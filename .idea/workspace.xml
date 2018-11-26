@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="59219a85-6e42-4de8-bcdf-f7789bc52758" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AWGN_Samples.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AWGN_Samples.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Channel_Impulse_Response_Samples.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Channel_Impulse_Response_Samples.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ConsoleOutput.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ConsoleOutput.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="-49998630">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="6" />
+          <entry key="project.open.time.1" value="1" />
+          <entry key="project.open.time.106" value="1" />
+          <entry key="project.open.time.118" value="1" />
+          <entry key="project.open.time.22" value="1" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.open.time.68" value="1" />
+          <entry key="project.open.time.7" value="1" />
+          <entry key="project.open.time.9" value="1" />
+          <entry key="project.opened" value="8" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="png" value="2" />
+          <entry key="py" value="19" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Image" value="2" />
+          <entry key="Python" value="19" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="Python Console" value="75" />
+          <entry key="dummy" value="31" />
+          <entry key="py" value="10818" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="PLAIN_TEXT" value="31" />
+          <entry key="Python" value="10893" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="340">
+              <caret line="166" column="36" lean-forward="true" selection-start-line="161" selection-start-column="4" selection-end-line="166" selection-end-column="36" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="408">
+              <caret line="279" column="52" selection-end-line="286" />
+              <folding>
+                <element signature="e#325#346#0" expanded="true" />
+                <marker date="1543209922210" expanded="true" signature="5581:5652" ph="..." />
+                <marker date="1543209922210" expanded="true" signature="11237:11472" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>Fever</find>
+      <find>1500</find>
+      <find>10000</find>
+      <find>5</find>
+      <find>1</find>
+      <find>36</find>
+      <find>100</find>
+      <find>10</find>
+      <find>4000</find>
+      <find>3000</find>
+      <find>2500</find>
+      <find>2000</find>
+      <find>18</find>
+      <find>1000</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>1500</replace>
+      <replace>10000</replace>
+      <replace>5</replace>
+      <replace>100</replace>
+      <replace>36</replace>
+      <replace>10</replace>
+      <replace>4000</replace>
+      <replace>3000</replace>
+      <replace>2500</replace>
+      <replace>2000</replace>
+      <replace>1000</replace>
+      <replace>500</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Viterbi_Example.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Viterbi_Algorithm.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiAlgorithm.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="404" />
+    <option name="y" value="205" />
+    <option name="width" value="1378" />
+    <option name="height" value="309" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Minerva" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Minerva" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Minerva" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Minerva" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="org" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Minerva" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="org" type="462c0819:PsiDirectoryNode" />
+              <item name="purdue" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Minerva" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="org" type="462c0819:PsiDirectoryNode" />
+              <item name="purdue" type="462c0819:PsiDirectoryNode" />
+              <item name="ece" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Minerva" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="org" type="462c0819:PsiDirectoryNode" />
+              <item name="purdue" type="462c0819:PsiDirectoryNode" />
+              <item name="ece" type="462c0819:PsiDirectoryNode" />
+              <item name="minerva" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.PUOccupancyBehaviorEstimator">
+    <configuration name="PUOccupancyBehaviorEstimator" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Minerva" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ViterbiAlgorithm" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Minerva" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Minerva\Minerva\src\main\org\purdue\ece\minerva\CrudeViterbiAlgorithm.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Viterbi_Algorithm" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Minerva" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Minerva\Minerva\src\main\org\purdue\ece\minerva\CrudeViterbiAlgorithm.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Viterbi_Example" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Minerva" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Viterbi_Example.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.PUOccupancyBehaviorEstimator" />
+      <item itemvalue="Python.Viterbi_Example" />
+      <item itemvalue="Python.Viterbi_Algorithm" />
+      <item itemvalue="Python.ViterbiAlgorithm" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.PUOccupancyBehaviorEstimator" />
+        <item itemvalue="Python.ViterbiAlgorithm" />
+        <item itemvalue="Python.Viterbi_Algorithm" />
+        <item itemvalue="Python.Viterbi_Example" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="59219a85-6e42-4de8-bcdf-f7789bc52758" name="Default Changelist" comment="" />
+      <created>1542845862482</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1542845862482</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Favorites" order="0" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="1" weight="0.3139881" />
+      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" order="0" />
+      <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="2" weight="0.32843137" />
+      <window_info anchor="bottom" id="Message" order="3" />
+      <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
+      <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.36601308" />
+      <window_info anchor="bottom" id="Debug" order="7" weight="0.41339868" />
+      <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="10" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Favorites" order="0" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="1" weight="0.3139881" />
+      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" order="0" />
+      <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="2" weight="0.32843137" />
+      <window_info anchor="bottom" id="Message" order="3" />
+      <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
+      <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
+      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.36601308" />
+      <window_info anchor="bottom" id="Debug" order="7" weight="0.41339868" />
+      <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="10" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout-to-restore>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateCodeFragment">
+      <expression>
+        <expression-string>self.channel_impulse_response_samples[i] * 1 + self.noise_samples[i]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.channel_impulse_response_samples[i] * true_pu_occupancy_state + self.noise_samples[i]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.channel_impulse_response_samples[
+                                                              i] * true_pu_occupancy_state + self.noise_samples[i]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>scipy.stats.norm(self.get_mean_observations(),
+                                numpy.sqrt(((numpy.std(self.channel_impulse_response_samples, ddof=1) ** 2)
+                                            * 0) + numpy.std(self.noise_samples, ddof=1) ** 2)).pdf(
+            -2.22)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>scipy.stats.norm(self.get_mean_observations(),
+                                numpy.sqrt(((numpy.std(self.channel_impulse_response_samples, ddof=1) ** 2)
+                                            * 0) + numpy.std(self.noise_samples, ddof=1) ** 2)).pdf(
+            10)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>scipy.stats.norm(self.get_mean_observations(),
+                                numpy.sqrt(((numpy.std(self.channel_impulse_response_samples, ddof=1) ** 2)
+                                            * 0) + numpy.std(self.noise_samples, ddof=1) ** 2)).pdf(
+            0)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>scipy.stats.norm(self.get_mean_observations(),
+                                numpy.sqrt(((numpy.std(self.channel_impulse_response_samples, ddof=1) ** 2)
+                                            * 0) + numpy.std(self.noise_samples, ddof=1) ** 2)).pdf(
+            observation_sample)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>scipy.stats.norm(self.get_mean_observations(),
+                                numpy.sqrt(((numpy.std(self.channel_impulse_response_samples, ddof=1) ** 2)
+                                            * state) + numpy.std(self.noise_samples, ddof=1) ** 2)).pdf(
+            observation_sample)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+    </expressions>
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>reduced_observation_vector</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.true_pu_occupancy_states</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.observation_samples</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.noise_samples[iband]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.noise_samples</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>numpy.random.normal(mu_noise, std_noise, 100)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>viterbi_algorithm</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>observations_round</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>observation_samples</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://C:/Program Files/Python36/Lib/site-packages/scipy/stats/kde.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-476">
+          <caret line="173" column="8" selection-start-line="173" selection-start-column="8" selection-end-line="173" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Viterbi_Example.py" />
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Channel_Impulse_Response_Samples.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AWGN_Samples.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.2/system/python_stubs/-1120166012/numpy/random/mtrand.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="228" column="4" selection-start-line="228" selection-start-column="4" selection-end-line="228" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Program Files/Python36/Lib/site-packages/scipy/stats/_continuous_distns.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="201" selection-start-line="201" selection-end-line="201" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Program Files/Python36/Lib/site-packages/scipy/stats/_distn_infrastructure.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19839">
+          <caret line="1625" column="8" selection-start-line="1625" selection-start-column="8" selection-end-line="1625" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="166" column="36" lean-forward="true" selection-start-line="161" selection-start-column="4" selection-end-line="166" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="279" column="52" selection-end-line="286" />
+          <folding>
+            <element signature="e#325#346#0" expanded="true" />
+            <marker date="1543209922210" expanded="true" signature="5581:5652" ph="..." />
+            <marker date="1543209922210" expanded="true" signature="11237:11472" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

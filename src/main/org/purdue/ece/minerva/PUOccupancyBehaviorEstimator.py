@@ -239,10 +239,10 @@ if __name__ == '__main__':
     puOccupancyBehaviorEstimation = PUOccupancyBehaviorEstimator()
     # P(1)
     pi = puOccupancyBehaviorEstimation.start_probabilities.occupied
-    # P(1|0) - Let's start small and move towards independence
-    p = increment_value_for_p
     final_frontier = int(pi / increment_value_for_p)
     for iteration_cycle in range(0, puOccupancyBehaviorEstimation.NUMBER_OF_CYCLES):
+        # P(1|0) - Let's start small and move towards independence
+        p = increment_value_for_p
         p_values = []
         detection_accuracies_across_p_values = []
         for increment_counter in range(0, final_frontier):

@@ -279,7 +279,8 @@ if __name__ == '__main__':
             _sum += _entry[pass_counter]
         final_detection_accuracy_array_for_averaging.append(_sum / puOccupancyBehaviorEstimation.NUMBER_OF_CYCLES)
     fig, ax = plt.subplots()
-    ax.plot(p_values_overall, final_detection_accuracy_array_for_averaging, linewidth=1.0)
+    ax.plot(p_values_overall, final_detection_accuracy_array_for_averaging, linestyle='--', linewidth=1.0, marker='o',
+            color='r')
     fig.suptitle('Detection Accuracy v/s P(Occupied | Idle) at P( Xi = 1 ) = 0.6', fontsize=20)
     ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
     ax.set_ylabel('Detection Accuracy', fontsize=12)

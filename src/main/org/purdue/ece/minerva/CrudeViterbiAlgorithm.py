@@ -164,9 +164,9 @@ if __name__ == '__main__':
         _sum = 0
         for entry in final_da:
             _sum += entry[n]
-        final_davg.append(_sum / 40)
+        final_davg.append(_sum / 50)
     fig, ax = plt.subplots()
-    ax.plot(ps, final_davg, linewidth=1.0)
+    ax.plot(ps, final_davg, linestyle='--', linewidth=1.0, marker='o', color='b')
     fig.suptitle('Detection Accuracy v/s P(Occupied | Idle) at P( Xi = 1 ) = 0.6', fontsize=20)
     ax.set_xlabel('p', fontsize=12)
     ax.set_ylabel('Detection Accuracy', fontsize=12)

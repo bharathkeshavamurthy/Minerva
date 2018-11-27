@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59219a85-6e42-4de8-bcdf-f7789bc52758" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AWGN_Samples.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AWGN_Samples.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Channel_Impulse_Response_Samples.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Channel_Impulse_Response_Samples.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ConsoleOutput.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ConsoleOutput.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,7 +17,7 @@
     <session id="-49998630">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="6" />
+          <entry key="project.closed" value="7" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.106" value="1" />
           <entry key="project.open.time.118" value="1" />
@@ -47,24 +45,24 @@
         <counts>
           <entry key="Python Console" value="75" />
           <entry key="dummy" value="31" />
-          <entry key="py" value="10818" />
+          <entry key="py" value="10887" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="31" />
-          <entry key="Python" value="10893" />
+          <entry key="Python" value="10962" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="166" column="36" lean-forward="true" selection-start-line="161" selection-start-column="4" selection-end-line="166" selection-end-column="36" />
+            <state relative-caret-position="306">
+              <caret line="164" column="30" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -72,15 +70,15 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="279" column="52" selection-end-line="286" />
+            <state relative-caret-position="178">
+              <caret line="282" column="22" selection-start-line="282" selection-start-column="22" selection-end-line="282" selection-end-column="22" />
               <folding>
                 <element signature="e#325#346#0" expanded="true" />
-                <marker date="1543209922210" expanded="true" signature="5581:5652" ph="..." />
-                <marker date="1543209922210" expanded="true" signature="11237:11472" ph="..." />
+                <marker date="1543328865299" expanded="true" signature="5581:5652" ph="..." />
+                <marker date="1543328865299" expanded="true" signature="11237:11472" ph="..." />
               </folding>
             </state>
           </provider>
@@ -111,11 +109,11 @@
       <find>2000</find>
       <find>18</find>
       <find>1000</find>
+      <find>500</find>
     </findStrings>
     <replaceStrings>
       <replace>1500</replace>
       <replace>10000</replace>
-      <replace>5</replace>
       <replace>100</replace>
       <replace>36</replace>
       <replace>10</replace>
@@ -125,6 +123,7 @@
       <replace>2000</replace>
       <replace>1000</replace>
       <replace>500</replace>
+      <replace>5</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -227,7 +226,28 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.PUOccupancyBehaviorEstimator">
+  <component name="RunManager" selected="Python.CrudeViterbiAlgorithm">
+    <configuration name="CrudeViterbiAlgorithm" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Minerva" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="PUOccupancyBehaviorEstimator" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Minerva" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -317,9 +337,11 @@
       <item itemvalue="Python.Viterbi_Example" />
       <item itemvalue="Python.Viterbi_Algorithm" />
       <item itemvalue="Python.ViterbiAlgorithm" />
+      <item itemvalue="Python.CrudeViterbiAlgorithm" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.CrudeViterbiAlgorithm" />
         <item itemvalue="Python.PUOccupancyBehaviorEstimator" />
         <item itemvalue="Python.ViterbiAlgorithm" />
         <item itemvalue="Python.Viterbi_Algorithm" />
@@ -342,7 +364,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="1" weight="0.3139881" />
@@ -353,7 +374,7 @@
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="6" weight="0.36601308" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.40359476" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.41339868" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -372,7 +393,7 @@
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.36601308" />
+      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.6111111" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.41339868" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -539,24 +560,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py">
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="166" column="36" lean-forward="true" selection-start-line="161" selection-start-column="4" selection-end-line="166" selection-end-column="36" />
+        <state relative-caret-position="178">
+          <caret line="282" column="22" selection-start-line="282" selection-start-column="22" selection-end-line="282" selection-end-column="22" />
           <folding>
-            <element signature="e#0#12#0" expanded="true" />
+            <element signature="e#325#346#0" expanded="true" />
+            <marker date="1543328865299" expanded="true" signature="5581:5652" ph="..." />
+            <marker date="1543328865299" expanded="true" signature="11237:11472" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="279" column="52" selection-end-line="286" />
+        <state relative-caret-position="306">
+          <caret line="164" column="30" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
           <folding>
-            <element signature="e#325#346#0" expanded="true" />
-            <marker date="1543209922210" expanded="true" signature="5581:5652" ph="..." />
-            <marker date="1543209922210" expanded="true" signature="11237:11472" ph="..." />
+            <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>

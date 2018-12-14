@@ -1,12 +1,12 @@
 # PU Occupancy Behavior Estimation
-# First iteration: Complete information and Markovian across frequency
+# Second Iteration: Incomplete information (Missing observations) and Markovian across frequency
 # Author: Bharath Keshavamurthy
 # School of Electrical and Computer Engineering
 # Purdue University
 # Copyright (c) 2018. All Rights Reserved.
 
-# For the math behind this algorithm, refer to:
-# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_3_0.pdf
+# For the math behind this algorithm, please refer to:
+# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_5_0.pdf
 
 from enum import Enum
 import numpy
@@ -24,7 +24,7 @@ class OccupancyState(Enum):
 
 
 # Main class: PU Occupancy Behavior Estimation
-class PUOccupancyBehaviorEstimator(object):
+class PUOccupancyBehaviorEstimatorII(object):
     # Number of samples for this simulation
     NUMBER_OF_SAMPLES = 1000
 
@@ -37,6 +37,12 @@ class PUOccupancyBehaviorEstimator(object):
     # Number of frequency bands/channels in the wideband spectrum of interest
     NUMBER_OF_FREQUENCY_BANDS = 18
 
+    # Channels in which the PU Occupancy is measured - the remaining channels are not sensed (Energy Efficiency metric)
+    BANDS_OBSERVED = ()
+
+    # Empty observation place holder value
+    EMPTY_OBSERVATION_PLACEHOLDER_VALUE = 0
+
     # Start probabilities of PU occupancy per frequency band
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
 
@@ -47,11 +53,11 @@ class PUOccupancyBehaviorEstimator(object):
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
-    NUMBER_OF_CYCLES = 50
+    NUMBER_OF_CYCLES = 100
 
     # Initialization Sequence
     def __init__(self):
-        print('[INFO] PUOccupancyBehaviorEstimator Initialization: Bringing things up ...')
+        print('[INFO] PUOccupancyBehaviorEstimatorII Initialization: Bringing things up ...')
         # AWGN samples
         self.noise_samples = {}
         # Channel Impulse Response samples
@@ -104,11 +110,14 @@ class PUOccupancyBehaviorEstimator(object):
                                                                                         self.NUMBER_OF_SAMPLES)
         # Re-arranging the vectors
         for band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            # Create an empty collection object
             obs_per_band = list()
-            for count in range(0, self.NUMBER_OF_SAMPLES):
-                obs_per_band.append(self.channel_impulse_response_samples[band][
-                                        count] * self.true_pu_occupancy_states[band] + self.noise_samples[
-                                        band][count])
+            # If the channel is sensed by the SU, extract the observations
+            if band in self.BANDS_OBSERVED:
+                for count in range(0, self.NUMBER_OF_SAMPLES):
+                    obs_per_band.append(self.channel_impulse_response_samples[band][
+                                            count] * self.true_pu_occupancy_states[band] + self.noise_samples[
+                                            band][count])
             self.observation_samples.append(obs_per_band)
         return self.observation_samples
 
@@ -125,9 +134,14 @@ class PUOccupancyBehaviorEstimator(object):
 
     # Get the Emission Probabilities -> P(y|x)
     def get_emission_probabilities(self, state, observation_sample):
-        return scipy.stats.norm(0, numpy.sqrt(
-            (self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE * state) + self.VARIANCE_OF_AWGN)).pdf(
-            observation_sample)
+        # If the channel is not observed, i.e. if the observation is [phi] or [0], report m_r(y_i) as 1
+        if observation_sample == self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE:
+            return 1
+        # Normal Viterbi code
+        else:
+            return scipy.stats.norm(0, numpy.sqrt(
+                (self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE * state) + self.VARIANCE_OF_AWGN)).pdf(
+                observation_sample)
 
     # Calculate the detection accuracy
     def get_detection_accuracy(self, estimated_states):
@@ -144,7 +158,7 @@ class PUOccupancyBehaviorEstimator(object):
             estimated_states = []
             reduced_observation_vector = []
             for entry in self.observation_samples:
-                reduced_observation_vector.append(entry[sampling_round])
+                reduced_observation_vector.append(self.get_entry(entry, sampling_round))
             # Now, I have to estimate the state of the ${NUMBER_OF_FREQUENCY_BANDS} based on
             # ...this reduced observation vector
             # INITIALIZATION : The array of initial probabilities is known
@@ -153,8 +167,9 @@ class PUOccupancyBehaviorEstimator(object):
             for state in OccupancyState:
                 current_value = self.get_emission_probabilities(state.value, reduced_observation_vector[0]) * \
                                 self.get_start_probabilities(state.name)
-                value_function_collection[0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(current_value=current_value,
-                                                                                           previous_state=None)
+                value_function_collection[0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
+                    current_value=current_value,
+                    previous_state=None)
             # For each observation after the first one (I can't apply Markovian to [0])
             for observation_index in range(1, len(reduced_observation_vector)):
                 # Trying to find the max pointer here ...
@@ -169,7 +184,8 @@ class PUOccupancyBehaviorEstimator(object):
                             # Already done
                             continue
                         else:
-                            pointer = self.get_transition_probabilities(candidate_previous_state.value, state.value) * \
+                            pointer = self.get_transition_probabilities(candidate_previous_state.value,
+                                                                        state.value) * \
                                       value_function_collection[observation_index - 1][
                                           candidate_previous_state.name].current_value
                             if pointer > max_pointer:
@@ -206,6 +222,13 @@ class PUOccupancyBehaviorEstimator(object):
             sum_for_average += accuracy_entry
         return sum_for_average / self.NUMBER_OF_SAMPLES
 
+    # Safe entry access using indices from a collection object
+    def get_entry(self, collection, index):
+        if len(collection) is not 0 and collection[index] is not None:
+            return collection[index]
+        else:
+            return self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE
+
     # Get enumeration field value from name
     @staticmethod
     def value_from_name(name):
@@ -224,65 +247,88 @@ class PUOccupancyBehaviorEstimator(object):
 
     # Exit strategy
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] PUOccupancyBehaviorEstimator Clean-up: Cleaning things up ...')
+        print('[INFO] PUOccupancyBehaviorEstimatorII Clean-up: Cleaning things up ...')
 
 
 # Run Trigger
 if __name__ == '__main__':
-    # Increment p by this value
-    increment_value_for_p = 0.030
-    # X-Axis for the P(1|0) versus Detection Accuracy plot
-    p_values_overall = []
-    # Y-Axis for the P(1|0) versus Detection Accuracy plot
-    detection_accuracies_across_p_values_overall = []
-    print(
-        '[INFO] PUOccupancyBehaviorEstimator main: Creating an instance and starting the initialization process ...')
-    puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimator()
-    # P(1)
-    pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
-    final_frontier = int(pi / increment_value_for_p)
-    for iteration_cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
-        # P(1|0) - Let's start small and move towards independence
-        p = increment_value_for_p
-        p_values = []
-        detection_accuracies_across_p_values = []
-        for increment_counter in range(0, final_frontier):
-            print('[INFO] PUOccupancyBehaviorEstimator main: Pass [', increment_counter, ']')
-            p_values.append(p)
-            # P(0|1)
-            q = (p * puOccupancyBehaviorEstimator.start_probabilities.idle) \
-                / puOccupancyBehaviorEstimator.start_probabilities.occupied
-            puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                1: {1: (1 - q), 0: q},
-                0: {1: p, 0: (1 - p)}
-            }
-            # True PU Occupancy State
-            puOccupancyBehaviorEstimator.allocate_true_pu_occupancy_states(p, q, pi)
-            puOccupancyBehaviorEstimator.allocate_observations()
-            print(
-                '[INFO] PUOccupancyBehaviorEstimator main: Now, '
-                'let us estimate the PU occupancy states in these frequency bands for p = ', p)
-            detection_accuracy_per_p = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states()
-            print('[INFO] PUOccupancyBehaviorEstimator main: p = ', p, ' Detection Accuracy: ',
-                  detection_accuracy_per_p)
-            detection_accuracies_across_p_values.append(detection_accuracy_per_p)
-            p += increment_value_for_p
-            print('[INFO] PUOccupancyBehaviorEstimator main: Reset everything and Re-initialize for the next pass ...')
-            puOccupancyBehaviorEstimator.reset()
-        p_values_overall = p_values
-        detection_accuracies_across_p_values_overall.append(detection_accuracies_across_p_values)
-    final_detection_accuracy_array_for_averaging = []
-    # I've run multiple passes of the logic for smoothening the curve
-    # Now, average over them and plot it
-    for pass_counter in range(0, final_frontier):
-        _sum = 0
-        for _entry in detection_accuracies_across_p_values_overall:
-            _sum += _entry[pass_counter]
-        final_detection_accuracy_array_for_averaging.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+    color_index = 0
+    # Colors for plotting
+    colors = ('b', 'g', 'r', 'w', 'm', 'y', 'k', 'c')
+    # Figure for plotting
     fig, ax = plt.subplots()
-    ax.plot(p_values_overall, final_detection_accuracy_array_for_averaging, linestyle='--', linewidth=1.0, marker='o',
-            color='r')
-    fig.suptitle('Detection Accuracy v/s P(Occupied | Idle) at P( Xi = 1 ) = 0.6', fontsize=20)
+    # Variety in channel selection for sensing - This'll be given by the Bandit
+    # Hard-coding a collection for now
+    channel_selection_strategies = (
+        (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17), (0, 1, 2, 3, 4, 5, 6, 7, 8),
+        (9, 10, 11, 12, 13, 14, 15, 16, 17),
+        (0, 2, 4, 6, 8, 10, 12, 14, 16, 18), (1, 5, 7, 9, 16, 17, 18), (0, 5, 8, 13, 17), (5, 10, 15), (10, 11))
+    print(
+        '[INFO] PUOccupancyBehaviorEstimatorII main: Creating an instance and starting the initialization process ...')
+    puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()
+    for channel_selection_strategy in channel_selection_strategies:
+        # Increment p by this value
+        increment_value_for_p = 0.030
+        # X-Axis for the P(1|0) versus Detection Accuracy plot
+        p_values_overall = []
+        # Y-Axis for the P(1|0) versus Detection Accuracy plot
+        detection_accuracies_across_p_values_overall = []
+        # P(1)
+        pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
+        final_frontier = int(pi / increment_value_for_p)
+        # Setting the chosen channel selection strategy
+        puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
+        label = 'Channel Sensing Strategy: ' + ''.join(str(channel_selection_strategy))
+        print('[INFO] PUOccupancyBehaviorEstimatorII main: Channel Selection Strategy- [',
+              channel_selection_strategy, ']')
+        for iteration_cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
+            # P(1|0) - Let's start small and move towards independence
+            p = increment_value_for_p
+            p_values = []
+            detection_accuracies_across_p_values = []
+            for increment_counter in range(0, final_frontier):
+                print('[INFO] PUOccupancyBehaviorEstimatorII main: Pass [', increment_counter, ']')
+                p_values.append(p)
+                # P(0|1)
+                q = (p * puOccupancyBehaviorEstimator.start_probabilities.idle) \
+                    / puOccupancyBehaviorEstimator.start_probabilities.occupied
+                puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
+                    1: {1: (1 - q), 0: q},
+                    0: {1: p, 0: (1 - p)}
+                }
+                # True PU Occupancy State
+                puOccupancyBehaviorEstimator.allocate_true_pu_occupancy_states(p, q, pi)
+                puOccupancyBehaviorEstimator.allocate_observations()
+                print(
+                    '[INFO] PUOccupancyBehaviorEstimatorII main: Now, '
+                    'let us estimate the PU occupancy states in these frequency bands for p = ', p)
+                detection_accuracy_per_p = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states()
+                print('[INFO] PUOccupancyBehaviorEstimatorII main: p = ', p, ' Detection Accuracy: ',
+                      detection_accuracy_per_p)
+                detection_accuracies_across_p_values.append(detection_accuracy_per_p)
+                p += increment_value_for_p
+                print(
+                    '[INFO] PUOccupancyBehaviorEstimatorII main: Reset everything and Re-initialize for the next '
+                    'pass ...')
+                puOccupancyBehaviorEstimator.reset()
+            p_values_overall = p_values
+            detection_accuracies_across_p_values_overall.append(detection_accuracies_across_p_values)
+        final_detection_accuracy_array_for_averaging = []
+        # I've run multiple passes of the logic for smoothening the curve
+        # Now, average over them and plot it
+        for pass_counter in range(0, final_frontier):
+            _sum = 0
+            for _entry in detection_accuracies_across_p_values_overall:
+                _sum += _entry[pass_counter]
+            final_detection_accuracy_array_for_averaging.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+        ax.plot(p_values_overall, final_detection_accuracy_array_for_averaging, linestyle='--', linewidth=1.0,
+                marker='o',
+                color=colors[color_index], label=label)
+        color_index += 1
+    fig.suptitle(
+        'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+        'with varying channel sensing strategies', fontsize=20)
     ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
     ax.set_ylabel('Detection Accuracy', fontsize=12)
+    plt.legend(loc='upper right', prop={'size': 6})
     plt.show()

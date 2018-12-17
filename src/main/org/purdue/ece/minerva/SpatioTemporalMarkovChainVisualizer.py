@@ -1,4 +1,4 @@
-# A Python Script that visualizes the Double Markov Chain
+# A Python Script that visualizes a Double Markov Chain
 # A Markov Chain across the frequency sub-bands
 # A Markov Chain across time (sampling rounds or iterations)
 # Extended Case 2

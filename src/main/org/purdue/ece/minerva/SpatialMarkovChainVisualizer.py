@@ -1,4 +1,4 @@
-# A Python Script that visualizes a Single Markov Chain across Channel indices
+# A Python Script that visualizes a single Markov Chain across the channel indices
 # Rudimentary case 1
 # A Markov Chain across the frequency sub-bands
 # Static Primary User Occupancy Behavior

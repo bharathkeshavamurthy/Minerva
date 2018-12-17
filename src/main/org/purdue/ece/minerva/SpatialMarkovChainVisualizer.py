@@ -15,7 +15,7 @@ plotly.tools.set_credentials_file(username='bkeshava', api_key='RHqYrDdThygiJEPi
 
 
 # Channel Object
-# Encapsulates the channel index, and PU occupancy
+# Encapsulates the channel index and PU occupancy
 class Channel(object):
     # Constructor - Channel Index and PU Occupancy
     def __init__(self, index, occupancy):
@@ -114,6 +114,10 @@ class SpatialMarkovChainVisualizer(object):
                 '[ERROR] SpatialMarkovChainVisualizer Visualization: Plotly Heatmap- '
                 'Exception caught while plotting [', e, ']')
         print('[INFO] SpatialMarkovChainVisualizer Visualization: Completed visualization!')
+
+    # Termination
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('[INFO] SpatialMarkovChainVisualizer Termination: Cleaning things up...')
 
 
 # Run Trigger

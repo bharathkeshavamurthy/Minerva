@@ -1,22 +1,32 @@
 <component name="ProjectDictionaryState">
   <dictionary name="BHARATH">
     <words>
+      <w>api</w>
       <w>awgn</w>
       <w>bharath</w>
+      <w>bkeshava</w>
       <w>davg</w>
       <w>ddof</w>
+      <w>discretized</w>
       <w>gaussians</w>
+      <w>heatmap</w>
       <w>iband</w>
       <w>keshavamurthy</w>
       <w>markovian</w>
       <w>mathcal</w>
+      <w>objs</w>
+      <w>plotly</w>
       <w>probs</w>
       <w>qrob</w>
       <w>smoothen</w>
       <w>smoothening</w>
       <w>spatio</w>
+      <w>thygi</w>
+      <w>viridis</w>
       <w>viterbi</w>
       <w>wideband</w>
+      <w>xaxis</w>
+      <w>yaxis</w>
     </words>
   </dictionary>
 </component>

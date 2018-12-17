@@ -26,7 +26,7 @@ class OccupancyState(Enum):
 # Main class: PU Occupancy Behavior Estimation
 class PUOccupancyBehaviorEstimatorII(object):
     # Number of samples for this simulation
-    NUMBER_OF_SAMPLES = 1000
+    NUMBER_OF_SAMPLES = 100
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -53,7 +53,7 @@ class PUOccupancyBehaviorEstimatorII(object):
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
-    NUMBER_OF_CYCLES = 100
+    NUMBER_OF_CYCLES = 50
 
     # Initialization Sequence
     def __init__(self):
@@ -262,7 +262,7 @@ if __name__ == '__main__':
     channel_selection_strategies = (
         (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17),
         (9, 10, 11, 12, 13, 14, 15, 16, 17),
-        (0, 2, 4, 6, 8, 10, 12, 14, 16, 18), (1, 5, 7, 9, 16, 17, 18), (0, 5, 8, 13, 17), (5, 10, 15), (10, 11))
+        (0, 2, 4, 6, 8, 10, 12, 14, 16), (1, 4, 7, 10, 13, 16), (0, 5, 10, 15), (5, 10), (11,))
     print(
         '[INFO] PUOccupancyBehaviorEstimatorII main: Creating an instance and starting the initialization process ...')
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()

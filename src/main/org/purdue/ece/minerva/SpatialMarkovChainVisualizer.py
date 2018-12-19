@@ -102,7 +102,8 @@ class SpatialMarkovChainVisualizer(object):
                                showscale=True)]
         # Layout
         layout = graph_objs.Layout(
-            title='PU Occupancy across time indices and across channel indices with P(Occupied) = 0.6',
+            title='Spectrum Occupancy HeatMap with Static PU and Markovian Correlation across channel indices '
+                  'with P(Occupied|Idle) = 0.3 and P(Occupied) = 0.6',
             xaxis=dict(title='Sampling Rounds (Time)', showgrid=True, showticklabels=True),
             yaxis=dict(title='Frequency Channels', showgrid=True, showticklabels=True))
         figure = graph_objs.Figure(data=data, layout=layout)

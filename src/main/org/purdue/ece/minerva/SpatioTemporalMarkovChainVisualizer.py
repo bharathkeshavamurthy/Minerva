@@ -87,11 +87,23 @@ class SpatioTemporalMarkovChainVisualizer(object):
         # Let's fill in the other states
         for channel_index in range(1, self.NUMBER_OF_CHANNELS):
             for round_index in range(1, self.NUMBER_OF_SAMPLING_ROUNDS):
+                # b
                 previous_temporal_state = self.true_pu_occupancy_states[channel_index][round_index - 1]
+                # c
                 previous_spatial_state = self.true_pu_occupancy_states[channel_index - 1][round_index]
+                # P(A=1|B=b)
                 probability_occupied_temporal = self.temporal_transition_probability_matrix[previous_temporal_state][1]
+                # P(A=1|C=c)
                 probability_occupied_spatial = self.spatial_transition_probability_matrix[previous_spatial_state][1]
-                probability_occupied = (probability_occupied_spatial * probability_occupied_temporal) / pi_val
+                # Calculating P(B=b)
+                if previous_temporal_state == 1:
+                    pi_temporal = pi_val
+                else:
+                    pi_temporal = 1 - pi_val
+                # P(A=1|B=b,C=c) = [P(A=1|B=b)*P(A=1|C=c)]/P(B=b)
+                # This formula is obtained by using Bayes' theorem, independence, and definitions of conditional...
+                # ...probability
+                probability_occupied = (probability_occupied_spatial * probability_occupied_temporal) / pi_temporal
                 seed = numpy.random.random_sample()
                 if seed < probability_occupied:
                     previous_state = 1

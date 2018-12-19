@@ -173,6 +173,9 @@ class PUOccupancyBehaviorEstimatorII(object):
                     current_value=current_value,
                     previous_state=None)
             # For each observation after the first one (I can't apply Markovian to [0])
+            # TODO: Maybe use different variable names instead of pointer and max_pointer for [a_lr*V_{j-1}^l]
+            # TODO: Although pointer is somewhat accurate, it is not entirely accurate based on the notation used
+            # TODO: Pointer in the doc constitutes the inclusion of the argmax operation ...so, that maybe confusing
             for observation_index in range(1, len(reduced_observation_vector)):
                 # Trying to find the max pointer here ...
                 for state in OccupancyState:
@@ -263,7 +266,15 @@ if __name__ == '__main__':
     dual = False
     # Colors for plotting
     colors = ('b', 'g', 'r', 'm', 'y', 'k', 'c', (0.1, 0.2, 0.3), (0.5, 0.6, 0.7), (0.0, 0.5, 0.8), (0.5, 0.5, 0.5),
-              (0.1, 0.2, 0.5, 0.3), (0.0, 0.4, 0.4, 0.6))
+              (0.1, 0.2, 0.5, 0.3), (0.0, 0.4, 0.4, 0.6), (0.2, 0.2, 0.2, 0.2), (0.3, 0.3, 0.3, 0.3),
+              (0.1, 0.2, 0.3, 0.4), (0.0, 0.0, 0.4, 0.4), (0.1, 0.1, 0.1, 0.1), (0.4, 0.4, 0.4, 0.4),
+              (0.6, 0.6, 0.6, 0.6), (0.7, 0.7, 0.7, 0.7), (0.8, 0.8, 0.8, 0.8),
+              (0.9, 0.9, 0.9, 0.9), (1.0, 1.0, 1.0, 1.0), (0.0, 0.0, 0.0, 0.0), (0.8, 0.9, 0.0), (0.4, 0.0, 0.7),
+              (0.3, 0.6, 1.0), (1.0, 0.5, 0.6),
+              (0.8, 0.9, 0.6, 1.0), (0.3, 1.0, 0.4, 0.6), (1.0, 0.9, 0.9, 0.9),
+              (0.8, 0.9, 0.0, 0.4), (0.3, 0.0, 0.4, 0.4), (0.1, 0.8, 1.0, 0.1),
+              (0.6, 0.6, 1.0, 0.6), (0.7, 0.6, 0.8, 1.0), (1.0, 0.9, 0.8, 0.9),
+              (0.0, 1.0, 0.1, 0.9), (0.4, 1.0, 0.4, 0.4), (0.3, 0.0, 0.3, 1.0))
     # Variety in channel selection for sensing - This'll be given by the Bandit
     # Emulating this for now using the ChannelSelectionStrategyGenerator class
     channel_selection_strategy_generator = ChannelSelectionStrategyGenerator.ChannelSelectionStrategyGenerator()

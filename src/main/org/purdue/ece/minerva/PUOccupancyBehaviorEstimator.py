@@ -156,6 +156,9 @@ class PUOccupancyBehaviorEstimator(object):
                 value_function_collection[0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(current_value=current_value,
                                                                                            previous_state=None)
             # For each observation after the first one (I can't apply Markovian to [0])
+            # TODO: Maybe use different variable names instead of pointer and max_pointer for [a_lr*V_{j-1}^l]
+            # TODO: Although pointer is somewhat accurate, it is not entirely accurate based on the notation used
+            # TODO: Pointer in the doc constitutes the inclusion of the argmax operation ...so, that maybe confusing
             for observation_index in range(1, len(reduced_observation_vector)):
                 # Trying to find the max pointer here ...
                 for state in OccupancyState:

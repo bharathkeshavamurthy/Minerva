@@ -2,6 +2,7 @@
   <dictionary name="BHARATH">
     <words>
       <w>api</w>
+      <w>argmax</w>
       <w>awgn</w>
       <w>bharath</w>
       <w>bkeshava</w>
@@ -18,6 +19,7 @@
       <w>plotly</w>
       <w>probs</w>
       <w>qrob</w>
+      <w>situ</w>
       <w>smoothen</w>
       <w>smoothening</w>
       <w>spatio</w>

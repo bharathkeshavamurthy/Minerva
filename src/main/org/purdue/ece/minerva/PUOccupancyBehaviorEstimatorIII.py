@@ -6,6 +6,7 @@
 # Copyright (c) 2018. All Rights Reserved.
 
 # For the math behind this algorithm, refer to:
+# This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
 # https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_5_0.pdf
 
 from enum import Enum

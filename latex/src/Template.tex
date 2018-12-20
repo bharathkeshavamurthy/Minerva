@@ -367,6 +367,41 @@ Now, moving on to the \textbf{Backtracking aspect},
 \[k^*\ =\ argmax_k(V_K^{(k)})\]
 \[x_{i-1}^*\ =\ Ptr_i\]
 There are other approaches to this "missing observations" problem of state estimation. For example, approaches like Gluing and Multi-sequences are discussed in Ref [\ref{10}]. Similar models are used in Automatic Speech Recognition with Missing Data (ASR with MD) as detailed in Ref [\ref{11}].
+\subsection{Simulation Results}
+The following results illustrate the PU Occupancy Behavior Estimation Algorithm with Markovian Correlation across channel indices and with incomplete information, i.e. missing observations. The channel selection strategy is simulated in two ways: Uniform Sampling and Random Sampling. In the Uniform Sampling/Uniform Sensing strategy, the step size between consecutive channels is incremented by 1 in each cycle while in the Random Sampling/Random Sensing strategy, a random number of channels are sensed from the discretized wideband spectrum of interest.
+\\The simulation model consists of 18 channels with 100 samples per channel over 50 iteration cycles.
+\\$P(Occupied|Idle)\ =\ p$ is incremented in steps of $0.03$ from $0.03$ all the way up to $P(Occupied)\ =\ \Pi\ =\ 0.6$ and for a given value of $p$, the detection accuracy is calculated and averaged out over multiple iteration cycles.
+\\The detection accuracy is then plotted against $P(Occupied|Idle)\ =\ p$.
+\begin{itemize}
+    \item Figure 4 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy
+    \item Figure 5 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 4, i.e. the channels that were missed in runs of Figure 4 are sensed here to get an understanding on the "regret" of the channel selection strategy.
+    \item Figure 5 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy
+    \item Figure 6 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 4, i.e. the channels that were missed in runs of Figure 4 are sensed here to get an understanding on the "regret" of the channel selection strategy.
+\end{itemize}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing.png}
+\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process.}
+\label{fig:mesh4}
+\centering
+\end{figure}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing_Duals.png}
+\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 4.}
+\label{fig:mesh5}
+\centering
+\end{figure}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Random_Channel_Sensing.png}
+\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Random Sampling process.}
+\label{fig:mesh6}
+\centering
+\end{figure}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Random_Channel_Sensing_Duals.png}
+\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 6.}
+\label{fig:mesh7}
+\centering
+\end{figure}
 \section{Dynamic PU with Temporal Correlation and Channel Correlation with Complete Information}
 \subsection{Observation Model}
 Persisting the same observation model as in the previous sections,
@@ -408,22 +443,22 @@ The \textbf{initial or start probabilities} are given as follows.
 \subsection{Visualization of Temporally and Spatially Correlated PU behavior}
 The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds. The PU behavior is dynamic (varying across time).
 \begin{itemize}
-    \item Figure 4 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming that a dual Markov chain exists- one across channels and one across sampling rounds. Mathematical details about the System Model are outlined in the previous subsection. Specifically, for both the Markov chains, 
+    \item Figure 8 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming that a dual Markov chain exists- one across channels and one across sampling rounds. Mathematical details about the System Model are outlined in the previous subsection. Specifically, for both the Markov chains, 
     \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
     \[P(Occupied)\ =\ P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
-    \item Figure 5 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence among channels and among sampling rounds, i.e,
+    \item Figure 9 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence among channels and among sampling rounds, i.e,
     \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.3\]
 \end{itemize}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_HeatMap_Dynamic_SpatioTemporal_Corr.png}
 \caption{Dynamic PU Occupancy Behavior with Markovian Correlation across channel indices and across time indices}
-\label{fig:mesh4}
+\label{fig:mesh8}
 \centering
 \end{figure}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_HeatMap_Dynamic_Independence.png}
 \caption{Dynamic PU Occupancy Behavior with independence among channels and among sampling rounds}
-\label{fig:mesh5}
+\label{fig:mesh9}
 \centering
 \end{figure}
 \subsection{The Estimator}

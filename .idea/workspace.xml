@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="59219a85-6e42-4de8-bcdf-f7789bc52758" name="Default Changelist" comment="" />
+    <list default="true" id="59219a85-6e42-4de8-bcdf-f7789bc52758" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,13 +48,13 @@
         <counts>
           <entry key="Python Console" value="75" />
           <entry key="dummy" value="46" />
-          <entry key="py" value="28756" />
+          <entry key="py" value="28963" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="46" />
-          <entry key="Python" value="28831" />
+          <entry key="Python" value="29038" />
         </counts>
       </usages-collector>
     </session>
@@ -80,10 +83,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-5134">
+            <state relative-caret-position="-748">
               <caret line="13" column="18" lean-forward="true" selection-start-line="13" selection-start-column="18" selection-end-line="13" selection-end-column="18" />
             </state>
           </provider>
@@ -92,8 +95,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="43">
-              <caret line="17" column="17" selection-start-line="17" selection-start-column="17" selection-end-line="17" selection-end-column="17" />
+            <state relative-caret-position="-93">
+              <caret line="36" column="26" lean-forward="true" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -116,16 +119,16 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" column="45" lean-forward="true" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
+            <state relative-caret-position="238">
+              <caret line="50" column="91" selection-end-line="105" />
               <folding>
                 <element signature="e#183#220#0" expanded="true" />
-                <marker date="1545076353872" expanded="true" signature="632:637" ph="..." />
-                <marker date="1545076353872" expanded="true" signature="2065:3312" ph="..." />
-                <marker date="1545076353872" expanded="true" signature="3388:4660" ph="..." />
+                <marker date="1545402518960" expanded="true" signature="632:637" ph="..." />
+                <marker date="1545402518960" expanded="true" signature="2365:3612" ph="..." />
+                <marker date="1545402518960" expanded="true" signature="3688:4960" ph="..." />
               </folding>
             </state>
           </provider>
@@ -192,13 +195,13 @@
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/Viterbi_Algorithm.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiAlgorithm.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/OccupancyBehaviorEstimatorWithIncompleteInformation.py" />
-        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatialMarkovChainVisualizer.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py" />
       </list>
     </option>
   </component>
@@ -385,7 +388,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.3125" />
+      <window_info content_ui="combo" id="Project" order="1" weight="0.3125" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="0" weight="0.32843137" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
@@ -393,7 +396,7 @@
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="6" weight="1.0" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.66993463" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4640523" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -404,7 +407,7 @@
     </layout>
     <layout-to-restore>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" weight="0.3125" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.3125" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="0" weight="0.32843137" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
@@ -412,7 +415,7 @@
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.70424837" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.66993463" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4640523" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -617,19 +620,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="45" lean-forward="true" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
-          <folding>
-            <element signature="e#183#220#0" expanded="true" />
-            <marker date="1545076353872" expanded="true" signature="632:637" ph="..." />
-            <marker date="1545076353872" expanded="true" signature="2065:3312" ph="..." />
-            <marker date="1545076353872" expanded="true" signature="3388:4660" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -662,17 +652,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py">
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="43">
-          <caret line="17" column="17" selection-start-line="17" selection-start-column="17" selection-end-line="17" selection-end-column="17" />
+        <state relative-caret-position="-748">
+          <caret line="13" column="18" lean-forward="true" selection-start-line="13" selection-start-column="18" selection-end-line="13" selection-end-column="18" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5134">
-          <caret line="13" column="18" lean-forward="true" selection-start-line="13" selection-start-column="18" selection-end-line="13" selection-end-column="18" />
+        <state relative-caret-position="-93">
+          <caret line="36" column="26" lean-forward="true" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="50" column="91" selection-end-line="105" />
+          <folding>
+            <element signature="e#183#220#0" expanded="true" />
+            <marker date="1545402518960" expanded="true" signature="632:637" ph="..." />
+            <marker date="1545402518960" expanded="true" signature="2365:3612" ph="..." />
+            <marker date="1545402518960" expanded="true" signature="3688:4960" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>

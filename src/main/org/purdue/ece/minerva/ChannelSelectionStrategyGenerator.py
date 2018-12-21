@@ -21,6 +21,8 @@ class ChannelSelectionStrategyGenerator(object):
     def __init__(self):
         print('[INFO] ChannelSelectionStrategyGenerator Initialization: Bringing things up...')
         self.discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
+        # I'm saving this in order to evaluate the duals at a later stage
+        self.random_sensing_strategy = []
 
     # Uniform Sensing
     def uniform_sensing(self):
@@ -46,6 +48,8 @@ class ChannelSelectionStrategyGenerator(object):
             for i in range(0, number_of_measurements):
                 temp_array.append(random.choice(self.discretized_spectrum))
             channel_selection_strategies_based_on_random_sensing.append(temp_array)
+        # Setting a instance-scope variable in order to evaluate the duals at a later stage
+        self.random_sensing_strategy = channel_selection_strategies_based_on_random_sensing
         return channel_selection_strategies_based_on_random_sensing
 
     # Return the duals of the channels selected by uniform sensing

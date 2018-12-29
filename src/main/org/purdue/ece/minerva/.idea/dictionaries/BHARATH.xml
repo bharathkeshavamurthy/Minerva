@@ -2,20 +2,32 @@
   <dictionary name="BHARATH">
     <words>
       <w>api</w>
+      <w>argmax</w>
+      <w>awgn</w>
       <w>bharath</w>
       <w>bkeshava</w>
+      <w>collab</w>
       <w>darpa</w>
+      <w>davg</w>
       <w>discretized</w>
       <w>dsrc</w>
+      <w>gaussians</w>
       <w>heatmap</w>
+      <w>iband</w>
       <w>keshavamurthy</w>
       <w>markovian</w>
       <w>objs</w>
       <w>plotly</w>
       <w>preprocess</w>
       <w>preprocessing</w>
+      <w>probs</w>
+      <w>qrob</w>
+      <w>situ</w>
+      <w>smoothen</w>
+      <w>smoothening</w>
       <w>spatio</w>
       <w>thygi</w>
+      <w>viterbi</w>
       <w>wideband</w>
       <w>wlan</w>
     </words>

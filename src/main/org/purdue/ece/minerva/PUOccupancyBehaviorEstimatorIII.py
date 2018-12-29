@@ -85,7 +85,7 @@ class PUOccupancyBehaviorEstimatorIII(object):
         initial_state_vector.append(previous)
         # Based on the state of band-0 at time-0 and the (p_val,q_val) values, generate the states of the remaining...
         # ...bands
-        for _loop_counter in range(1, self.NUMBER_OF_SAMPLES):
+        for _loop_iterator in range(1, self.NUMBER_OF_SAMPLES):
             seed = numpy.random.random_sample()
             if previous == 1 and seed < q_val:
                 previous = 0
@@ -305,9 +305,9 @@ class PUOccupancyBehaviorEstimatorIII(object):
                         previous_spatial_state=confirmed_previous_state_spatial)
         max_value = 0
         # Finding the max value among the named tuples
-        for value in value_function_collection[-1][-1].values():
-            if value.current_value > max_value:
-                max_value = value.current_value
+        for _value in value_function_collection[-1][-1].values():
+            if _value.current_value > max_value:
+                max_value = _value.current_value
         # Finding the state corresponding to this max_value and using this as the final confirmed state to ...
         # ...backtrack and find the previous states
         for k, v in value_function_collection[-1][-1].items():

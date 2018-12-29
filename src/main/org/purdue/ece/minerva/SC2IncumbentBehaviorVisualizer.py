@@ -16,13 +16,13 @@ plotly.tools.set_credentials_file(username='bkeshava', api_key='RHqYrDdThygiJEPi
 # DARPA SC2 DSRC Incumbent Behavior Visualization
 class SC2IncumbentBehaviorVisualizer(object):
     # COLOSSEUM_CONFIG_INI_FILE
-    COLOSSEUM_CONFIG_INI_FILE = 'config/example_incumbent_dsrc_colosseum_config.ini'
+    COLOSSEUM_CONFIG_INI_FILE = 'config/srn_113_incumbent_dsrc_colosseum_config.ini'
 
     # RADIO_CONF_FILE
-    RADIO_CONF_FILE = 'config/example_incumbent_dsrc_radio.conf'
+    RADIO_CONF_FILE = 'config/srn_113_incumbent_dsrc_radio.conf'
 
     # SRN_ID
-    SRN_ID = 111
+    SRN_ID = 113
 
     # NETWORK_TYPE
     NETWORK_TYPE = 'incumbent-dsrc'
@@ -59,6 +59,9 @@ class SC2IncumbentBehaviorVisualizer(object):
 
     # DEFAULT LOWEST FREQUENCY
     LOWEST_FREQUENCY_DEFAULT = 100000000000
+
+    # INCUMBENT_PROTECTION_OFFSET
+    INCUMBENT_PROTECTION_OFFSET = LOWEST_FREQUENCY_DEFAULT / 10
 
     # Initialization sequence
     def __init__(self):
@@ -156,9 +159,9 @@ class SC2IncumbentBehaviorVisualizer(object):
             highest_frequency = 0.0
             for k, v in self.timestamp_parameter_map.items():
                 if v.lower_cutoff < lowest_frequency:
-                    lowest_frequency = v.lower_cutoff
+                    lowest_frequency = v.lower_cutoff - self.PRECISION
                 if v.upper_cutoff > highest_frequency:
-                    highest_frequency = v.upper_cutoff
+                    highest_frequency = v.upper_cutoff + self.PRECISION
             self.number_of_channels = round((highest_frequency - lowest_frequency) / self.PRECISION)
             # self.channel_axis = [k for k in range(0, self.number_of_channels)]
             # This channel axis is being updated in the visualize() method
@@ -181,10 +184,11 @@ class SC2IncumbentBehaviorVisualizer(object):
                 for k, v in self.timestamp_parameter_map.items():
                     if k not in self.time_axis:
                         self.time_axis.append(k)
-                    if v.lower_cutoff < (self.lower_end_of_the_spectrum + (
-                            self.PRECISION * channel_index)) < v.upper_cutoff or v.lower_cutoff < (
+                    # Boundary occupancy is considered 'OCCUPIED' in order to eliminate adjacent channel interference
+                    if v.lower_cutoff <= (self.lower_end_of_the_spectrum + (
+                            self.PRECISION * channel_index)) <= v.upper_cutoff or v.lower_cutoff <= (
                             self.lower_end_of_the_spectrum + (
-                            self.PRECISION * channel_index) + self.PRECISION) < v.upper_cutoff:
+                            self.PRECISION * channel_index) + self.PRECISION) <= v.upper_cutoff:
                         self.true_pu_occupancy_states[channel_index].append(1)
                     else:
                         self.true_pu_occupancy_states[channel_index].append(0)

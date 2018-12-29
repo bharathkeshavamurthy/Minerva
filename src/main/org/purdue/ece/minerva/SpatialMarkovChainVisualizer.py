@@ -96,7 +96,7 @@ class SpatialMarkovChainVisualizer(object):
         # Plotly API's HeatMap
         data = [
             graph_objs.Heatmap(z=occupancy_metric, x=horizontal_axis,
-                               y=vertical_axis, colorscale=[[0, 'rgb(0,255,0)'], [1, 'rgb(255,0,0)']],
+                               y=vertical_axis, xgap=1, ygap=1, colorscale=[[0, 'rgb(0,255,0)'], [1, 'rgb(255,0,0)']],
                                colorbar=dict(title='PU Occupancy', titleside='right', tickmode='array', tickvals=[0, 1],
                                              ticktext=['Unoccupied', 'Occupied'], ticks='outside'),
                                showscale=True)]

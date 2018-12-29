@@ -54,6 +54,9 @@ class SC2IncumbentBehaviorVisualizer(object):
     # PRECISION = 1MHz
     PRECISION = 1000000
 
+    # FREQUENCY_UNITS
+    FREQUENCY_UNITS = 'MHz'
+
     # DEFAULT LOWEST FREQUENCY
     LOWEST_FREQUENCY_DEFAULT = 100000000000
 
@@ -69,6 +72,7 @@ class SC2IncumbentBehaviorVisualizer(object):
         self.higher_end_of_the_spectrum = 0.0
         self.time_axis = []
         self.channel_axis = []
+        self.number_of_channels = 0
         self.temporal_termination_point = 0.0
 
     # Get Properties
@@ -141,7 +145,8 @@ class SC2IncumbentBehaviorVisualizer(object):
                 '[ERROR] SC2IncumbentBehaviorVisualizer visualize: Error reading the pre-processed properties. '
                 'Please refer to the previous error messages for more details.')
             return False
-        self.time_axis = [k for k in range(0, len(self.timestamp_parameter_map))]
+        # self.time_axis = [k for k in range(0, len(self.timestamp_parameter_map))]
+        # Time axis will be set in the visualize method
         return True
 
     # Process Channel Axis for visualization
@@ -154,8 +159,9 @@ class SC2IncumbentBehaviorVisualizer(object):
                     lowest_frequency = v.lower_cutoff
                 if v.upper_cutoff > highest_frequency:
                     highest_frequency = v.upper_cutoff
-            number_of_channels = round((highest_frequency - lowest_frequency) / self.PRECISION)
-            self.channel_axis = [k for k in range(0, number_of_channels)]
+            self.number_of_channels = round((highest_frequency - lowest_frequency) / self.PRECISION)
+            # self.channel_axis = [k for k in range(0, self.number_of_channels)]
+            # This channel axis is being updated in the visualize() method
             self.lower_end_of_the_spectrum = lowest_frequency
             self.higher_end_of_the_spectrum = highest_frequency
             return True
@@ -167,9 +173,14 @@ class SC2IncumbentBehaviorVisualizer(object):
     # Core method
     def visualize(self):
         if self.process_time_axis() and self.process_channel_axis():
-            for channel_index in range(0, len(self.channel_axis)):
+            for channel_index in range(0, self.number_of_channels):
+                self.channel_axis.append((((self.lower_end_of_the_spectrum + (self.PRECISION * channel_index)) + (
+                        self.lower_end_of_the_spectrum + (self.PRECISION * channel_index) + self.PRECISION)) / 2) /
+                                         self.PRECISION)
                 self.true_pu_occupancy_states.append(list())
                 for k, v in self.timestamp_parameter_map.items():
+                    if k not in self.time_axis:
+                        self.time_axis.append(k)
                     if v.lower_cutoff < (self.lower_end_of_the_spectrum + (
                             self.PRECISION * channel_index)) < v.upper_cutoff or v.lower_cutoff < (
                             self.lower_end_of_the_spectrum + (
@@ -188,7 +199,8 @@ class SC2IncumbentBehaviorVisualizer(object):
         # Plotly API's HeatMap
         data = [
             graph_objs.Heatmap(z=self.true_pu_occupancy_states, x=self.time_axis,
-                               y=self.channel_axis, colorscale=[[0, 'rgb(0,255,0)'], [1, 'rgb(255,0,0)']],
+                               y=self.channel_axis, xgap=1, ygap=1,
+                               colorscale=[[0, 'rgb(0,255,0)'], [1, 'rgb(255,0,0)']],
                                colorbar=dict(title='PU Occupancy', titleside='right', tickmode='array', tickvals=[0, 1],
                                              ticktext=['Unoccupied', 'Occupied'], ticks='outside'),
                                showscale=True)]
@@ -197,10 +209,10 @@ class SC2IncumbentBehaviorVisualizer(object):
                                          str(self.SRN_ID) + ' and spectrum ''ranging from ' +
                                          str(self.lower_end_of_the_spectrum) + ' Hz to ' +
                                          str(self.higher_end_of_the_spectrum) + ' Hz',
-                                   xaxis=dict(title='Sampling Rounds (Time) extracted from TimeStamps', showgrid=True,
-                                              linecolor='black', showticklabels=True),
+                                   xaxis=dict(title='Sampling Rounds extracted from TimeStamps', showgrid=True,
+                                              linecolor='black', showticklabels=True, tickvals=self.time_axis),
                                    yaxis=dict(
-                                       title='Frequency Channels extracted from changes in center frequency offsets',
+                                       title='Frequency of channels (in ' + self.FREQUENCY_UNITS + ')',
                                        showgrid=True,
                                        linecolor='black',
                                        showticklabels=True))

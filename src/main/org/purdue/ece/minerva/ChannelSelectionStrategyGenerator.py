@@ -4,8 +4,12 @@
 # Purdue University
 # Copyright (c) 2018. All Rights Reserved.
 
+# Some members in this class have been deprecated.
+
 import PUOccupancyBehaviorEstimatorII
 import random
+import warnings
+import functools
 
 
 # Channel Selection Strategy Generator
@@ -16,6 +20,21 @@ class ChannelSelectionStrategyGenerator(object):
 
     # Number of iterations for random sensing
     NUMBER_OF_ITERATIONS = 8
+
+    # This is a decorator which can be used to mark functions as deprecated.
+    # It will result in a warning being emitted when the function is used.
+    @staticmethod
+    def deprecated(func):
+        @functools.wraps(func)
+        def new_func(*args, **kwargs):
+            warnings.simplefilter('always', DeprecationWarning)
+            warnings.warn("Call to deprecated function {}.".format(func.__name__),
+                          category=DeprecationWarning,
+                          stacklevel=2)
+            warnings.simplefilter('default', DeprecationWarning)  # reset filter
+            return func(*args, **kwargs)
+
+        return new_func
 
     # Initialization
     def __init__(self):
@@ -53,6 +72,10 @@ class ChannelSelectionStrategyGenerator(object):
         return channel_selection_strategies_based_on_random_sensing
 
     # Return the duals of the channels selected by uniform sensing
+    # Duals have been rendered obsolete as of 29-Dec-2018
+    # A different interpretation of detection accuracies for un-sensed channels has been developed
+    # TODO: Comment / Remove / Deprecate this obsolete method
+    @deprecated
     def uniform_sensing_duals(self):
         channel_selection_strategies_based_on_uniform_sensing = self.uniform_sensing()
         channel_selection_strategies_based_on_uniform_sensing_duals = []
@@ -65,6 +88,10 @@ class ChannelSelectionStrategyGenerator(object):
         return channel_selection_strategies_based_on_uniform_sensing_duals
 
     # Return the duals of the channels selected by random sensing
+    # Duals have been rendered obsolete as of 29-Dec-2018
+    # A different interpretation of detection accuracies for un-sensed channels has been developed
+    # TODO: Comment / Remove / Deprecate this obsolete method
+    @deprecated
     def random_sensing_duals(self):
         channel_selection_strategies_based_on_random_sensing = self.random_sensing()
         channel_selection_strategies_based_on_random_sensing_duals = []
@@ -77,6 +104,10 @@ class ChannelSelectionStrategyGenerator(object):
         return channel_selection_strategies_based_on_random_sensing_duals
 
     # Uniform Sensing with their Duals
+    # Duals have been rendered obsolete as of 29-Dec-2018
+    # A different interpretation of detection accuracies for un-sensed channels has been developed
+    # TODO: Comment / Remove / Deprecate this obsolete method
+    @deprecated
     def uniform_sensing_with_duals(self):
         channel_selection_strategies_based_on_uniform_sensing = self.uniform_sensing()
         channel_selection_strategies_based_on_uniform_sensing_with_duals = []
@@ -89,6 +120,10 @@ class ChannelSelectionStrategyGenerator(object):
         return channel_selection_strategies_based_on_uniform_sensing_with_duals
 
     # Random Sensing with their Duals
+    # Duals have been rendered obsolete as of 29-Dec-2018
+    # A different interpretation of detection accuracies for un-sensed channels has been developed
+    # TODO: Comment / Remove / Deprecate this obsolete method
+    @deprecated
     def random_sensing_with_duals(self):
         channel_selection_strategies_based_on_random_sensing = self.random_sensing()
         channel_selection_strategies_based_on_random_sensing_with_duals = []

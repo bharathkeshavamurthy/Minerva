@@ -1,10 +1,14 @@
 # PU Occupancy Behavior Estimation
 # Second Iteration: Incomplete information (Missing observations) and Markovian across frequency
-# Second run of Prof. Michelusi's suggestion of obtaining detection accuracies of channels which haven't been sensed
+# First run of Prof. Michelusi's suggestion of obtaining detection accuracies of channels which haven't been sensed
+# Prof. Michelusi wants the detection accuracy of only the channels that have not been sensed in any given run...
+# So, this logic (detection accuracy of all channels) is rendered obsolete
 # Author: Bharath Keshavamurthy
 # School of Electrical and Computer Engineering
 # Purdue University
 # Copyright (c) 2018. All Rights Reserved.
+
+# The classes/members in this script have been deprecated
 
 # For the math behind this algorithm, please refer to:
 # This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
@@ -17,9 +21,27 @@ from matplotlib import pyplot as plt
 from collections import namedtuple
 import ChannelSelectionStrategyGenerator
 import os
+import warnings
+import functools
+
+
+# This is a decorator which can be used to mark functions as deprecated.
+# It will result in a warning being emitted when the function is used.
+def deprecated(func):
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.simplefilter('always', DeprecationWarning)
+        warnings.warn("Call to deprecated function {}.".format(func.__name__),
+                      category=DeprecationWarning,
+                      stacklevel=2)
+        warnings.simplefilter('default', DeprecationWarning)  # reset filter
+        return func(*args, **kwargs)
+
+    return new_func
 
 
 # Occupancy state enumeration
+@deprecated
 class OccupancyState(Enum):
     # Channel Idle
     idle = 0
@@ -28,6 +50,7 @@ class OccupancyState(Enum):
 
 
 # Main class: PU Occupancy Behavior Estimation
+@deprecated
 class PUOccupancyBehaviorEstimatorII(object):
     # Number of samples for this simulation
     NUMBER_OF_SAMPLES = 100
@@ -264,83 +287,126 @@ if __name__ == '__main__':
     file_list = [f for f in os.listdir(path_to_output_folder) if f.endswith('.png')]
     for f in file_list:
         os.remove(os.path.join(path_to_output_folder, f))
+    # Boolean indicating the dual flag for visualization differentiation
+    dual = False
+    # Colors for plotting
+    colors = ('b', 'g', 'r', 'm', 'y', 'k', 'c', (0.1, 0.2, 0.3), (0.5, 0.6, 0.7), (0.0, 0.5, 0.8), (0.5, 0.5, 0.5),
+              (0.1, 0.2, 0.5, 0.3), (0.0, 0.4, 0.4, 0.6), (0.2, 0.2, 0.2, 0.2), (0.3, 0.3, 0.3, 0.3),
+              (0.1, 0.2, 0.3, 0.4), (0.0, 0.0, 0.4, 0.4), (0.1, 0.1, 0.1, 0.1), (0.4, 0.4, 0.4, 0.4),
+              (0.6, 0.6, 0.6, 0.6), (0.7, 0.7, 0.7, 0.7), (0.8, 0.8, 0.8, 0.8),
+              (0.9, 0.9, 0.9, 0.9), (1.0, 1.0, 1.0, 1.0), (0.0, 0.0, 0.0, 0.0), (0.8, 0.9, 0.0), (0.4, 0.0, 0.7),
+              (0.3, 0.6, 1.0), (1.0, 0.5, 0.6),
+              (0.8, 0.9, 0.6, 1.0), (0.3, 1.0, 0.4, 0.6), (1.0, 0.9, 0.9, 0.9),
+              (0.8, 0.9, 0.0, 0.4), (0.3, 0.0, 0.4, 0.4), (0.1, 0.8, 1.0, 0.1),
+              (0.6, 0.6, 1.0, 0.6), (0.7, 0.6, 0.8, 1.0), (1.0, 0.9, 0.8, 0.9),
+              (0.0, 1.0, 0.1, 0.9), (0.4, 1.0, 0.4, 0.4), (0.3, 0.0, 0.3, 1.0))
     # Variety in channel selection for sensing - This'll be given by the Bandit
     # Emulating this for now using the ChannelSelectionStrategyGenerator class
     channel_selection_strategy_generator = ChannelSelectionStrategyGenerator.ChannelSelectionStrategyGenerator()
-    # Figure for plotting
-    fig, ax = plt.subplots()
-    print(
-        '[INFO] PUOccupancyBehaviorEstimatorII main: Creating an instance and starting the '
-        'initialization process ...')
-    puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()
-    # Get the channel selection strategies
-    channel_selection_strategies = channel_selection_strategy_generator.uniform_sensing()
-    for channel_selection_strategy in channel_selection_strategies:
-        # Increment p by this value
-        increment_value_for_p = 0.030
-        # X-Axis for the P(1|0) versus Detection Accuracy plot
-        p_values_overall = []
-        # Y-Axis for the P(1|0) versus Detection Accuracy plot
-        detection_accuracies_across_p_values_overall = []
-        # P(1)
-        pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
-        final_frontier = int(pi / increment_value_for_p)
-        # Setting the chosen channel selection strategy
-        puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
-        label = 'Channel Sensing Strategy: ' + ''.join(str(channel_selection_strategy))
-        print('[INFO] PUOccupancyBehaviorEstimatorII main: Channel Selection Strategy- [',
-              channel_selection_strategy, ']')
-        for iteration_cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
-            # P(1|0) - Let's start small and move towards independence
-            p = increment_value_for_p
-            p_values = []
-            detection_accuracies_across_p_values = []
-            for increment_counter in range(0, final_frontier):
-                print('[INFO] PUOccupancyBehaviorEstimatorII main: Pass [', increment_counter, ']')
-                p_values.append(p)
-                # P(0|1)
-                q = (p * puOccupancyBehaviorEstimator.start_probabilities.idle) \
-                    / puOccupancyBehaviorEstimator.start_probabilities.occupied
-                puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                    1: {1: (1 - q), 0: q},
-                    0: {1: p, 0: (1 - p)}
-                }
-                # True PU Occupancy State
-                puOccupancyBehaviorEstimator.allocate_true_pu_occupancy_states(p, q, pi)
-                puOccupancyBehaviorEstimator.allocate_observations()
-                print(
-                    '[INFO] PUOccupancyBehaviorEstimatorII main: Now, '
-                    'let us estimate the PU occupancy states in these frequency bands for p = ', p)
-                detection_accuracy_per_p = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states()
-                print('[INFO] PUOccupancyBehaviorEstimatorII main: p = ', p, ' Detection Accuracy: ',
-                      detection_accuracy_per_p)
-                detection_accuracies_across_p_values.append(detection_accuracy_per_p)
-                p += increment_value_for_p
-                print(
-                    '[INFO] PUOccupancyBehaviorEstimatorII main: Reset everything and Re-initialize for the next '
-                    'pass ...')
-                puOccupancyBehaviorEstimator.reset()
-            p_values_overall = p_values
-            detection_accuracies_across_p_values_overall.append(detection_accuracies_across_p_values)
-        final_detection_accuracy_array_for_averaging = []
-        # I've run multiple passes of the logic for smoothening the curve
-        # Now, average over them and plot it
-        for pass_counter in range(0, final_frontier):
-            _sum = 0
-            for _entry in detection_accuracies_across_p_values_overall:
-                _sum += _entry[pass_counter]
-            final_detection_accuracy_array_for_averaging.append(
-                _sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
-        ax.plot(p_values_overall, final_detection_accuracy_array_for_averaging, linestyle='--', linewidth=1.0,
-                marker='o',
-                color=colors[color_index], label=label)
-        color_index += 1
-    title = 'Uniform_Channel_Sensing'
-    fig.suptitle(
-        'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
-        'with varying uniform channel sensing strategies', fontsize=7)
-    ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
-    ax.set_ylabel('Detection Accuracy', fontsize=12)
-    plt.legend(loc='upper right', prop={'size': 6})
-    fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots/' + title + '.png')
-    plt.close(fig)
+    for selection_strategy_trial in range(0, 4):
+        # color_index for indexing into the colors tuple
+        color_index = 0
+        # Figure for plotting
+        fig, ax = plt.subplots()
+        if selection_strategy_trial == 0:
+            channel_selection_strategies = channel_selection_strategy_generator.uniform_sensing()
+        elif selection_strategy_trial == 1:
+            dual = True
+            channel_selection_strategies = channel_selection_strategy_generator.uniform_sensing_duals()
+        elif selection_strategy_trial == 2:
+            dual = False
+            channel_selection_strategies = channel_selection_strategy_generator.random_sensing()
+        else:
+            dual = True
+            channel_selection_strategies = channel_selection_strategy_generator.random_sensing_duals()
+        print(
+            '[INFO] PUOccupancyBehaviorEstimatorII main: Creating an instance and starting the '
+            'initialization process ...')
+        puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()
+        for channel_selection_strategy in channel_selection_strategies:
+            # Increment p by this value
+            increment_value_for_p = 0.030
+            # X-Axis for the P(1|0) versus Detection Accuracy plot
+            p_values_overall = []
+            # Y-Axis for the P(1|0) versus Detection Accuracy plot
+            detection_accuracies_across_p_values_overall = []
+            # P(1)
+            pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
+            final_frontier = int(pi / increment_value_for_p)
+            # Setting the chosen channel selection strategy
+            puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
+            label = 'Channel Sensing Strategy: ' + ''.join(str(channel_selection_strategy))
+            print('[INFO] PUOccupancyBehaviorEstimatorII main: Channel Selection Strategy- [',
+                  channel_selection_strategy, ']')
+            for iteration_cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
+                # P(1|0) - Let's start small and move towards independence
+                p = increment_value_for_p
+                p_values = []
+                detection_accuracies_across_p_values = []
+                for increment_counter in range(0, final_frontier):
+                    print('[INFO] PUOccupancyBehaviorEstimatorII main: Pass [', increment_counter, ']')
+                    p_values.append(p)
+                    # P(0|1)
+                    q = (p * puOccupancyBehaviorEstimator.start_probabilities.idle) \
+                        / puOccupancyBehaviorEstimator.start_probabilities.occupied
+                    puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
+                        1: {1: (1 - q), 0: q},
+                        0: {1: p, 0: (1 - p)}
+                    }
+                    # True PU Occupancy State
+                    puOccupancyBehaviorEstimator.allocate_true_pu_occupancy_states(p, q, pi)
+                    puOccupancyBehaviorEstimator.allocate_observations()
+                    print(
+                        '[INFO] PUOccupancyBehaviorEstimatorII main: Now, '
+                        'let us estimate the PU occupancy states in these frequency bands for p = ', p)
+                    detection_accuracy_per_p = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states()
+                    print('[INFO] PUOccupancyBehaviorEstimatorII main: p = ', p, ' Detection Accuracy: ',
+                          detection_accuracy_per_p)
+                    detection_accuracies_across_p_values.append(detection_accuracy_per_p)
+                    p += increment_value_for_p
+                    print(
+                        '[INFO] PUOccupancyBehaviorEstimatorII main: Reset everything and Re-initialize for the next '
+                        'pass ...')
+                    puOccupancyBehaviorEstimator.reset()
+                p_values_overall = p_values
+                detection_accuracies_across_p_values_overall.append(detection_accuracies_across_p_values)
+            final_detection_accuracy_array_for_averaging = []
+            # I've run multiple passes of the logic for smoothening the curve
+            # Now, average over them and plot it
+            for pass_counter in range(0, final_frontier):
+                _sum = 0
+                for _entry in detection_accuracies_across_p_values_overall:
+                    _sum += _entry[pass_counter]
+                final_detection_accuracy_array_for_averaging.append(
+                    _sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+            ax.plot(p_values_overall, final_detection_accuracy_array_for_averaging, linestyle='--', linewidth=1.0,
+                    marker='o',
+                    color=colors[color_index], label=label)
+            color_index += 1
+        # Double-check can be removed
+        # Added double-check for safety
+        if selection_strategy_trial == 0 and dual is False:
+            title = 'Uniform_Channel_Sensing'
+            fig.suptitle(
+                'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+                'with varying uniform channel sensing strategies', fontsize=7)
+        elif selection_strategy_trial == 1 and dual is True:
+            title = 'Uniform_Channel_Sensing_Duals'
+            fig.suptitle(
+                'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+                'with varying uniform channel sensing strategies (duals)', fontsize=7)
+        elif selection_strategy_trial == 2 and dual is False:
+            title = 'Random_Channel_Sensing'
+            fig.suptitle(
+                'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+                'with varying random channel sensing strategies', fontsize=7)
+        else:
+            title = 'Random_Channel_Sensing_Duals'
+            fig.suptitle(
+                'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+                'with varying random channel sensing strategies (duals)', fontsize=7)
+        ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
+        ax.set_ylabel('Detection Accuracy', fontsize=12)
+        plt.legend(loc='upper right', prop={'size': 6})
+        fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots/' + title + '.png')
+        plt.close(fig)

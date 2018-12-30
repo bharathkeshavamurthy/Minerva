@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bd0b878c-fd51-4605-844f-d723f6104ed3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ChannelSelectionStrategyGenerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/ChannelSelectionStrategyGenerator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py" beforeDir="false" afterPath="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SC2CILMessageParser.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,60 +27,51 @@
         <counts>
           <entry key="conf" value="7" />
           <entry key="ini" value="5" />
-          <entry key="py" value="40" />
+          <entry key="py" value="43" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="PLAIN_TEXT" value="12" />
-          <entry key="Python" value="40" />
+          <entry key="Python" value="43" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="conf" value="45" />
           <entry key="ini" value="16" />
-          <entry key="py" value="2520" />
+          <entry key="py" value="4081" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="61" />
-          <entry key="Python" value="2520" />
+          <entry key="Python" value="4081" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="18" column="9" lean-forward="true" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ChannelSelectionStrategyGenerator.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="50" selection-end-line="140" />
+            <state relative-caret-position="-204">
+              <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
               <folding>
-                <element signature="e#183#220#0" expanded="true" />
+                <marker date="1546186481237" expanded="true" signature="13244:13504" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/obsolete-src/PUOccupancyBehaviorEstimatorII.py">
+        <entry file="file://$PROJECT_DIR$/ChannelSelectionStrategyGenerator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2448">
-              <caret line="12" column="54" lean-forward="true" selection-start-line="12" selection-start-column="54" selection-end-line="12" selection-end-column="54" />
+            <state relative-caret-position="408">
+              <caret line="79" column="86" lean-forward="true" selection-start-line="79" selection-start-column="86" selection-end-line="79" selection-end-column="86" />
               <folding>
-                <element signature="e#827#848#0" expanded="true" />
+                <element signature="e#235#272#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -118,9 +106,9 @@
         <option value="$PROJECT_DIR$/SC2IncumbentBehaviorVisualizer.py" />
         <option value="$PROJECT_DIR$/SpatioTemporalMarkovChainVisualizer.py" />
         <option value="$PROJECT_DIR$/SpatialMarkovChainVisualizer.py" />
-        <option value="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py" />
         <option value="$PROJECT_DIR$/obsolete-src/PUOccupancyBehaviorEstimatorII.py" />
         <option value="$PROJECT_DIR$/ChannelSelectionStrategyGenerator.py" />
+        <option value="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py" />
       </list>
     </option>
   </component>
@@ -146,7 +134,7 @@
             <path>
               <item name="minerva" type="b2602c69:ProjectViewProjectNode" />
               <item name="minerva" type="462c0819:PsiDirectoryNode" />
-              <item name="obsolete-src" type="462c0819:PsiDirectoryNode" />
+              <item name="src-deprecated" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -177,7 +165,28 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.SpatioTemporalMarkovChainVisualizer">
+  <component name="RunManager" selected="Python.PUOccupancyBehaviorEstimatorII">
+    <configuration name="PUOccupancyBehaviorEstimatorII" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="minerva" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="SC2IncumbentBehaviorVisualizer" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="minerva" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -245,9 +254,11 @@
       <item itemvalue="Python.SC2IncumbentBehaviorVisualizer" />
       <item itemvalue="Python.SpatioTemporalMarkovChainVisualizer" />
       <item itemvalue="Python.SpatialMarkovChainVisualizer" />
+      <item itemvalue="Python.PUOccupancyBehaviorEstimatorII" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.PUOccupancyBehaviorEstimatorII" />
         <item itemvalue="Python.SpatioTemporalMarkovChainVisualizer" />
         <item itemvalue="Python.SpatialMarkovChainVisualizer" />
         <item itemvalue="Python.SC2IncumbentBehaviorVisualizer" />
@@ -271,12 +282,12 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24962178" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.24962178" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32843137" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49924356" weight="0.49346405" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49924356" visible="true" weight="0.6993464" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.51797384" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -292,12 +303,12 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="4" weight="0.25" />
     </layout>
     <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24962178" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.24962178" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32843137" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49924356" weight="0.49346405" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49924356" visible="true" weight="0.70098037" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.51797384" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -500,13 +511,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="18" column="9" lean-forward="true" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/obsolete-src/PUOccupancyBehaviorEstimatorII.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2448">
@@ -519,10 +523,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ChannelSelectionStrategyGenerator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="50" selection-end-line="140" />
+        <state relative-caret-position="408">
+          <caret line="79" column="86" lean-forward="true" selection-start-line="79" selection-start-column="86" selection-end-line="79" selection-end-column="86" />
           <folding>
-            <element signature="e#183#220#0" expanded="true" />
+            <element signature="e#235#272#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-deprecated/SC2CILMessageParser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#381#395#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-deprecated/PUOccupancyBehaviorEstimatorII.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6528">
+          <caret line="401" column="28" lean-forward="true" selection-start-line="401" selection-start-column="28" selection-end-line="401" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-204">
+          <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
+          <folding>
+            <marker date="1546186481237" expanded="true" signature="13244:13504" ph="..." />
           </folding>
         </state>
       </provider>

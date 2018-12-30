@@ -12,6 +12,21 @@ import warnings
 import functools
 
 
+# This is a decorator which can be used to mark functions as deprecated.
+# It will result in a warning being emitted when the function is used.
+def deprecated(func):
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.simplefilter('always', DeprecationWarning)
+        warnings.warn("Call to deprecated function {}.".format(func.__name__),
+                      category=DeprecationWarning,
+                      stacklevel=2)
+        warnings.simplefilter('default', DeprecationWarning)  # reset filter
+        return func(*args, **kwargs)
+
+    return new_func
+
+
 # Channel Selection Strategy Generator
 # Emulates the Multi-Armed Bandit
 class ChannelSelectionStrategyGenerator(object):
@@ -20,21 +35,6 @@ class ChannelSelectionStrategyGenerator(object):
 
     # Number of iterations for random sensing
     NUMBER_OF_ITERATIONS = 8
-
-    # This is a decorator which can be used to mark functions as deprecated.
-    # It will result in a warning being emitted when the function is used.
-    @staticmethod
-    def deprecated(func):
-        @functools.wraps(func)
-        def new_func(*args, **kwargs):
-            warnings.simplefilter('always', DeprecationWarning)
-            warnings.warn("Call to deprecated function {}.".format(func.__name__),
-                          category=DeprecationWarning,
-                          stacklevel=2)
-            warnings.simplefilter('default', DeprecationWarning)  # reset filter
-            return func(*args, **kwargs)
-
-        return new_func
 
     # Initialization
     def __init__(self):

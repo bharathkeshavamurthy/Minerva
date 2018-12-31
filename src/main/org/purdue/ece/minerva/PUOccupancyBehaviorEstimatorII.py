@@ -30,7 +30,7 @@ class OccupancyState(Enum):
 # Main class: PU Occupancy Behavior Estimation
 class PUOccupancyBehaviorEstimatorII(object):
     # Number of samples for this simulation
-    NUMBER_OF_SAMPLES = 100
+    NUMBER_OF_SAMPLES = 500
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -57,7 +57,7 @@ class PUOccupancyBehaviorEstimatorII(object):
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
-    NUMBER_OF_CYCLES = 500
+    NUMBER_OF_CYCLES = 50
 
     # Initialization Sequence
     def __init__(self):
@@ -273,7 +273,7 @@ if __name__ == '__main__':
     # Colors tuple for differentiation in the visualized results
     colors = ('b', 'r')
     # Clear the output folder
-    path_to_output_folder = '../../../../../../test/Channel_Sensing_Strategy_Plots/Uniform_Sensing/'
+    path_to_output_folder = '../../../../../../test/Channel_Sensing_Strategy_Plots_2/Uniform_Sensing/'
     file_list = [f for f in os.listdir(path_to_output_folder) if f.endswith('.png')]
     for f in file_list:
         os.remove(os.path.join(path_to_output_folder, f))
@@ -377,5 +377,5 @@ if __name__ == '__main__':
         ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
         ax.set_ylabel('Detection Accuracy', fontsize=12)
         plt.legend(loc='upper right', prop={'size': 6})
-        fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title + '.png')
+        fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots_2/Uniform_Sensing/' + title + '.png')
         plt.close(fig)

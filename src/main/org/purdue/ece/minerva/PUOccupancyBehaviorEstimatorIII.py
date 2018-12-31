@@ -28,7 +28,7 @@ class OccupancyState(Enum):
 class PUOccupancyBehaviorEstimatorIII(object):
     # Number of samples for this simulation
     # Also referred to as the Number of Sampling Rounds
-    NUMBER_OF_SAMPLES = 1000
+    NUMBER_OF_SAMPLES = 500
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -198,94 +198,146 @@ class PUOccupancyBehaviorEstimatorIII(object):
         return accuracies / (self.NUMBER_OF_FREQUENCY_BANDS * self.NUMBER_OF_SAMPLES)
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
+    # TODO: Remove unnecessary comments and Verified tags which were added in because the code is too complex to keep...
+    # ...track of without them...Remove them once you get the hang of it!
+    # TODO: Refactor this method - it's way too huge!
     def estimate_pu_occupancy_states(self):
         # Estimated states - kxt matrix
+        # Verified
         estimated_states = [[] for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
         # A value function collection to store and index the calculated value functions across t and k
+        # Verified
         value_function_collection = [[dict() for x in range(self.NUMBER_OF_SAMPLES)] for k in
                                      range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
         # t = 0 and k = 0 - No previous state to base the Markovian Correlation on in either dimension
+        # Verified
         for state in OccupancyState:
+            # Verified - [0][0] is being finished here because there's no Markovian correlation that exists here
             current_value = self.get_emission_probabilities(state.value, self.observation_samples[0][0]) * \
                             self.get_start_probabilities(state.name)
+            # Verified
             value_function_collection[0][0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(current_value=current_value,
                                                                                           previous_temporal_state=None,
                                                                                           previous_spatial_state=None)
         # First row - Only temporal correlation
+        # Verified
         i = 0
+        # Verified
         for j in range(1, self.NUMBER_OF_SAMPLES):
             # Trying to find the max pointer here ...
+            # Verified
             for state in OccupancyState:
                 # Again finishing off the [0] index first
+                # Verified - a_{lr} * V_{j-1}^{(l)}
+                # TODO: max_pointer may be a kind of misnomer here and you may confuse it with the backtrack pointer
                 max_pointer = self.get_transition_probabilities_single(OccupancyState.idle.value,
                                                                        state.value) * \
                               value_function_collection[i][j - 1][
                                   OccupancyState.idle.name].current_value
+                # Using IDLE as the confirmed previous state
+                # Verified
                 confirmed_previous_state = OccupancyState.idle.name
+                # Verified
                 for candidate_previous_state in OccupancyState:
+                    # Verified
                     if candidate_previous_state.name == OccupancyState.idle.name:
                         # Already done
+                        # Verified
                         continue
                     else:
+                        # Verified
                         pointer = self.get_transition_probabilities_single(candidate_previous_state.value,
                                                                            state.value) * \
                                   value_function_collection[i][j - 1][
                                       candidate_previous_state.name].current_value
+                        # Verified
                         if pointer > max_pointer:
+                            # Verified
                             max_pointer = pointer
+                            # Verified
                             confirmed_previous_state = candidate_previous_state.name
+                # Verified
                 current_value = max_pointer * self.get_emission_probabilities(state.value,
                                                                               self.observation_samples[
                                                                                   i][j])
+                # Verified
                 value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
                     current_value=current_value, previous_temporal_state=confirmed_previous_state,
                     previous_spatial_state=None)
         # First column - Only spatial correlation
+        # Verified
         j = 0
+        # Verified
         for i in range(1, self.NUMBER_OF_FREQUENCY_BANDS):
             # Trying to find the max pointer here ...
+            # Verified
             for state in OccupancyState:
                 # Again finishing off the [0] index first
+                # Verified
                 max_pointer = self.get_transition_probabilities_single(OccupancyState.idle.value,
                                                                        state.value) * \
                               value_function_collection[i - 1][j][
                                   OccupancyState.idle.name].current_value
+                # Verified
                 confirmed_previous_state = OccupancyState.idle.name
+                # Verified
                 for candidate_previous_state in OccupancyState:
+                    # Verified
                     if candidate_previous_state.name == OccupancyState.idle.name:
                         # Already done
+                        # Verified
                         continue
                     else:
+                        # Verified
                         pointer = self.get_transition_probabilities_single(candidate_previous_state.value,
                                                                            state.value) * \
                                   value_function_collection[i - 1][j][
                                       candidate_previous_state.name].current_value
+                        # Verified
                         if pointer > max_pointer:
+                            # Verified
                             max_pointer = pointer
+                            # Verified
                             confirmed_previous_state = candidate_previous_state.name
+                # Verified
                 current_value = max_pointer * self.get_emission_probabilities(state.value,
                                                                               self.observation_samples[
                                                                                   i][j])
+                # Verified
                 value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
-                    current_value=current_value, previous_temporal_state=confirmed_previous_state,
-                    previous_spatial_state=None)
+                    current_value=current_value, previous_temporal_state=None,
+                    previous_spatial_state=confirmed_previous_state)
+        # I'm done with the first row and first column
+        # Moving on to the other rows and columns
+        # Verified
         for i in range(1, self.NUMBER_OF_FREQUENCY_BANDS):
+            # Verified
+            # For every row, I'm going across laterally (across columns) and populating the value_function_collection
             for j in range(1, self.NUMBER_OF_SAMPLES):
+                # Verified
                 for state in OccupancyState:
                     # Again finishing off the [0] index first
+                    # Verified - Double checked
                     max_pointer = self.get_transition_probabilities(OccupancyState.idle.value,
                                                                     OccupancyState.idle.value, state.value) * \
                                   value_function_collection[i][j - 1][OccupancyState.idle.name].current_value * \
                                   value_function_collection[i - 1][j][OccupancyState.idle.name].current_value
+                    # Verified
                     confirmed_previous_state_temporal = OccupancyState.idle.name
+                    # Verified
                     confirmed_previous_state_spatial = OccupancyState.idle.name
+                    # Verified
                     for candidate_previous_state_temporal in OccupancyState:
+                        # Verified
                         for candidate_previous_state_spatial in OccupancyState:
+                            # Verified - if both are IDLE, I've already covered them
                             if candidate_previous_state_temporal.name == OccupancyState.idle.name and \
                                     candidate_previous_state_spatial.name == OccupancyState.idle.name:
                                 # Already done
+                                # Verified
                                 continue
                             else:
+                                # Verified
                                 pointer = self.get_transition_probabilities(candidate_previous_state_temporal.value,
                                                                             candidate_previous_state_spatial.value,
                                                                             state.value) * \
@@ -293,37 +345,70 @@ class PUOccupancyBehaviorEstimatorIII(object):
                                               candidate_previous_state_temporal.name].current_value * \
                                           value_function_collection[i - 1][j][
                                               candidate_previous_state_spatial.name].current_value
+                                # Verified
                                 if pointer > max_pointer:
+                                    # Verified
                                     max_pointer = pointer
+                                    # Verified
                                     confirmed_previous_state_temporal = candidate_previous_state_temporal.name
+                                    # Verified
                                     confirmed_previous_state_spatial = candidate_previous_state_spatial.name
+                    # Now, I have the value function for this i and this j
+                    # Populate the value function collection with this value
+                    # Verified
+                    # I found maximum of Double Markov Chain value functions from the past and now I'm multiplying it...
+                    # ...with the emission probability of this particular observation
                     current_value = max_pointer * self.get_emission_probabilities(state.value,
                                                                                   self.observation_samples[
                                                                                       i][j])
+                    # Verified
                     value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
                         current_value=current_value, previous_temporal_state=confirmed_previous_state_temporal,
                         previous_spatial_state=confirmed_previous_state_spatial)
+        # I think the forward path is perfect
+        # I have doubts in the backtrack path
         max_value = 0
         # Finding the max value among the named tuples
+        # Verified
         for _value in value_function_collection[-1][-1].values():
+            # Verified
             if _value.current_value > max_value:
+                # Verified
                 max_value = _value.current_value
         # Finding the state corresponding to this max_value and using this as the final confirmed state to ...
         # ...backtrack and find the previous states
+        # Verified
         for k, v in value_function_collection[-1][-1].items():
+            # Verified
             if v.current_value == max_value:
+                # Verified
                 estimated_states[self.NUMBER_OF_FREQUENCY_BANDS - 1].append(
                     self.value_from_name(k))
+                # Verified
                 previous_state_temporal = k
+                # Verified
                 previous_state_spatial = k
+                # Verified
                 break
         # Backtracking
+        # Verified
         for i in range(self.NUMBER_OF_FREQUENCY_BANDS - 1, -1, -1):
+            # Verified
             for j in range(self.NUMBER_OF_SAMPLES - 1, -1, -1):
+                # Verified
+                if len(estimated_states[i]) == 0:
+                    estimated_states[i].insert(0, self.value_from_name(
+                        value_function_collection[i + 1][j][previous_state_spatial].previous_spatial_state))
+                    previous_state_temporal = value_function_collection[i][j][
+                        previous_state_spatial].previous_temporal_state
+                    continue
                 estimated_states[i].insert(0, self.value_from_name(
                     value_function_collection[i][j][previous_state_temporal].previous_temporal_state))
+                # Verified
                 previous_state_temporal = value_function_collection[i][j][
                     previous_state_temporal].previous_temporal_state
+            previous_state_spatial = value_function_collection[i][self.NUMBER_OF_SAMPLES - 1][
+                previous_state_spatial].previous_spatial_state
         return self.get_detection_accuracy(estimated_states)
 
     # Get enumeration field value from name

@@ -30,7 +30,7 @@ class OccupancyState(Enum):
 # Main class: PU Occupancy Behavior Estimation
 class PUOccupancyBehaviorEstimatorII(object):
     # Number of samples for this simulation
-    NUMBER_OF_SAMPLES = 500
+    NUMBER_OF_SAMPLES = 250
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -57,7 +57,7 @@ class PUOccupancyBehaviorEstimatorII(object):
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
-    NUMBER_OF_CYCLES = 50
+    NUMBER_OF_CYCLES = 250
 
     # Initialization Sequence
     def __init__(self):
@@ -147,15 +147,15 @@ class PUOccupancyBehaviorEstimatorII(object):
                 (self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE * state) + self.VARIANCE_OF_AWGN)).pdf(
                 observation_sample)
 
-    # Calculate the detection accuracy
+    # Calculate the detection   accuracy
     # A modified version of get_detection_accuracy
     # Find the detection accuracy of only the channels outlined in the input arg against their corresponding true states
     def get_detection_accuracy(self, _input, estimated_states):
         accuracies = 0
         for _counter in range(0, len(_input)):
-            if self.true_pu_occupancy_states[_counter] == estimated_states[_counter]:
+            if self.true_pu_occupancy_states[_input[_counter]] == estimated_states[_input[_counter]]:
                 accuracies += 1
-        return accuracies / self.NUMBER_OF_FREQUENCY_BANDS
+        return accuracies / len(_input)
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     def estimate_pu_occupancy_states(self, _detection_accuracy_input):
@@ -273,7 +273,7 @@ if __name__ == '__main__':
     # Colors tuple for differentiation in the visualized results
     colors = ('b', 'r')
     # Clear the output folder
-    path_to_output_folder = '../../../../../../test/Channel_Sensing_Strategy_Plots_2/Uniform_Sensing/'
+    path_to_output_folder = '../../../../../../test/Channel_Sensing_Strategy_Plots/Uniform_Sensing/'
     file_list = [f for f in os.listdir(path_to_output_folder) if f.endswith('.png')]
     for f in file_list:
         os.remove(os.path.join(path_to_output_folder, f))
@@ -289,6 +289,8 @@ if __name__ == '__main__':
     strategy_counter = 0
     # Iterate over multiple channel selection strategies provided by the emulator or the bandit
     for channel_selection_strategy in channel_selection_strategies:
+        # A boolean to check the complete observations case
+        singular = False
         # Figure for plotting
         fig, ax = plt.subplots()
         # Strategy Counter for title
@@ -297,10 +299,6 @@ if __name__ == '__main__':
         color_index = 0
         # Increment p by this value
         increment_value_for_p = 0.030
-        # X-Axis for the P(1|0) versus Detection Accuracy plot
-        p_values_overall = []
-        # Y-Axis for the P(1|0) versus Detection Accuracy plot
-        detection_accuracies_across_p_values_overall = []
         # P(1)
         pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
         final_frontier = int(pi / increment_value_for_p)
@@ -310,6 +308,10 @@ if __name__ == '__main__':
               channel_selection_strategy, ']')
         # 2 takes - sensed channels and un-sensed channels
         for _simple_counter in range(0, 2):
+            # X-Axis for the P(1|0) versus Detection Accuracy plot
+            p_values_overall = []
+            # Y-Axis for the P(1|0) versus Detection Accuracy plot
+            detection_accuracies_across_p_values_overall = []
             # Figure out the detection accuracy input here
             if _simple_counter == 0:
                 detection_accuracy_input = channel_selection_strategy
@@ -318,9 +320,10 @@ if __name__ == '__main__':
                 detection_accuracy_input = puOccupancyBehaviorEstimator.get_complement(channel_selection_strategy)
             # If all the channels are a part of the channel selection strategy, the complement is gonna be a null set
             # Then, there's no point in calculating the detection accuracy of a null set
-            if len(detection_accuracy_input) == 0:
-                _simple_counter += 1
-                continue
+            if len(detection_accuracy_input) == puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS:
+                singular = True
+                strategy_counter = strategy_counter - 1
+                break
             # Multiple iteration cycles to average out inconsistencies
             for iteration_cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
                 # P(1|0) - Let's start small and move towards independence
@@ -370,12 +373,18 @@ if __name__ == '__main__':
                     color=colors[color_index], label=label)
             color_index += 1
             _simple_counter += 1
-        title = 'Uniform_Channel_Sensing_' + str(strategy_counter)
-        fig.suptitle(
-            'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
-            'with uniform channel sensing strategy ' + str(channel_selection_strategy), fontsize=6)
-        ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
-        ax.set_ylabel('Detection Accuracy', fontsize=12)
-        plt.legend(loc='upper right', prop={'size': 6})
-        fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots_2/Uniform_Sensing/' + title + '.png')
-        plt.close(fig)
+            # Reset everything
+            puOccupancyBehaviorEstimator.reset()
+        # Don't bother plotting the complete observations case
+        if singular is False:
+            title = 'Uniform_Channel_Sensing_' + str(strategy_counter)
+            fig.suptitle(
+                'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+                'with uniform channel sensing strategy ' + str(channel_selection_strategy), fontsize=6)
+            ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
+            ax.set_ylabel('Detection Accuracy', fontsize=12)
+            plt.legend(loc='upper right', prop={'size': 6})
+            fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title + '.png')
+            plt.close(fig)
+        # Reset everything
+        puOccupancyBehaviorEstimator.reset()

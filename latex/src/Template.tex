@@ -126,27 +126,28 @@ because, as already discussed, $V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ and $
 \begin{equation}\label{6}
     Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2x_k + \sigma_V^2
 \end{equation}
-\subsection{Visualization of Spatially Correlated PU Occupancy Behavior}
-The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds. The PU behavior is assumed to be static (constant across time).
-\begin{itemize}
-    \item Figure 1 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming that a Markovian correlation exists across the channel indices based on the System Model detailed in the previous subsection. Specifically,
-    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
-    \[P(Occupied)\ =\ P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
-    \item Figure 2 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence across channels, i.e,
-    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.3\]
-\end{itemize}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_HeatMap_Static_Spatial_Corr.png}
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_Spatial_Markovian_Correlation.png}
 \caption{Static PU Occupancy Behavior with Markovian Correlation across channel indices}
 \label{fig:mesh1}
 \centering
 \end{figure}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_HeatMap_Static_Independence.png}
-\caption{Static PU Occupancy Behavior with independence among channels}
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_Spatial_Independence_2.png}
+\caption{Static PU Occupancy Behavior with independence among channels $P(Occupied|Idle)\ =\ P(Occupied)\ =\ 0.6$}
 \label{fig:mesh2}
 \centering
 \end{figure}
+\subsection{Visualization of Spatially Correlated PU Occupancy Behavior}
+The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds. The PU behavior is assumed to be static (constant across time).
+\newline
+\begin{itemize}
+    \item Figure 1 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming that a Markovian correlation exists across the channel indices based on the System Model detailed in the previous subsection. Specifically,
+    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
+    \[P(Occupied)\ =\ P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
+    \item Figure 2 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence among channels, i.e,
+    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.6\]
+\end{itemize}
 \subsection{The Estimator}
 \textbf{Given}: The observations of the K frequency sub-bands in the wideband spectrum of interest, i.e. $Y_1,\ Y_2,\ Y_3,\ .....,\ Y_K$
 \\\textbf{Assuming} the state transition probability matrix $A$ and the array of initial probabilities $\Pi$ are known.
@@ -296,7 +297,7 @@ Here,
 \\\textbf{The start probabilities $\Pi\ =\ P(X_i\ =\ 1)$ are fixed at 0.60}.
 If $p\ =\ P(1|0)$ and $q\ =\ P(0|1)$, then we can write the relation between $p$ and $q$ as follows,
 \[\Pi\ =\ \frac{p}{p+q}\]
-\textbf{Varying $p$ from $0.030\ to\ \Pi$}, where if $p\ =\ \Pi$ corresponds to independence among bands because $P(1|0)\ =\ P(1)$ and $P(0|1)\ =\ P(0)$, we get a plot of $Detection\ Accuracy\ v/s\ p$ as depicted in Figure (\ref{3}). Multiple independent trials have been run to smooth the curve.
+\textbf{Varying $p$ from $0.030\ to\ \Pi$}, where if $p\ =\ \Pi$ corresponds to independence among bands because $P(1|0)\ =\ P(1)$ and $P(0|1)\ =\ P(0)$, we get a plot of $Detection\ Accuracy\ v/s\ p$ as depicted in Figure 3. Multiple independent trials have been run to smooth the curve.
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{DetectionAccuracy_v_p_test_3_final.png}
 \caption{Detection Accuracy v/s p for $1000$ observations per band averaged over 50 independent trials with $\Pi\ =\ 0.60$ and $p$ varied from $0.03$ to $\Pi$. This plot corresponds to a linear noisy observation model with the system obviously modelled as an HMM. The true states for the 18 frequency bands are generated using a custom Markov state generator $\forall p\ and\ \forall q$ with a fixed $\Pi\ =\ 0.6$.}
@@ -373,35 +374,43 @@ The following results illustrate the PU Occupancy Behavior Estimation Algorithm 
 \\$P(Occupied|Idle)\ =\ p$ is incremented in steps of $0.03$ from $0.03$ all the way up to $P(Occupied)\ =\ \Pi\ =\ 0.6$ and for a given value of $p$, the detection accuracy is calculated and averaged out over multiple iteration cycles.
 \\The detection accuracy is then plotted against $P(Occupied|Idle)\ =\ p$.
 \begin{itemize}
-    \item Figure 4 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy
-    \item Figure 5 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 4, i.e. the channels that were missed in runs of Figure 4 are sensed here to get an understanding on the "regret" of the channel selection strategy.
-    \item Figure 6 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy
-    \item Figure 7 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 4, i.e. the channels that were missed in runs of Figure 4 are sensed here to get an understanding on the "regret" of the channel selection strategy.
+    \item In this run, only the even channels in the discretized wideband spectrum of interest are sensed, i.e. the channel selection strategy is \{0, 2, 4, 6, 8, 10, 12, 14, 16\}. The Detection Accuracy v/s $P(Occupied|Idle)$ plot is depicted in Figure 4. The blue curve corresponds to the detection accuracy of the sensed channels which, as expected, should fare better compared to the detection accuracy of the un-sensed channels (the red curve).
+    \item Figure 5 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy
+    \item Figure 6 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 5, i.e. the channels that were missed in runs of Figure 5 are sensed here to get an understanding on the "regret" of the channel selection strategy.
+    \item Figure 7 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy
+    \item Figure 8 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 7, i.e. the channels that were missed in runs of Figure 7 are sensed here to get an understanding on the "regret" of the channel selection strategy.
 \end{itemize}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing.png}
-\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process.}
+\includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing_1.png}
+\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process. Here, the plot presents a comparison of the detection accuracy performances between the sensed channels and the un-sensed channels when only the even channels in the discretized wideband spectrum of interest have been sensed by the SU.}
 \label{fig:mesh4}
 \centering
 \end{figure}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing_Duals.png}
-\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 4.}
+\includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing.png}
+\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process.}
 \label{fig:mesh5}
 \centering
 \end{figure}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Random_Channel_Sensing.png}
-\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Random Sampling process.}
+\includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing_Duals.png}
+\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 5.}
 \label{fig:mesh6}
 \centering
 \end{figure}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Random_Channel_Sensing_Duals.png}
-\caption{Detection Accuracy v/s P(Occupied|Idle) for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 6.}
+\includegraphics[width=1.0\textwidth]{Random_Channel_Sensing.png}
+\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Random Sampling process.}
 \label{fig:mesh7}
 \centering
 \end{figure}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Random_Channel_Sensing_Duals.png}
+\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 7.}
+\label{fig:mesh8}
+\centering
+\end{figure}
+\clearpage
 \section{Dynamic PU with Temporal Correlation and Channel Correlation with Complete Information}
 \subsection{Observation Model}
 Persisting the same observation model as in the previous sections,
@@ -447,18 +456,18 @@ The following visualization results illustrate the Occupancy Behavior of the Pri
     \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
     \[P(Occupied)\ =\ P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
     \item Figure 9 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence among channels and among sampling rounds, i.e,
-    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.3\]
+    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.6\]
 \end{itemize}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_HeatMap_Dynamic_SpatioTemporal_Corr.png}
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_SpatioTemporal_Markovian_Correlation.png}
 \caption{Dynamic PU Occupancy Behavior with Markovian Correlation across channel indices and across time indices}
-\label{fig:mesh8}
+\label{fig:mesh9}
 \centering
 \end{figure}
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_HeatMap_Dynamic_Independence.png}
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_SpatioTemporal_Independence_2.png}
 \caption{Dynamic PU Occupancy Behavior with independence among channels and among sampling rounds}
-\label{fig:mesh9}
+\label{fig:mesh10}
 \centering
 \end{figure}
 \subsection{The Estimator}
@@ -589,6 +598,25 @@ Using the analytical equations derived for both the \textbf{Forward Recursion ph
 \\\textbf{Termination}: $P([y_{tk}]\ |\ [x_{tk}])\ =\ max_s\ V_{TK}^{(s)}$
 \end{flushleft}
 \textit{This will be implemented in Python and numerical results such as the $Detection\ Accuracy$ of our estimator will be reported}.
+\subsection{Simulation Results}
+The PU Occupancy Behavior Estimation algorithm detailed analytically in the previous subsection is implemented in Python and the Detection Accuracy of the Estimator is plotted against varying $p\ =\ P(Occupied|Idle)\ =\ P(X_j=1|X_i=0)$. Here are some of the simulation parameters:
+\begin{itemize}
+    \item Number of frequency bands/channels = 18
+    \item Number of sampling rounds/time indices = 500
+    \item Number of algorithm iterations to average the results = 100
+    \item The same model parameters are used for both the spatial Markov chain as well as the temporal Markov chain.
+    \[\Pi\ =\ P(Occupied)\ =\ P(X_i=1)\ =\ 0.6\]
+    \[P(Occupied|Idle)\ =\ P(X_j=1|X_i=0)\ =\ p\ is\ varied\ from\ 0.03\ to\ 0.6\ (independence)\]
+    \[P(X_j=1)\ =\ P(X_j=1|X_i=0)P(X_i=0)\ +\ P(X_j=1|X_i=1)P(X_i=1)\]
+    \[\Pi\ =\ p(1-\Pi)\ +\ (1\ -\ q)\Pi\]
+    \[P(Idle|Occupied)\ =\ P(X_j=0|X_i=1)\ =\ q\ =\ \frac{p(1-\Pi)}{\Pi}\ varies\ as\ p\ varies\]
+\end{itemize}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Detection_Accuracy_vs_p_Iteration_1.png}
+\caption{Detection Accuracy v/s $P(Occupied|Idle)\ =\ p$ for a Double Markov chain Viterbi Estimator observing all 18 channels across 500 sampling rounds with Markovian correlation across channel indices and across time indices.}
+\label{fig:mesh11}
+\centering
+\end{figure}
 \section{Dynamic PU with Temporal Correlation and Channel Correlation with Incomplete Information}
 In this extension, the SU does not sense all $|B|\ =\ K$ frequency bands in the wideband spectrum of interest. Instead, a subset $M\ <\ K$ frequency bands are sensed in a given sampling round based on recommendations given a Bandit or a Reinforcement Learning agent. Let the set of these "incomplete" observations in sampling round $t$ be given as,
 \[\vec{Y}_t\ =\ [y_{t,1},\ y_{t,2},\ \phi,\ ...,\ \phi,....,\ y_{t,m},\ \phi,\ ...,\ y_{t,K}]^T\]
@@ -598,6 +626,36 @@ Persisting the same observation model and system model as in the previous sectio
 \[V_{t,k}^{(r)}\ =\ m_r(y_{tk})max_{m,n}[a_{mnr}V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}],\ if\ y_{tk}\neq\phi\]
 \[V_{t,k}^{(r)}\ =\ max_{m,n}[a_{mnr}V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}],\ if\ y_{tk}=\phi\]
 \[x_{t-1,k-1}^*\ =\ l^*\ =\ argmax_{l}\{a_{mnr}\ V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}\}\]
+\section{DARPA SC2 DSRC Incumbent Spectrum Occupancy Behavior}
+The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic scenario is modelled after a WLAN transceiver emulating PU-PU RF communications. The operational requirement of competitor radio nodes in a given DSRC scenario is that there should be no interference with the Incumbents' communications. The center frequency and bandwidth of the DSRC incumbent are not fixed and are not predefined. The competitor radio nodes should detect and workaround the Incumbents' spectrum occupancy behaviour.
+\\As per the design specifications laid down in the SC2 website, the incumbent uses CSMA-based MAC along with OFDM and QPSK 1/2 modulation at the PHY layer. The incumbent used Layer-2 switching with ARP discovery for node-to-node traffic forwarding. Furthermore, the incumbent uses Layer3 routing protocols to advertise Colosseum traffic sub-nets among other incumbents.
+\\The incumbents in the DSRC traffic scenario send out performance and location updates periodically to the competitor nodes over the collaboration network using the CIL message wrappers. The LocationUpdate CIL message contains latitude, longitude, and altitude information of the incumbent while the DetailedPerformance CIL message contains scalar\_performance, mandates\_achieved, hold\_period, and achieved\_duration parameters which are employed by the competitors to analyze the health/performance of the incumbent communications.
+\\The following figures depict the Spectrum Occupancy Behavior of four Incumbents (SRN\_IDs: 111, 112, 113, and 114) across the scenario run-time in an SC2 DSRC reservation (Reservation\_ID: 72031). The radio.confs and colosseum\_config.ini files for these incumbents can be found on this projects GitHub repository (Minerva).
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_DARPA_SC2_Incumbent_WLAN_DSRC_SRN_111.png}
+\caption{Spectrum Occupancy Behavior of Incumbent 1 (SRN\_ID: 111) across the scenario run-time in SC2 DSRC traffic reservation 72031}
+\label{fig:mesh12}
+\centering
+\end{figure}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_DARPA_SC2_Incumbent_WLAN_DSRC_SRN_112.png}
+\caption{Spectrum Occupancy Behavior of Incumbent 2 (SRN\_ID: 112) across the scenario run-time in SC2 DSRC traffic reservation 72031}
+\label{fig:mesh13}
+\centering
+\end{figure}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_DARPA_SC2_Incumbent_WLAN_DSRC_SRN_113.png}
+\caption{Spectrum Occupancy Behavior of Incumbent 3 (SRN\_ID: 113) across the scenario run-time in SC2 DSRC traffic reservation 72031}
+\label{fig:mesh14}
+\centering
+\end{figure}
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_DARPA_SC2_Incumbent_WLAN_DSRC_SRN_114.png}
+\caption{Spectrum Occupancy Behavior of Incumbent 4 (SRN\_ID: 114) across the scenario run-time in SC2 DSRC traffic reservation 72031}
+\label{fig:mesh15}
+\centering
+\end{figure}
+\clearpage
 \section{External References}
 \begin{enumerate}
     \item \textbf{Fast Spectrum Sensing: A Combination of Channel Correlation and Markov Model}: https://ieeexplore.ieee.org/document/6956794

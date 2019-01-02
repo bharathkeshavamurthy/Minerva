@@ -28,7 +28,7 @@ class OccupancyState(Enum):
 class PUOccupancyBehaviorEstimatorIII(object):
     # Number of samples for this simulation
     # Also referred to as the Number of Sampling Rounds
-    NUMBER_OF_SAMPLES = 500
+    NUMBER_OF_SAMPLES = 1000
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -51,7 +51,7 @@ class PUOccupancyBehaviorEstimatorIII(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 100
+    NUMBER_OF_CYCLES = 250
 
     # Initialization Sequence
     def __init__(self):

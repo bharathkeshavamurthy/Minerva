@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bd0b878c-fd51-4605-844f-d723f6104ed3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py" beforeDir="false" afterPath="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorIII.py" beforeDir="false" afterPath="$PROJECT_DIR$/PUOccupancyBehaviorEstimatorIII.py" afterDir="false" />
-    </list>
+    <list default="true" id="bd0b878c-fd51-4605-844f-d723f6104ed3" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +89,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SpatialMarkovChainVisualizer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
+            <state relative-caret-position="71">
               <caret line="42" column="35" selection-start-line="42" selection-start-column="32" selection-end-line="42" selection-end-column="35" />
             </state>
           </provider>
@@ -134,7 +131,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="10" />
     <option name="y" value="20" />
     <option name="width" value="1346" />
@@ -329,15 +326,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.24962178" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32843137" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49924356" weight="0.5669935" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49924356" visible="true" weight="0.5669935" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.51797384" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -624,7 +620,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SpatialMarkovChainVisualizer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
+        <state relative-caret-position="71">
           <caret line="42" column="35" selection-start-line="42" selection-start-column="32" selection-end-line="42" selection-end-column="35" />
         </state>
       </provider>

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bd0b878c-fd51-4605-844f-d723f6104ed3" name="Default Changelist" comment="" />
+    <list default="true" id="bd0b878c-fd51-4605-844f-d723f6104ed3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +56,7 @@
         <entry file="file://$PROJECT_DIR$/PUOccupancyBehaviorEstimatorIII.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="71">
-              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
               <folding>
                 <element signature="e#503#524#0" expanded="true" />
               </folding>
@@ -66,7 +68,7 @@
         <entry file="file://$PROJECT_DIR$/SpatioTemporalMarkovChainVisualizer.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="136">
-              <caret line="36" column="26" lean-forward="true" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
+              <caret line="36" column="26" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
               <folding>
                 <element signature="e#327#339#0" expanded="true" />
               </folding>
@@ -78,7 +80,7 @@
         <entry file="file://$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="204">
-              <caret line="285" column="67" lean-forward="true" selection-start-line="285" selection-start-column="67" selection-end-line="285" selection-end-column="67" />
+              <caret line="285" column="67" selection-start-line="285" selection-start-column="67" selection-end-line="285" selection-end-column="67" />
               <folding>
                 <marker date="1546378182415" expanded="true" signature="13243:13503" ph="..." />
               </folding>
@@ -591,7 +593,7 @@
     <entry file="file://$PROJECT_DIR$/PUOccupancyBehaviorEstimatorII.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
-          <caret line="285" column="67" lean-forward="true" selection-start-line="285" selection-start-column="67" selection-end-line="285" selection-end-column="67" />
+          <caret line="285" column="67" selection-start-line="285" selection-start-column="67" selection-end-line="285" selection-end-column="67" />
           <folding>
             <marker date="1546378182415" expanded="true" signature="13243:13503" ph="..." />
           </folding>
@@ -601,7 +603,7 @@
     <entry file="file://$PROJECT_DIR$/PUOccupancyBehaviorEstimatorIII.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="71">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
           <folding>
             <element signature="e#503#524#0" expanded="true" />
           </folding>
@@ -611,7 +613,7 @@
     <entry file="file://$PROJECT_DIR$/SpatioTemporalMarkovChainVisualizer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
-          <caret line="36" column="26" lean-forward="true" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
+          <caret line="36" column="26" selection-start-line="36" selection-start-column="26" selection-end-line="36" selection-end-column="26" />
           <folding>
             <element signature="e#327#339#0" expanded="true" />
           </folding>

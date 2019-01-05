@@ -11,5 +11,9 @@ if __name__ == '__main__':
     collection_of_dicts = [[dict() for j in range(0, 10)] for i in range(0, 10)]
     for k, v in collection_of_dicts[-1][-1].items():
         print(v)
+    print('Range check...')
     for i in range(18 - 1, -1, -1):
         print(i)
+    print('Loop check...')
+    for _simple_counter in range(0, 2):
+        print(_simple_counter)

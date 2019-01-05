@@ -58,6 +58,22 @@ class ChannelSelectionStrategyGenerator(object):
             k += 1
         return channel_selection_strategies_based_on_uniform_sensing
 
+    # Uniform Sensing Generic - Take in the number of channels as an argument
+    @staticmethod
+    def generic_uniform_sensing(number_of_channels):
+        # Array of tuples with varying k
+        channel_selection_strategies_based_on_uniform_sensing = []
+        k = 0
+        while k < number_of_channels - 1:
+            i = 0
+            temp_array = []
+            while i < number_of_channels:
+                temp_array.append(i)
+                i = i + k + 1
+            channel_selection_strategies_based_on_uniform_sensing.append(temp_array)
+            k += 1
+        return channel_selection_strategies_based_on_uniform_sensing
+
     # Random Sensing
     def random_sensing(self):
         channel_selection_strategies_based_on_random_sensing = []
@@ -69,6 +85,18 @@ class ChannelSelectionStrategyGenerator(object):
             channel_selection_strategies_based_on_random_sensing.append(temp_array)
         # Setting a instance-scope variable in order to evaluate the duals at a later stage
         self.random_sensing_strategy = channel_selection_strategies_based_on_random_sensing
+        return channel_selection_strategies_based_on_random_sensing
+
+    # Random Sensing Generic - Take in the number of channels and number of iterations as arguments
+    @staticmethod
+    def generic_random_sensing(number_of_channels, number_of_iterations):
+        channel_selection_strategies_based_on_random_sensing = []
+        for iteration in range(0, number_of_iterations):
+            temp_array = []
+            number_of_measurements = random.choice([k for k in range(0, number_of_channels)])
+            for i in range(0, number_of_measurements):
+                temp_array.append(random.choice([k for k in range(0, number_of_channels)]))
+            channel_selection_strategies_based_on_random_sensing.append(temp_array)
         return channel_selection_strategies_based_on_random_sensing
 
     # Return the duals of the channels selected by uniform sensing

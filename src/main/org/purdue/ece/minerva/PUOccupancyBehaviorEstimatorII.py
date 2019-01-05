@@ -372,7 +372,6 @@ if __name__ == '__main__':
                     marker='o',
                     color=colors[color_index], label=label)
             color_index += 1
-            _simple_counter += 1
             # Reset everything
             puOccupancyBehaviorEstimator.reset()
         # Don't bother plotting the complete observations case

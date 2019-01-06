@@ -273,7 +273,7 @@ if __name__ == '__main__':
     # Colors tuple for differentiation in the visualized results
     colors = ('b', 'r')
     # Clear the output folder
-    path_to_output_folder = '../../../../../../test/Channel_Sensing_Strategy_Plots/Random_Sensing/'
+    path_to_output_folder = '../../../../../../test/Channel_Sensing_Strategy_Plots/Uniform_Sensing/'
     file_list = [f for f in os.listdir(path_to_output_folder) if f.endswith('.png')]
     for f in file_list:
         os.remove(os.path.join(path_to_output_folder, f))
@@ -285,7 +285,7 @@ if __name__ == '__main__':
         'initialization process ...')
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()
     # Get the channel selection strategies
-    channel_selection_strategies = channel_selection_strategy_generator.random_sensing()
+    channel_selection_strategies = channel_selection_strategy_generator.uniform_sensing()
     strategy_counter = 0
     # Iterate over multiple channel selection strategies provided by the emulator or the bandit
     for channel_selection_strategy in channel_selection_strategies:
@@ -376,14 +376,14 @@ if __name__ == '__main__':
             puOccupancyBehaviorEstimator.reset()
         # Don't bother plotting the complete observations case
         if singular is False:
-            title = 'Random_Channel_Sensing_' + str(strategy_counter)
+            title = 'Uniform_Channel_Sensing_' + str(strategy_counter)
             fig.suptitle(
                 'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
                 'with uniform channel sensing strategy ' + str(channel_selection_strategy), fontsize=6)
             ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
             ax.set_ylabel('Detection Accuracy', fontsize=12)
             plt.legend(loc='upper right', prop={'size': 6})
-            fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots/Random_Sensing/' + title + '.png')
+            fig.savefig('../../../../../../test/Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title + '.png')
             plt.close(fig)
         # Reset everything
         puOccupancyBehaviorEstimator.reset()

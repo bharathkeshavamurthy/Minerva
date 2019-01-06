@@ -31,7 +31,7 @@ class OccupancyState(Enum):
 class PUOccupancyBehaviorEstimatorIV(object):
     # Number of samples for this simulation
     # Also referred to as the Number of Sampling Rounds
-    NUMBER_OF_SAMPLES = 100
+    NUMBER_OF_SAMPLES = 1000
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -528,6 +528,7 @@ if __name__ == '__main__':
                     local_detection_accuracies.append(
                         puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(detection_input))
                     p += p_initial
+                    puOccupancyBehaviorEstimator.reset()
                 global_detection_accuracies.append(local_detection_accuracies)
                 # Reset everything for the next pass
                 puOccupancyBehaviorEstimator.reset()
@@ -545,7 +546,9 @@ if __name__ == '__main__':
                     color=colors[color_index], label=label)
             color_index += 1
         if singular is False:
-            fig.suptitle('Detection Accuracy v/s P(Occupied | Idle) at P( Xi = 1 ) = 0.6', fontsize=6)
+            fig.suptitle(
+                'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+                'with uniform channel sensing strategy ' + str(channel_selection_strategy), fontsize=6)
             ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
             ax.set_ylabel('Detection Accuracy', fontsize=12)
             title = 'Uniform_Sensing_' + str(strategy_counter)

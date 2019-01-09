@@ -65,7 +65,7 @@
     \item There's only one Primary User (PU) in the wideband spectrum of interest.
     \item There's only one Secondary User (SU) making observations of the PU occupancy in the wideband spectrum of interest.
     \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $E[|X_k(i)|^2]\ =\ 0$.
-    \item The noise samples $V_k(i)$ are i.i.d Complex Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
+    \item The noise samples $V_k(i)$ are i.i.d Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
     \item Furthermore, the PU occupancy behavior is assumed to be static during the estimation period of our algorithm.
     \item The Hidden Markov Model parameters are assumed to be known for now in order to come up with an optimal algorithm for state estimation.
 \end{enumerate}
@@ -618,6 +618,7 @@ The PU Occupancy Behavior Estimation algorithm detailed analytically in the prev
 \centering
 \end{figure}
 \section{Dynamic PU with Temporal Correlation and Channel Correlation with Incomplete Information}
+\subsection{The Estimator}
 In this extension, the SU does not sense all $|B|\ =\ K$ frequency bands in the wideband spectrum of interest. Instead, a subset $M\ <\ K$ frequency bands are sensed in a given sampling round based on recommendations given a Bandit or a Reinforcement Learning agent. Let the set of these "incomplete" observations in sampling round $t$ be given as,
 \[\vec{Y}_t\ =\ [y_{t,1},\ y_{t,2},\ \phi,\ ...,\ \phi,....,\ y_{t,m},\ \phi,\ ...,\ y_{t,K}]^T\]
 where, $\vec{Y}_t$ represents the observation vector in sampling round $t$ with $\phi$ filled in for frequency bands which have not been observed.
@@ -626,6 +627,17 @@ Persisting the same observation model and system model as in the previous sectio
 \[V_{t,k}^{(r)}\ =\ m_r(y_{tk})max_{m,n}[a_{mnr}V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}],\ if\ y_{tk}\neq\phi\]
 \[V_{t,k}^{(r)}\ =\ max_{m,n}[a_{mnr}V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}],\ if\ y_{tk}=\phi\]
 \[x_{t-1,k-1}^*\ =\ l^*\ =\ argmax_{l}\{a_{mnr}\ V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}\}\]
+\subsection{Simulation Results}
+The simulation parameters and methodologies are detailed below.
+\begin{itemize}
+    \item Number of channels in the wideband spectrum of interest = 18
+    \item Number of sampling rounds / time indices = 1000
+    \item Number of iterations / cycles to average out inconsistencies = 300
+    \item Markovian correlation across both the time indices as well as the channel indices: The same model \[\theta\ =\ (A,\ B,\ \Pi)\] is used for both the chains.
+    \item A customized Viterbi algorithm to account for missing information has been implemented in Python in order to verify the functionality of the proposed algorithm.
+    \item A Channel Selection Strategy Generator has been implemented in Python to emulate a Channel Recommendation System such as an RL agent or a Multi-Armed Bandit.
+    \item \[P(Occupied\ |\ Idle)\ =\ p\ =\ P(X_j=1\ |\ X_i=1)\] is varied from $0.03$ to \[P(Occupied)\ =\ P(X_i=1)\ =\ 0.6\] and the corresponding detection accuracies of the sensed and the un-sensed channels are plotted.
+\end{itemize}
 \section{DARPA SC2 DSRC Incumbent Spectrum Occupancy Behavior}
 The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic scenario is modelled after a WLAN transceiver emulating PU-PU RF communications. The operational requirement of competitor radio nodes in a given DSRC scenario is that there should be no interference with the Incumbents' communications. The center frequency and bandwidth of the DSRC incumbent are not fixed and are not predefined. The competitor radio nodes should detect and workaround the Incumbents' spectrum occupancy behaviour.
 \\As per the design specifications laid down in the SC2 website, the incumbent uses CSMA-based MAC along with OFDM and QPSK 1/2 modulation at the PHY layer. The incumbent used Layer-2 switching with ARP discovery for node-to-node traffic forwarding. Furthermore, the incumbent uses Layer3 routing protocols to advertise Colosseum traffic sub-nets among other incumbents.
@@ -656,6 +668,225 @@ The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic sc
 \centering
 \end{figure}
 \clearpage
+\section{Markov Chain Parameter Estimation: Static PU with Markovian correlation across the channel indices with complete information}
+\subsection{Assumptions}
+\begin{enumerate}
+    \item There's only one Primary User (PU) in the wideband spectrum of interest.
+    \item There's only one Secondary User (SU) making observations of the PU occupancy in the wideband spectrum of interest.
+    \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $E[|X_k(i)|^2]\ =\ 0$.
+    \item The noise samples $V_k(i)$ are i.i.d Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
+    \item Furthermore, the PU occupancy behavior is assumed to be static during the estimation period of our algorithm.
+    \item A Markov chain exists across the channel indices whose parameters are to be estimated in this section.
+\end{enumerate}
+\subsection{Observation Model}
+\begin{equation}\label{51}
+    y(n) = \sum_{m=0}^{M-1} h(m)x(n-m) + v(n)
+\end{equation}
+Here, $y(n)$ is the wideband signal observed at the SU receiver expressed as a convolution of the PU signal $x(n)$ with the channel impulse response $h(n)$ added with a noise term v(n).
+Equation (\ref{51}) can be written in the frequency domain by taking a K-point DFT which decomposes the observed wideband signal into K discrete narrow-band components as shown below,
+\begin{equation}\label{52}
+    Y_k(i) = H_kX_k(i) + V_k(i)
+\end{equation}
+where,
+\\$i\ \in\ \{1,\ 2,\ 3,\ .........,\ T\}$ represents the index of the observation
+\\\textbf{NOTE}: Multiple observations of all the frequency bands are made by the SU for training the algorithm and averaging the results over numerous iterations. However, the PU occupancy behavior in this case remains static over time.
+\\$k\ \in\ \{1,\ 2,\ 3,\ .........,\ K\}$ represents the index of the sub-band
+\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
+\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
+\\The PU occupancy behavior in each sub-band $b_k\ \in\ B$ is modelled as $X_k$ taking two possible values $0\ and\ 1$. Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components can be modelled as a vector of size $|B|\ =\ K$ such that,
+\begin{equation}\label{53}
+    \vec{X} = [X_1, X_2, X_3, ........., X_K]^T \in \{0,1\}^K
+\end{equation}
+\subsection{System Model}
+The true states encapsulate the actual behavior of the PU which is an unobserved Markov process and the measurements at the SU are noisy observations of the true states which are modelled to be the observed states of a Hidden Markov Model.
+For some sub-band $j\ \in\ \{2,\ 3,\ 4,\ .....,\ K\}$, the system is assumed to satisfy the Markov property as shown below,
+\[P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
+\[And,\ we\ will\ use\ P(X_1(i))\ for\ j=1.\]
+Since \textbf{the PU is assumed to be static in the period of our estimation}, we can write the above assumption as,
+\[P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ P(X_{j}|X_{j-1}),\ for\ j>1,\]
+\[And,\ we\ will\ use\ P(X_1)\ for\ j=1.\]
+Now, we know that,
+\[\vec{X}\ =\ [X_1,\ X_2,\ X_3,\ ......,\ X_K]^T\] which realizes as,
+\[\vec{x}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\]
+So, the probability of the realized state sequence (i.e. the path) is given as,
+\begin{equation}\label{54}
+    P(\vec{X}=\vec{x}) = P(X_1=x_1) \prod_{k=2}^{K} P(X_k=x_k|X_{k-1}=x_{k-1})
+\end{equation}
+Now, let's expand on the observation model. With a realization $x_k\ in\ \{0,1\}$ of $X_k$, we have from assumption 3 that,
+\[E[|X_k(i)|^2]\ =\ x_k,\ given\ X_k\ during\ observation\ cycle\ i\ has\ realized\ as\ x_k\]
+Taking the expectation operator on both sides of equation (\ref{52}) given $X_k$ has realized as $x_k$, we have,
+\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_kx_k]\ +\ E[V_k(i)]\]
+\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_k]E[x_k]\ +\ E[V_k(i)]\]
+\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ 0\ +\ 0\]
+\begin{equation}\label{55}
+    E[Y_k(i) | X_k(i) = x_k] = 0
+\end{equation}
+because, as already discussed, $V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ and $H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$.
+\\Furthermore, the variance of $Y_k(i)$ given $X_k$ at observation cycle $i$ has realized as $x_k$, is calculated to be, 
+\begin{equation*}
+    Var[Y_k(i) | X_k(i) = x_k] = E[(Y_k(i) | X_k(i) = x_k)^2] - [E[Y_k(i) | X_k(i) = x_k]]^2
+\end{equation*}
+\begin{equation*}
+    Var[Y_k(i) | X_k(i) = x_k] = E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2H_kX_k(i)V_k(i)] - (0)^2
+\end{equation*}
+\begin{equation*}
+    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2E[|X_k(i)|^2] + \sigma_V^2 + 2E[H_k]E[X_k(i)]E[V_k(i)]
+\end{equation*}
+\begin{equation}\label{56}
+    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2x_k + \sigma_V^2
+\end{equation}
+Therefore, the emission probabilities can be extracted as follows,
+\begin{equation}\label{57}
+    m_{X_k(i)=x_k=l}(Y_k(i)=y_k)\ \sim \mathcal{N}(0,\ \sigma_H^2l + \sigma_V^2)
+\end{equation}
+The state transition probabilities of this Markov chain across the channel indices are unknown and we will estimate the state transition probabilities matrix using the estimator detailed in subsection D.
+Let us define a few other terms in order to proceed.
+\begin{equation}\label{58}
+    A\ =\ \{a_{rl}\}\ is\ the\ state\ transition\ probability\ matrix
+\end{equation}
+where,
+\[a_{rl}\ =\ P(X_j=l\ |\ X_i=r)\]
+\begin{equation}\label{59}
+    \Pi\ =\ P(X_1\ =\ 1)\ is\ the\ initial\ PU\ occupancy\ probability
+\end{equation}
+\subsection{The Estimator}
+Before diving into the algorithm, let us first define the Forward and Backward probabilities that will be employed in our estimation algorithm.
+Let,
+\[X_i\ =\ x_i\ be\ the\ PU\ Occupancy\ state\ of\ an\ arbitrary\ channel\]
+\[X_{i+1}\ =\ X_j\ =\ x_j\ be\ the\ PU\ Occupancy\ state\ of\ the\ channel\ adjacent\ to\ channel\ b_i\]
+\subsubsection{Forward Probabilities}
+Let, $F(j,\ l)$ represent the probability of being in state $x_j=l$ after observing $y_1,\ y_2,\ y_3,\ ......,\ y_i,\ y_j$.
+\begin{equation}\label{60}
+    F(j,\ l)\ \triangleq \ P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l)
+\end{equation}
+Using the definition of Marginal Probability, equation (\ref{60}) can be written as,
+\begin{equation}\label{61}
+    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l,\ x_i=r)
+\end{equation}
+Using the definition of conditional probability, equation (\ref{61}) can be written as,
+\begin{equation}\label{62}
+    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ P(x_j=l,\ y_j\ |\ y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)P(y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)
+\end{equation}
+Using the Markov property and definition of Forward Probability outlined in equation (\ref{60}), we can write equation (\ref{62}) as follows,
+\begin{equation}\label{63}
+    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ P(x_j=l,\ y_j\ |\ x_i=r)F(i,\ r)
+\end{equation}
+\subsubsection{Backward Probabilities}
+Let $B(j,\ r)$ represent the probability of observing $y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K$ given state $x_i\ =\ r$.
+\begin{equation}\label{64}
+    B(j,\ r)\ \triangleq\ P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ x_i\ =\ r)
+\end{equation}
+Using the definition of Marginal Probabilities,
+\begin{equation}\label{65}
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K,\ x_j=l\ |\ x_i\ =\ r)
+\end{equation}
+Now, re-arranging the terms in equation (\ref{65}), we get,
+\begin{equation}\label{66}
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_{j+1},\ y_{j+2},\ ......,\ y_K,\ y_j,\ x_j=l\ |\ x_i\ =\ r)
+\end{equation}
+Now, we know that,
+\begin{equation*}
+    P(A,\ B\ |\ C)\ =\ P(A\ |\ B,\ C)P(B\ |\ C)
+\end{equation*}
+Using this, we can write equation (\ref{66}) as,
+\begin{equation}\label{67}
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ y_j,\ x_j=l,\ x_i\ =\ r)P(y_j,\ x_j=l\ |\ x_i=r)
+\end{equation}
+Now, using the Markov property, equation (\ref{67}) can be written as,
+\begin{equation}\label{68}
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |x_j=l)P(y_j,\ x_j=l\ |\ x_i=r)
+\end{equation}
+Now, using the definition of Backward Probability outlined in equation (\ref{64}),
+\begin{equation}\label{69}
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} B(j+1,\ l)P(y_j,\ x_j=l\ |\ x_i=r)
+\end{equation}
+\subsubsection{Deriving the analytical expressions for the parameter estimation algorithm}
+Equations (\ref{63}) and (\ref{69}) represent a \textbf{Cross Iteration Dependency Relationship} between Forward Probabilities across adjacent channels and between Backward Probabilities across adjacent channels, respectively. Both equations (\ref{63}) and (\ref{69}) have a common term, i.e. $P(x_j=l,\ y_j\ |\ x_i=r)$ which can be simplified for our estimation as follows.
+\\Using,
+\begin{equation*}
+    P(A,\ B\ |\ C)\ =\ P(B\ |\ A,\ C)P(A\ |\ C)
+\end{equation*}
+The common term can be written as,
+\begin{equation}\label{70}
+    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ P(y_j\ |\ x_j=l,\ x_i=r)P(x_j=l\ |\ x_i=r)
+\end{equation}
+Since, observation $y_j$ depends only on the state of channel $j$, i.e. $x_j$ and using our System Model, equation (\ref{70}) can be written as,
+\begin{equation}\label{71}
+    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ m_{l}(y_j)a_{rl}
+\end{equation}
+We know the emission probabilities from equation (\ref{57}) as,
+\[m_l(y_j)\ \sim\ \mathcal{N}(0,\ \sigma_H^2l + \sigma_V^2)\]
+Now, we can find a reasonably good estimate of $P(x_j=l,\ y_j\ |\ x_i=r)$ using the following expression.
+\begin{equation*}
+    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{number\ of\ transitions\ from\ x_i=r\ to\ x_j=l\ emitting\ symbol\ y_j}{total\ number\ of\ transitions\ from\ x_i=r}
+\end{equation*}
+Mathematically, the above equation can be written as,
+\begin{equation}\label{72}
+    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}} n(x_i=r,\Tilde{y},x_j=s)}
+\end{equation}
+Assuming we have multiple estimates of the state sequence, we can weight the count using the probability of that state sequence, i.e. $P(path)\ =\ P(\vec{X}=\vec{x}\ |\ \vec{Y}=\vec{y})$,
+\begin{equation}\label{73}
+    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}
+\end{equation}
+Now, the term $\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)$ which is common in both the numerator and denominator can be expressed using the definition of Conditional Probability as follows.
+\begin{equation}\label{74}
+    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{\vec{x}}\ P(\vec{x},\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)
+\end{equation}
+Equation (\ref{74}) can now be written as,
+\begin{equation}\label{75}
+    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{\vec{x}}\ \sum_{k=0}^{n}\ P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
+\end{equation}
+Re-arranging the summation operators,
+\begin{equation}\label{76}
+    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ \sum_{\vec{x}}\ P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
+\end{equation}
+Using the definition of Marginal Probability, we get,
+\begin{equation}\label{77}
+    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(\vec{y},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j)
+\end{equation}
+Now, equation (\ref{77}) can be re-written as follows,
+\begin{equation}\label{78}
+    \begin{aligned}
+        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j,\\y_{k+1},\ y_{k+2},\ ...,\ y_K)
+    \end{aligned}
+\end{equation}
+Extracting the independent terms, equation (\ref{78}) can be written as,
+\begin{equation}\label{79}
+    \begin{aligned}
+        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\P(x_{k}=l,\ y_k=y_j\ |\ y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
+    \end{aligned}
+\end{equation}
+Using the Markov property, equation (\ref{79}) can be written as follows,
+\begin{equation}\label{80}
+    \begin{aligned}
+        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)\\P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
+    \end{aligned}
+\end{equation}
+Based on our definitions of Forward Probability and Backward Probability outlined in equations (\ref{60}) and (\ref{64}), we can write equation (\ref{80}) as follows,
+\begin{equation}\label{81}
+    \begin{aligned}
+        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)B(k+1,\ l)
+    \end{aligned}
+\end{equation}
+Using equation (\ref{71}), equation (\ref{81}) can be written as,
+\begin{equation}\label{82}
+    \begin{aligned}
+        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)
+    \end{aligned}
+\end{equation}
+\subsection{The Algorithm}
+Based on the analytical expressions derived in the previous subsection, we have arrived at the following algorithm.
+\\\textbf{Initialization}: Initial estimates of $a_{rl}\ =\ P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$
+\\\textbf{Iteration}: \[a_{rl}\ =\ P(x_j=l\ |\ x_i=r)\ =\ \frac{1}{m_l(y_j)}\ \frac{\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}\]
+where,
+\[\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)\]
+The new estimates of $a_{rl}\ =\ P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$ are then used in the next iteration.
+\\Concretely,
+\[a_{rl}(t+1)\ =\ \frac{a_{rl}(t)\sum_{k=0}^{n}\ F(k-1,\ r)B(k+1,\ l)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ m_s(\Tilde{y})a_{rs}(t)\sum_{k=0}^{n}\ F(k-1,\ r)B(k+1,\ s)}\]
+\\\textbf{Termination}: Terminate the algorithm when there's no appreciable change in the estimates of $a_{rl}\ =\ P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$. Mathematically speaking, terminate the algorithm if,
+\[|a_{rl}(t+1)\ -\ a_{rl}(t)|\ <\ \epsilon,\ where,\ t\ is\ the\ iteration\ counter,\ \forall\ l,\ r\in\{0,1\},\ and\ \forall\ \epsilon\ >\ 0\]
+\subsection{Simulation Results}
+The algorithm outlined in the previous subsection will be implemented in Python and its results would be detailed in this subsection.
 \section{External References}
 \begin{enumerate}
     \item \textbf{Fast Spectrum Sensing: A Combination of Channel Correlation and Markov Model}: https://ieeexplore.ieee.org/document/6956794

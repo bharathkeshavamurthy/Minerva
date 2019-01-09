@@ -54,7 +54,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 300
+    NUMBER_OF_CYCLES = 400
 
     # The set of channels that are sensed based on recommendations from the RL agent / bandit / emulator
     BANDS_OBSERVED = []
@@ -415,6 +415,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
             # Verified
             for j in range(self.NUMBER_OF_SAMPLES - 1, -1, -1):
                 # Verified
+                # TODO: Add Verified tags for this block here after validation by Prof. Michelusi
                 if len(estimated_states[i]) == 0:
                     estimated_states[i].insert(0, self.value_from_name(
                         value_function_collection[i + 1][j][previous_state_spatial].previous_spatial_state))
@@ -454,7 +455,6 @@ class PUOccupancyBehaviorEstimatorIV(object):
         self.noise_samples.clear()
         self.channel_impulse_response_samples.clear()
         self.observation_samples.clear()
-        self.BANDS_OBSERVED = []
 
     # Exit strategy
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -504,8 +504,6 @@ if __name__ == '__main__':
                 detection_input = puOccupancyBehaviorEstimator.get_complement(channel_selection_strategy)
             # Global detection accuracies array
             global_detection_accuracies = []
-            # Reset everything for the next strategy
-            puOccupancyBehaviorEstimator.reset()
             puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
             # P(1)
             pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
@@ -528,9 +526,14 @@ if __name__ == '__main__':
                     local_detection_accuracies.append(
                         puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(detection_input))
                     p += p_initial
+                    # Reset everything in the instance just to be safe...
+                    # TODO: The code is too complicated now to validate it perfectly.
+                    # Adding safeguards to ensure nothing unexpected happens...
                     puOccupancyBehaviorEstimator.reset()
                 global_detection_accuracies.append(local_detection_accuracies)
-                # Reset everything for the next pass
+                # Reset everything in the instance just to be safe...
+                # TODO: The code is too complicated now to validate it perfectly.
+                # Adding safeguards to ensure nothing unexpected happens...
                 puOccupancyBehaviorEstimator.reset()
             y_axis = []
             for _loop_counter in range(0, int(pi / p_initial)):
@@ -545,6 +548,10 @@ if __name__ == '__main__':
             ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
                     color=colors[color_index], label=label)
             color_index += 1
+            # Reset everything in the instance just to be safe...
+            # TODO: The code is too complicated now to validate it perfectly.
+            # Adding safeguards to ensure nothing unexpected happens...
+            puOccupancyBehaviorEstimator.reset()
         if singular is False:
             fig.suptitle(
                 'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
@@ -556,3 +563,7 @@ if __name__ == '__main__':
             fig.savefig(
                 '../../../../../../test/Dynamic_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title + '.png')
             plt.close(fig)
+        # Reset everything in the instance just to be safe...
+        # TODO: The code is too complicated now to validate it perfectly.
+        # Adding safeguards to ensure nothing unexpected happens...
+        puOccupancyBehaviorEstimator.reset()

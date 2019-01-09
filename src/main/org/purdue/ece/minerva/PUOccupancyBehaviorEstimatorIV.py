@@ -54,7 +54,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 500
+    NUMBER_OF_CYCLES = 300
 
     # The set of channels that are sensed based on recommendations from the RL agent / bandit / emulator
     BANDS_OBSERVED = []
@@ -220,7 +220,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
     # TODO: Remove unnecessary comments and Verified tags which were added in because the code is too complex to keep...
     # ...track of without them...Remove them once you get the hang of it!
     # TODO: Refactor this method - it's way too huge!
-    def estimate_pu_occupancy_states(self, detection_input):
+    def estimate_pu_occupancy_states(self, _detection_input):
         # Estimated states - kxt matrix
         # Verified
         estimated_states = [[] for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
@@ -428,7 +428,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
                     previous_state_temporal].previous_temporal_state
             previous_state_spatial = value_function_collection[i][self.NUMBER_OF_SAMPLES - 1][
                 previous_state_spatial].previous_spatial_state
-        return self.get_detection_accuracy(detection_input, estimated_states)
+        return self.get_detection_accuracy(_detection_input, estimated_states)
 
     # Get enumeration field value from name
     @staticmethod

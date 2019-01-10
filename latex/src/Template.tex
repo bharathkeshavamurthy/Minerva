@@ -65,7 +65,7 @@
     \item There's only one Primary User (PU) in the wideband spectrum of interest.
     \item There's only one Secondary User (SU) making observations of the PU occupancy in the wideband spectrum of interest.
     \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $E[|X_k(i)|^2]\ =\ 0$.
-    \item The noise samples $V_k(i)$ are i.i.d Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
+    \item The noise samples $V_k(i)$ are i.i.d \nm{circular?} Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
     \item Furthermore, the PU occupancy behavior is assumed to be static during the estimation period of our algorithm.
     \item The Hidden Markov Model parameters are assumed to be known for now in order to come up with an optimal algorithm for state estimation.
 \end{enumerate}
@@ -82,8 +82,9 @@ where,
 \\$i\ \in\ \{1,\ 2,\ 3,\ .........,\ T\}$ represents the index of the observation
 \\\textbf{NOTE}: Multiple observations of all the frequency bands are made by the SU for training the algorithm and averaging the results over numerous iterations. However, the PU occupancy behavior in this case remains static over time.
 \\$k\ \in\ \{1,\ 2,\ 3,\ .........,\ K\}$ represents the index of the sub-band
-\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
-\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
+\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample \nm{should be "circular" Gaussian} \nm{i.i.d. across frequency/time?}
+\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver \nm{should be "circular" Gaussian}
+\nm{i.i.d. across frequency? Or is there any freq. correlation?}
 \\The PU occupancy behavior in each sub-band $b_k\ \in\ B$ is modelled as $X_k$ taking two possible values $0\ and\ 1$. Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components can be modelled as a vector of size $|B|\ =\ K$ such that,
 \begin{equation}\label{3}
     \vec{X} = [X_1, X_2, X_3, ........., X_K]^T \in \{0,1\}^K
@@ -91,11 +92,31 @@ where,
 \subsection{System Model}
 The true states encapsulate the actual behavior of the PU which is an unobserved Markov process and the measurements at the SU are noisy observations of the true states which are modelled to be the observed states of a Hidden Markov Model.
 For some sub-band $j\ \in\ \{2,\ 3,\ 4,\ .....,\ K\}$, the system is assumed to satisfy the Markov property as shown below,
+\nm{Please use $\mathbb P$ for probabilities instead of $P$}
 \[P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
 \[And,\ we\ will\ use\ P(X_1(i))\ for\ j=1.\]
 Since \textbf{the PU is assumed to be static in the period of our estimation}, we can write the above assumption as,
 \[P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ P(X_{j}|X_{j-1}),\ for\ j>1,\]
 \[And,\ we\ will\ use\ P(X_1)\ for\ j=1.\]
+
+\nm{I will rather write it as:}
+\add{
+\begin{align}
+\mathbb P(\vec{X}=\vec{x})=\mathbb P(X_1=x_1)\prod_{j=2}^K \mathbb P(X_{j}=x_j|X_{j-1}=x_{j-1})
+\end{align}
+so that $\vec{X}$ obeys the Markov property across frequency.
+We also let $\mathbb P(X_{j}=1|X_{j-1}=0)=p$ and $\mathbb P(X_{j}=0|X_{j-1}=1)=q$,
+and $\mathbb P(X_1=1)=\frac{p}{p+q}$. Note that this decomposition implies that 
+\begin{align}
+\mathbb P(X_k=1)=\frac{p}{p+q},\ \forall k
+\end{align}
+and also
+\begin{align}
+\mathbb P(\vec{X}=\vec{x})=\mathbb P(X_K=x_K)\prod_{j=1}^{K-1} \mathbb P(X_{j}=x_j|X_{j+1}=x_{j+1})
+\end{align}
+so that it obeys the Markov property also in the reversed direction.
+}
+
 Now, we know that,
 \[\vec{X}\ =\ [X_1,\ X_2,\ X_3,\ ......,\ X_K]^T\] which realizes as,
 \[\vec{x}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\]
@@ -104,7 +125,9 @@ So,
     P(\vec{X}=\vec{x}) = P(X_1=x_1) \prod_{k=2}^{K} P(X_k=x_k|X_{k-1}=x_{k-1})
 \end{equation}
 Now, let's expand on the observation model. With a realization $x_k\ in\ \{0,1\}$ of $X_k$, we have from assumption 3 that,
+\nm{please use $\mathbb E$ for expectation}
 \[E[|X_k(i)|^2]\ =\ x_k,\ given\ X_k\ during\ observation\ cycle\ i\ has\ realized\ as\ x_k\]
+\nm{This should be written as $\mathbb E[|X_k(i)|^2|X_k=x_k]\ =\ x_k$ (i.e., make the condition explicit in the expectation so there is no need to explain); however this result is obvious and you should remove it}
 Taking the expectation operator on both sides of equation (\ref{2}) given $X_k$ has realized as $x_k$, we have,
 \[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_kx_k]\ +\ E[V_k(i)]\]
 \[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_k]E[x_k]\ +\ E[V_k(i)]\]
@@ -114,15 +137,23 @@ Taking the expectation operator on both sides of equation (\ref{2}) given $X_k$ 
 \end{equation}
 because, as already discussed, $V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ and $H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$.
 \\Furthermore, the variance of $Y_k(i)$ given $X_k$ at observation cycle $i$ has realized as $x_k$, is calculated to be, 
-\begin{equation*}
+\nm{errors below, please take a careful look at my corrections:}
+\begin{align*}
     Var[Y_k(i) | X_k(i) = x_k] = E[(Y_k(i) | X_k(i) = x_k)^2] - [E[Y_k(i) | X_k(i) = x_k]]^2
-\end{equation*}
-\begin{equation*}
+    \\
+\add{Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|Y_k(i)|^2 | X_k(i) = x_k] - |\mathbb E[Y_k(i) | X_k(i) = x_k]|^2}    
+\end{align*}
+\begin{align*}
     Var[Y_k(i) | X_k(i) = x_k] = E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2H_kX_k(i)V_k(i)] - (0)^2
-\end{equation*}
-\begin{equation*}
+    \\
+    \add{Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2\text{real}(H_kX_k(i)V_k^*(i))] - (0)^2}
+\end{align*}
+\nm{remember you are dealing with complex variables}
+\begin{align*}
     Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2E[|X_k(i)|^2] + \sigma_V^2 + 2E[H_k]E[X_k(i)]E[V_k(i)]
-\end{equation*}
+    \\
+    \add{    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2\mathbb E[|X_k(i)|^2|X_k=x_k] + \sigma_V^2 + 2\text{real}(\mathbb E[H_k]E[X_k(i)]E[V_k(i)^*])}
+\end{align*}
 \begin{equation}\label{6}
     Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2x_k + \sigma_V^2
 \end{equation}
@@ -139,11 +170,14 @@ because, as already discussed, $V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ and $
 \centering
 \end{figure}
 \subsection{Visualization of Spatially Correlated PU Occupancy Behavior}
-The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds. The PU behavior is assumed to be static (constant across time).
+The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds.
+\nm{since it is static, no need to show evolution over time...}
+ The PU behavior is assumed to be static (constant across time).
 \newline
 \begin{itemize}
     \item Figure 1 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming that a Markovian correlation exists across the channel indices based on the System Model detailed in the previous subsection. Specifically,
     \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
+    \nm{what about $\mathbb P(Idle|Occupied)$?}
     \[P(Occupied)\ =\ P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
     \item Figure 2 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence among channels, i.e,
     \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.6\]
@@ -153,6 +187,14 @@ The following visualization results illustrate the Occupancy Behavior of the Pri
 \\\textbf{Assuming} the state transition probability matrix $A$ and the array of initial probabilities $\Pi$ are known.
 \\\textbf{From the observation model}, we already know that the emission probabilities are given by,
 \[P(Y_k|X_k = x_k)\ \sim \mathcal{N}(0,\ \sigma_H^2x_k+\sigma_V^2)\]
+\nm{remember you are dealing with complex vars!}
+\nm{Before explaining which algorithm you are going to use, introduce the problem you are going to solve:}
+\add{Given a sequence of observations $\vec{Y}=\vec{y}$ across frequency, we want to develop a maximum a posteriori estimator of the frequency occupancy vector $\vec{X}$, i.e.
+\begin{align}
+\vec{X}^*=\arg\max_{\vec{x}}\mathbb P(\vec{X}=\vec{x}|\vec{Y}=\vec{y})
+\end{align}
+This can be solved using .....
+}
 Now, the problem of estimating a sequence of states across the frequency bands in a Hidden Markov Model can be solved using Dynamic Programming to give us the most likely sequence of hidden states called the \textbf{Viterbi Path} based on the sequence of noisy observations of the true states of the frequency sub-bands.
 \\From the above statements we can write,
 \begin{equation*}

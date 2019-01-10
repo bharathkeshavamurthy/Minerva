@@ -12,12 +12,13 @@
 # https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
 
 from enum import Enum
+import os
 import numpy
 import scipy.stats
 from collections import namedtuple
 from matplotlib import pyplot as plt
 import ChannelSelectionStrategyGenerator
-import os
+import SamplingRoundSelectionStrategyGenerator
 
 
 # Occupancy state enumeration
@@ -32,7 +33,7 @@ class OccupancyState(Enum):
 class PUOccupancyBehaviorEstimatorIV(object):
     # Number of samples for this simulation
     # Also referred to as the Number of Sampling Rounds
-    NUMBER_OF_SAMPLES = 100
+    NUMBER_OF_SAMPLES = 250
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -41,7 +42,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
     VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
 
     # Number of frequency bands/channels in the wideband spectrum of interest
-    NUMBER_OF_FREQUENCY_BANDS = 10
+    NUMBER_OF_FREQUENCY_BANDS = 18
 
     # Start probabilities of PU occupancy per frequency band
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
@@ -55,10 +56,13 @@ class PUOccupancyBehaviorEstimatorIV(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 50
+    NUMBER_OF_CYCLES = 250
 
     # The set of channels that are sensed based on recommendations from the RL agent / bandit / emulator
     BANDS_OBSERVED = []
+
+    # The set of sampling rounds / time indices in which the Bandit/RL agent senses the selected channels
+    ACTIVE_SAMPLING_ROUNDS = []
 
     # Empty observation place holder value
     EMPTY_OBSERVATION_PLACEHOLDER_VALUE = 0
@@ -165,9 +169,13 @@ class PUOccupancyBehaviorEstimatorIV(object):
             # However, I'm sensing across all time steps / rounds / time indices for the bands that are being sensed!
             if band in self.BANDS_OBSERVED:
                 for count in range(0, self.NUMBER_OF_SAMPLES):
-                    obs_per_band.append(self.channel_impulse_response_samples[band][
-                                            count] * self.true_pu_occupancy_states[band][count] + self.noise_samples[
-                                            band][count])
+                    if count in self.ACTIVE_SAMPLING_ROUNDS:
+                        obs_per_band.append(self.channel_impulse_response_samples[band][
+                                                count] * self.true_pu_occupancy_states[band][count] +
+                                            self.noise_samples[
+                                                band][count])
+                    else:
+                        obs_per_band.append(self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE)
             self.observation_samples.append(obs_per_band)
         # The observation_samples member is a kxt matrix
         return self.observation_samples
@@ -203,25 +211,26 @@ class PUOccupancyBehaviorEstimatorIV(object):
                 observation_sample)
 
     # Calculate the detection accuracy
-    def get_detection_accuracy(self, _input, estimated_states):
+    def get_detection_accuracy(self, spatial_input, temporal_input, estimated_states):
         accuracies = 0
         try:
-            for _counter in range(0, len(_input)):
-                for _round in range(0, self.NUMBER_OF_SAMPLES):
-                    if self.true_pu_occupancy_states[_input[_counter]][_round] == \
-                            estimated_states[_input[_counter]][_round]:
+            for spatial_counter in range(0, len(spatial_input)):
+                for temporal_counter in range(0, len(temporal_input)):
+                    if self.true_pu_occupancy_states[spatial_input[spatial_counter]][
+                        temporal_input[temporal_counter]] == \
+                            estimated_states[spatial_input[spatial_counter]][temporal_input[temporal_counter]]:
                         accuracies += 1
         except Exception as e:
             print(
                 '[ERROR] PUOccupancyBehaviorEstimatorIV get_detection_accuracy: Exception caught while calculating '
                 'detection accuracy of the estimator- [', e, ']')
-        return accuracies / (len(_input) * self.NUMBER_OF_SAMPLES)
+        return accuracies / (len(spatial_input) * len(temporal_input))
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     # TODO: Remove unnecessary comments and Verified tags which were added in because the code is too complex to keep...
     # ...track of without them...Remove them once you get the hang of it!
     # TODO: Refactor this method - it's way too huge!
-    def estimate_pu_occupancy_states(self, _detection_input):
+    def estimate_pu_occupancy_states(self, spatial_input, temporal_input):
         # Estimated states - kxt matrix
         # Verified
         estimated_states = [[] for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
@@ -430,7 +439,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
                     previous_state_temporal].previous_temporal_state
             previous_state_spatial = value_function_collection[i][self.NUMBER_OF_SAMPLES - 1][
                 previous_state_spatial].previous_spatial_state
-        return self.get_detection_accuracy(_detection_input, estimated_states)
+        return self.get_detection_accuracy(spatial_input, temporal_input, estimated_states)
 
     # Get enumeration field value from name
     @staticmethod
@@ -441,13 +450,22 @@ class PUOccupancyBehaviorEstimatorIV(object):
             return OccupancyState.idle.value
 
     # Get un-sensed channels from the sensed channels input
-    # In other words, find the complement
-    def get_complement(self, sensed_channels):
+    # In other words, find the complement across the channel indices
+    def get_spatial_complement(self, sensed_channels):
         un_sensed_channels = list()
         for _channel_index in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
             if _channel_index not in sensed_channels:
                 un_sensed_channels.append(_channel_index)
         return un_sensed_channels
+
+    # Get the inactive sampling rounds from the active sampling rounds input
+    # In other words, find the complement across the time indices
+    def get_temporal_complement(self, active_time_indices):
+        inactive_time_indices = list()
+        for _time_index in range(0, self.NUMBER_OF_SAMPLES):
+            if _time_index not in active_time_indices:
+                inactive_time_indices.append(_time_index)
+        return inactive_time_indices
 
     # Reset every collection for the next run
     def reset(self):
@@ -462,6 +480,30 @@ class PUOccupancyBehaviorEstimatorIV(object):
         print('[INFO] PUOccupancyBehaviorEstimatorIV Clean-up: Cleaning things up ...')
 
 
+# Check if the spatial or temporal strategies are irrelevant
+def is_irrelevant(estimator_object, _channel_strategy, _sampling_round_strategy):
+    if len(_channel_strategy) == 0 or len(estimator_object.get_spatial_complement(_channel_strategy)) \
+            == 0 or len(_sampling_round_strategy) == 0 or \
+            len(estimator_object.get_temporal_complement(_sampling_round_strategy)) == 0:
+        return True
+    return False
+
+
+# Get Irrelevance boolean for the channel selection strategies
+def get_spatial_irrelevance(estimator_object, _channel_strategy):
+    if len(_channel_strategy) == 0 or len(estimator_object.get_spatial_complement(_channel_strategy)) == 0:
+        return True
+    return False
+
+
+# Get Irrelevance boolean for the sampling round selection strategies
+def get_temporal_irrelevance(estimator_object, _sampling_round_strategy):
+    if len(_sampling_round_strategy) == 0 or len(estimator_object.get_spatial_complement(_sampling_round_strategy)) \
+            == 0:
+        return True
+    return False
+
+
 # Run Trigger
 if __name__ == '__main__':
     # Colors tuple for differentiation in the visualized results
@@ -474,95 +516,106 @@ if __name__ == '__main__':
     print(
         '[INFO] PUOccupancyBehaviorEstimatorIV main: Creating an instance and starting the initialization process ...')
     # Emulate the recommendations of an RL agent / a bandit
+    # In the Static PU, Spatial Markov Chain with Incomplete information case, I decided to stick to the...
+    # ...proposed/recommended channel selection strategy for the entire duration of my simulation in order to get a...
+    # ...Detection Accuracy v/s p plot.
     channelSelectionStrategyGenerator = ChannelSelectionStrategyGenerator.ChannelSelectionStrategyGenerator()
+    # Similarly, sticking to what works and trying to persist a few traditions in this research, I decided to stick...
+    # ...to the recommended channel selection strategy and the sampling round selection strategy for the entire...
+    # ...duration of my simulation.
+    # This is in line with the episodic nature of any RL agent / MAB
+    # Let's say a time-slot lasts for 2 sampling rounds: In the first half of the time slot, the SU senses
+    # In the second half of the time slot, the SU transmits. So, in accordance with this, only the even sampling...
+    # ...rounds have sensing activities in them.
+    # So, intuitively, this makes sense.
+    samplingRoundStrategyGenerator = SamplingRoundSelectionStrategyGenerator.SamplingRoundSelectionStrategyGenerator()
     # Estimator instance
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorIV()
     # Strategy Counter
     strategy_counter = 0
+    # Spatial step for legend labels in the plots
+    spatial_step = 0
+    # Temporal step for legend labels in the plots
+    temporal_step = 0
     for channel_selection_strategy in channelSelectionStrategyGenerator.generic_uniform_sensing(
             puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS):
-        print('[DEBUG] PUOccupancyBehaviorEstimatorIV main: Channel Selection Strategy = ',
-              str(channel_selection_strategy))
-        # Singular identification boolean
-        singular = False
-        # Increment the strategy counter for file name and other aesthetic considerations
-        strategy_counter += 1
-        color_index = 0
-        fig, ax = plt.subplots()
-        for complement_counter in range(0, 2):
-            # Global detection accuracies array
-            global_detection_accuracies = []
-            puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
-            print('[DEBUG] PUOccupancyBehaviorEstimatorIV main: Setting Bands Observed to be ',
-                  str(puOccupancyBehaviorEstimator.BANDS_OBSERVED))
-            # P(1)
-            pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
-            p_initial = 0.03
-            # If I'm sensing all the channels, there's no point in doing complement analysis
-            if len(channel_selection_strategy) == 0 or len(
-                    puOccupancyBehaviorEstimator.get_complement(channel_selection_strategy)) == 0:
-                print(
-                    '[DEBUG] PUOccupancyBehaviorEstimatorIV main: Encountered empty sets for true or complemented '
-                    'channel selection strategies. Ignoring this case...')
-                # Reverse the increment
-                strategy_counter = strategy_counter - 1
-                # Singular is true
-                singular = True
-                # Break this complement_counter loop
-                break
-            # Sensed channels
-            if complement_counter == 0:
-                detection_input = channel_selection_strategy
-                print('[DEBUG] PUOccupancyBehaviorEstimatorIV main: True channel selection strategy = ',
-                      str(detection_input))
-            # Un-sensed channels
-            else:
-                detection_input = puOccupancyBehaviorEstimator.get_complement(channel_selection_strategy)
-                print('[DEBUG] PUOccupancyBehaviorEstimatorIV main: Complemented channel selection strategy = ',
-                      str(detection_input))
-            for cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
-                print('[DEBUG] PUOccupancyBehaviorEstimatorIV main: Cycle ', cycle)
-                # Internal detection accuracies array
-                local_detection_accuracies = []
-                # P(Occupied|Idle)
-                p = p_initial
-                # Varying p all the way up to independence
-                for iteration in range(0, int(pi / p)):
-                    print('[DEBUG] PUOccupancyBehaviorEstimatorIV main: Iteration ', iteration)
-                    q = (p * (1 - pi)) / pi
-                    puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                        1: {1: (1 - q), 0: q},
-                        0: {1: p, 0: (1 - p)}
-                    }
-                    # True PU Occupancy State
-                    puOccupancyBehaviorEstimator.generate_true_pu_occupancy_states(p, q, pi)
-                    puOccupancyBehaviorEstimator.allocate_observations()
-                    local_detection_accuracies.append(
-                        puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(detection_input))
-                    p += p_initial
-                    # Reset everything in the instance just to be safe...
-                    # TODO: The code is too complicated now to validate it perfectly.
-                    # Adding safeguards to ensure nothing unexpected happens...
-                    puOccupancyBehaviorEstimator.reset()
-                global_detection_accuracies.append(local_detection_accuracies)
-            y_axis = []
-            for _loop_counter in range(0, int(pi / p_initial)):
-                _sum = 0
-                for entry in global_detection_accuracies:
-                    _sum = _sum + entry[_loop_counter]
-                y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
-            x_axis = []
-            for value in range(1, int(pi / p_initial) + 1):
-                x_axis.append(value * p_initial)
-            label = 'Detection Accuracy for ' + str(detection_input)
-            ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
-                    color=colors[color_index], label=label)
-            color_index += 1
-            # Reset everything in the instance just to be safe...
-            # TODO: The code is too complicated now to validate it perfectly.
-            # Adding safeguards to ensure nothing unexpected happens...
-            puOccupancyBehaviorEstimator.reset()
-        if singular is False:
+        spatial_irrelevance = get_spatial_irrelevance(puOccupancyBehaviorEstimator, channel_selection_strategy)
+        if spatial_irrelevance:
+            continue
+        spatial_step += 1
+        for sampling_round_selection_strategy in samplingRoundStrategyGenerator.generic_uniform_sensing(
+                puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES):
+            temporal_irrelevance = get_temporal_irrelevance(puOccupancyBehaviorEstimator,
+                                                            sampling_round_selection_strategy)
+            if temporal_irrelevance:
+                continue
+            temporal_step += 1
+            # Increment the strategy counter for file name and other aesthetic considerations
+            strategy_counter += 1
+            color_index = 0
+            fig, ax = plt.subplots()
+            for complement_counter in range(0, 2):
+                # Global detection accuracies array
+                global_detection_accuracies = []
+                puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
+                puOccupancyBehaviorEstimator.ACTIVE_SAMPLING_ROUNDS = sampling_round_selection_strategy
+                # P(1)
+                pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
+                p_initial = 0.03
+                # Sensed channels
+                if complement_counter == 0:
+                    spatial_detection_input = channel_selection_strategy
+                    temporal_detection_input = sampling_round_selection_strategy
+                # Un-sensed channels
+                else:
+                    spatial_detection_input = puOccupancyBehaviorEstimator.get_spatial_complement(
+                        channel_selection_strategy)
+                    temporal_detection_input = puOccupancyBehaviorEstimator.get_temporal_complement(
+                        sampling_round_selection_strategy)
+                for cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
+                    # Internal detection accuracies array
+                    local_detection_accuracies = []
+                    # P(Occupied|Idle)
+                    p = p_initial
+                    # Varying p all the way up to independence
+                    for iteration in range(0, int(pi / p)):
+                        q = (p * (1 - pi)) / pi
+                        puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
+                            1: {1: (1 - q), 0: q},
+                            0: {1: p, 0: (1 - p)}
+                        }
+                        # True PU Occupancy State
+                        puOccupancyBehaviorEstimator.generate_true_pu_occupancy_states(p, q, pi)
+                        puOccupancyBehaviorEstimator.allocate_observations()
+                        local_detection_accuracies.append(
+                            puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(spatial_detection_input,
+                                                                                      temporal_detection_input))
+                        p += p_initial
+                        # Reset everything in the instance just to be safe...
+                        # TODO: The code is too complicated now to validate it perfectly.
+                        # Adding safeguards to ensure nothing unexpected happens...
+                        puOccupancyBehaviorEstimator.reset()
+                    global_detection_accuracies.append(local_detection_accuracies)
+                y_axis = []
+                for _loop_counter in range(0, int(pi / p_initial)):
+                    _sum = 0
+                    for entry in global_detection_accuracies:
+                        _sum = _sum + entry[_loop_counter]
+                    y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+                x_axis = []
+                for value in range(1, int(pi / p_initial) + 1):
+                    x_axis.append(value * p_initial)
+                label = 'Detection Accuracy for channel strategy [0:' + str(
+                    puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1) + '] in steps of ' + str(
+                    spatial_step) + ' and for time index strategy [0:' + str(
+                    puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1) + '] in steps of ' + str(temporal_step)
+                ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+                        color=colors[color_index], label=label)
+                color_index += 1
+                # Reset everything in the instance just to be safe...
+                # TODO: The code is too complicated now to validate it perfectly.
+                # Adding safeguards to ensure nothing unexpected happens...
+                puOccupancyBehaviorEstimator.reset()
             fig.suptitle(
                 'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
                 'with uniform channel sensing strategy ' + str(channel_selection_strategy), fontsize=6)
@@ -571,9 +624,10 @@ if __name__ == '__main__':
             title = 'Uniform_Sensing_' + str(strategy_counter)
             plt.legend(loc='upper right', prop={'size': 6})
             fig.savefig(
-                '../../../../../../test/Dynamic_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title + '.png')
+                '../../../../../../test/Dynamic_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title
+                + '.png')
             plt.close(fig)
-        # Reset everything in the instance just to be safe...
-        # TODO: The code is too complicated now to validate it perfectly.
-        # Adding safeguards to ensure nothing unexpected happens...
-        puOccupancyBehaviorEstimator.reset()
+            # Reset everything in the instance just to be safe...
+            # TODO: The code is too complicated now to validate it perfectly.
+            # Adding safeguards to ensure nothing unexpected happens...
+            puOccupancyBehaviorEstimator.reset()

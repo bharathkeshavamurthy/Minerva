@@ -2,23 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59219a85-6e42-4de8-bcdf-f7789bc52758" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SamplingRoundSelectionStrategyGenerator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/BHARATH.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/CrudeViterbiAlgorithm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SC2IncumbentBehaviorVisualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SC2IncumbentBehaviorVisualizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatialMarkovChainVisualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatialMarkovChainVisualizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/PUOccupancyBehaviorEstimatorII.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/PUOccupancyBehaviorEstimatorII.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/SC2CILMessageParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/SC2CILMessageParser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-playground/UtilitiesPlayground.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-playground/UtilitiesPlayground.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/Dynamic_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing/Uniform_Sensing_1.png" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -55,98 +39,48 @@
           <entry key="conf" value="1" />
           <entry key="ini" value="2" />
           <entry key="png" value="2" />
-          <entry key="py" value="86" />
+          <entry key="py" value="89" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Image" value="2" />
           <entry key="PLAIN_TEXT" value="3" />
-          <entry key="Python" value="86" />
+          <entry key="Python" value="89" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="75" />
           <entry key="dummy" value="46" />
-          <entry key="py" value="39403" />
+          <entry key="py" value="43085" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="46" />
-          <entry key="Python" value="39478" />
+          <entry key="Python" value="43160" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SC2IncumbentBehaviorVisualizer.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="230" lean-forward="true" selection-start-line="230" selection-end-line="230" />
-              <folding>
-                <element signature="e#254#263#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatialMarkovChainVisualizer.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/SC2CILMessageParser.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/PUOccupancyBehaviorEstimatorII.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="20" selection-end-line="411" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2788">
-              <caret line="164" column="74" selection-start-line="164" selection-start-column="61" selection-end-line="164" selection-end-column="74" />
-              <folding>
-                <element signature="e#327#339#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-playground/UtilitiesPlayground.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="16" lean-forward="true" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+            <state relative-caret-position="85">
+              <caret line="35" column="27" selection-end-line="633" />
+              <folding>
+                <element signature="e#867#888#0" expanded="true" />
+                <element signature="e#26407#26462#0" />
+                <element signature="e#26891#27005#0" />
+                <element signature="e#30283#30336#0" />
+                <element signature="e#31331#31384#0" />
+                <element signature="e#32265#32318#0" />
+                <marker date="1547143325008" expanded="true" signature="27060:27949" ph="..." />
+                <marker date="1547143325008" expanded="true" signature="27482:27949" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -154,8 +88,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SamplingRoundSelectionStrategyGenerator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="32" column="47" lean-forward="true" selection-start-line="32" selection-start-column="47" selection-end-line="32" selection-end-column="47" />
+            <state relative-caret-position="578">
+              <caret line="34" selection-start-line="34" selection-end-line="34" />
               <folding>
                 <marker date="1547083257804" expanded="true" signature="588:589" ph="..." />
                 <marker date="1547083257804" expanded="true" signature="1127:1639" ph="..." />
@@ -199,6 +133,7 @@
       <find>reduced_observation_vector</find>
       <find>PUOccupancyBehaviorEstimator</find>
       <find>random</find>
+      <find>spa</find>
     </findStrings>
     <replaceStrings>
       <replace>1500</replace>
@@ -237,13 +172,13 @@
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py" />
-        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SC2IncumbentBehaviorVisualizer.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatialMarkovChainVisualizer.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatioTemporalMarkovChainVisualizer.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-playground/UtilitiesPlayground.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/SC2CILMessageParser.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/PUOccupancyBehaviorEstimatorII.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py" />
       </list>
     </option>
   </component>
@@ -265,21 +200,6 @@
             <path>
               <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
               <item name="minerva" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
-              <item name="minerva" type="462c0819:PsiDirectoryNode" />
-              <item name="config" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
-              <item name="minerva" type="462c0819:PsiDirectoryNode" />
-              <item name="src-deprecated" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Minerva" type="b2602c69:ProjectViewProjectNode" />
-              <item name="minerva" type="462c0819:PsiDirectoryNode" />
-              <item name="src-playground" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -310,7 +230,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.PUOccupancyBehaviorEstimatorIII">
+  <component name="RunManager" selected="Python.PUOccupancyBehaviorEstimatorIV">
     <configuration name="PUOccupancyBehaviorEstimatorIII" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Minerva" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -324,6 +244,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="PUOccupancyBehaviorEstimatorIV" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Minerva" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -374,27 +315,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="SpatialMarkovChainVisualizer" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Minerva" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SpatialMarkovChainVisualizer.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="SpatioTemporalMarkovChainVisualizer" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Minerva" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -418,18 +338,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.SpatioTemporalMarkovChainVisualizer" />
-      <item itemvalue="Python.SpatialMarkovChainVisualizer" />
       <item itemvalue="Python.PUOccupancyBehaviorEstimatorIII" />
       <item itemvalue="Python.SC2CILMessageParser" />
       <item itemvalue="Python.SC2IncumbentBehaviorVisualizer" />
+      <item itemvalue="Python.PUOccupancyBehaviorEstimatorIV" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.PUOccupancyBehaviorEstimatorIV" />
         <item itemvalue="Python.PUOccupancyBehaviorEstimatorIII" />
         <item itemvalue="Python.SC2IncumbentBehaviorVisualizer" />
         <item itemvalue="Python.SC2CILMessageParser" />
         <item itemvalue="Python.SpatioTemporalMarkovChainVisualizer" />
-        <item itemvalue="Python.SpatialMarkovChainVisualizer" />
       </list>
     </recent_temporary>
   </component>
@@ -451,7 +371,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.3125" />
+      <window_info content_ui="combo" id="Project" order="1" weight="0.3125" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="0" weight="0.32843137" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
@@ -470,7 +390,7 @@
     </layout>
     <layout-to-restore>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.3125" />
+      <window_info content_ui="combo" id="Project" order="1" weight="0.3125" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="0" weight="0.32843137" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
@@ -478,7 +398,7 @@
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="6" weight="0.374183" />
+      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.374183" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4640523" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -702,34 +622,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6188">
-          <caret line="368" column="21" lean-forward="true" selection-start-line="368" selection-start-column="21" selection-end-line="368" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SamplingRoundSelectionStrategyGenerator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="32" column="47" lean-forward="true" selection-start-line="32" selection-start-column="47" selection-end-line="32" selection-end-column="47" />
-          <folding>
-            <marker date="1547083257804" expanded="true" signature="588:589" ph="..." />
-            <marker date="1547083257804" expanded="true" signature="1127:1639" ph="..." />
-            <marker date="1547083257804" expanded="true" signature="1127:1946" ph="..." />
-            <marker date="1547083257804" expanded="true" signature="2022:2586" ph="..." />
-            <marker date="1547083257804" expanded="true" signature="2022:2613" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SC2IncumbentBehaviorVisualizer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -773,8 +665,46 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/src-deprecated/PUOccupancyBehaviorEstimatorII.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="20" selection-end-line="411" />
+        <state relative-caret-position="204">
+          <caret line="12" column="34" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5780">
+          <caret line="368" column="21" lean-forward="true" selection-start-line="368" selection-start-column="21" selection-end-line="368" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/SamplingRoundSelectionStrategyGenerator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
+          <folding>
+            <marker date="1547083257804" expanded="true" signature="588:589" ph="..." />
+            <marker date="1547083257804" expanded="true" signature="1127:1639" ph="..." />
+            <marker date="1547083257804" expanded="true" signature="1127:1946" ph="..." />
+            <marker date="1547083257804" expanded="true" signature="2022:2586" ph="..." />
+            <marker date="1547083257804" expanded="true" signature="2022:2613" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="35" column="27" selection-end-line="633" />
+          <folding>
+            <element signature="e#867#888#0" expanded="true" />
+            <element signature="e#26407#26462#0" />
+            <element signature="e#26891#27005#0" />
+            <element signature="e#30283#30336#0" />
+            <element signature="e#31331#31384#0" />
+            <element signature="e#32265#32318#0" />
+            <marker date="1547143325008" expanded="true" signature="27060:27949" ph="..." />
+            <marker date="1547143325008" expanded="true" signature="27482:27949" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>

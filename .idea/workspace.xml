@@ -69,8 +69,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="35" column="27" selection-end-line="633" />
+            <state relative-caret-position="-2919">
+              <caret line="53" column="59" lean-forward="true" selection-start-line="53" selection-start-column="59" selection-end-line="53" selection-end-column="59" />
               <folding>
                 <element signature="e#867#888#0" expanded="true" />
                 <element signature="e#26407#26462#0" />
@@ -379,7 +379,7 @@
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32843137" />
       <window_info anchor="bottom" id="Version Control" order="5" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="6" weight="0.374183" />
+      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.26960784" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4640523" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -693,8 +693,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIV.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="35" column="27" selection-end-line="633" />
+        <state relative-caret-position="-2919">
+          <caret line="53" column="59" lean-forward="true" selection-start-line="53" selection-start-column="59" selection-end-line="53" selection-end-column="59" />
           <folding>
             <element signature="e#867#888#0" expanded="true" />
             <element signature="e#26407#26462#0" />

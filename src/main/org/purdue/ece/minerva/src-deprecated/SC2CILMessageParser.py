@@ -2,8 +2,8 @@
 # This parsed information will be used to visualize the occupancy behavior of the Incumbent ...
 # ... in the given SC2 traffic scenario
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering, Purdue University
-# 2018 (c) Copyright. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 import sqlite3
 import os
@@ -11,6 +11,7 @@ import proto_cil_pb2
 from google.protobuf.json_format import MessageToJson
 
 
+# SC2 CIL Message Parser
 class SC2CILMessageParser(object):
     # SRN_ID REPLACEMENT KEY
     SRN_ID_REPLACEMENT_KEY = '${SRN_ID}'
@@ -21,7 +22,7 @@ class SC2CILMessageParser(object):
     # CIL Network ID Query - This is the SRN_ID of the Gateway of the Collaborating competitor
     CIL_NETWORK_IDENTIFIER_QUERY = 'SELECT DISTINCT srnID FROM CollabCILRx'
 
-    # The Initialization sequence
+    # Initialization sequence
     def __init__(self):
         print('[INFO] SC2CILMessageParser Initialization: Bringing things up...')
         self.db_file = input('Please enter the DB File Path: ')

@@ -1,13 +1,12 @@
 # PU Occupancy Behavior Estimation
 # First iteration: Complete information and Markovian across frequency
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 # For the math behind this algorithm, refer to:
 # This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
-# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_3_0.pdf
+# https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
 
 from enum import Enum
 import numpy
@@ -159,7 +158,7 @@ class PUOccupancyBehaviorEstimator(object):
             # For each observation after the first one (I can't apply Markovian to [0])
             # TODO: Maybe use different variable names instead of pointer and max_pointer for [a_lr*V_{j-1}^l]
             # TODO: Although pointer is somewhat accurate, it is not entirely accurate based on the notation used
-            # TODO: Pointer in the doc constitutes the inclusion of the argmax operation ...so, that maybe confusing
+            # TODO: Pointer in the report constitutes the inclusion of the argmax operation ...so, that maybe confusing
             for observation_index in range(1, len(reduced_observation_vector)):
                 # Trying to find the max pointer here ...
                 for state in OccupancyState:

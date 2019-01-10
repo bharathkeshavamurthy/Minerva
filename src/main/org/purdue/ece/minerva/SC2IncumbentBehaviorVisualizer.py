@@ -1,7 +1,7 @@
 # This entity visualizes the Occupancy Behavior of an SC2 Incumbent in the DSRC traffic scenario
 # Author: Bharath Keshavamurthy
 # Organization: School of Electrical and Computer Engineering, Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Copyright (c) 2019. All Rights Reserved.
 
 import os
 import json

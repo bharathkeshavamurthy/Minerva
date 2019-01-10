@@ -1,11 +1,10 @@
 # A Python Script that visualizes a single Markov Chain across the channel indices
-# Rudimentary case 1
+# Spatial Markov chain
 # A Markov Chain across the frequency sub-bands
 # Static Primary User Occupancy Behavior
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 import numpy
 import plotly

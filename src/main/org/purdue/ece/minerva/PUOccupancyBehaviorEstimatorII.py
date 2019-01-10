@@ -2,13 +2,12 @@
 # Second Iteration: Incomplete information (Missing observations) and Markovian across frequency
 # Second run of Prof. Michelusi's suggestion of obtaining detection accuracies of channels which haven't been sensed
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 # For the math behind this algorithm, please refer to:
 # This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
-# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_5_0.pdf
+# https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
 
 from enum import Enum
 import numpy
@@ -273,7 +272,7 @@ if __name__ == '__main__':
     # Colors tuple for differentiation in the visualized results
     colors = ('b', 'r')
     # Clear the output folder
-    path_to_output_folder = '../../../../../../test/Static_PU_Channel_Sensing_Strategy_Plots/Random_Sensing/'
+    path_to_output_folder = '../../../../../../test/Static_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing/'
     file_list = [f for f in os.listdir(path_to_output_folder) if f.endswith('.png')]
     for f in file_list:
         os.remove(os.path.join(path_to_output_folder, f))
@@ -285,7 +284,8 @@ if __name__ == '__main__':
         'initialization process ...')
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()
     # Get the channel selection strategies
-    channel_selection_strategies = channel_selection_strategy_generator.random_sensing()
+    channel_selection_strategies = channel_selection_strategy_generator.generic_uniform_sensing(
+        puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)
     strategy_counter = 0
     # Iterate over multiple channel selection strategies provided by the emulator or the bandit
     for channel_selection_strategy in channel_selection_strategies:
@@ -376,15 +376,15 @@ if __name__ == '__main__':
             puOccupancyBehaviorEstimator.reset()
         # Don't bother plotting the complete observations case
         if singular is False:
-            title = 'Random_Channel_Sensing_' + str(strategy_counter)
+            title = 'Uniform_Channel_Sensing_' + str(strategy_counter)
             fig.suptitle(
                 'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
-                'with random channel sensing strategy ' + str(channel_selection_strategy), fontsize=6)
+                'with uniform channel sensing strategy ' + str(channel_selection_strategy), fontsize=6)
             ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
             ax.set_ylabel('Detection Accuracy', fontsize=12)
             plt.legend(loc='upper right', prop={'size': 6})
             fig.savefig(
-                '../../../../../../test/Static_PU_Channel_Sensing_Strategy_Plots/Random_Sensing/' + title + '.png')
+                '../../../../../../test/Static_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title + '.png')
             plt.close(fig)
         # Reset everything
         puOccupancyBehaviorEstimator.reset()

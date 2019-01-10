@@ -4,15 +4,14 @@
 # Prof. Michelusi wants the detection accuracy of only the channels that have not been sensed in any given run...
 # So, this logic (detection accuracy of all channels) is rendered obsolete
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 # The classes/members in this script have been deprecated
 
 # For the math behind this algorithm, please refer to:
 # This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
-# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_5_0.pdf
+# https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
 
 from enum import Enum
 import numpy

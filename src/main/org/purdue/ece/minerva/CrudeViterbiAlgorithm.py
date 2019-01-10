@@ -1,13 +1,12 @@
 # PU Occupancy Behavior Estimation - A Crude Viterbi Algorithm
 # For the official, refined, fine-tuned version, please refer to PUOccupancyBehaviorEstimator
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 # For the math behind this algorithm, refer to:
 # This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
-# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_3_0.pdf
+# https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
 
 import numpy
 import scipy.stats
@@ -15,6 +14,7 @@ from matplotlib import pyplot as plt
 
 
 # PU Occupancy Behavior Estimator
+# Crude Viterbi Algorithm
 # Markovian across Frequency - Viterbi algorithm used to predict the most likely sequence of states
 class CrudeViterbiAlgorithm:
 

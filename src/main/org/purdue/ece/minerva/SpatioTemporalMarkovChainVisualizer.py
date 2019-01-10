@@ -1,11 +1,10 @@
 # A Python Script that visualizes a Double Markov Chain
 # A Markov Chain across the frequency sub-bands
 # A Markov Chain across time (sampling rounds or iterations)
-# Extended Case 2
+# Spatio-Temporal Markov chain
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 import numpy
 import plotly

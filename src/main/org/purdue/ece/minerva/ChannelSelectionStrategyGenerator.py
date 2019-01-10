@@ -1,8 +1,9 @@
+# This Python script emulates the operation of an RL agent / a Multi-Armed Bandit which makes recommendations on...
+# ...which channels to sense in the wideband spectrum of interest based on our defined optimization objective.
 # Channel Selection Strategy Generator
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 # Some members in this class have been deprecated.
 
@@ -28,7 +29,7 @@ def deprecated(func):
 
 
 # Channel Selection Strategy Generator
-# Emulates the Multi-Armed Bandit
+# Emulates an RL agent or a Multi-Armed Bandit
 class ChannelSelectionStrategyGenerator(object):
     # Number of channels in the wide-band spectrum of interest
     NUMBER_OF_CHANNELS = PUOccupancyBehaviorEstimatorII.PUOccupancyBehaviorEstimatorII.NUMBER_OF_FREQUENCY_BANDS
@@ -102,7 +103,6 @@ class ChannelSelectionStrategyGenerator(object):
     # Return the duals of the channels selected by uniform sensing
     # Duals have been rendered obsolete as of 29-Dec-2018
     # A different interpretation of detection accuracies for un-sensed channels has been developed
-    # TODO: Comment / Remove / Deprecate this obsolete method
     @deprecated
     def uniform_sensing_duals(self):
         channel_selection_strategies_based_on_uniform_sensing = self.uniform_sensing()
@@ -118,7 +118,6 @@ class ChannelSelectionStrategyGenerator(object):
     # Return the duals of the channels selected by random sensing
     # Duals have been rendered obsolete as of 29-Dec-2018
     # A different interpretation of detection accuracies for un-sensed channels has been developed
-    # TODO: Comment / Remove / Deprecate this obsolete method
     @deprecated
     def random_sensing_duals(self):
         channel_selection_strategies_based_on_random_sensing = self.random_sensing()
@@ -134,7 +133,6 @@ class ChannelSelectionStrategyGenerator(object):
     # Uniform Sensing with their Duals
     # Duals have been rendered obsolete as of 29-Dec-2018
     # A different interpretation of detection accuracies for un-sensed channels has been developed
-    # TODO: Comment / Remove / Deprecate this obsolete method
     @deprecated
     def uniform_sensing_with_duals(self):
         channel_selection_strategies_based_on_uniform_sensing = self.uniform_sensing()
@@ -150,7 +148,6 @@ class ChannelSelectionStrategyGenerator(object):
     # Random Sensing with their Duals
     # Duals have been rendered obsolete as of 29-Dec-2018
     # A different interpretation of detection accuracies for un-sensed channels has been developed
-    # TODO: Comment / Remove / Deprecate this obsolete method
     @deprecated
     def random_sensing_with_duals(self):
         channel_selection_strategies_based_on_random_sensing = self.random_sensing()

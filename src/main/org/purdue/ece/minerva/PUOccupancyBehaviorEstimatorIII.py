@@ -1,13 +1,12 @@
 # PU Occupancy Behavior Estimation
 # Third iteration: Complete Information and Markovian across both time and frequency
 # Author: Bharath Keshavamurthy
-# School of Electrical and Computer Engineering
-# Purdue University
-# Copyright (c) 2018. All Rights Reserved.
+# Organization: School of Electrical and Computer Engineering, Purdue University
+# Copyright (c) 2019. All Rights Reserved.
 
 # For the math behind this algorithm, refer to:
 # This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
-# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/SystemModelAndEstimator_v3_5_0.pdf
+# https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
 
 from enum import Enum
 import numpy
@@ -51,7 +50,7 @@ class PUOccupancyBehaviorEstimatorIII(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 250
+    NUMBER_OF_CYCLES = 400
 
     # Initialization Sequence
     def __init__(self):
@@ -459,9 +458,8 @@ if __name__ == '__main__':
             puOccupancyBehaviorEstimator.allocate_observations()
             local_detection_accuracies.append(puOccupancyBehaviorEstimator.estimate_pu_occupancy_states())
             p += p_initial
+            puOccupancyBehaviorEstimator.reset()
         global_detection_accuracies.append(local_detection_accuracies)
-        # Reset everything for the next pass
-        puOccupancyBehaviorEstimator.reset()
     y_axis = []
     for _loop_counter in range(0, int(pi / p_initial)):
         _sum = 0

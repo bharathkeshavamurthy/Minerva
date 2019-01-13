@@ -33,7 +33,7 @@ class OccupancyState(Enum):
 class PUOccupancyBehaviorEstimatorIV(object):
     # Number of samples for this simulation
     # Also referred to as the Number of Sampling Rounds
-    NUMBER_OF_SAMPLES = 250
+    NUMBER_OF_SAMPLES = 25
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -42,7 +42,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
     VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
 
     # Number of frequency bands/channels in the wideband spectrum of interest
-    NUMBER_OF_FREQUENCY_BANDS = 18
+    NUMBER_OF_FREQUENCY_BANDS = 10
 
     # Start probabilities of PU occupancy per frequency band
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
@@ -56,7 +56,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 250
+    NUMBER_OF_CYCLES = 50
 
     # The set of channels that are sensed based on recommendations from the RL agent / bandit / emulator
     BANDS_OBSERVED = []
@@ -607,9 +607,9 @@ if __name__ == '__main__':
                     x_axis.append(value * p_initial)
                 # Label selection
                 if complement_counter == 0:
-                    label = 'Detection Accuracy for sensed grids'
+                    label = 'Detection Accuracy for sensed cells'
                 else:
-                    label = 'Detection Accuracy for un-sensed grids'
+                    label = 'Detection Accuracy for un-sensed cells'
                 ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
                         color=colors[color_index], label=label)
                 color_index += 1
@@ -620,11 +620,11 @@ if __name__ == '__main__':
             # Figure title
             fig.suptitle(
                 'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
-                'with a uniform channel sensing strategy: [0:',
-                puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1,
-                '] across channels with gaps of ', spatial_step + 1, ' and [0:',
-                puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1,
-                '] across time with gaps of ', temporal_step + 1, fontsize=6)
+                'with a uniform channel sensing strategy: [0:' + str(
+                    puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1)
+                + '] across channels with gaps of ' + str(spatial_step + 1) + ' and [0:' + str(
+                    puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1)
+                + '] across time with gaps of ' + str(temporal_step + 1), fontsize=6)
             ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
             ax.set_ylabel('Detection Accuracy', fontsize=12)
             title = 'Uniform_Sensing_' + str(strategy_counter)

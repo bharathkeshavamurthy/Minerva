@@ -34,7 +34,7 @@ class OccupancyState(Enum):
 class PUOccupancyBehaviorEstimatorScrimmage(object):
     # Number of samples for this simulation
     # Also referred to as the Number of Sampling Rounds
-    NUMBER_OF_SAMPLES = 1000
+    NUMBER_OF_SAMPLES = 100
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -43,7 +43,7 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
     VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
 
     # Number of frequency bands/channels in the wideband spectrum of interest
-    NUMBER_OF_FREQUENCY_BANDS = 18
+    NUMBER_OF_FREQUENCY_BANDS = 10
 
     # Start probabilities of PU occupancy per frequency band
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
@@ -57,7 +57,7 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 20
+    NUMBER_OF_CYCLES = 250
 
     # The set of channels that are sensed based on recommendations from the RL agent / bandit / emulator
     BANDS_OBSERVED = []
@@ -491,10 +491,10 @@ if __name__ == '__main__':
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorScrimmage()
     channelSelectionStrategyGenerator = ChannelSelectionStrategyGenerator.ChannelSelectionStrategyGenerator()
     channel_selection_strategy = channelSelectionStrategyGenerator.generic_uniform_sensing(
-        puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)[3]
+        puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)[2]
     samplingRoundStrategyGenerator = SamplingRoundSelectionStrategyGenerator.SamplingRoundSelectionStrategyGenerator()
     sampling_round_selection_strategy = samplingRoundStrategyGenerator.generic_uniform_sensing(
-        puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES)[9]
+        puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES)[11]
     color_index = 0
     fig, ax = plt.subplots()
     for complement_counter in range(0, 2):
@@ -549,18 +549,18 @@ if __name__ == '__main__':
         for value in range(1, int(pi / p_initial) + 1):
             x_axis.append(value * p_initial)
         if complement_counter == 0:
-            label = 'Detection Accuracy for the sensed grids'
+            label = 'Detection Accuracy for the sensed cells'
         else:
-            label = 'Detection Accuracy for the un-sensed grids'
+            label = 'Detection Accuracy for the un-sensed cells'
         ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
                 color=colors[color_index], label=label)
         color_index += 1
         puOccupancyBehaviorEstimator.reset()
     fig.suptitle(
         'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
-        'with a uniform channel sensing strategy: [0:', puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1,
-        '] across channels with gaps of 4 and [0:', puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1,
-        '] across time with gaps of 10', fontsize=6)
+        'with a uniform channel sensing strategy: [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1)
+        + '] across channels with gaps of 3 and [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1)
+        + '] across time with gaps of 12', fontsize=6)
     ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
     ax.set_ylabel('Detection Accuracy', fontsize=12)
     title = 'Uniform_Sensing'

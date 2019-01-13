@@ -2,6 +2,8 @@
 # Fourth iteration: Dynamic PU with double Markov chain across both time and channel indices with missing observations
 # There exists a Markovian Correlation across both the channel indices and the time indices
 # Only a few channels are observed by the SU estimating the occupancy status of channels in the spectrum of interest
+# This is different from PUOccupancyBehaviorEstimatorIV because I will be hard-coding the channel and sampling round...
+# ... selection strategies
 # Dynamic PU with Double Markov Chain and Missing observations
 # Author: Bharath Keshavamurthy
 # Organization: School of Electrical and Computer Engineering, Purdue University
@@ -12,7 +14,6 @@
 # https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
 
 from enum import Enum
-import os
 import numpy
 import scipy.stats
 from collections import namedtuple
@@ -30,10 +31,10 @@ class OccupancyState(Enum):
 
 
 # Main class: PU Occupancy Behavior Estimation
-class PUOccupancyBehaviorEstimatorIV(object):
+class PUOccupancyBehaviorEstimatorScrimmage(object):
     # Number of samples for this simulation
     # Also referred to as the Number of Sampling Rounds
-    NUMBER_OF_SAMPLES = 250
+    NUMBER_OF_SAMPLES = 1000
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -56,7 +57,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 250
+    NUMBER_OF_CYCLES = 20
 
     # The set of channels that are sensed based on recommendations from the RL agent / bandit / emulator
     BANDS_OBSERVED = []
@@ -69,7 +70,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
 
     # Initialization Sequence
     def __init__(self):
-        print('[INFO] PUOccupancyBehaviorEstimatorIV Initialization: Bringing things up ...')
+        print('[INFO] PUOccupancyBehaviorEstimatorScrimmage Initialization: Bringing things up ...')
         # AWGN samples
         self.noise_samples = {}
         # Channel Impulse Response samples
@@ -222,8 +223,8 @@ class PUOccupancyBehaviorEstimatorIV(object):
                         accuracies += 1
         except Exception as e:
             print(
-                '[ERROR] PUOccupancyBehaviorEstimatorIV get_detection_accuracy: Exception caught while calculating '
-                'detection accuracy of the estimator- [', e, ']')
+                '[ERROR] PUOccupancyBehaviorEstimatorScrimmage get_detection_accuracy: Exception caught while '
+                'calculating detection accuracy of the estimator- [', e, ']')
         return accuracies / (len(spatial_input) * len(temporal_input))
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
@@ -441,14 +442,6 @@ class PUOccupancyBehaviorEstimatorIV(object):
                 previous_state_spatial].previous_spatial_state
         return self.get_detection_accuracy(spatial_input, temporal_input, estimated_states)
 
-    # Get enumeration field value from name
-    @staticmethod
-    def value_from_name(name):
-        if name == 'occupied':
-            return OccupancyState.occupied.value
-        else:
-            return OccupancyState.idle.value
-
     # Get un-sensed channels from the sensed channels input
     # In other words, find the complement across the channel indices
     def get_spatial_complement(self, sensed_channels):
@@ -467,6 +460,14 @@ class PUOccupancyBehaviorEstimatorIV(object):
                 inactive_time_indices.append(_time_index)
         return inactive_time_indices
 
+    # Get enumeration field value from name
+    @staticmethod
+    def value_from_name(name):
+        if name == 'occupied':
+            return OccupancyState.occupied.value
+        else:
+            return OccupancyState.idle.value
+
     # Reset every collection for the next run
     def reset(self):
         self.true_pu_occupancy_states.clear()
@@ -477,163 +478,91 @@ class PUOccupancyBehaviorEstimatorIV(object):
 
     # Exit strategy
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] PUOccupancyBehaviorEstimatorIV Clean-up: Cleaning things up ...')
-
-
-# Check if the spatial or temporal strategies are irrelevant
-def is_irrelevant(estimator_object, _channel_strategy, _sampling_round_strategy):
-    if len(_channel_strategy) == 0 or len(estimator_object.get_spatial_complement(_channel_strategy)) \
-            == 0 or len(_sampling_round_strategy) == 0 or \
-            len(estimator_object.get_temporal_complement(_sampling_round_strategy)) == 0:
-        return True
-    return False
-
-
-# Get Irrelevance boolean for the channel selection strategies
-def get_spatial_irrelevance(estimator_object, _channel_strategy):
-    if len(_channel_strategy) == 0 or len(estimator_object.get_spatial_complement(_channel_strategy)) == 0:
-        return True
-    return False
-
-
-# Get Irrelevance boolean for the sampling round selection strategies
-def get_temporal_irrelevance(estimator_object, _sampling_round_strategy):
-    if len(_sampling_round_strategy) == 0 or len(estimator_object.get_spatial_complement(_sampling_round_strategy)) \
-            == 0:
-        return True
-    return False
+        print('[INFO] PUOccupancyBehaviorEstimatorScrimmage Clean-up: Cleaning things up ...')
 
 
 # Run Trigger
 if __name__ == '__main__':
     # Colors tuple for differentiation in the visualized results
     colors = ('b', 'r')
-    # Clear the output folder
-    path_to_output_folder = '../../../../../../test/Dynamic_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing'
-    file_list = [f for f in os.listdir(path_to_output_folder) if f.endswith('.png')]
-    for f in file_list:
-        os.remove(os.path.join(path_to_output_folder, f))
-    print(
-        '[INFO] PUOccupancyBehaviorEstimatorIV main: Creating an instance and starting the initialization process ...')
-    # Emulate the recommendations of an RL agent / a bandit
-    # In the Static PU, Spatial Markov Chain with Incomplete information case, I decided to stick to the...
-    # ...proposed/recommended channel selection strategy for the entire duration of my simulation in order to get a...
-    # ...Detection Accuracy v/s p plot.
-    channelSelectionStrategyGenerator = ChannelSelectionStrategyGenerator.ChannelSelectionStrategyGenerator()
-    # Similarly, sticking to what works and trying to persist a few traditions in this research, I decided to stick...
-    # ...to the recommended channel selection strategy and the sampling round selection strategy for the entire...
-    # ...duration of my simulation.
-    # This is in line with the episodic nature of any RL agent / MAB
-    # Let's say a time-slot lasts for 2 sampling rounds: In the first half of the time slot, the SU senses
-    # In the second half of the time slot, the SU transmits. So, in accordance with this, only the even sampling...
-    # ...rounds have sensing activities in them.
-    # So, intuitively, this makes sense.
-    samplingRoundStrategyGenerator = SamplingRoundSelectionStrategyGenerator.SamplingRoundSelectionStrategyGenerator()
+    print('[INFO] PUOccupancyBehaviorEstimatorScrimmage main: Creating an instance and starting the initialization '
+          'process ...')
     # Estimator instance
-    puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorIV()
-    # Strategy Counter
-    strategy_counter = 0
-    # Spatial step for legend labels in the plots
-    spatial_step = 0
-    # Temporal step for legend labels in the plots
-    temporal_step = 0
-    for channel_selection_strategy in channelSelectionStrategyGenerator.generic_uniform_sensing(
-            puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS):
-        spatial_irrelevance = get_spatial_irrelevance(puOccupancyBehaviorEstimator, channel_selection_strategy)
-        if spatial_irrelevance:
-            continue
-        spatial_step += 1
-        for sampling_round_selection_strategy in samplingRoundStrategyGenerator.generic_uniform_sensing(
-                puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES):
-            temporal_irrelevance = get_temporal_irrelevance(puOccupancyBehaviorEstimator,
-                                                            sampling_round_selection_strategy)
-            if temporal_irrelevance:
-                continue
-            temporal_step += 1
-            # Increment the strategy counter for file name and other aesthetic considerations
-            strategy_counter += 1
-            color_index = 0
-            fig, ax = plt.subplots()
-            for complement_counter in range(0, 2):
-                # Global detection accuracies array
-                global_detection_accuracies = []
-                puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
-                puOccupancyBehaviorEstimator.ACTIVE_SAMPLING_ROUNDS = sampling_round_selection_strategy
-                # P(1)
-                pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
-                p_initial = 0.03
-                # Sensed grids
-                if complement_counter == 0:
-                    spatial_detection_input = channel_selection_strategy
-                    temporal_detection_input = sampling_round_selection_strategy
-                # Un-sensed grids
-                else:
-                    spatial_detection_input = puOccupancyBehaviorEstimator.get_spatial_complement(
-                        channel_selection_strategy)
-                    temporal_detection_input = puOccupancyBehaviorEstimator.get_temporal_complement(
-                        sampling_round_selection_strategy)
-                for cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
-                    # Internal detection accuracies array
-                    local_detection_accuracies = []
-                    # P(Occupied|Idle)
-                    p = p_initial
-                    # Varying p all the way up to independence
-                    for iteration in range(0, int(pi / p)):
-                        q = (p * (1 - pi)) / pi
-                        puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                            1: {1: (1 - q), 0: q},
-                            0: {1: p, 0: (1 - p)}
-                        }
-                        # True PU Occupancy State
-                        puOccupancyBehaviorEstimator.generate_true_pu_occupancy_states(p, q, pi)
-                        puOccupancyBehaviorEstimator.allocate_observations()
-                        local_detection_accuracies.append(
-                            puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(spatial_detection_input,
-                                                                                      temporal_detection_input))
-                        p += p_initial
-                        # Reset everything in the instance just to be safe...
-                        # TODO: The code is too complicated now to validate it perfectly.
-                        # Adding safeguards to ensure nothing unexpected happens...
-                        puOccupancyBehaviorEstimator.reset()
-                    global_detection_accuracies.append(local_detection_accuracies)
-                y_axis = []
-                for _loop_counter in range(0, int(pi / p_initial)):
-                    _sum = 0
-                    for entry in global_detection_accuracies:
-                        _sum = _sum + entry[_loop_counter]
-                    y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
-                x_axis = []
-                for value in range(1, int(pi / p_initial) + 1):
-                    x_axis.append(value * p_initial)
-                # Label selection
-                if complement_counter == 0:
-                    label = 'Detection Accuracy for sensed grids'
-                else:
-                    label = 'Detection Accuracy for un-sensed grids'
-                ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
-                        color=colors[color_index], label=label)
-                color_index += 1
-                # Reset everything in the instance just to be safe...
-                # TODO: The code is too complicated now to validate it perfectly.
-                # Adding safeguards to ensure nothing unexpected happens...
+    puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorScrimmage()
+    channelSelectionStrategyGenerator = ChannelSelectionStrategyGenerator.ChannelSelectionStrategyGenerator()
+    channel_selection_strategy = channelSelectionStrategyGenerator.generic_uniform_sensing(
+        puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)[3]
+    samplingRoundStrategyGenerator = SamplingRoundSelectionStrategyGenerator.SamplingRoundSelectionStrategyGenerator()
+    sampling_round_selection_strategy = samplingRoundStrategyGenerator.generic_uniform_sensing(
+        puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES)[9]
+    color_index = 0
+    fig, ax = plt.subplots()
+    for complement_counter in range(0, 2):
+        # Global detection accuracies array
+        global_detection_accuracies = []
+        puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
+        puOccupancyBehaviorEstimator.ACTIVE_SAMPLING_ROUNDS = sampling_round_selection_strategy
+        # P(1)
+        pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
+        p_initial = 0.03
+        # Sensed grids
+        if complement_counter == 0:
+            spatial_detection_input = channel_selection_strategy
+            temporal_detection_input = sampling_round_selection_strategy
+        # Un-sensed grids
+        else:
+            spatial_detection_input = puOccupancyBehaviorEstimator.get_spatial_complement(
+                channel_selection_strategy)
+            temporal_detection_input = puOccupancyBehaviorEstimator.get_temporal_complement(
+                sampling_round_selection_strategy)
+        for cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
+            # Internal detection accuracies array
+            local_detection_accuracies = []
+            # P(Occupied|Idle)
+            p = p_initial
+            # Varying p all the way up to independence
+            for iteration in range(0, int(pi / p)):
+                q = (p * (1 - pi)) / pi
+                puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
+                    1: {1: (1 - q), 0: q},
+                    0: {1: p, 0: (1 - p)}
+                }
+                # True PU Occupancy State
+                puOccupancyBehaviorEstimator.generate_true_pu_occupancy_states(p, q, pi)
+                puOccupancyBehaviorEstimator.allocate_observations()
+                detection_accuracy = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(spatial_detection_input,
+                                                                                               temporal_detection_input)
+                local_detection_accuracies.append(detection_accuracy)
+                print('[DEBUG] PUOccupancyBehaviorEstimatorScrimmage main: Complement Count = ', complement_counter,
+                      ' | p = ', p, ' | Detection Accuracy = ',
+                      detection_accuracy)
+                p += p_initial
                 puOccupancyBehaviorEstimator.reset()
-            # Figure title
-            fig.suptitle(
-                'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
-                'with a uniform channel sensing strategy: [0:',
-                puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1,
-                '] across channels with gaps of ', spatial_step + 1, ' and [0:',
-                puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1,
-                '] across time with gaps of ', temporal_step + 1, fontsize=6)
-            ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
-            ax.set_ylabel('Detection Accuracy', fontsize=12)
-            title = 'Uniform_Sensing_' + str(strategy_counter)
-            plt.legend(loc='upper right', prop={'size': 6})
-            fig.savefig(
-                '../../../../../../test/Dynamic_PU_Channel_Sensing_Strategy_Plots/Uniform_Sensing/' + title
-                + '.png')
-            plt.close(fig)
-            # Reset everything in the instance just to be safe...
-            # TODO: The code is too complicated now to validate it perfectly.
-            # Adding safeguards to ensure nothing unexpected happens...
-            puOccupancyBehaviorEstimator.reset()
+            global_detection_accuracies.append(local_detection_accuracies)
+        y_axis = []
+        for _loop_counter in range(0, int(pi / p_initial)):
+            _sum = 0
+            for entry in global_detection_accuracies:
+                _sum = _sum + entry[_loop_counter]
+            y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+        x_axis = []
+        for value in range(1, int(pi / p_initial) + 1):
+            x_axis.append(value * p_initial)
+        if complement_counter == 0:
+            label = 'Detection Accuracy for the sensed grids'
+        else:
+            label = 'Detection Accuracy for the un-sensed grids'
+        ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+                color=colors[color_index], label=label)
+        color_index += 1
+        puOccupancyBehaviorEstimator.reset()
+    fig.suptitle(
+        'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+        'with a uniform channel sensing strategy: [0:', puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1,
+        '] across channels with gaps of 4 and [0:', puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1,
+        '] across time with gaps of 10', fontsize=6)
+    ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
+    ax.set_ylabel('Detection Accuracy', fontsize=12)
+    title = 'Uniform_Sensing'
+    plt.legend(loc='upper right', prop={'size': 6})
+    plt.show()

@@ -40,10 +40,10 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
     VARIANCE_OF_AWGN = 1
 
     # Variance of the Channel Impulse Response which is a zero mean Gaussian
-    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
+    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 120
 
     # Number of frequency bands/channels in the wideband spectrum of interest
-    NUMBER_OF_FREQUENCY_BANDS = 10
+    NUMBER_OF_FREQUENCY_BANDS = 18
 
     # Start probabilities of PU occupancy per frequency band
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
@@ -57,7 +57,7 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 250
+    NUMBER_OF_CYCLES = 10
 
     # The set of channels that are sensed based on recommendations from the RL agent / bandit / emulator
     BANDS_OBSERVED = []
@@ -83,7 +83,7 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
         self.observation_samples = []
         # The start probabilities
         # This is gonna be same in either dimension because P(X_i = 1) is same in either dimension
-        self.start_probabilities = self.BAND_START_PROBABILITIES(occupied=0.6, idle=0.4)
+        self.start_probabilities = self.BAND_START_PROBABILITIES(occupied=0.8, idle=0.2)
         # The complete state transition matrix is defined as a Python dictionary taking in named-tuples
         # Both spatially and temporally, I'm using the same transition probability matrix
         # TODO: Maybe use different transition probability matrices and see what happens...
@@ -175,8 +175,6 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
                                                    count] * self.true_pu_occupancy_states[band][count] +
                                                self.noise_samples[
                                                    band][count])
-                    else:
-                        obs_per_band[count] = self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE
             self.observation_samples.append(obs_per_band)
         # The observation_samples member is a kxt matrix
         return self.observation_samples
@@ -212,26 +210,94 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
                 observation_sample)
 
     # Calculate the detection accuracy
-    def get_detection_accuracy(self, spatial_input, temporal_input, estimated_states):
+    def get_detection_accuracy(self, spatial_input, temporal_input, _estimated_states, true_value):
         accuracies = 0
+        _count = 0
         try:
-            for spatial_counter in range(0, len(spatial_input)):
-                for temporal_counter in range(0, len(temporal_input)):
-                    if self.true_pu_occupancy_states[spatial_input[spatial_counter]][
-                        temporal_input[temporal_counter]] == \
-                            estimated_states[spatial_input[spatial_counter]][temporal_input[temporal_counter]]:
-                        accuracies += 1
+            if true_value is True:
+                for _channel in spatial_input:
+                    for _round in temporal_input:
+                        _count += 1
+                        if self.true_pu_occupancy_states[_channel][_round] == _estimated_states[_channel][_round]:
+                            accuracies += 1
+            else:
+                for _channel in spatial_input:
+                    for _round in range(0, self.NUMBER_OF_SAMPLES):
+                        _count += 1
+                        if self.true_pu_occupancy_states[_channel][_round] == _estimated_states[_channel][_round]:
+                            accuracies += 1
+                for _channel in self.get_spatial_complement(spatial_input):
+                    for _round in temporal_input:
+                        _count += 1
+                        if self.true_pu_occupancy_states[_channel][_round] == _estimated_states[_channel][_round]:
+                            accuracies += 1
         except Exception as e:
             print(
                 '[ERROR] PUOccupancyBehaviorEstimatorScrimmage get_detection_accuracy: Exception caught while '
                 'calculating detection accuracy of the estimator- [', e, ']')
-        return accuracies / (len(spatial_input) * len(temporal_input))
+        return accuracies / _count
+
+    # A Relative Frequency approach to find the False Alarm Probability
+    def get_false_alarm_probability(self, spatial_input, temporal_input, _estimated_states, true_value):
+        _idle_count = 0
+        _false_alarm_count = 0
+        if true_value:
+            for _channel in spatial_input:
+                for _round in temporal_input:
+                    if self.true_pu_occupancy_states[_channel][_round] == 0:
+                        _idle_count += 1
+                        if _estimated_states[_channel][_round] == 1:
+                            _false_alarm_count += 1
+        else:
+            for _channel in spatial_input:
+                for _round in range(0, self.NUMBER_OF_SAMPLES):
+                    if self.true_pu_occupancy_states[_channel][_round] == 0:
+                        _idle_count += 1
+                        if _estimated_states[_channel][_round] == 1:
+                            _false_alarm_count += 1
+            for _channel in self.get_spatial_complement(spatial_input):
+                for _round in temporal_input:
+                    if self.true_pu_occupancy_states[_channel][_round] == 0:
+                        _idle_count += 1
+                        if _estimated_states[_channel][_round] == 1:
+                            _false_alarm_count += 1
+        if _idle_count != 0:
+            return _false_alarm_count / _idle_count
+        return 0
+
+    # A Relative Frequency approach to find the Missed Detection Probability
+    def get_missed_detection_probability(self, spatial_input, temporal_input, _estimated_states, true_value):
+        _occupied_count = 0
+        _missed_detection_count = 0
+        if true_value:
+            for _channel in spatial_input:
+                for _round in temporal_input:
+                    if self.true_pu_occupancy_states[_channel][_round] == 1:
+                        _occupied_count += 1
+                        if _estimated_states[_channel][_round] == 0:
+                            _missed_detection_count += 1
+        else:
+            for _channel in spatial_input:
+                for _round in range(0, self.NUMBER_OF_SAMPLES):
+                    if self.true_pu_occupancy_states[_channel][_round] == 1:
+                        _occupied_count += 1
+                        if _estimated_states[_channel][_round] == 0:
+                            _missed_detection_count += 1
+            for _channel in self.get_spatial_complement(spatial_input):
+                for _round in temporal_input:
+                    if self.true_pu_occupancy_states[_channel][_round] == 1:
+                        _occupied_count += 1
+                        if _estimated_states[_channel][_round] == 0:
+                            _missed_detection_count += 1
+        if _occupied_count != 0:
+            return _missed_detection_count / _occupied_count
+        return 0
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     # TODO: Remove unnecessary comments and Verified tags which were added in because the code is too complex to keep...
     # ...track of without them...Remove them once you get the hang of it!
     # TODO: Refactor this method - it's way too huge!
-    def estimate_pu_occupancy_states(self, spatial_input, temporal_input):
+    def estimate_pu_occupancy_states(self):
         # Estimated states - kxt matrix
         # Verified
         estimated_states = [[] for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
@@ -440,7 +506,7 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
                     previous_state_temporal].previous_temporal_state
             previous_state_spatial = value_function_collection[i][self.NUMBER_OF_SAMPLES - 1][
                 previous_state_spatial].previous_spatial_state
-        return self.get_detection_accuracy(spatial_input, temporal_input, estimated_states)
+        return estimated_states
 
     # Get un-sensed channels from the sensed channels input
     # In other words, find the complement across the channel indices
@@ -470,11 +536,13 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
 
     # Reset every collection for the next run
     def reset(self):
-        self.true_pu_occupancy_states.clear()
+        self.true_pu_occupancy_states = []
         self.transition_probabilities_matrix.clear()
         self.noise_samples.clear()
         self.channel_impulse_response_samples.clear()
-        self.observation_samples.clear()
+        self.observation_samples = []
+        self.BANDS_OBSERVED = []
+        self.ACTIVE_SAMPLING_ROUNDS = []
 
     # Exit strategy
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -484,83 +552,175 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
 # Run Trigger
 if __name__ == '__main__':
     # Colors tuple for differentiation in the visualized results
-    colors = ('b', 'r')
+    colors = ('b', 'r', 'g', 'm', 'y', 'k')
     print('[INFO] PUOccupancyBehaviorEstimatorScrimmage main: Creating an instance and starting the initialization '
           'process ...')
     # Estimator instance
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorScrimmage()
     channelSelectionStrategyGenerator = ChannelSelectionStrategyGenerator.ChannelSelectionStrategyGenerator()
     channel_selection_strategy = channelSelectionStrategyGenerator.generic_uniform_sensing(
-        puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)[2]
+        puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)[1]
     samplingRoundStrategyGenerator = SamplingRoundSelectionStrategyGenerator.SamplingRoundSelectionStrategyGenerator()
     sampling_round_selection_strategy = samplingRoundStrategyGenerator.generic_uniform_sensing(
-        puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES)[11]
+        puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES)[4]
     color_index = 0
     fig, ax = plt.subplots()
-    for complement_counter in range(0, 2):
-        # Global detection accuracies array
-        global_detection_accuracies = []
-        puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
-        puOccupancyBehaviorEstimator.ACTIVE_SAMPLING_ROUNDS = sampling_round_selection_strategy
-        # P(1)
-        pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
-        p_initial = 0.03
-        # Sensed grids
-        if complement_counter == 0:
-            spatial_detection_input = channel_selection_strategy
-            temporal_detection_input = sampling_round_selection_strategy
-        # Un-sensed grids
-        else:
-            spatial_detection_input = puOccupancyBehaviorEstimator.get_spatial_complement(
-                channel_selection_strategy)
-            temporal_detection_input = puOccupancyBehaviorEstimator.get_temporal_complement(
-                sampling_round_selection_strategy)
-        for cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
-            # Internal detection accuracies array
-            local_detection_accuracies = []
-            # P(Occupied|Idle)
-            p = p_initial
-            # Varying p all the way up to independence
-            for iteration in range(0, int(pi / p)):
-                q = (p * (1 - pi)) / pi
-                puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                    1: {1: (1 - q), 0: q},
-                    0: {1: p, 0: (1 - p)}
-                }
-                # True PU Occupancy State
-                puOccupancyBehaviorEstimator.generate_true_pu_occupancy_states(p, q, pi)
-                puOccupancyBehaviorEstimator.allocate_observations()
-                detection_accuracy = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(spatial_detection_input,
-                                                                                               temporal_detection_input)
-                local_detection_accuracies.append(detection_accuracy)
-                print('[DEBUG] PUOccupancyBehaviorEstimatorScrimmage main: Complement Count = ', complement_counter,
-                      ' | p = ', p, ' | Detection Accuracy = ',
-                      detection_accuracy)
-                p += p_initial
-                puOccupancyBehaviorEstimator.reset()
-            global_detection_accuracies.append(local_detection_accuracies)
-        y_axis = []
-        for _loop_counter in range(0, int(pi / p_initial)):
-            _sum = 0
-            for entry in global_detection_accuracies:
-                _sum = _sum + entry[_loop_counter]
-            y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
-        x_axis = []
-        for value in range(1, int(pi / p_initial) + 1):
-            x_axis.append(value * p_initial)
-        if complement_counter == 0:
-            label = 'Detection Accuracy for the sensed cells'
-        else:
-            label = 'Detection Accuracy for the un-sensed cells'
-        ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
-                color=colors[color_index], label=label)
-        color_index += 1
-        puOccupancyBehaviorEstimator.reset()
+    # Global detection accuracies array - sensed cells
+    global_detection_accuracies_sensed = []
+    # Global detection accuracies array - unsensed cells
+    global_detection_accuracies_unsensed = []
+    # Global missed detection probabilities array - sensed cells
+    global_missed_detection_probabilities_sensed = []
+    # Global missed detection probabilities array - unsensed cells
+    global_missed_detection_probabilities_unsensed = []
+    # Global false alarm probabilities array - sensed cells
+    global_false_alarm_probabilities_sensed = []
+    # Global false alarm probabilities array - unsensed cells
+    global_false_alarm_probabilities_unsensed = []
+    # P(1)
+    pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
+    p_initial = 0.01
+    for cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
+        # Internal detection accuracies array - sensed cells
+        local_detection_accuracies_sensed = []
+        # Internal detection accuracies array - unsensed cells
+        local_detection_accuracies_unsensed = []
+        # Internal missed detection probabilities array - sensed cells
+        local_missed_detection_probabilities_sensed = []
+        # Internal missed detection probabilities array - unsensed cells
+        local_missed_detection_probabilities_unsensed = []
+        # Internal false alarm probabilities array - sensed cells
+        local_false_alarm_probabilities_sensed = []
+        # Internal false alarm probabilities array - unsensed cells
+        local_false_alarm_probabilities_unsensed = []
+        # P(Occupied|Idle)
+        p = p_initial
+        # Varying p all the way up to independence
+        for iteration in range(0, int(pi / p)):
+            puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
+            puOccupancyBehaviorEstimator.ACTIVE_SAMPLING_ROUNDS = sampling_round_selection_strategy
+            q = (p * (1 - pi)) / pi
+            puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
+                1: {1: (1 - q), 0: q},
+                0: {1: p, 0: (1 - p)}
+            }
+            # True PU Occupancy State
+            puOccupancyBehaviorEstimator.generate_true_pu_occupancy_states(p, q, pi)
+            puOccupancyBehaviorEstimator.allocate_observations()
+            # Estimated states
+            estimated_states_external = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states()
+            # Detection Accuracy - sensed
+            detection_accuracy_sensed = puOccupancyBehaviorEstimator.get_detection_accuracy(
+                channel_selection_strategy, sampling_round_selection_strategy, estimated_states_external, True)
+            local_detection_accuracies_sensed.append(detection_accuracy_sensed)
+            # Missed Detection Probability - sensed
+            missed_detection_probabilities_sensed = puOccupancyBehaviorEstimator.get_missed_detection_probability(
+                channel_selection_strategy, sampling_round_selection_strategy, estimated_states_external, True)
+            local_missed_detection_probabilities_sensed.append(missed_detection_probabilities_sensed)
+            # False Alarm Probability - sensed
+            false_alarm_probabilities_sensed = puOccupancyBehaviorEstimator.get_false_alarm_probability(
+                channel_selection_strategy, sampling_round_selection_strategy, estimated_states_external, True)
+            local_false_alarm_probabilities_sensed.append(false_alarm_probabilities_sensed)
+            # Detection Accuracy - unsensed
+            detection_accuracy_unsensed = puOccupancyBehaviorEstimator.get_detection_accuracy(
+                puOccupancyBehaviorEstimator.get_spatial_complement(channel_selection_strategy),
+                puOccupancyBehaviorEstimator.get_temporal_complement(sampling_round_selection_strategy),
+                estimated_states_external, False)
+            local_detection_accuracies_unsensed.append(detection_accuracy_unsensed)
+            # Missed Detection Probability - unsensed
+            missed_detection_probabilities_unsensed = puOccupancyBehaviorEstimator.get_missed_detection_probability(
+                puOccupancyBehaviorEstimator.get_spatial_complement(channel_selection_strategy),
+                puOccupancyBehaviorEstimator.get_temporal_complement(sampling_round_selection_strategy),
+                estimated_states_external, False)
+            local_missed_detection_probabilities_unsensed.append(missed_detection_probabilities_unsensed)
+            # False Alarm Probability - unsensed
+            false_alarm_probabilities_unsensed = puOccupancyBehaviorEstimator.get_false_alarm_probability(
+                puOccupancyBehaviorEstimator.get_spatial_complement(channel_selection_strategy),
+                puOccupancyBehaviorEstimator.get_temporal_complement(sampling_round_selection_strategy),
+                estimated_states_external, False)
+            local_false_alarm_probabilities_unsensed.append(false_alarm_probabilities_unsensed)
+            p += p_initial
+            puOccupancyBehaviorEstimator.reset()
+        # Appending the local arrays to their corresponding global arrays for averaging
+        global_detection_accuracies_sensed.append(local_detection_accuracies_sensed)
+        global_missed_detection_probabilities_sensed.append(local_missed_detection_probabilities_sensed)
+        global_false_alarm_probabilities_sensed.append(local_false_alarm_probabilities_sensed)
+        global_detection_accuracies_unsensed.append(local_detection_accuracies_unsensed)
+        global_missed_detection_probabilities_unsensed.append(local_missed_detection_probabilities_unsensed)
+        global_false_alarm_probabilities_unsensed.append(local_false_alarm_probabilities_unsensed)
+    # X-Axis is fixed for all plots
+    x_axis = []
+    for value in range(1, int(pi / p_initial) + 1):
+        x_axis.append(value * p_initial)
+    # Detection Accuracy for sensed cells
+    y_axis = []
+    for _loop_counter in range(0, int(pi / p_initial)):
+        _sum = 0
+        for entry in global_detection_accuracies_sensed:
+            _sum = _sum + entry[_loop_counter]
+        y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+    ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+            color=colors[color_index], label='Detection Accuracy for sensed cells')
+    # Increment color counter for the next plot
+    color_index += 1
+    # Detection Accuracy for unsensed cells
+    y_axis = []
+    for _loop_counter in range(0, int(pi / p_initial)):
+        _sum = 0
+        for entry in global_detection_accuracies_unsensed:
+            _sum = _sum + entry[_loop_counter]
+        y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+    ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+            color=colors[color_index], label='Detection Accuracy for unsensed cells')
+    # Increment color counter for the next plot
+    color_index += 1
+    # Missed Detection Probabilities for sensed cells
+    y_axis = []
+    for _loop_counter in range(0, int(pi / p_initial)):
+        _sum = 0
+        for entry in global_missed_detection_probabilities_sensed:
+            _sum = _sum + entry[_loop_counter]
+        y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+    ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+            color=colors[color_index], label='Missed Detection Probabilities for sensed cells')
+    # Increment color counter for the next plot
+    color_index += 1
+    # Missed Detection Probabilities for unsensed cells
+    y_axis = []
+    for _loop_counter in range(0, int(pi / p_initial)):
+        _sum = 0
+        for entry in global_missed_detection_probabilities_unsensed:
+            _sum = _sum + entry[_loop_counter]
+        y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+    ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+            color=colors[color_index], label='Missed Detection Probabilities for unsensed cells')
+    # Increment color counter for the next plot
+    color_index += 1
+    # False Alarm Probabilities for sensed cells
+    y_axis = []
+    for _loop_counter in range(0, int(pi / p_initial)):
+        _sum = 0
+        for entry in global_false_alarm_probabilities_sensed:
+            _sum = _sum + entry[_loop_counter]
+        y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+    ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+            color=colors[color_index], label='False Alarm Probabilities for sensed cells')
+    # Increment color counter for the next plot
+    color_index += 1
+    # False Alarm probabilities for unsensed cells
+    y_axis = []
+    for _loop_counter in range(0, int(pi / p_initial)):
+        _sum = 0
+        for entry in global_false_alarm_probabilities_unsensed:
+            _sum = _sum + entry[_loop_counter]
+        y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+    ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
+            color=colors[color_index], label='False Alarm Probabilities for unsensed cells')
     fig.suptitle(
-        'Detection Accuracy v/s P(Occupied | Idle) for 18 channels at P( Xi = 1 ) = 0.6 '
+        'Parameters of Interest for 18 channels and 100 sampling rounds at P( Xi = 1 ) = 0.6 '
         'with a uniform channel sensing strategy: [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1)
-        + '] across channels with gaps of 3 and [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1)
-        + '] across time with gaps of 12', fontsize=6)
+        + '] across channels with gaps of 2 and [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1)
+        + '] across time with gaps of 5', fontsize=6)
     ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
     ax.set_ylabel('Detection Accuracy', fontsize=12)
     title = 'Uniform_Sensing'

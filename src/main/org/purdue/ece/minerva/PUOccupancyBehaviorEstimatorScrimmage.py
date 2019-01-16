@@ -563,8 +563,8 @@ if __name__ == '__main__':
     samplingRoundStrategyGenerator = SamplingRoundSelectionStrategyGenerator.SamplingRoundSelectionStrategyGenerator()
     sampling_round_selection_strategy = samplingRoundStrategyGenerator.generic_uniform_sensing(
         puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES)[4]
+    # Color Index for plotting
     color_index = 0
-    fig, ax = plt.subplots()
     # Global detection accuracies array - sensed cells
     global_detection_accuracies_sensed = []
     # Global detection accuracies array - unsensed cells
@@ -648,6 +648,8 @@ if __name__ == '__main__':
         global_detection_accuracies_unsensed.append(local_detection_accuracies_unsensed)
         global_missed_detection_probabilities_unsensed.append(local_missed_detection_probabilities_unsensed)
         global_false_alarm_probabilities_unsensed.append(local_false_alarm_probabilities_unsensed)
+    # Figure for Detection Accuracy
+    fig, ax = plt.subplots()
     # X-Axis is fixed for all plots
     x_axis = []
     for value in range(1, int(pi / p_initial) + 1):
@@ -672,6 +674,18 @@ if __name__ == '__main__':
         y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
     ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
             color=colors[color_index], label='Detection Accuracy for unsensed cells')
+    fig.suptitle(
+        'Detection Accuracy v/s p for 18 channels and 100 sampling rounds at P( Xi = 1 ) = 0.6 '
+        'with a uniform channel sensing strategy: [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1)
+        + '] across channels with gaps of 2 and [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1)
+        + '] across time with gaps of 5', fontsize=6)
+    ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
+    ax.set_ylabel('Detection Accuracy', fontsize=12)
+    title = 'Uniform_Sensing_Detection_Accuracy_Plot'
+    plt.legend(loc='upper right', prop={'size': 6})
+    plt.show()
+    # Figure for Missed Detection Probabilities
+    fig, ax = plt.subplots()
     # Increment color counter for the next plot
     color_index += 1
     # Missed Detection Probabilities for sensed cells
@@ -694,6 +708,18 @@ if __name__ == '__main__':
         y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
     ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
             color=colors[color_index], label='Missed Detection Probabilities for unsensed cells')
+    fig.suptitle(
+        'Missed Detection Probabilities v/s p for 18 channels and 100 sampling rounds at P( Xi = 1 ) = 0.6 '
+        'with a uniform channel sensing strategy: [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1)
+        + '] across channels with gaps of 2 and [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1)
+        + '] across time with gaps of 5', fontsize=6)
+    ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
+    ax.set_ylabel('Missed Detection Probability', fontsize=12)
+    title = 'Uniform_Sensing_Missed_Detection'
+    plt.legend(loc='upper right', prop={'size': 6})
+    plt.show()
+    # Figure for False Alarm Probabilities
+    fig, ax = plt.subplots()
     # Increment color counter for the next plot
     color_index += 1
     # False Alarm Probabilities for sensed cells
@@ -717,12 +743,12 @@ if __name__ == '__main__':
     ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
             color=colors[color_index], label='False Alarm Probabilities for unsensed cells')
     fig.suptitle(
-        'Parameters of Interest for 18 channels and 100 sampling rounds at P( Xi = 1 ) = 0.6 '
+        'False Alarm Probabilities v/s p for 18 channels and 100 sampling rounds at P( Xi = 1 ) = 0.6 '
         'with a uniform channel sensing strategy: [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS - 1)
         + '] across channels with gaps of 2 and [0:' + str(puOccupancyBehaviorEstimator.NUMBER_OF_SAMPLES - 1)
         + '] across time with gaps of 5', fontsize=6)
     ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
-    ax.set_ylabel('Detection Accuracy', fontsize=12)
-    title = 'Uniform_Sensing'
+    ax.set_ylabel('False Alarm Probability', fontsize=12)
+    title = 'Uniform_Sensing_False_Alarm'
     plt.legend(loc='upper right', prop={'size': 6})
     plt.show()

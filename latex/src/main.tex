@@ -64,8 +64,8 @@
 \begin{enumerate}
     \item There's only one Primary User (PU) in the wideband spectrum of interest.
     \item There's only one Secondary User (SU) making observations of the PU occupancy in the wideband spectrum of interest.
-    \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $E[|X_k(i)|^2]\ =\ 0$.
-    \item The noise samples $V_k(i)$ are i.i.d \nm{circular?} Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
+    \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $\mathbb E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $\mathbb E[|X_k(i)|^2]\ =\ 0$.
+    \item The noise samples $V_k(i)$ are i.i.d circular-symmetric complex Gaussians with variance $\sigma_V^2$, independent of PU occupancy state in the wideband spectrum of interest. Note that the noise samples are i.i.d across frequency and across observation rounds.
     \item Furthermore, the PU occupancy behavior is assumed to be static during the estimation period of our algorithm.
     \item The Hidden Markov Model parameters are assumed to be known for now in order to come up with an optimal algorithm for state estimation.
 \end{enumerate}
@@ -82,9 +82,8 @@ where,
 \\$i\ \in\ \{1,\ 2,\ 3,\ .........,\ T\}$ represents the index of the observation
 \\\textbf{NOTE}: Multiple observations of all the frequency bands are made by the SU for training the algorithm and averaging the results over numerous iterations. However, the PU occupancy behavior in this case remains static over time.
 \\$k\ \in\ \{1,\ 2,\ 3,\ .........,\ K\}$ represents the index of the sub-band
-\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample \nm{should be "circular" Gaussian} \nm{i.i.d. across frequency/time?}
-\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver \nm{should be "circular" Gaussian}
-\nm{i.i.d. across frequency? Or is there any freq. correlation?}
+\\$V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ represents the circular symmetric additive complex Gaussian noise sample i.i.d across channel indices and across time indices
+\\$H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver - another circular symmetric complex Gaussian random variable i.i.d across channel indices with variance $\sigma_H^2$
 \\The PU occupancy behavior in each sub-band $b_k\ \in\ B$ is modelled as $X_k$ taking two possible values $0\ and\ 1$. Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components can be modelled as a vector of size $|B|\ =\ K$ such that,
 \begin{equation}\label{3}
     \vec{X} = [X_1, X_2, X_3, ........., X_K]^T \in \{0,1\}^K
@@ -92,68 +91,62 @@ where,
 \subsection{System Model}
 The true states encapsulate the actual behavior of the PU which is an unobserved Markov process and the measurements at the SU are noisy observations of the true states which are modelled to be the observed states of a Hidden Markov Model.
 For some sub-band $j\ \in\ \{2,\ 3,\ 4,\ .....,\ K\}$, the system is assumed to satisfy the Markov property as shown below,
-\nm{Please use $\mathbb P$ for probabilities instead of $P$}
-\[P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
-\[And,\ we\ will\ use\ P(X_1(i))\ for\ j=1.\]
+\[\mathbb P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ \mathbb P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
+\[And,\ we\ will\ use\ \mathbb P(X_1(i))\ for\ j=1.\]
 Since \textbf{the PU is assumed to be static in the period of our estimation}, we can write the above assumption as,
-\[P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ P(X_{j}|X_{j-1}),\ for\ j>1,\]
-\[And,\ we\ will\ use\ P(X_1)\ for\ j=1.\]
-
-\nm{I will rather write it as:}
-\add{
-\begin{align}
-\mathbb P(\vec{X}=\vec{x})=\mathbb P(X_1=x_1)\prod_{j=2}^K \mathbb P(X_{j}=x_j|X_{j-1}=x_{j-1})
-\end{align}
-so that $\vec{X}$ obeys the Markov property across frequency.
-We also let $\mathbb P(X_{j}=1|X_{j-1}=0)=p$ and $\mathbb P(X_{j}=0|X_{j-1}=1)=q$,
-and $\mathbb P(X_1=1)=\frac{p}{p+q}$. Note that this decomposition implies that 
-\begin{align}
-\mathbb P(X_k=1)=\frac{p}{p+q},\ \forall k
-\end{align}
-and also
-\begin{align}
-\mathbb P(\vec{X}=\vec{x})=\mathbb P(X_K=x_K)\prod_{j=1}^{K-1} \mathbb P(X_{j}=x_j|X_{j+1}=x_{j+1})
-\end{align}
-so that it obeys the Markov property also in the reversed direction.
-}
-
+\[\mathbb P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ \mathbb P(X_{j}|X_{j-1}),\ for\ j>1,\]
+\[And,\ we\ will\ use\ \mathbb P(X_1)\ for\ j=1.\]
 Now, we know that,
 \[\vec{X}\ =\ [X_1,\ X_2,\ X_3,\ ......,\ X_K]^T\] which realizes as,
 \[\vec{x}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\]
 So,
 \begin{equation}\label{4}
-    P(\vec{X}=\vec{x}) = P(X_1=x_1) \prod_{k=2}^{K} P(X_k=x_k|X_{k-1}=x_{k-1})
+    \mathbb P(\vec{X}=\vec{x}) = \mathbb P(X_1=x_1) \prod_{k=2}^{K} \mathbb P(X_k=x_k|X_{k-1}=x_{k-1})
 \end{equation}
-Now, let's expand on the observation model. With a realization $x_k\ in\ \{0,1\}$ of $X_k$, we have from assumption 3 that,
-\nm{please use $\mathbb E$ for expectation}
-\[E[|X_k(i)|^2]\ =\ x_k,\ given\ X_k\ during\ observation\ cycle\ i\ has\ realized\ as\ x_k\]
-\nm{This should be written as $\mathbb E[|X_k(i)|^2|X_k=x_k]\ =\ x_k$ (i.e., make the condition explicit in the expectation so there is no need to explain); however this result is obvious and you should remove it}
+Since $x_k \in \{0,\ 1\},\ \forallk \in \{1,\ 2,\ 3,\ ....,\ K\}$, Let,
+\begin{equation*}
+    \mathbb P(X_k=1)\ \triangleq\ \Pi, \forall k
+\end{equation*}
+Furthermore, let, 
+\begin{equation*}
+    \mathbb P(X_k=1\ |\ X_{k-1}=0)\ \triangleq\ p, \forall k
+\end{equation*}
+And,
+\begin{equation*}
+    \mathbb P(X_k=0\ |\ X_{k-1}=1)\ \triangleq\ q, \forall k
+\end{equation*}
+From the above definitions, we have,
+\begin{equation*}
+    \mathbb P(X_k=1)\ =\ \Pi\ =\ \frac{p}{p+q}, \forall k
+\end{equation*}
+Moreover, we also assume that the Markov Property is satisfied when we traverse the spectrum in the descending order of the channel indices, i.e, the reverse direction. Mathematically,
+\begin{equation*}
+\mathbb P(\vec{X}=\vec{x})=\mathbb P(X_K=x_K)\prod_{k=1}^{K-1} \mathbb P(X_{k}=x_k|X_{k+1}=x_{k+1})
+\end{equation*}
+Now, let's expand on the observation model.
 Taking the expectation operator on both sides of equation (\ref{2}) given $X_k$ has realized as $x_k$, we have,
-\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_kx_k]\ +\ E[V_k(i)]\]
-\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_k]E[x_k]\ +\ E[V_k(i)]\]
-\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ 0\ +\ 0\]
+\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ \mathbb E[H_kx_k]\ +\ \mathbb E[V_k(i)]\]
+\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ \mathbb E[H_k]\mathbb E[x_k]\ +\ \mathbb E[V_k(i)]\]
+\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ 0\ +\ 0\]
 \begin{equation}\label{5}
-    E[Y_k(i) | X_k(i) = x_k] = 0
+    \mathbb E[Y_k(i) | X_k(i) = x_k] = 0
 \end{equation}
-because, as already discussed, $V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ and $H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$.
+because, as already discussed, $V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ and $H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$.
 \\Furthermore, the variance of $Y_k(i)$ given $X_k$ at observation cycle $i$ has realized as $x_k$, is calculated to be, 
-\nm{errors below, please take a careful look at my corrections:}
-\begin{align*}
-    Var[Y_k(i) | X_k(i) = x_k] = E[(Y_k(i) | X_k(i) = x_k)^2] - [E[Y_k(i) | X_k(i) = x_k]]^2
-    \\
-\add{Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|Y_k(i)|^2 | X_k(i) = x_k] - |\mathbb E[Y_k(i) | X_k(i) = x_k]|^2}    
-\end{align*}
-\begin{align*}
-    Var[Y_k(i) | X_k(i) = x_k] = E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2H_kX_k(i)V_k(i)] - (0)^2
-    \\
-    \add{Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2\text{real}(H_kX_k(i)V_k^*(i))] - (0)^2}
-\end{align*}
-\nm{remember you are dealing with complex variables}
-\begin{align*}
-    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2E[|X_k(i)|^2] + \sigma_V^2 + 2E[H_k]E[X_k(i)]E[V_k(i)]
-    \\
-    \add{    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2\mathbb E[|X_k(i)|^2|X_k=x_k] + \sigma_V^2 + 2\text{real}(\mathbb E[H_k]E[X_k(i)]E[V_k(i)^*])}
-\end{align*}
+\begin{equation*}
+    Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|Y_k(i)|^2 | X_k(i) = x_k] - |\mathbb E[Y_k(i) | X_k(i) = x_k]|^2
+\end{equation*}
+\begin{equation*}
+    Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|H_kX_k(i)+V_k(i)|^2\ |\ X_k(i) = x_k] - 0
+\end{equation*}
+\begin{equation*}
+    Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2\Re(H_kX_k(i)V_k^*(i))\ |\ X_k(i)=x_k]
+\end{equation*}
+\begin{equation*}
+    \begin{aligned}
+        Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|H_k|^2]\mathbb E[|X_k(i)|^2\ |\ X_k(i)=x_k] + \mathbb E[|V_k(i)|^2] + \\2\Re(\mathbb E[H_k]\mathbb E[X_k(i)\ | X_k(i)=x_k]\mathbb E[V_k^*(i)])
+    \end{aligned}
+\end{equation*}
 \begin{equation}\label{6}
     Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2x_k + \sigma_V^2
 \end{equation}
@@ -165,44 +158,34 @@ because, as already discussed, $V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ and $
 \end{figure}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_Spatial_Independence_2.png}
-\caption{Static PU Occupancy Behavior with independence among channels $P(Occupied|Idle)\ =\ P(Occupied)\ =\ 0.6$}
+\caption{Static PU Occupancy Behavior with independence among channels $\mathbb P(Occupied|Idle)\ =\ \mathbb P(Occupied)\ =\ 0.6$}
 \label{fig:mesh2}
 \centering
 \end{figure}
 \subsection{Visualization of Spatially Correlated PU Occupancy Behavior}
-The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds.
-\nm{since it is static, no need to show evolution over time...}
- The PU behavior is assumed to be static (constant across time).
+The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds. The PU behavior is assumed to be static (constant across time).
 \newline
 \begin{itemize}
     \item Figure 1 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming that a Markovian correlation exists across the channel indices based on the System Model detailed in the previous subsection. Specifically,
-    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
-    \nm{what about $\mathbb P(Idle|Occupied)$?}
-    \[P(Occupied)\ =\ P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
+    \[\mathbb P(Occupied)\ =\ \mathbb P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
+    \[\mathbb P(Occupied|Idle)\ =\ \mathbb P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
+    \[\mathbb P(Idle|Occupied)\ =\ \mathbb P(X_j = 0|X_i = 1)\ =\ q\ =\ \frac{p(1-\Pi)}{\Pi}\ =\ 0.2\]
     \item Figure 2 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence among channels, i.e,
-    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.6\]
+    \[\mathbb P(Occupied|Idle)\ =\ \mathbb P(X_j = 1|X_i = 0)\ =\ p\ =\ \mathbb P(Occupied)\ =\ \mathbb P(X_i\ =\ 1)\ = \Pi\ =\ 0.6\]
 \end{itemize}
 \subsection{The Estimator}
 \textbf{Given}: The observations of the K frequency sub-bands in the wideband spectrum of interest, i.e. $Y_1,\ Y_2,\ Y_3,\ .....,\ Y_K$
 \\\textbf{Assuming} the state transition probability matrix $A$ and the array of initial probabilities $\Pi$ are known.
 \\\textbf{From the observation model}, we already know that the emission probabilities are given by,
-\[P(Y_k|X_k = x_k)\ \sim \mathcal{N}(0,\ \sigma_H^2x_k+\sigma_V^2)\]
-\nm{remember you are dealing with complex vars!}
-\nm{Before explaining which algorithm you are going to use, introduce the problem you are going to solve:}
-\add{Given a sequence of observations $\vec{Y}=\vec{y}$ across frequency, we want to develop a maximum a posteriori estimator of the frequency occupancy vector $\vec{X}$, i.e.
-\begin{align}
-\vec{X}^*=\arg\max_{\vec{x}}\mathbb P(\vec{X}=\vec{x}|\vec{Y}=\vec{y})
-\end{align}
-This can be solved using .....
-}
+\[\mathbb P(Y_k|X_k = x_k)\ \sim \mathcal{CN}(0,\ \sigma_H^2x_k+\sigma_V^2)\]
 Now, the problem of estimating a sequence of states across the frequency bands in a Hidden Markov Model can be solved using Dynamic Programming to give us the most likely sequence of hidden states called the \textbf{Viterbi Path} based on the sequence of noisy observations of the true states of the frequency sub-bands.
 \\From the above statements we can write,
 \begin{equation*}
-    P(\vec{X}=\vec{x}) = P(X_1=x_1) \prod_{k=2}^{K} P(X_k=x_k|X_{k-1}=x_{k-1})
+    \mathbb P(\vec{X}=\vec{x}) = \mathbb P(X_1=x_1) \prod_{k=2}^{K} \mathbb P(X_k=x_k|X_{k-1}=x_{k-1})
 \end{equation*}
 Now, the optimization problem can be written as follows,
 \begin{equation}\label{7}
-    \vec{x}^* = argmax_{\vec{x}} P(\vec{X}|\vec{Y})
+    \vec{x}^* = argmax_{\vec{x}} \mathbb P(\vec{X}|\vec{Y})
 \end{equation}
 Here,
 $\vec{Y}$ represents the observation vector consisting of the observations of the K sub-bands given by equation (\ref{2}), as shown below,
@@ -212,37 +195,37 @@ In other words,
 \[\vec{Y}\ represents\ the\ sequence\ of\ observations\ across\ frequency\ sub-bands\]
 This argmax problem can be re-written as a maximization problem of the joint distribution due to the proportional relation between the joint and the conditional. Therefore, Equation (\ref{7}) can be written as,
 \begin{equation}\label{8}
-    V_{i}^{(j)}\ =\ max_{x_1,x_2,...,x_{i-1}}P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
+    V_{i}^{(j)}\ =\ max_{x_1,x_2,...,x_{i-1}}\mathbb P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
 \end{equation}
 Here, $V_{i}^{(j)}$ represents \textbf{a value function in our optimization problem tracking the sequence of states of sub-bands that maximize the joint distribution of states and observations as detailed in Equation (\ref{8})}.
 \\Now, for the $(i+1)^{th}$ sub-band in state $l$, repeating the same step, we have,
 \begin{equation}\label{9}
-    V_{i+1}^{(l)}\ =\ max_{x_1,x_2,...,x_i}P(y_1,y_2,...,y_i,x_1,x_2,...,x_i,y_{i+1},x_{i+1}=l)
+    V_{i+1}^{(l)}\ =\ max_{x_1,x_2,...,x_i}\mathbb P(y_1,y_2,...,y_i,x_1,x_2,...,x_i,y_{i+1},x_{i+1}=l)
 \end{equation}
 Using the definition of conditional probability, we have,
 \begin{equation}\label{10}
-    V_{i+1}^{(l)}\ =\ max_{x_1,x_2,...,x_i}P(y_{i+1},x_{i+1}=l|y_1,y_2,...,y_i,x_1,x_2,...,x_i)\\P(y_1,y_2,...,y_i,x_1,x_2,...,x_i)
+    V_{i+1}^{(l)}\ =\ max_{x_1,x_2,...,x_i}\mathbb P(y_{i+1},x_{i+1}=l|y_1,y_2,...,y_i,x_1,x_2,...,x_i)\\\mathbb P(y_1,y_2,...,y_i,x_1,x_2,...,x_i)
 \end{equation}
 Now, from the Markov Property, we have,
 \begin{equation}\label{11}
-    V_{i+1}^{(l)}\ =\ max_{x_1,x_2,...,x_i}P(y_{i+1},x_{i+1}=l|x_i)P(y_1,y_2,...,y_i,x_1,x_2,...,x_i)
+    V_{i+1}^{(l)}\ =\ max_{x_1,x_2,...,x_i}\mathbb P(y_{i+1},x_{i+1}=l|x_i)\mathbb P(y_1,y_2,...,y_i,x_1,x_2,...,x_i)
 \end{equation}
 Pushing the maximization operator in,
 \begin{equation}\label{12}
-    V_{i+1}^{(l)}\ =\ max_{j}[P(y_{i+1},x_{i+1}=l|x_i=j)max_{x_1,x_2,...,x_{i-1}}[P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_i=j)]]
+    V_{i+1}^{(l)}\ =\ max_{j}[\mathbb P(y_{i+1},x_{i+1}=l|x_i=j)max_{x_1,x_2,...,x_{i-1}}[\mathbb P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_i=j)]]
 \end{equation}
 Using Equation (\ref{8}),
 \begin{equation}\label{13}
-    V_{i+1}^{(l)}\ =\ max_{j}[P(y_{i+1},x_{i+1}=l|x_i=j)V_i^{(j)}]
+    V_{i+1}^{(l)}\ =\ max_{j}[\mathbb P(y_{i+1},x_{i+1}=l|x_i=j)V_i^{(j)}]
 \end{equation}
 We know that, for three random variables R, U, and W,
-\[P(R,U|W)\ =\ P(U|R,W)P(R|W)\]
+\[\mathbb P(R,U|W)\ =\ \mathbb P(U|R,W)\mathbb P(R|W)\]
 Using this, we have,
 \begin{equation}\label{14}
-    V_{i+1}^{(l)}\ =\ max_{j}[P(y_{i+1}|x_{i+1}=l,x_i=j)P(x_{i+1}=l|x_i=j)V_i^{(j)}]
+    V_{i+1}^{(l)}\ =\ max_{j}[\mathbb P(y_{i+1}|x_{i+1}=l,x_i=j)\mathbb P(x_{i+1}=l|x_i=j)V_i^{(j)}]
 \end{equation}
 \begin{equation}\label{15}
-    V_{i+1}^{(l)}\ =\ max_{j}[P(y_{i+1}|x_{i+1}=l)P(x_{i+1}=l|x_i=j)V_i^{(j)}]
+    V_{i+1}^{(l)}\ =\ max_{j}[\mathbb P(y_{i+1}|x_{i+1}=l)\mathbb P(x_{i+1}=l|x_i=j)V_i^{(j)}]
 \end{equation}
 Let, $m_l(y_{i+1})$ be the emission probability, i.e. the probability of emission of observation $y_{i+1}$ in state $l$.
 \\Let, $a_{jl}$ be the state transition probability.
@@ -251,9 +234,9 @@ Then,
     V_{i+1}^{(l)}\ =\ m_l(y_{i+1})\ max_{j}[a_{jl}V_i^{(j)}]
 \end{equation}
 Here, from the observation model,
-\[m_l(y_{i+1})\ \sim \mathcal{N}(0,\ \sigma_H^2l+\sigma_V^2)\]
+\[m_l(y_{i+1})\ \sim \mathcal{CN}(0,\ \sigma_H^2l+\sigma_V^2)\]
 And, from the system's Markov model,
-\[a_{jl}\ \in\ A,\ :\ a_{jl}\ =\ P(x_{i+1}=l|x_i=j)\]
+\[a_{jl}\ \in\ A,\ :\ a_{jl}\ =\ \mathbb P(x_{i+1}=l|x_i=j)\]
 Equation (\ref{16}) constitutes the \textbf{Forward Recursion aspect of the Viterbi algorithm}.
 \\Now, we analytically derive the \textbf{Backtrack feature of the Viterbi algorithm} below.
 \\The state of the $K^{th}$ sub-band, i.e the last state in the Viterbi path is given by,
@@ -262,7 +245,7 @@ Equation (\ref{16}) constitutes the \textbf{Forward Recursion aspect of the Vite
 \end{equation}
 This can be written as follows,
 \begin{equation}\label{18}
-    k^*\ =\ argmax_k\ max_{x_1,x_2,...,x_{K-1}}\ P(x_1,x_2,...,x_{K-1},x_K=k,y_1,y_2,...y_K)
+    k^*\ =\ argmax_k\ max_{x_1,x_2,...,x_{K-1}}\ \mathbb P(x_1,x_2,...,x_{K-1},x_K=k,y_1,y_2,...y_K)
 \end{equation}
 Essentially, the idea here is to prove the an earlier sub-band in the sequence is in a certain state given that a later sub-band in the sequence is in a certain state.
 \\So,
@@ -272,43 +255,43 @@ Essentially, the idea here is to prove the an earlier sub-band in the sequence i
 \[Ptr_{i+1}\ =\ argmax_j\ (a_{jl}V_{i}^{(j)})\]
 Now, substituting in the definitions of the state transition probabilities and the value function,
 \begin{equation}\label{19}
-    Ptr_{i+1}=argmax_j\ P(x_{i+1}=l^*|x_{i}=j)\ max_{x_1,x_2,...,x_{i-1}}P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
+    Ptr_{i+1}=argmax_j\ \mathbb P(x_{i+1}=l^*|x_{i}=j)\ max_{x_1,x_2,...,x_{i-1}}\mathbb P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
 \end{equation}
 Moving the constant in or taking max operator outside,
 \begin{equation}\label{20}
-    Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1}}\ P(x_{i+1}=l^*|x_{i}=j)P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
+    Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1}}\ \mathbb P(x_{i+1}=l^*|x_{i}=j)\mathbb P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
 \end{equation}
 We can write Equation (\ref{20}) as,
 \begin{equation}\label{21}
     \begin{aligned}
-        Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1}}\ P(x_{i+1}=l^*|x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})\\P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
+        Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1}}\ \mathbb P(x_{i+1}=l^*|x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})\\\mathbb P(y_1,y_2,...,y_{i-1},x_1,x_2,...,x_{i-1},y_i,x_{i}=j)
     \end{aligned}
 \end{equation}
 Using Chain Rule, this product becomes the joint distribution,
 \begin{equation}\label{22}
-        Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1}}\ P(x_{i+1}=l^*,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})
+        Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1}}\ \mathbb P(x_{i+1}=l^*,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})
 \end{equation}
 Adding a constant to the argmax operation, i.e. $j$ should not feature in this constant, we have,
 \begin{equation}\label{23}
     \begin{aligned}
-        Ptr_{i+1}=argmax_j\ (max_{x_{i+1},x_{i+2},...,x_K}\ P(x_{i+2},x_{i+3},...,x_K,y_{i+1},y_{i+2},...,y_{K}|x_{i+1}=l^*))\\max_{x_1,x_2,...,x_{i-1}}\ P(x_{i+1}=l,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i}))
+        Ptr_{i+1}=argmax_j\ (max_{x_{i+1},x_{i+2},...,x_K}\ \mathbb P(x_{i+2},x_{i+3},...,x_K,y_{i+1},y_{i+2},...,y_{K}|x_{i+1}=l^*))\\max_{x_1,x_2,...,x_{i-1}}\ \mathbb P(x_{i+1}=l,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i}))
     \end{aligned}
 \end{equation}
 \begin{equation}\label{24}
     \begin{aligned}
-        Ptr_{i+1}=argmax_j\ max_{x_{i+1},x_{i+2},...,x_K}\ max_{x_1,x_2,...,x_{i-1}}\ P(x_{i+2},x_{i+3},...,x_K,y_{i+1},y_{i+2},...,y_{K}|x_{i+1}=l^*)\\P(x_{i+1}=l,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})
+        Ptr_{i+1}=argmax_j\ max_{x_{i+1},x_{i+2},...,x_K}\ max_{x_1,x_2,...,x_{i-1}}\ \mathbb P(x_{i+2},x_{i+3},...,x_K,y_{i+1},y_{i+2},...,y_{K}|x_{i+1}=l^*)\\\mathbb P(x_{i+1}=l,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})
     \end{aligned}
 \end{equation}
 We can write Equation (\ref{24}) as follows due to the independence relation exhibited by the Markov Model,
 \begin{equation}\label{25}
     \begin{aligned}
-        Ptr_{i+1}=argmax_j\ max_{x_{i+1},x_{i+2},...,x_K}\ max_{x_1,x_2,...,x_{i-1}}P(x_{i+2},x_{i+3},...,x_K,y_{i+1},y_{i+2},...,y_{K}|x_{i+1}=l^*,\\x_{i}=j,x_{i-1},...,x_1,y_{i},y_{i-1},...,y_1)P(x_{i+1}=l,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})
+        Ptr_{i+1}=argmax_j\ max_{x_{i+1},x_{i+2},...,x_K}\ max_{x_1,x_2,...,x_{i-1}}\mathbb P(x_{i+2},x_{i+3},...,x_K,y_{i+1},y_{i+2},...,y_{K}|x_{i+1}=l^*,\\x_{i}=j,x_{i-1},...,x_1,y_{i},y_{i-1},...,y_1)\mathbb P(x_{i+1}=l,x_1,x_2,...,x_{i-1},x_{i}=j,y_1,y_2,...,y_{i-1},y_{i})
     \end{aligned}
 \end{equation}
 Using Chain Rule again and consolidating the max operator,
 \begin{equation}\label{26}
     \begin{aligned}
-        Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1},x_{i+1},x_{i+2},...,x_K}\ P(x_{i+2},x_{i+3},...,x_K,x_{i+1}=l^*,x_{i}=j,x_{i-1},...,x_1,\\y_{i+1},y_{i+2},...,y_{K},y_{i},y_{i-1},...,y_1)
+        Ptr_{i+1}=argmax_j\ max_{x_1,x_2,...,x_{i-1},x_{i+1},x_{i+2},...,x_K}\ \mathbb P(x_{i+2},x_{i+3},...,x_K,x_{i+1}=l^*,x_{i}=j,x_{i-1},...,x_1,\\y_{i+1},y_{i+2},...,y_{K},y_{i},y_{i-1},...,y_1)
     \end{aligned}
 \end{equation}
 Now, the right-hand side of Equation (\ref{26}) corresponds to the state of the $i^{th}$ sub-band in most-likely state sequence.
@@ -324,7 +307,7 @@ This constitutes an overlapping sub-problems solution which can be solved using 
 \textbf{Initialization}: The array of initial probabilities $\Pi$ is known.
 \\\textbf{Forward Recursion}: $V_j^{(r)}\ =\ m_r(y_j)\ max_{l}[a_{lr}V_{j-1}^{(l)}]$
 \\\textbf{Backtrack}: $Ptr_j\ =\ argmax_l\ (a_{lr}\ V_{j-1}^{(l)})$ and $x_{i-1}^*\ =\ Ptr_{i}$
-\\\textbf{Termination}: $P(\vec{y},\vec{x}^*)\ =\ max_k\ (V_K^{(k)})$
+\\\textbf{Termination}: $\mathbb P(\vec{y},\vec{x}^*)\ =\ max_k\ (V_K^{(k)})$
 \end{flushleft}
 \subsection{Simulation Results}
 Let,
@@ -332,14 +315,14 @@ Let,
 \[x_i\ =\ 0\ imply\ that\ frequency\ band\ i\ is\ Idle\]
 The emission probabilities are obtained from the Gaussian Observation Model where,
 \[Y_k(i) = H_kX_k(i) + V_k(i),\ and\]
-\[m_l(y_{i+1})\ \sim \mathcal{N}(0,\ \sigma_H^2l+\sigma_V^2)\]
+\[m_l(y_{i+1})\ \sim \mathcal{CN}(0,\ \sigma_H^2l+\sigma_V^2)\]
 Here,
-\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
-\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
-\\\textbf{The start probabilities $\Pi\ =\ P(X_i\ =\ 1)$ are fixed at 0.60}.
-If $p\ =\ P(1|0)$ and $q\ =\ P(0|1)$, then we can write the relation between $p$ and $q$ as follows,
+\\$V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ represents the circular-symmetric complex Gaussian noise sample
+\\$H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
+\\\textbf{The start probabilities $\Pi\ =\ \mathbb P(X_i\ =\ 1)$ are fixed at 0.60}.
+If $p\ =\ \mathbb P(1|0)$ and $q\ =\ \mathbb P(0|1)$, then we can write the relation between $p$ and $q$ as follows,
 \[\Pi\ =\ \frac{p}{p+q}\]
-\textbf{Varying $p$ from $0.030\ to\ \Pi$}, where if $p\ =\ \Pi$ corresponds to independence among bands because $P(1|0)\ =\ P(1)$ and $P(0|1)\ =\ P(0)$, we get a plot of $Detection\ Accuracy\ v/s\ p$ as depicted in Figure 3. Multiple independent trials have been run to smooth the curve.
+\textbf{Varying $p$ from $0.030\ to\ \Pi$}, where if $p\ =\ \Pi$ corresponds to independence among bands because $\mathbb P(1|0)\ =\ \mathbb P(1)$ and $\mathbb P(0|1)\ =\ \mathbb P(0)$, we get a plot of $Detection\ Accuracy\ v/s\ p$ as depicted in Figure 3. Multiple independent trials have been run to smooth the curve.
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{DetectionAccuracy_v_p_test_3_final.png}
 \caption{Detection Accuracy v/s p for $1000$ observations per band averaged over 50 independent trials with $\Pi\ =\ 0.60$ and $p$ varied from $0.03$ to $\Pi$. This plot corresponds to a linear noisy observation model with the system obviously modelled as an HMM. The true states for the 18 frequency bands are generated using a custom Markov state generator $\forall p\ and\ \forall q$ with a fixed $\Pi\ =\ 0.6$.}
@@ -356,8 +339,8 @@ where,
 \\$i\ \in\ \{1,\ 2,\ 3,\ .........,\ T\}$ represents the index of the observation
 \\\textbf{NOTE}: Multiple observations of all the frequency bands are made by the SU for training the algorithm and averaging the results over numerous iterations. However, the PU occupancy behavior in this case remains static over time.
 \\$k\ \in\ \{1,\ 2,\ 3,\ .........,\ K\}$ represents the index of the sub-band
-\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
-\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
+\\$V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
+\\$H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
 \\The PU occupancy behavior in each sub-band $b_k\ \in\ B$ is modelled as $X_k$ taking two possible values $0\ and\ 1$. Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components can be modelled as a vector of size $|B|\ =\ K$ such that,
 \begin{equation}\label{29}
     \vec{X} = [X_1, X_2, X_3, ........., X_K]^T \in \{0,1\}^K
@@ -365,21 +348,21 @@ where,
 \subsection{System Model}
 The true states encapsulate the actual behavior of the PU which is an unobserved Markov process and the measurements at the SU are noisy observations of the true states which are modelled to be the observed states of a Hidden Markov Model.
 For some sub-band $j\ \in\ \{2,\ 3,\ 4,\ .....,\ K\}$, the system is assumed to satisfy the Markov property as shown below,
-\[P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
-\[And,\ we\ will\ use\ P(X_1(i))\ for\ j=1.\]
+\[\mathbb P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ \mathbb P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
+\[And,\ we\ will\ use\ \mathbb P(X_1(i))\ for\ j=1.\]
 Since \textbf{the PU is assumed to be static in the period of our estimation}, we can write the above assumption as,
-\[P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ P(X_{j}|X_{j-1}),\ for\ j>1,\]
-\[And,\ we\ will\ use\ P(X_1)\ for\ j=1.\]
+\[\mathbb P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ \mathbb P(X_{j}|X_{j-1}),\ for\ j>1,\]
+\[And,\ we\ will\ use\ \mathbb P(X_1)\ for\ j=1.\]
 Now, we know that,
 \[\vec{X}\ =\ [X_1,\ X_2,\ X_3,\ ......,\ X_K]^T\] which realizes as,
 \[\vec{x}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\]
 So,
 \begin{equation}\label{30}
-    P(\vec{X}=\vec{x}) = P(X_1=x_1) \prod_{k=2}^{K} P(X_k=x_k|X_{k-1}=x_{k-1})
+    \mathbb P(\vec{X}=\vec{x}) = \mathbb P(X_1=x_1) \prod_{k=2}^{K} \mathbb P(X_k=x_k|X_{k-1}=x_{k-1})
 \end{equation}
 \textbf{Assuming there is a single PU and a single SU making observations}, we have, from the observation model,
 \begin{equation}\label{31}
-    P(Y_k|X_k = x_k)\ \sim \mathcal{N}(0,\ \sigma_H^2x_k+\sigma_V^2)
+    \mathbb P(Y_k|X_k = x_k)\ \sim \mathcal{CN}(0,\ \sigma_H^2x_k+\sigma_V^2)
 \end{equation}
 In this extension, the SU does not sense all $|B|\ =\ K$ frequency bands in the wideband spectrum of interest. Instead, a subset $M\ <\ K$ frequency bands are sensed based on recommendations given a Bandit or a Reinforcement Learning agent. Let the set of these "incomplete" observations be given as,
 \[\vec{Y}\ =\ [y_1,\ y_2,\ \phi,\ ...,\ \phi,....,\ y_m,\ \phi,\ ...,\ y_K]^T\]
@@ -388,21 +371,21 @@ Based on this System Model and Observation Model, the state sequence estimation 
 \subsection{The Estimator}
 Assuming a static PU across time, a linear, noisy observation model, and a Markovian correlation across the frequency channels, the optimization problem can be stated as follows.
 \begin{equation}\label{32}
-    \vec{x}^* = argmax_{\vec{x}} P(\vec{X}|\vec{Y})
+    \vec{x}^* = argmax_{\vec{x}} \mathbb P(\vec{X}|\vec{Y})
 \end{equation}
-\[\vec{x}^* = argmax_{\vec{x}} P(\vec{X}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\ |\ \vec{Y}\ =\ [y_1,\ y_2,\ \phi,\ ...,\ \phi,....,\ y_m,\ \phi,\ ...,\ y_K]^T)\]
+\[\vec{x}^* = argmax_{\vec{x}} \mathbb P(\vec{X}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\ |\ \vec{Y}\ =\ [y_1,\ y_2,\ \phi,\ ...,\ \phi,....,\ y_m,\ \phi,\ ...,\ y_K]^T)\]
 For $X_1 = x_1$, i.e. \textbf{Initialization},
 \[V_1^{(r)}\ =\ m_r(y_1)\pi_r,\ if\ y_1\ \neq\ \phi\]
 \[V_1^{(r)}\ =\ \pi_r,\ if\ y_1\ = \phi\]
 where,
-\[m_r(y_1)\ \sim \mathcal{N}(0,\ \sigma_H^2r+\sigma_V^2),\]
+\[m_r(y_1)\ \sim \mathcal{CN}(0,\ \sigma_H^2r+\sigma_V^2),\]
 \[\pi_r\ \in\ \Pi\ ,\ and\]
 \[r\ \in\ \{0,\ 1\}\]
 Now, moving on to the \textbf{Forward Recursion aspect},
 \[V_j^{(r)}\ =\ m_r(y_j)\ max_l[a_{lr}V_{j-1}^{(l)}],\ if\ y_j\ \neq\ \phi\]
 \[V_j^{(r)}\ =\ max_l[a_{lr}V_{j-1}^{(l)}],\ if\ y_j\ =\ \phi\]
 where,
-\[m_r(y_j)\ \sim \mathcal{N}(0,\ \sigma_H^2r+\sigma_V^2),\]
+\[m_r(y_j)\ \sim \mathcal{CN}(0,\ \sigma_H^2r+\sigma_V^2),\]
 \[j\ \in\ \{2,\ 3,\ 4,\ ......,\ K\}\]
 \[l,\ r\ \in\ \{0,1\}\]
 Now, moving on to the \textbf{Backtracking aspect},
@@ -413,42 +396,42 @@ There are other approaches to this "missing observations" problem of state estim
 \subsection{Simulation Results}
 The following results illustrate the PU Occupancy Behavior Estimation Algorithm with Markovian Correlation across channel indices and with incomplete information, i.e. missing observations. The channel selection strategy is simulated in two ways: Uniform Sampling and Random Sampling. In the Uniform Sampling/Uniform Sensing strategy, the step size between consecutive channels is incremented by 1 in each cycle while in the Random Sampling/Random Sensing strategy, a random number of channels are sensed from the discretized wideband spectrum of interest.
 \\The simulation model consists of 18 channels with 100 samples per channel over 50 iteration cycles.
-\\$P(Occupied|Idle)\ =\ p$ is incremented in steps of $0.03$ from $0.03$ all the way up to $P(Occupied)\ =\ \Pi\ =\ 0.6$ and for a given value of $p$, the detection accuracy is calculated and averaged out over multiple iteration cycles.
-\\The detection accuracy is then plotted against $P(Occupied|Idle)\ =\ p$.
+\\$\mathbb P(Occupied|Idle)\ =\ p$ is incremented in steps of $0.03$ from $0.03$ all the way up to $\mathbb P(Occupied)\ =\ \Pi\ =\ 0.6$ and for a given value of $p$, the detection accuracy is calculated and averaged out over multiple iteration cycles.
+\\The detection accuracy is then plotted against $\mathbb P(Occupied|Idle)\ =\ p$.
 \begin{itemize}
-    \item In this run, only the even channels in the discretized wideband spectrum of interest are sensed, i.e. the channel selection strategy is \{0, 2, 4, 6, 8, 10, 12, 14, 16\}. The Detection Accuracy v/s $P(Occupied|Idle)$ plot is depicted in Figure 4. The blue curve corresponds to the detection accuracy of the sensed channels which, as expected, should fare better compared to the detection accuracy of the un-sensed channels (the red curve).
-    \item Figure 5 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy
-    \item Figure 6 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 5, i.e. the channels that were missed in runs of Figure 5 are sensed here to get an understanding on the "regret" of the channel selection strategy.
-    \item Figure 7 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy
-    \item Figure 8 depicts the plot of Detection Accuracy versus $P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 7, i.e. the channels that were missed in runs of Figure 7 are sensed here to get an understanding on the "regret" of the channel selection strategy.
+    \item In this run, only the even channels in the discretized wideband spectrum of interest are sensed, i.e. the channel selection strategy is \{0, 2, 4, 6, 8, 10, 12, 14, 16\}. The Detection Accuracy v/s $\mathbb P(Occupied|Idle)$ plot is depicted in Figure 4. The blue curve corresponds to the detection accuracy of the sensed channels which, as expected, should fare better compared to the detection accuracy of the un-sensed channels (the red curve).
+    \item Figure 5 depicts the plot of Detection Accuracy versus $\mathbb P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy
+    \item Figure 6 depicts the plot of Detection Accuracy versus $\mathbb P(Occupied|Idle)$ for a Uniform Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 5, i.e. the channels that were missed in runs of Figure 5 are sensed here to get an understanding on the "regret" of the channel selection strategy.
+    \item Figure 7 depicts the plot of Detection Accuracy versus $\mathbb P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy
+    \item Figure 8 depicts the plot of Detection Accuracy versus $\mathbb P(Occupied|Idle)$ for a Random Sensing Channel Selection Strategy with the 'Duals' of the channels sensed in Figure 7, i.e. the channels that were missed in runs of Figure 7 are sensed here to get an understanding on the "regret" of the channel selection strategy.
 \end{itemize}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing_1.png}
-\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process. Here, the plot presents a comparison of the detection accuracy performances between the sensed channels and the un-sensed channels when only the even channels in the discretized wideband spectrum of interest have been sensed by the SU.}
+\caption{Detection Accuracy v/s $\mathbb P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process. Here, the plot presents a comparison of the detection accuracy performances between the sensed channels and the un-sensed channels when only the even channels in the discretized wideband spectrum of interest have been sensed by the SU.}
 \label{fig:mesh4}
 \centering
 \end{figure}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing.png}
-\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process.}
+\caption{Detection Accuracy v/s $\mathbb P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Uniform Sampling process.}
 \label{fig:mesh5}
 \centering
 \end{figure}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Uniform_Channel_Sensing_Duals.png}
-\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 5.}
+\caption{Detection Accuracy v/s $\mathbb P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 5.}
 \label{fig:mesh6}
 \centering
 \end{figure}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Random_Channel_Sensing.png}
-\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Random Sampling process.}
+\caption{Detection Accuracy v/s $\mathbb P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies are recommended by a Random Sampling process.}
 \label{fig:mesh7}
 \centering
 \end{figure}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Random_Channel_Sensing_Duals.png}
-\caption{Detection Accuracy v/s $P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 7.}
+\caption{Detection Accuracy v/s $\mathbb P(Occupied\ |\ Idle)$ for 18 channels with Markovian Correlation across channel indices and missing observations where the channel selection strategies involve the Duals of the channels employed in Figure 7.}
 \label{fig:mesh8}
 \centering
 \end{figure}
@@ -462,43 +445,43 @@ Persisting the same observation model as in the previous sections,
 where,
 \\$i\ \in\ \{1,\ 2,\ 3,\ .........,\ T\}$ represents the index of the observation
 \\$k\ \in\ \{1,\ 2,\ 3,\ .........,\ K\}$ represents the index of the sub-band
-\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
-\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
+\\$V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
+\\$H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
 \\The PU occupancy behavior in each sub-band $b_k\ \in\ B$ is modelled as $X_k$ taking two possible values $0\ and\ 1$. Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components can be modelled as a vector of size $|B|\ =\ K$ such that,
 \begin{equation}\label{34}
     \vec{X} = [X_1, X_2, X_3, ........., X_K]^T \in \{0,1\}^K
 \end{equation}
 Solving for the mean and variance of $Y_k(i)$ from (\ref{33}) with $X_k(i)\ =\ x_k$, we get,
 \begin{equation}\label{35}
-    E[Y_k(i) | X_k(i) = x_k] = 0
+    \mathbb E[Y_k(i) | X_k(i) = x_k] = 0
 \end{equation}
 \begin{equation}\label{36}
     Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2x_k + \sigma_V^2
 \end{equation}
 Therefore,
-\[Y_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_H^2x_k + \sigma_V^2)\]
+\[Y_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_H^2x_k + \sigma_V^2)\]
 \subsection{System Model}
 The system model comprises a \textbf{2D Markov Chain: one across time and one across frequency bands - all the frequency bands in the wideband spectrum of interest are sensed by the SU in each sampling round $t$}. We'll see the next extension of this work (PU Occupancy Behavior Estimation with Time and Channel Markovian Correlation and Incomplete Information) in Section 4 of this document.
 \\The \textbf{transition probabilities matrix} for PU Occupancy Behavior transitions, i.e $0\longrightarrow1$ or $1\longrightarrow0$ across both time and frequency is given by,
-\[A\ =\ [a_{mnr}]\ such\ that\ a_{mnr}\ =\ P(x_{tk}\ =\ r\ |\ x_{t-1,k}\ =\ m,\ x_{t,k-1}\ =\ n]\]
+\[A\ =\ [a_{mnr}]\ such\ that\ a_{mnr}\ =\ \mathbb P(x_{tk}\ =\ r\ |\ x_{t-1,k}\ =\ m,\ x_{t,k-1}\ =\ n]\]
 where,
 \[r,\ m,\ n\ \in\ \{0,1\}\ represents\ the\ PU\ occupancy\ state\ in\ a\ particular\ channel\ at\ a\ particular\ time\]
 \[t\ \in\ \{2,\ 3,\ 4,\ .....,\ T\}\ represents\ the\ temporal\ index\]
 \[k\ \in\ \{2,\ 3,\ 4,\ .....,\ K\}\ represents\ the\ channel\ index\]
 From the observation model, the \textbf{emission probabilities} are given by,
-\[m_r(y_{tk})\ =\ P(y_{tk}\ |\ x_{tk}\ =\ r)\ \sim\ \mathcal{N}(0,\ \sigma_H^2r+\sigma_V^2)\]
+\[m_r(y_{tk})\ =\ \mathbb P(y_{tk}\ |\ x_{tk}\ =\ r)\ \sim\ \mathcal{CN}(0,\ \sigma_H^2r+\sigma_V^2)\]
 where,
 \[r\ \in\ \{0,1\}\]
 The \textbf{initial or start probabilities} are given as follows.
-\[\Pi\ =\ \{\pi_r:\ \pi_r\ =\ P(x_{tk}\ =\ r)\ for\ t\ =\ 1\ or\ k\ =\ 1,\ \forall\ r\ \in\ \{0,1\}\}\]
+\[\Pi\ =\ \{\pi_r:\ \pi_r\ =\ \mathbb P(x_{tk}\ =\ r)\ for\ t\ =\ 1\ or\ k\ =\ 1,\ \forall\ r\ \in\ \{0,1\}\}\]
 \subsection{Visualization of Temporally and Spatially Correlated PU behavior}
 The following visualization results illustrate the Occupancy Behavior of the Primary User in a wideband spectrum of interest consisting of 18 frequency bands observed over 100 sampling rounds. The PU behavior is dynamic (varying across time).
 \begin{itemize}
     \item Figure 9 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming that a dual Markov chain exists- one across channels and one across sampling rounds. Mathematical details about the System Model are outlined in the previous subsection. Specifically, for both the Markov chains, 
-    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
-    \[P(Occupied)\ =\ P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
+    \[\mathbb P(Occupied|Idle)\ =\ \mathbb P(X_j = 1|X_i = 0)\ =\ p\ =\ 0.3\]
+    \[\mathbb P(Occupied)\ =\ \mathbb P(X_i\ =\ 1)\ =\ \Pi\ =\ 0.6\]
     \item Figure 10 depicts the PU Occupancy Behavior across time indices (sampling rounds) and across channel indices (frequency bands) assuming independence among channels and among sampling rounds, i.e,
-    \[P(Occupied|Idle)\ =\ P(X_j = 1|X_i = 0)\ =\ p\ =\ P(Occupied)\ =\ P(X_i\ =\ 1)\ = \Pi\ =\ 0.6\]
+    \[\mathbb P(Occupied|Idle)\ =\ \mathbb P(X_j = 1|X_i = 0)\ =\ p\ =\ \mathbb P(Occupied)\ =\ \mathbb P(X_i\ =\ 1)\ = \Pi\ =\ 0.6\]
 \end{itemize}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Spectrum_Occupancy_SpatioTemporal_Markovian_Correlation.png}
@@ -520,102 +503,102 @@ Let us first define the notations employed in this analytical derivation.
 \\The set of all past states required for the estimation of PU Occupancy in channel $k$ in sampling round $t$ is given as follows.
 \[x_{1:t-1,1:k-1}\ =\ \{x_{t,1},x_{t,2},...,x_{t,k-1},x_{1,k},x_{2,k},...,x_{t-1,k}\}\]
 \\The joint probability term while analyzing state-observation pair of channel $k$ which is in state $r \in \{0,1\}$ in sampling round $t$ is denoted as follows.
-\[P(y_{tk}, x_{tk}=r, y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})\]
+\[\mathbb P(y_{tk}, x_{tk}=r, y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})\]
 The probability terms are simplified and the estimation algorithm's analytical expressions are derived in the upcoming subsubsections.
 \subsubsection{Defining the Probability terms}
 The joint probability term for analyzing the state-observation pair of channel $k$ which is in state $r \in \{0,1\}$ in sampling round $t$ is defined as follows. Note that, channel $k$ is in state $m \in \{0,1\}$ in sampling round $t-1$ and channel $k-1$ is in state $n \in \{0,1\}$ in sampling round $t$. Based on our System Model described subsection B of section III, the PU Occupancy state at location $(t,k)$ depends only on the PU Occupancy states at locations $(t-1,k)$ and $(t,k-1)$ respectively, i.e. the previous states both temporally and spatially.
 \begin{equation*}
-    P(y_{tk}, x_{tk}=r, y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
+    \mathbb P(y_{tk}, x_{tk}=r, y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
 \end{equation*}
 Using the definition of conditional probability, the joint probability term from above can be written as,
 \begin{equation*}
-    P(y_{tk}, x_{tk}=r|y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
+    \mathbb P(y_{tk}, x_{tk}=r|y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
 \end{equation*}
 Using the Markov property across both time indices (sampling rounds or iterations) and channel indices, the joint probability term from above can be written as,
 \begin{equation*}
-    P(y_{tk}, x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
+    \mathbb P(y_{tk}, x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
 \end{equation*}
 Simplifying the conditional even further, the aforementioned joint probability term can be written as,
 \begin{equation*}
-        P(y_{tk}|x_{tk}=r,x_{t-1,k}=m,x_{t,k-1}=n)P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
+        \mathbb P(y_{tk}|x_{tk}=r,x_{t-1,k}=m,x_{t,k-1}=n)\mathbb P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
 \end{equation*}
 Since the observations depend only on the current state, the joint probability term can be further simplified as,
 \begin{equation*}
-        P(y_{tk}|x_{tk}=r)P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
+        \mathbb P(y_{tk}|x_{tk}=r)\mathbb P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
 \end{equation*}
 Using the definitions of emission and state transition probabilities from the System Model, the aforementioned joint probability term can be written as,
 \begin{equation*}
-        m_r(y_{tk})a_{mnr}P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
+        m_r(y_{tk})a_{mnr}\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})
 \end{equation*}
 \subsubsection{Maximization of the Probabilities to arrive at the Forward and Backward Variables}
 For the state estimation analysis, let's derive the analytical equations for a state element $x_{tk}\ =\ r$ and for the corresponding observation element $y_{tk}$. We'll now derive the forward and backward variables based on this \textit{node} and it's neighbors.
 Let us first define the value function $V_{t-1,k-1}^{(l)}$ as follows.
 \begin{equation}\label{37}
-        V_{t-1,k-1}^{(l)}\ =\ max_{1:t-2,1:k-2}[P(y_{1:t-2,1:k-2},x_{1:t-2,1:k-2},y_{t-1,k-1},x_{t-1,k-1}=l)]
+        V_{t-1,k-1}^{(l)}\ =\ max_{1:t-2,1:k-2}[\mathbb P(y_{1:t-2,1:k-2},x_{1:t-2,1:k-2},y_{t-1,k-1},x_{t-1,k-1}=l)]
 \end{equation}
 Here, $V_{t-1,k-1}^{(l)}$ represents the maximum probability of emission of $y_{t-1,k-1}$ with $x_{t-1,k-1}\ =\ l\ \in\ \{0,1\}$.
 \\Now, since we have two dimensions (time indices and channel indices) in our System Model, we will have two flavors of value functions as discussed below. Let's first define $V_{t-1,k}^{(m)}$, i.e. the \textbf{horizontal transition across channel indices} with respect to $ V_{t-1,k-1}^{(l)}$ in the same way as in equation (\ref{37}).
 \begin{equation}\label{38}
-   V_{t-1,k}^{(m)}\ =\ max_{1:t-2,1:k-1}[P(y_{1:t-2,1:k-1},x_{1:t-2,1:k-1},y_{t-1,k},x_{t-1,k}=m)]
+   V_{t-1,k}^{(m)}\ =\ max_{1:t-2,1:k-1}[\mathbb P(y_{1:t-2,1:k-1},x_{1:t-2,1:k-1},y_{t-1,k},x_{t-1,k}=m)]
 \end{equation}
 Similarly, let's define the value functions for time index traversal as follows.
 Writing $V_{t,k-1}^{(n)}$, i.e. the \textbf{vertical transition across time indices} with respect to $ V_{t-1,k-1}^{(l)}$ in the same way as in equation (\ref{37}),
 \begin{equation}\label{39}
     \begin{aligned}
-        V_{t,k-1}^{(n)}\ =\ max_{1:t-1,1:k-2}[P(y_{1:t-1,1:k-2},x_{1:t-1,1:k-2},y_{t,k-1},x_{t,k-1}=n)]
+        V_{t,k-1}^{(n)}\ =\ max_{1:t-1,1:k-2}[\mathbb P(y_{1:t-1,1:k-2},x_{1:t-1,1:k-2},y_{t,k-1},x_{t,k-1}=n)]
     \end{aligned}
 \end{equation}
 Now, let's define the \textbf{Forward Recursion} Value function for $V_{tk}^{(r)}$ using the analytical equations defined above.
 From equation (\ref{37}),
 \begin{equation}\label{40}
-         V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1},y_{tk},x_{tk}=r)]
+         V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1},y_{tk},x_{tk}=r)]
 \end{equation}
 Now, using the definition of conditional probability, we have,
 \begin{equation}\label{41}
-    V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[P(y_{tk}, x_{tk}=r|y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
+    V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[\mathbb P(y_{tk}, x_{tk}=r|y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
 \end{equation}
 Since, we have a Markovian correlation across both time and frequency, we can apply the Markov property to equation (\ref{41}), to get,
 \begin{equation}\label{42}
-         V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[P(y_{tk}, x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
+         V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[\mathbb P(y_{tk}, x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
 \end{equation}
 Simplifying the conditional even further, we have,
 \begin{equation}\label{43}
 \begin{aligned}
-    V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[P(y_{tk}|x_{tk}=r,x_{t-1,k}=m,x_{t,k-1}=n)P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)\\P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
+    V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[\mathbb P(y_{tk}|x_{tk}=r,x_{t-1,k}=m,x_{t,k-1}=n)\mathbb P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)\\\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
 \end{aligned}
 \end{equation}
 Since the observation in location $(t,k)$ depends only on the PU Occupancy state $x_{t,k}\ =\ r \in \{0,1\}$,
 \begin{equation}\label{44}
-    V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[P(y_{tk}|x_{tk}=r)P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
+    V_{t,k}^{(r)}\ =\ max_{1:t-1,1:k-1}[\mathbb P(y_{tk}|x_{tk}=r)\mathbb P(x_{tk}=r|x_{t-1,k}=m,x_{t,k-1}=n)\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
 \end{equation}
 From the system model definitions of emission and transition probabilities, equation (\ref{44}) can be written as,
 \begin{equation}\label{45}
-    V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{1:t-1,1:k-1}[a_{mnr}P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
+    V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{1:t-1,1:k-1}[a_{mnr}\mathbb P(y_{1:t-1,1:k-1}, x_{1:t-1,1:k-1})]
 \end{equation}
 Factorizing the joint distribution into its independent constituent marginals and splitting the maximization operator, we have,
 \begin{equation}\label{46}
     \begin{aligned}
-         V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{(t,k-1),(t-1,k)}[a_{mnr}\  max_{1:k-1}[P(y_{1:k-2},x_{1:k-1})]max_{1:t-1}[P(y_{1:t-1},x_{1,t-1})]]
+         V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{(t,k-1),(t-1,k)}[a_{mnr}\  max_{1:k-1}[\mathbb P(y_{1:k-2},x_{1:k-1})]max_{1:t-1}[\mathbb P(y_{1:t-1},x_{1,t-1})]]
     \end{aligned}
 \end{equation}
 Using redundancy, equation (\ref{46}) can be written as,
 \begin{equation}\label{47}
     \begin{aligned}
-         V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{m,n}[a_{mnr}max_{1:k-2,1:t-1}[P(y_{1:k-2},y_{t,k-1},y_{1:t-1},x_{1:k-2},x_{t,k-1}=n,x_{1:t-1})]\\max_{1:t-2,1:k-1}[P(y_{1:t-2},y_{t-1,k},y_{1:k-1},x_{1:t-2},x_{t-1,k}=m,x_{1:k-1})]]]
+         V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{m,n}[a_{mnr}max_{1:k-2,1:t-1}[\mathbb P(y_{1:k-2},y_{t,k-1},y_{1:t-1},x_{1:k-2},x_{t,k-1}=n,x_{1:t-1})]\\max_{1:t-2,1:k-1}[\mathbb P(y_{1:t-2},y_{t-1,k},y_{1:k-1},x_{1:t-2},x_{t-1,k}=m,x_{1:k-1})]]]
     \end{aligned}
 \end{equation}
 Consolidating terms inside the joint probabilities, we have,
 \begin{equation}\label{48}
     \begin{aligned}
-         V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{m,n}[a_{mnr}max_{1:k-2,1:t-1}[P(y_{1:k-2,1:t-1},y_{t,k-1},x_{1:k-2,1:t-1},x_{t,k-1}=n)]\\max_{1:t-2,1:k-1}[P(y_{1:t-2,1:k-1},y_{t-1,k},x_{1:t-2,1:k-1},x_{t-1,k}=m)]]]
+         V_{t,k}^{(r)}\ =\ m_r(y_{tk})\ max_{m,n}[a_{mnr}max_{1:k-2,1:t-1}[\mathbb P(y_{1:k-2,1:t-1},y_{t,k-1},x_{1:k-2,1:t-1},x_{t,k-1}=n)]\\max_{1:t-2,1:k-1}[\mathbb P(y_{1:t-2,1:k-1},y_{t-1,k},x_{1:t-2,1:k-1},x_{t-1,k}=m)]]]
     \end{aligned}
 \end{equation}
 Now, we know from equations (\ref{38}) and (\ref{39}) that,
 \begin{equation*}
-   V_{t-1,k}^{(m)}\ =\ max_{1:t-2,1:k-1}[P(y_{1:t-2,1:k-1},x_{1:t-2,1:k-1},y_{t-1,k},x_{t-1,k}=m)]
+   V_{t-1,k}^{(m)}\ =\ max_{1:t-2,1:k-1}[\mathbb P(y_{1:t-2,1:k-1},x_{1:t-2,1:k-1},y_{t-1,k},x_{t-1,k}=m)]
 \end{equation*}
 \begin{equation*}
-    V_{t,k-1}^{(n)}\ =\ max_{1:t-1,1:k-2}[P(y_{1:t-1,1:k-2},x_{1:t-1,1:k-2},y_{t,k-1},x_{t,k-1}=n)]
+    V_{t,k-1}^{(n)}\ =\ max_{1:t-1,1:k-2}[\mathbb P(y_{1:t-1,1:k-2},x_{1:t-1,1:k-2},y_{t,k-1},x_{t,k-1}=n)]
 \end{equation*}
 Using these results in equation (\ref{48}), we get,
 \begin{equation}\label{49}
@@ -637,25 +620,25 @@ Using the analytical equations derived for both the \textbf{Forward Recursion ph
 \textbf{Initialization}: The array of initial probabilities $\Pi$ is known.
 \\\textbf{Forward Recursion}: $V_{t,k}^{(r)}\ =\ m_r(y_{tk})max_{m,n}[a_{mnr}V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}]$
 \\\textbf{Backtrack}: $x_{t-1,k-1}^{(r)*}\ =\ l^*\ =\ argmax_{l}\{a_{mnr}\ V_{t,k-1}^{(n)}V_{t-1,k}^{(m)}\}$
-\\\textbf{Termination}: $P([y_{tk}]\ |\ [x_{tk}])\ =\ max_s\ V_{TK}^{(s)}$
+\\\textbf{Termination}: $\mathbb P([y_{tk}]\ |\ [x_{tk}])\ =\ max_s\ V_{TK}^{(s)}$
 \end{flushleft}
 \textit{This will be implemented in Python and numerical results such as the $Detection\ Accuracy$ of our estimator will be reported}.
 \subsection{Simulation Results}
-The PU Occupancy Behavior Estimation algorithm detailed analytically in the previous subsection is implemented in Python and the Detection Accuracy of the Estimator is plotted against varying $p\ =\ P(Occupied|Idle)\ =\ P(X_j=1|X_i=0)$. Here are some of the simulation parameters:
+The PU Occupancy Behavior Estimation algorithm detailed analytically in the previous subsection is implemented in Python and the Detection Accuracy of the Estimator is plotted against varying $p\ =\ \mathbb P(Occupied|Idle)\ =\ \mathbb P(X_j=1|X_i=0)$. Here are some of the simulation parameters:
 \begin{itemize}
     \item Number of frequency bands/channels = 18
     \item Number of sampling rounds/time indices = 500
     \item Number of algorithm iterations to average the results = 100
     \item The same model parameters are used for both the spatial Markov chain as well as the temporal Markov chain.
-    \[\Pi\ =\ P(Occupied)\ =\ P(X_i=1)\ =\ 0.6\]
-    \[P(Occupied|Idle)\ =\ P(X_j=1|X_i=0)\ =\ p\ is\ varied\ from\ 0.03\ to\ 0.6\ (independence)\]
-    \[P(X_j=1)\ =\ P(X_j=1|X_i=0)P(X_i=0)\ +\ P(X_j=1|X_i=1)P(X_i=1)\]
-    \[\Pi\ =\ p(1-\Pi)\ +\ (1\ -\ q)\Pi\]
-    \[P(Idle|Occupied)\ =\ P(X_j=0|X_i=1)\ =\ q\ =\ \frac{p(1-\Pi)}{\Pi}\ varies\ as\ p\ varies\]
+    \[\Pi\ =\ \mathbb P(Occupied)\ =\ \mathbb P(X_i=1)\ =\ 0.6\]
+    \[\mathbb P(Occupied|Idle)\ =\ \mathbb P(X_j=1|X_i=0)\ =\ p\ is\ varied\ from\ 0.03\ to\ 0.6\ (independence)\]
+    \[\mathbb P(X_j=1)\ =\ \mathbb P(X_j=1|X_i=0)\mathbb P(X_i=0)\ +\ \mathbb P(X_j=1|X_i=1)\mathbb P(X_i=1)\]
+    \[\Pi\ =\ \mathbb P(1-\Pi)\ +\ (1\ -\ q)\Pi\]
+    \[\mathbb P(Idle|Occupied)\ =\ \mathbb P(X_j=0|X_i=1)\ =\ q\ =\ \frac{\mathbb P(1-\Pi)}{\Pi}\ varies\ as\ p\ varies\]
 \end{itemize}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Detection_Accuracy_vs_p_Iteration_1.png}
-\caption{Detection Accuracy v/s $P(Occupied|Idle)\ =\ p$ for a Double Markov chain Viterbi Estimator observing all 18 channels across 500 sampling rounds with Markovian correlation across channel indices and across time indices.}
+\caption{Detection Accuracy v/s $\mathbb P(Occupied|Idle)\ =\ p$ for a Double Markov chain Viterbi Estimator observing all 18 channels across 500 sampling rounds with Markovian correlation across channel indices and across time indices.}
 \label{fig:mesh11}
 \centering
 \end{figure}
@@ -678,7 +661,7 @@ The simulation parameters and methodologies are detailed below.
     \item Markovian correlation across both the time indices as well as the channel indices: The same model \[\theta\ =\ (A,\ B,\ \Pi)\] is used for both the chains.
     \item A customized Viterbi algorithm to account for missing information has been implemented in Python in order to verify the functionality of the proposed algorithm.
     \item A Channel Selection Strategy Generator has been implemented in Python to emulate a Channel Recommendation System such as an RL agent or a Multi-Armed Bandit.
-    \item \[P(Occupied\ |\ Idle)\ =\ p\ =\ P(X_j=1\ |\ X_i=1)\] is varied from $0.03$ to \[P(Occupied)\ =\ P(X_i=1)\ =\ 0.6\] and the corresponding detection accuracies of the sensed and the un-sensed channels are plotted.
+    \item \[\mathbb P(Occupied\ |\ Idle)\ =\ p\ =\ \mathbb P(X_j=1\ |\ X_i=1)\] is varied from $0.03$ to \[\mathbb P(Occupied)\ =\ \mathbb P(X_i=1)\ =\ 0.6\] and the corresponding detection accuracies of the sensed and the un-sensed channels are plotted.
 \end{itemize}
 \section{DARPA SC2 DSRC Incumbent Spectrum Occupancy Behavior}
 The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic scenario is modelled after a WLAN transceiver emulating PU-PU RF communications. The operational requirement of competitor radio nodes in a given DSRC scenario is that there should be no interference with the Incumbents' communications. The center frequency and bandwidth of the DSRC incumbent are not fixed and are not predefined. The competitor radio nodes should detect and workaround the Incumbents' spectrum occupancy behaviour.
@@ -715,7 +698,7 @@ The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic sc
 \begin{enumerate}
     \item There's only one Primary User (PU) in the wideband spectrum of interest.
     \item There's only one Secondary User (SU) making observations of the PU occupancy in the wideband spectrum of interest.
-    \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $E[|X_k(i)|^2]\ =\ 0$.
+    \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $\mathbb E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $\mathbb E[|X_k(i)|^2]\ =\ 0$.
     \item The noise samples $V_k(i)$ are i.i.d Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
     \item Furthermore, the PU occupancy behavior is assumed to be static during the estimation period of our algorithm.
     \item A Markov chain exists across the channel indices whose parameters are to be estimated in this section.
@@ -733,8 +716,8 @@ where,
 \\$i\ \in\ \{1,\ 2,\ 3,\ .........,\ T\}$ represents the index of the observation
 \\\textbf{NOTE}: Multiple observations of all the frequency bands are made by the SU for training the algorithm and averaging the results over numerous iterations. However, the PU occupancy behavior in this case remains static over time.
 \\$k\ \in\ \{1,\ 2,\ 3,\ .........,\ K\}$ represents the index of the sub-band
-\\$V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
-\\$H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
+\\$V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
+\\$H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
 \\The PU occupancy behavior in each sub-band $b_k\ \in\ B$ is modelled as $X_k$ taking two possible values $0\ and\ 1$. Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components can be modelled as a vector of size $|B|\ =\ K$ such that,
 \begin{equation}\label{53}
     \vec{X} = [X_1, X_2, X_3, ........., X_K]^T \in \{0,1\}^K
@@ -742,44 +725,44 @@ where,
 \subsection{System Model}
 The true states encapsulate the actual behavior of the PU which is an unobserved Markov process and the measurements at the SU are noisy observations of the true states which are modelled to be the observed states of a Hidden Markov Model.
 For some sub-band $j\ \in\ \{2,\ 3,\ 4,\ .....,\ K\}$, the system is assumed to satisfy the Markov property as shown below,
-\[P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
-\[And,\ we\ will\ use\ P(X_1(i))\ for\ j=1.\]
+\[\mathbb P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ \mathbb P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
+\[And,\ we\ will\ use\ \mathbb P(X_1(i))\ for\ j=1.\]
 Since \textbf{the PU is assumed to be static in the period of our estimation}, we can write the above assumption as,
-\[P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ P(X_{j}|X_{j-1}),\ for\ j>1,\]
-\[And,\ we\ will\ use\ P(X_1)\ for\ j=1.\]
+\[\mathbb P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ \mathbb P(X_{j}|X_{j-1}),\ for\ j>1,\]
+\[And,\ we\ will\ use\ \mathbb P(X_1)\ for\ j=1.\]
 Now, we know that,
 \[\vec{X}\ =\ [X_1,\ X_2,\ X_3,\ ......,\ X_K]^T\] which realizes as,
 \[\vec{x}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\]
 So, the probability of the realized state sequence (i.e. the path) is given as,
 \begin{equation}\label{54}
-    P(\vec{X}=\vec{x}) = P(X_1=x_1) \prod_{k=2}^{K} P(X_k=x_k|X_{k-1}=x_{k-1})
+    \mathbb P(\vec{X}=\vec{x}) = \mathbb P(X_1=x_1) \prod_{k=2}^{K} \mathbb P(X_k=x_k|X_{k-1}=x_{k-1})
 \end{equation}
 Now, let's expand on the observation model. With a realization $x_k\ in\ \{0,1\}$ of $X_k$, we have from assumption 3 that,
-\[E[|X_k(i)|^2]\ =\ x_k,\ given\ X_k\ during\ observation\ cycle\ i\ has\ realized\ as\ x_k\]
+\[\mathbb E[|X_k(i)|^2]\ =\ x_k,\ given\ X_k\ during\ observation\ cycle\ i\ has\ realized\ as\ x_k\]
 Taking the expectation operator on both sides of equation (\ref{52}) given $X_k$ has realized as $x_k$, we have,
-\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_kx_k]\ +\ E[V_k(i)]\]
-\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ E[H_k]E[x_k]\ +\ E[V_k(i)]\]
-\[E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ 0\ +\ 0\]
+\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ \mathbb E[H_kx_k]\ +\ \mathbb E[V_k(i)]\]
+\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ \mathbb E[H_k]\mathbb E[x_k]\ +\ \mathbb E[V_k(i)]\]
+\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ 0\ +\ 0\]
 \begin{equation}\label{55}
-    E[Y_k(i) | X_k(i) = x_k] = 0
+    \mathbb E[Y_k(i) | X_k(i) = x_k] = 0
 \end{equation}
-because, as already discussed, $V_k(i)\ \sim\ \mathcal{N}(0,\ \sigma_V^2)$ and $H_k\ \sim\ \mathcal{N}(0,\ \sigma_H^2)$.
+because, as already discussed, $V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ and $H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$.
 \\Furthermore, the variance of $Y_k(i)$ given $X_k$ at observation cycle $i$ has realized as $x_k$, is calculated to be, 
 \begin{equation*}
-    Var[Y_k(i) | X_k(i) = x_k] = E[(Y_k(i) | X_k(i) = x_k)^2] - [E[Y_k(i) | X_k(i) = x_k]]^2
+    Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[(Y_k(i) | X_k(i) = x_k)^2] - [\mathbb E[Y_k(i) | X_k(i) = x_k]]^2
 \end{equation*}
 \begin{equation*}
-    Var[Y_k(i) | X_k(i) = x_k] = E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2H_kX_k(i)V_k(i)] - (0)^2
+    Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2H_kX_k(i)V_k(i)] - (0)^2
 \end{equation*}
 \begin{equation*}
-    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2E[|X_k(i)|^2] + \sigma_V^2 + 2E[H_k]E[X_k(i)]E[V_k(i)]
+    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2\mathbb E[|X_k(i)|^2] + \sigma_V^2 + 2\mathbb E[H_k]\mathbb E[X_k(i)]\mathbb E[V_k(i)]
 \end{equation*}
 \begin{equation}\label{56}
     Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2x_k + \sigma_V^2
 \end{equation}
 Therefore, the emission probabilities can be extracted as follows,
 \begin{equation}\label{57}
-    m_{X_k(i)=x_k=l}(Y_k(i)=y_k)\ \sim \mathcal{N}(0,\ \sigma_H^2l + \sigma_V^2)
+    m_{X_k(i)=x_k=l}(Y_k(i)=y_k)\ \sim \mathcal{CN}(0,\ \sigma_H^2l + \sigma_V^2)
 \end{equation}
 The state transition probabilities of this Markov chain across the channel indices are unknown and we will estimate the state transition probabilities matrix using the estimator detailed in subsection D.
 Let us define a few other terms in order to proceed.
@@ -787,9 +770,9 @@ Let us define a few other terms in order to proceed.
     A\ =\ \{a_{rl}\}\ is\ the\ state\ transition\ probability\ matrix
 \end{equation}
 where,
-\[a_{rl}\ =\ P(X_j=l\ |\ X_i=r)\]
+\[a_{rl}\ =\ \mathbb P(X_j=l\ |\ X_i=r)\]
 \begin{equation}\label{59}
-    \Pi\ =\ P(X_1\ =\ 1)\ is\ the\ initial\ PU\ occupancy\ probability
+    \Pi\ =\ \mathbb P(X_1\ =\ 1)\ is\ the\ initial\ PU\ occupancy\ probability
 \end{equation}
 \subsection{The Estimator}
 Before diving into the algorithm, let us first define the Forward and Backward probabilities that will be employed in our estimation algorithm.
@@ -799,133 +782,133 @@ Let,
 \subsubsection{Forward Probabilities}
 Let, $F(j,\ l)$ represent the probability of being in state $x_j=l$ after observing $y_1,\ y_2,\ y_3,\ ......,\ y_i,\ y_j$.
 \begin{equation}\label{60}
-    F(j,\ l)\ \triangleq \ P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l)
+    F(j,\ l)\ \triangleq \ \mathbb P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l)
 \end{equation}
 Using the definition of Marginal Probability, equation (\ref{60}) can be written as,
 \begin{equation}\label{61}
-    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l,\ x_i=r)
+    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ \mathbb P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l,\ x_i=r)
 \end{equation}
 Using the definition of conditional probability, equation (\ref{61}) can be written as,
 \begin{equation}\label{62}
-    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ P(x_j=l,\ y_j\ |\ y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)P(y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)
+    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ \mathbb P(x_j=l,\ y_j\ |\ y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)\mathbb P(y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)
 \end{equation}
 Using the Markov property and definition of Forward Probability outlined in equation (\ref{60}), we can write equation (\ref{62}) as follows,
 \begin{equation}\label{63}
-    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ P(x_j=l,\ y_j\ |\ x_i=r)F(i,\ r)
+    F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ \mathbb P(x_j=l,\ y_j\ |\ x_i=r)F(i,\ r)
 \end{equation}
 \subsubsection{Backward Probabilities}
 Let $B(j,\ r)$ represent the probability of observing $y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K$ given state $x_i\ =\ r$.
 \begin{equation}\label{64}
-    B(j,\ r)\ \triangleq\ P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ x_i\ =\ r)
+    B(j,\ r)\ \triangleq\ \mathbb P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ x_i\ =\ r)
 \end{equation}
 Using the definition of Marginal Probabilities,
 \begin{equation}\label{65}
-    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K,\ x_j=l\ |\ x_i\ =\ r)
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K,\ x_j=l\ |\ x_i\ =\ r)
 \end{equation}
 Now, re-arranging the terms in equation (\ref{65}), we get,
 \begin{equation}\label{66}
-    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_{j+1},\ y_{j+2},\ ......,\ y_K,\ y_j,\ x_j=l\ |\ x_i\ =\ r)
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_{j+1},\ y_{j+2},\ ......,\ y_K,\ y_j,\ x_j=l\ |\ x_i\ =\ r)
 \end{equation}
 Now, we know that,
 \begin{equation*}
-    P(A,\ B\ |\ C)\ =\ P(A\ |\ B,\ C)P(B\ |\ C)
+    \mathbb P(A,\ B\ |\ C)\ =\ \mathbb P(A\ |\ B,\ C)\mathbb P(B\ |\ C)
 \end{equation*}
 Using this, we can write equation (\ref{66}) as,
 \begin{equation}\label{67}
-    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ y_j,\ x_j=l,\ x_i\ =\ r)P(y_j,\ x_j=l\ |\ x_i=r)
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ y_j,\ x_j=l,\ x_i\ =\ r)\mathbb P(y_j,\ x_j=l\ |\ x_i=r)
 \end{equation}
 Now, using the Markov property, equation (\ref{67}) can be written as,
 \begin{equation}\label{68}
-    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |x_j=l)P(y_j,\ x_j=l\ |\ x_i=r)
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |x_j=l)\mathbb P(y_j,\ x_j=l\ |\ x_i=r)
 \end{equation}
 Now, using the definition of Backward Probability outlined in equation (\ref{64}),
 \begin{equation}\label{69}
-    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} B(j+1,\ l)P(y_j,\ x_j=l\ |\ x_i=r)
+    B(j,\ r)\ =\ \sum_{l\in\{0,1\}} B(j+1,\ l)\mathbb P(y_j,\ x_j=l\ |\ x_i=r)
 \end{equation}
 \subsubsection{Deriving the analytical expressions for the parameter estimation algorithm}
-Equations (\ref{63}) and (\ref{69}) represent a \textbf{Cross Iteration Dependency Relationship} between Forward Probabilities across adjacent channels and between Backward Probabilities across adjacent channels, respectively. Both equations (\ref{63}) and (\ref{69}) have a common term, i.e. $P(x_j=l,\ y_j\ |\ x_i=r)$ which can be simplified for our estimation as follows.
+Equations (\ref{63}) and (\ref{69}) represent a \textbf{Cross Iteration Dependency Relationship} between Forward Probabilities across adjacent channels and between Backward Probabilities across adjacent channels, respectively. Both equations (\ref{63}) and (\ref{69}) have a common term, i.e. $\mathbb P(x_j=l,\ y_j\ |\ x_i=r)$ which can be simplified for our estimation as follows.
 \\Using,
 \begin{equation*}
-    P(A,\ B\ |\ C)\ =\ P(B\ |\ A,\ C)P(A\ |\ C)
+    \mathbb P(A,\ B\ |\ C)\ =\ \mathbb P(B\ |\ A,\ C)\mathbb P(A\ |\ C)
 \end{equation*}
 The common term can be written as,
 \begin{equation}\label{70}
-    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ P(y_j\ |\ x_j=l,\ x_i=r)P(x_j=l\ |\ x_i=r)
+    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \mathbb P(y_j\ |\ x_j=l,\ x_i=r)\mathbb P(x_j=l\ |\ x_i=r)
 \end{equation}
 Since, observation $y_j$ depends only on the state of channel $j$, i.e. $x_j$ and using our System Model, equation (\ref{70}) can be written as,
 \begin{equation}\label{71}
-    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ m_{l}(y_j)a_{rl}
+    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ m_{l}(y_j)a_{rl}
 \end{equation}
 We know the emission probabilities from equation (\ref{57}) as,
-\[m_l(y_j)\ \sim\ \mathcal{N}(0,\ \sigma_H^2l + \sigma_V^2)\]
-Now, we can find a reasonably good estimate of $P(x_j=l,\ y_j\ |\ x_i=r)$ using the following expression.
+\[m_l(y_j)\ \sim\ \mathcal{CN}(0,\ \sigma_H^2l + \sigma_V^2)\]
+Now, we can find a reasonably good estimate of $\mathbb P(x_j=l,\ y_j\ |\ x_i=r)$ using the following expression.
 \begin{equation*}
-    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{number\ of\ transitions\ from\ x_i=r\ to\ x_j=l\ emitting\ symbol\ y_j}{total\ number\ of\ transitions\ from\ x_i=r}
+    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{number\ of\ transitions\ from\ x_i=r\ to\ x_j=l\ emitting\ symbol\ y_j}{total\ number\ of\ transitions\ from\ x_i=r}
 \end{equation*}
 Mathematically, the above equation can be written as,
 \begin{equation}\label{72}
-    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}} n(x_i=r,\Tilde{y},x_j=s)}
+    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}} n(x_i=r,\Tilde{y},x_j=s)}
 \end{equation}
-Assuming we have multiple estimates of the state sequence, we can weight the count using the probability of that state sequence, i.e. $P(path)\ =\ P(\vec{X}=\vec{x}\ |\ \vec{Y}=\vec{y})$,
+Assuming we have multiple estimates of the state sequence, we can weight the count using the probability of that state sequence, i.e. $\mathbb P(path)\ =\ \mathbb P(\vec{X}=\vec{x}\ |\ \vec{Y}=\vec{y})$,
 \begin{equation}\label{73}
-    P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}
+    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}
 \end{equation}
-Now, the term $\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)$ which is common in both the numerator and denominator can be expressed using the definition of Conditional Probability as follows.
+Now, the term $\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)$ which is common in both the numerator and denominator can be expressed using the definition of Conditional Probability as follows.
 \begin{equation}\label{74}
-    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{\vec{x}}\ P(\vec{x},\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)
+    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{\vec{x}}\ \mathbb P(\vec{x},\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)
 \end{equation}
 Equation (\ref{74}) can now be written as,
 \begin{equation}\label{75}
-    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{\vec{x}}\ \sum_{k=0}^{n}\ P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
+    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{\vec{x}}\ \sum_{k=0}^{n}\ \mathbb P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
 \end{equation}
 Re-arranging the summation operators,
 \begin{equation}\label{76}
-    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ \sum_{\vec{x}}\ P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
+    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \sum_{\vec{x}}\ \mathbb P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
 \end{equation}
 Using the definition of Marginal Probability, we get,
 \begin{equation}\label{77}
-    \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(\vec{y},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j)
+    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(\vec{y},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j)
 \end{equation}
 Now, equation (\ref{77}) can be re-written as follows,
 \begin{equation}\label{78}
     \begin{aligned}
-        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j,\\y_{k+1},\ y_{k+2},\ ...,\ y_K)
+        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j,\\y_{k+1},\ y_{k+2},\ ...,\ y_K)
     \end{aligned}
 \end{equation}
 Extracting the independent terms, equation (\ref{78}) can be written as,
 \begin{equation}\label{79}
     \begin{aligned}
-        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\P(x_{k}=l,\ y_k=y_j\ |\ y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
+        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\\mathbb P(x_{k}=l,\ y_k=y_j\ |\ y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\\mathbb P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
     \end{aligned}
 \end{equation}
 Using the Markov property, equation (\ref{79}) can be written as follows,
 \begin{equation}\label{80}
     \begin{aligned}
-        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)\\P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
+        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\\mathbb P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)\\\mathbb P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
     \end{aligned}
 \end{equation}
 Based on our definitions of Forward Probability and Backward Probability outlined in equations (\ref{60}) and (\ref{64}), we can write equation (\ref{80}) as follows,
 \begin{equation}\label{81}
     \begin{aligned}
-        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)B(k+1,\ l)
+        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)\mathbb P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)B(k+1,\ l)
     \end{aligned}
 \end{equation}
 Using equation (\ref{71}), equation (\ref{81}) can be written as,
 \begin{equation}\label{82}
     \begin{aligned}
-        \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)
+        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)
     \end{aligned}
 \end{equation}
 \subsection{The Algorithm}
 Based on the analytical expressions derived in the previous subsection, we have arrived at the following algorithm.
-\\\textbf{Initialization}: Initial estimates of $a_{rl}\ =\ P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$
-\\\textbf{Iteration}: \[a_{rl}\ =\ P(x_j=l\ |\ x_i=r)\ =\ \frac{1}{m_l(y_j)}\ \frac{\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}\]
+\\\textbf{Initialization}: Initial estimates of $a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$
+\\\textbf{Iteration}: \[a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r)\ =\ \frac{1}{m_l(y_j)}\ \frac{\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}\]
 where,
-\[\sum_{\vec{x}}\ P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)\]
-The new estimates of $a_{rl}\ =\ P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$ are then used in the next iteration.
+\[\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)\]
+The new estimates of $a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$ are then used in the next iteration.
 \\Concretely,
 \[a_{rl}(t+1)\ =\ \frac{a_{rl}(t)\sum_{k=0}^{n}\ F(k-1,\ r)B(k+1,\ l)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ m_s(\Tilde{y})a_{rs}(t)\sum_{k=0}^{n}\ F(k-1,\ r)B(k+1,\ s)}\]
-\\\textbf{Termination}: Terminate the algorithm when there's no appreciable change in the estimates of $a_{rl}\ =\ P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$. Mathematically speaking, terminate the algorithm if,
+\\\textbf{Termination}: Terminate the algorithm when there's no appreciable change in the estimates of $a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$. Mathematically speaking, terminate the algorithm if,
 \[|a_{rl}(t+1)\ -\ a_{rl}(t)|\ <\ \epsilon,\ where,\ t\ is\ the\ iteration\ counter,\ \forall\ l,\ r\in\{0,1\},\ and\ \forall\ \epsilon\ >\ 0\]
 \subsection{Simulation Results}
 The algorithm outlined in the previous subsection will be implemented in Python and its results would be detailed in this subsection.

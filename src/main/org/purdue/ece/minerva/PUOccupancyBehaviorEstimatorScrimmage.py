@@ -233,7 +233,7 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
                             accuracies += 1
         except Exception as e:
             print(
-                '[ERROR] PUOccupancyBehaviorEstimatorScrimmage get_detection_accuracy: Exception caught while '
+                '[ERROR] PUOccupancyBehaviorEstimatorScrimmage get_estimation_accuracy: Exception caught while '
                 'calculating detection accuracy of the estimator- [', e, ']')
         return accuracies / _count
 

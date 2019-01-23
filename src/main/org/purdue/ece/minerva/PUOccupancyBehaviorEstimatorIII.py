@@ -33,7 +33,9 @@ class PUOccupancyBehaviorEstimatorIII(object):
     VARIANCE_OF_AWGN = 1
 
     # Variance of the Channel Impulse Response which is a zero mean Gaussian
-    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
+    # SNR = 20 dB
+    # SNR = 10log_10(100/1) = 10 * 2 = 20 dB
+    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 100
 
     # Number of frequency bands/channels in the wideband spectrum of interest
     NUMBER_OF_FREQUENCY_BANDS = 18
@@ -50,7 +52,7 @@ class PUOccupancyBehaviorEstimatorIII(object):
 
     # Number of trials to smoothen the Detection Accuracy v/s P(1|0) curve
     # Iterating the estimation over numerous trials to average out the inconsistencies
-    NUMBER_OF_CYCLES = 400
+    NUMBER_OF_CYCLES = 50
 
     # Initialization Sequence
     def __init__(self):
@@ -131,7 +133,6 @@ class PUOccupancyBehaviorEstimatorIII(object):
                 else:
                     previous_state = 0
                 self.true_pu_occupancy_states[channel_index].append(previous_state)
-                # TODO: Maybe return the output instead of doing a instance-level in-situ update
 
     # Get the observations vector
     # Generate the observations of all the bands for a number of observation rounds or cycles
@@ -141,12 +142,21 @@ class PUOccupancyBehaviorEstimatorIII(object):
         # ... and a channel impulse response sample between that SU receiver and the radio environment
         for frequency_band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
             mu_noise, std_noise = 0, numpy.sqrt(self.VARIANCE_OF_AWGN)
-            self.noise_samples[frequency_band] = numpy.random.normal(mu_noise, std_noise, self.NUMBER_OF_SAMPLES)
+            # The Re and Im parts of the noise samples are IID and distributed as N(0,\sigma_V^2/2)
+            real_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)), self.NUMBER_OF_SAMPLES)
+            img_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)), self.NUMBER_OF_SAMPLES)
+            self.noise_samples[frequency_band] = real_noise_samples + (1j * img_noise_samples)
             mu_channel_impulse_response, std_channel_impulse_response = 0, numpy.sqrt(
                 self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE)
-            self.channel_impulse_response_samples[frequency_band] = numpy.random.normal(mu_channel_impulse_response,
-                                                                                        std_channel_impulse_response,
-                                                                                        self.NUMBER_OF_SAMPLES)
+            # The Re and Im parts of the channel impulse response samples are IID and distributed as N(0,\sigma_H^2/2)
+            real_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
+                                                                        (std_channel_impulse_response / numpy.sqrt(2)),
+                                                                        self.NUMBER_OF_SAMPLES)
+            img_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
+                                                                       (std_channel_impulse_response / numpy.sqrt(2)),
+                                                                       self.NUMBER_OF_SAMPLES)
+            self.channel_impulse_response_samples[frequency_band] = real_channel_impulse_response_samples + (
+                    1j * img_channel_impulse_response_samples)
         # Re-arranging the vectors
         for band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
             obs_per_band = list()
@@ -178,165 +188,175 @@ class PUOccupancyBehaviorEstimatorIII(object):
 
     # Get the Emission Probabilities -> P(y|x)
     def get_emission_probabilities(self, state, observation_sample):
-        return scipy.stats.norm(0, numpy.sqrt(
-            (self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE * state) + self.VARIANCE_OF_AWGN)).pdf(
-            observation_sample)
+        # Idea: P(A, B|C) = P(A|B, C)P(B|C) = P(A|C)P(B|C) because the real and imaginary components are independent
+        # P(\Re(y_k(i)), \Im(y_k(i))|x_k) = P(\Re(y_k(i))|x_k)P(\Im(y_k(i)|x_k)
+        # The emission probability from the real component
+        emission_real_gaussian_component = scipy.stats.norm(0, numpy.sqrt(
+            ((self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE / 2) * state) + (self.VARIANCE_OF_AWGN / 2))).pdf(
+            observation_sample.real)
+        # The emission probability from the imaginary component
+        emission_imaginary_gaussian_component = scipy.stats.norm(0, numpy.sqrt(
+            ((self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE / 2) * state) + (self.VARIANCE_OF_AWGN / 2))).pdf(
+            observation_sample.imag)
+        return emission_real_gaussian_component * emission_imaginary_gaussian_component
 
-    # Calculate the detection accuracy
-    def get_detection_accuracy(self, estimated_states):
+    # Evaluate the Estimation Accuracy
+    # P(\hat{X_k} = x_k | X_k = x_k) \forall k \in \{0, 1, 2, ...., K-1\} and x_k \in \{0, 1\}
+    # Relative Frequency approach to estimate this parameter
+    def get_estimation_accuracy(self, estimated_states):
+        total_count = 0
         accuracies = 0
-        try:
-            for _counter in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
-                for _round in range(0, self.NUMBER_OF_SAMPLES):
-                    if self.true_pu_occupancy_states[_counter][_round] == estimated_states[_counter][_round]:
-                        accuracies += 1
-        except Exception as e:
-            print(
-                '[ERROR] PUOccupancyBehaviorEstimatorIII get_detection_accuracy: Exception caught while calculating '
-                'detection accuracy of the estimator- [', e, ']')
-        return accuracies / (self.NUMBER_OF_FREQUENCY_BANDS * self.NUMBER_OF_SAMPLES)
+        for _counter in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            for _round in range(0, self.NUMBER_OF_SAMPLES):
+                total_count += 1
+                if self.true_pu_occupancy_states[_counter][_round] == estimated_states[_counter][_round]:
+                    accuracies += 1
+        return accuracies / total_count
+
+    # Evaluate the Probability of Detection P_D
+    # P(\hat{X_k} = 1 | X_k = 1) \forall k \in \{0, 1, 2, ...., K-1\}
+    # Relative Frequency approach to estimate this parameter
+    def get_probability_of_detection(self, estimated_states):
+        occupancies = 0
+        number_of_detections = 0
+        for channel_index in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            for time_index in range(0, self.NUMBER_OF_SAMPLES):
+                pu_state = self.true_pu_occupancy_states[channel_index][time_index]
+                if pu_state == 1:
+                    occupancies += 1
+                    if estimated_states[channel_index][time_index] == pu_state:
+                        number_of_detections += 1
+        if occupancies == 0:
+            return 1
+        return number_of_detections / occupancies
+
+    # Evaluate the Probability of False Alarm P_FA
+    # P(\hat{X_k} = 1 | X_k = 0) \forall k \in \{0, 1, 2, ...., K-1\}
+    # Relative Frequency approach to estimate this parameter
+    def get_probability_of_false_alarm(self, estimated_states):
+        idle_count = 0
+        number_of_false_alarms = 0
+        for channel_index in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            for time_index in range(0, self.NUMBER_OF_SAMPLES):
+                pu_state = self.true_pu_occupancy_states[channel_index][time_index]
+                if pu_state == 0:
+                    idle_count += 1
+                    if estimated_states[channel_index][time_index] == 1:
+                        number_of_false_alarms += 1
+        if idle_count == 0:
+            return 0
+        return number_of_false_alarms / idle_count
+
+    # Evaluate the Probability of Missed Detection P_MD
+    # P(\hat{X_k} = 0 | X_k = 1) \forall k \in \{0, 1, 2, ...., K-1\}
+    # Relative Frequency approach to estimate this parameter
+    def get_probability_of_missed_detection(self, estimated_states):
+        occupancies = 0
+        number_of_missed_detections = 0
+        for channel_index in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            for time_index in range(0, self.NUMBER_OF_SAMPLES):
+                pu_state = self.true_pu_occupancy_states[channel_index][time_index]
+                if pu_state == 1:
+                    occupancies += 1
+                    if estimated_states[channel_index][time_index] == 0:
+                        number_of_missed_detections += 1
+        if occupancies == 0:
+            return 0
+        return number_of_missed_detections / occupancies
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
-    # TODO: Remove unnecessary comments and Verified tags which were added in because the code is too complex to keep...
-    # ...track of without them...Remove them once you get the hang of it!
-    # TODO: Refactor this method - it's way too huge!
+    # Output the collection consisting of the parameters of interest
     def estimate_pu_occupancy_states(self):
         # Estimated states - kxt matrix
-        # Verified
         estimated_states = [[] for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
         # A value function collection to store and index the calculated value functions across t and k
-        # Verified
         value_function_collection = [[dict() for x in range(self.NUMBER_OF_SAMPLES)] for k in
                                      range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
         # t = 0 and k = 0 - No previous state to base the Markovian Correlation on in either dimension
-        # Verified
         for state in OccupancyState:
-            # Verified - [0][0] is being finished here because there's no Markovian correlation that exists here
             current_value = self.get_emission_probabilities(state.value, self.observation_samples[0][0]) * \
                             self.get_start_probabilities(state.name)
-            # Verified
             value_function_collection[0][0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(current_value=current_value,
                                                                                           previous_temporal_state=None,
                                                                                           previous_spatial_state=None)
         # First row - Only temporal correlation
-        # Verified
         i = 0
-        # Verified
         for j in range(1, self.NUMBER_OF_SAMPLES):
             # Trying to find the max pointer here ...
-            # Verified
             for state in OccupancyState:
                 # Again finishing off the [0] index first
-                # Verified - a_{lr} * V_{j-1}^{(l)}
-                # TODO: max_pointer may be a kind of misnomer here and you may confuse it with the backtrack pointer
                 max_pointer = self.get_transition_probabilities_single(OccupancyState.idle.value,
                                                                        state.value) * \
-                              value_function_collection[i][j - 1][
-                                  OccupancyState.idle.name].current_value
+                              value_function_collection[i][j - 1][OccupancyState.idle.name].current_value
                 # Using IDLE as the confirmed previous state
-                # Verified
                 confirmed_previous_state = OccupancyState.idle.name
-                # Verified
                 for candidate_previous_state in OccupancyState:
-                    # Verified
                     if candidate_previous_state.name == OccupancyState.idle.name:
                         # Already done
-                        # Verified
                         continue
                     else:
-                        # Verified
                         pointer = self.get_transition_probabilities_single(candidate_previous_state.value,
                                                                            state.value) * \
                                   value_function_collection[i][j - 1][
                                       candidate_previous_state.name].current_value
-                        # Verified
                         if pointer > max_pointer:
-                            # Verified
                             max_pointer = pointer
-                            # Verified
                             confirmed_previous_state = candidate_previous_state.name
-                # Verified
                 current_value = max_pointer * self.get_emission_probabilities(state.value,
                                                                               self.observation_samples[
                                                                                   i][j])
-                # Verified
                 value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
                     current_value=current_value, previous_temporal_state=confirmed_previous_state,
                     previous_spatial_state=None)
         # First column - Only spatial correlation
-        # Verified
         j = 0
-        # Verified
         for i in range(1, self.NUMBER_OF_FREQUENCY_BANDS):
             # Trying to find the max pointer here ...
-            # Verified
             for state in OccupancyState:
                 # Again finishing off the [0] index first
-                # Verified
                 max_pointer = self.get_transition_probabilities_single(OccupancyState.idle.value,
                                                                        state.value) * \
                               value_function_collection[i - 1][j][
                                   OccupancyState.idle.name].current_value
-                # Verified
                 confirmed_previous_state = OccupancyState.idle.name
-                # Verified
                 for candidate_previous_state in OccupancyState:
-                    # Verified
                     if candidate_previous_state.name == OccupancyState.idle.name:
                         # Already done
-                        # Verified
                         continue
                     else:
-                        # Verified
                         pointer = self.get_transition_probabilities_single(candidate_previous_state.value,
                                                                            state.value) * \
                                   value_function_collection[i - 1][j][
                                       candidate_previous_state.name].current_value
-                        # Verified
                         if pointer > max_pointer:
-                            # Verified
                             max_pointer = pointer
-                            # Verified
                             confirmed_previous_state = candidate_previous_state.name
-                # Verified
                 current_value = max_pointer * self.get_emission_probabilities(state.value,
                                                                               self.observation_samples[
                                                                                   i][j])
-                # Verified
                 value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
                     current_value=current_value, previous_temporal_state=None,
                     previous_spatial_state=confirmed_previous_state)
         # I'm done with the first row and first column
         # Moving on to the other rows and columns
-        # Verified
         for i in range(1, self.NUMBER_OF_FREQUENCY_BANDS):
-            # Verified
             # For every row, I'm going across laterally (across columns) and populating the value_function_collection
             for j in range(1, self.NUMBER_OF_SAMPLES):
-                # Verified
                 for state in OccupancyState:
                     # Again finishing off the [0] index first
-                    # Verified - Double checked
                     max_pointer = self.get_transition_probabilities(OccupancyState.idle.value,
                                                                     OccupancyState.idle.value, state.value) * \
                                   value_function_collection[i][j - 1][OccupancyState.idle.name].current_value * \
                                   value_function_collection[i - 1][j][OccupancyState.idle.name].current_value
-                    # Verified
                     confirmed_previous_state_temporal = OccupancyState.idle.name
-                    # Verified
                     confirmed_previous_state_spatial = OccupancyState.idle.name
-                    # Verified
                     for candidate_previous_state_temporal in OccupancyState:
-                        # Verified
                         for candidate_previous_state_spatial in OccupancyState:
-                            # Verified - if both are IDLE, I've already covered them
                             if candidate_previous_state_temporal.name == OccupancyState.idle.name and \
                                     candidate_previous_state_spatial.name == OccupancyState.idle.name:
                                 # Already done
-                                # Verified
                                 continue
                             else:
-                                # Verified
                                 pointer = self.get_transition_probabilities(candidate_previous_state_temporal.value,
                                                                             candidate_previous_state_spatial.value,
                                                                             state.value) * \
@@ -344,23 +364,17 @@ class PUOccupancyBehaviorEstimatorIII(object):
                                               candidate_previous_state_temporal.name].current_value * \
                                           value_function_collection[i - 1][j][
                                               candidate_previous_state_spatial.name].current_value
-                                # Verified
                                 if pointer > max_pointer:
-                                    # Verified
                                     max_pointer = pointer
-                                    # Verified
                                     confirmed_previous_state_temporal = candidate_previous_state_temporal.name
-                                    # Verified
                                     confirmed_previous_state_spatial = candidate_previous_state_spatial.name
                     # Now, I have the value function for this i and this j
                     # Populate the value function collection with this value
-                    # Verified
                     # I found maximum of Double Markov Chain value functions from the past and now I'm multiplying it...
                     # ...with the emission probability of this particular observation
                     current_value = max_pointer * self.get_emission_probabilities(state.value,
                                                                                   self.observation_samples[
                                                                                       i][j])
-                    # Verified
                     value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
                         current_value=current_value, previous_temporal_state=confirmed_previous_state_temporal,
                         previous_spatial_state=confirmed_previous_state_spatial)
@@ -368,33 +382,21 @@ class PUOccupancyBehaviorEstimatorIII(object):
         # I have doubts in the backtrack path
         max_value = 0
         # Finding the max value among the named tuples
-        # Verified
         for _value in value_function_collection[-1][-1].values():
-            # Verified
             if _value.current_value > max_value:
-                # Verified
                 max_value = _value.current_value
         # Finding the state corresponding to this max_value and using this as the final confirmed state to ...
         # ...backtrack and find the previous states
-        # Verified
         for k, v in value_function_collection[-1][-1].items():
-            # Verified
             if v.current_value == max_value:
-                # Verified
                 estimated_states[self.NUMBER_OF_FREQUENCY_BANDS - 1].append(
                     self.value_from_name(k))
-                # Verified
                 previous_state_temporal = k
-                # Verified
                 previous_state_spatial = k
-                # Verified
                 break
         # Backtracking
-        # Verified
         for i in range(self.NUMBER_OF_FREQUENCY_BANDS - 1, -1, -1):
-            # Verified
             for j in range(self.NUMBER_OF_SAMPLES - 1, -1, -1):
-                # Verified
                 if len(estimated_states[i]) == 0:
                     estimated_states[i].insert(0, self.value_from_name(
                         value_function_collection[i + 1][j][previous_state_spatial].previous_spatial_state))
@@ -403,12 +405,14 @@ class PUOccupancyBehaviorEstimatorIII(object):
                     continue
                 estimated_states[i].insert(0, self.value_from_name(
                     value_function_collection[i][j][previous_state_temporal].previous_temporal_state))
-                # Verified
                 previous_state_temporal = value_function_collection[i][j][
                     previous_state_temporal].previous_temporal_state
             previous_state_spatial = value_function_collection[i][self.NUMBER_OF_SAMPLES - 1][
                 previous_state_spatial].previous_spatial_state
-        return self.get_detection_accuracy(estimated_states)
+        return {'Estimation_Accuracy': self.get_estimation_accuracy(estimated_states),
+                'Detection_Probability': self.get_probability_of_detection(estimated_states),
+                'False_Alarm_Probability': self.get_probability_of_false_alarm(estimated_states),
+                'Missed_Detection_Probability': self.get_probability_of_missed_detection(estimated_states)}
 
     # Get enumeration field value from name
     @staticmethod
@@ -431,19 +435,79 @@ class PUOccupancyBehaviorEstimatorIII(object):
         print('[INFO] PUOccupancyBehaviorEstimatorIII Clean-up: Cleaning things up ...')
 
 
+# Visualize a plot of Estimation Accuracies v/s P(Occupied|Idle)
+def visualize_estimation_accuracy_plot(p_estimation_x_axis, estimation_accuracies_for_plotting):
+    estimation_fig, estimation_axes = plt.subplots()
+    estimation_axes.plot(p_estimation_x_axis, estimation_accuracies_for_plotting, linestyle='--', linewidth=1.0,
+                         marker='o', color='r')
+    estimation_fig.suptitle(
+        'Estimation Accuracy v P(Occupied|Idle) at P(Occupied)=0.6 with Markovian Correlation across channels and '
+        'across observation rounds', fontsize=7.5)
+    estimation_axes.set_xlabel('P(Occupied | Idle)', fontsize=10)
+    estimation_axes.set_ylabel('Estimation Accuracy', fontsize=10)
+    plt.show()
+
+
+# Visualize a plot of False Alarm Probabilities v/s P(Occupied|Idle)
+def visualize_false_alarm_probability_plot(p_false_alarm_x_axis, false_alarm_probabilities_for_plotting):
+    false_alarm_fig, false_alarm_axes = plt.subplots()
+    false_alarm_axes.plot(p_false_alarm_x_axis, false_alarm_probabilities_for_plotting, linestyle='--', linewidth=1.0,
+                          marker='o', color='b')
+    false_alarm_fig.suptitle('False Alarm Probability v P(Occupied|Idle) at P(Occupied)=0.6 with Markovian Correlation '
+                             'across channels and across observation rounds', fontsize=7.5)
+    false_alarm_axes.set_xlabel('P(Occupied | Idle)', fontsize=10)
+    false_alarm_axes.set_ylabel('Probability of False Alarm', fontsize=10)
+    plt.show()
+
+
+# Visualize a plot of Missed Detection Probabilities v/s P(Occupied|Idle)
+def visualize_missed_detection_probability_plot(p_missed_detection_x_axis, missed_detection_probabilities_for_plotting):
+    missed_detection_fig, missed_detection_axes = plt.subplots()
+    missed_detection_axes.plot(p_missed_detection_x_axis, missed_detection_probabilities_for_plotting, linestyle='--',
+                               linewidth=1.0, marker='o', color='m')
+    missed_detection_fig.suptitle(
+        'Missed Detection Probability v P(Occupied|Idle) at P(Occupied)=0.6 with Markovian Correlation '
+        'across channels and across observation rounds', fontsize=7.5)
+    missed_detection_axes.set_xlabel('P(Occupied | Idle)', fontsize=10)
+    missed_detection_axes.set_ylabel('Probability of Missed Detection', fontsize=10)
+    plt.legend(loc='upper right', prop={'size': 8})
+    plt.show()
+
+
+# Cyclic average evaluation
+def cyclic_average(collection, number_of_internal_collections, number_of_cycles):
+    collection_for_plotting = []
+    for pass_counter in range(0, number_of_internal_collections):
+        _sum = 0
+        for _entry in collection:
+            _sum += _entry[pass_counter]
+        collection_for_plotting.append(_sum / number_of_cycles)
+    return collection_for_plotting
+
+
 # Run Trigger
 if __name__ == '__main__':
-    # Global detection accuracies array
-    global_detection_accuracies = []
-    print(
-        '[INFO] PUOccupancyBehaviorEstimatorIII main: Creating an instance and starting the initialization process ...')
+    # External estimation accuracies array
+    external_estimation_accuracies = []
+    # External detection probabilities array
+    external_detection_probabilities = []
+    # External false_alarm_probabilities array
+    external_false_alarm_probabilities = []
+    # External missed detection probabilities array
+    external_missed_detection_probabilities = []
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorIII()
     # P(1)
     pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
     p_initial = 0.03
     for cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
-        # Internal detection accuracies array
-        local_detection_accuracies = []
+        # Internal estimation accuracies array
+        internal_estimation_accuracies = []
+        # Internal detection probabilities array
+        internal_detection_probabilities = []
+        # Internal false_alarm_probabilities array
+        internal_false_alarm_probabilities = []
+        # Internal missed detection probabilities array
+        internal_missed_detection_probabilities = []
         # P(Occupied|Idle)
         p = p_initial
         # Varying p all the way up to independence
@@ -456,23 +520,27 @@ if __name__ == '__main__':
             # True PU Occupancy State
             puOccupancyBehaviorEstimator.generate_true_pu_occupancy_states(p, q, pi)
             puOccupancyBehaviorEstimator.allocate_observations()
-            local_detection_accuracies.append(puOccupancyBehaviorEstimator.estimate_pu_occupancy_states())
+            obtained_collection = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states()
+            internal_estimation_accuracies.append(obtained_collection['Estimation_Accuracy'])
+            internal_detection_probabilities.append(obtained_collection['Detection_Probability'])
+            internal_false_alarm_probabilities.append(obtained_collection['False_Alarm_Probability'])
+            internal_missed_detection_probabilities.append(obtained_collection['Missed_Detection_Probability'])
             p += p_initial
             puOccupancyBehaviorEstimator.reset()
-        global_detection_accuracies.append(local_detection_accuracies)
-    y_axis = []
-    for _loop_counter in range(0, int(pi / p_initial)):
-        _sum = 0
-        for entry in global_detection_accuracies:
-            _sum = _sum + entry[_loop_counter]
-        y_axis.append(_sum / puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+        external_estimation_accuracies.append(internal_estimation_accuracies)
+        external_detection_probabilities.append(internal_detection_probabilities)
+        external_false_alarm_probabilities.append(internal_false_alarm_probabilities)
+        external_missed_detection_probabilities.append(internal_missed_detection_probabilities)
     x_axis = []
     for value in range(1, int(pi / p_initial) + 1):
         x_axis.append(value * p_initial)
-    fig, ax = plt.subplots()
-    ax.plot(x_axis, y_axis, linestyle='--', linewidth=1.0, marker='o',
-            color='r')
-    fig.suptitle('Detection Accuracy v/s P(Occupied | Idle) at P( Xi = 1 ) = 0.6', fontsize=20)
-    ax.set_xlabel('P(Occupied | Idle)', fontsize=12)
-    ax.set_ylabel('Detection Accuracy', fontsize=12)
-    plt.show()
+    final_frontier = int(pi / p_initial)
+    # Start Plotting
+    visualize_estimation_accuracy_plot(x_axis,
+                                       cyclic_average(external_estimation_accuracies, final_frontier,
+                                                      puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES))
+    visualize_false_alarm_probability_plot(x_axis, cyclic_average(external_false_alarm_probabilities, final_frontier,
+                                                                  puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES))
+    visualize_missed_detection_probability_plot(x_axis,
+                                                cyclic_average(external_missed_detection_probabilities, final_frontier,
+                                                               puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES))

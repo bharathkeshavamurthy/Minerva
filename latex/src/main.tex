@@ -103,7 +103,7 @@ So,
 \begin{equation}\label{4}
     \mathbb P(\vec{X}=\vec{x}) = \mathbb P(X_1=x_1) \prod_{k=2}^{K} \mathbb P(X_k=x_k|X_{k-1}=x_{k-1})
 \end{equation}
-Since $x_k \in \{0,\ 1\},\ \forallk \in \{1,\ 2,\ 3,\ ....,\ K\}$, Let,
+Since $x_k \in \{0,\ 1\},\ k \in \{1,\ 2,\ 3,\ ....,\ K\}$, let,
 \begin{equation*}
     \mathbb P(X_k=1)\ \triangleq\ \Pi, \forall k
 \end{equation*}
@@ -304,7 +304,7 @@ Now, the right-hand side of Equation (\ref{26}) corresponds to the state of the 
 This constitutes an overlapping sub-problems solution which can be solved using Dynamic Programming. The idea is to recursively traverse through the Trellis diagram to find the next state which maximizes the probability of the traversed path. Using the analytical results obtained above, we can now write the algorithm.
 \subsection{The Algorithm}
 \begin{flushleft}
-\textbf{Initialization}: The array of initial probabilities $\Pi$ is known.
+\textbf{Initialization}: Initial probabilities, $\mathbb{P}(X_k\ =\ 1)\ =\ \Pi$ and $\mathbb{P}(X_k\ =\ 0)\ =\ 1-\Pi$ are known.
 \\\textbf{Forward Recursion}: $V_j^{(r)}\ =\ m_r(y_j)\ max_{l}[a_{lr}V_{j-1}^{(l)}]$
 \\\textbf{Backtrack}: $Ptr_j\ =\ argmax_l\ (a_{lr}\ V_{j-1}^{(l)})$ and $x_{i-1}^*\ =\ Ptr_{i}$
 \\\textbf{Termination}: $\mathbb P(\vec{y},\vec{x}^*)\ =\ max_k\ (V_K^{(k)})$
@@ -325,7 +325,7 @@ If $p\ =\ \mathbb P(1|0)$ and $q\ =\ \mathbb P(0|1)$, then we can write the rela
 \textbf{Varying $p$ from $0.030\ to\ \Pi$}, where if $p\ =\ \Pi$ corresponds to independence among bands because $\mathbb P(1|0)\ =\ \mathbb P(1)$ and $\mathbb P(0|1)\ =\ \mathbb P(0)$, we get a plot of $Detection\ Accuracy\ v/s\ p$ as depicted in Figure 3. Multiple independent trials have been run to smooth the curve.
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{DetectionAccuracy_v_p_test_3_final.png}
-\caption{Detection Accuracy v/s p for $1000$ observations per band averaged over 50 independent trials with $\Pi\ =\ 0.60$ and $p$ varied from $0.03$ to $\Pi$. This plot corresponds to a linear noisy observation model with the system obviously modelled as an HMM. The true states for the 18 frequency bands are generated using a custom Markov state generator $\forall p\ and\ \forall q$ with a fixed $\Pi\ =\ 0.6$.}
+\caption{Detection Accuracy v/s p for $1000$ observations per band averaged over 50 independent trials with $\Pi\ =\ 0.60$ and $p$ varied from $0.03$ to $\Pi$. This plot corresponds to a linear noisy observation model with the system modelled as an HMM. The true states for the 18 frequency bands are generated using a custom Markov state generator $\forall p\ and\ \forall q$ with a fixed $\Pi\ =\ 0.6$.}
 \label{fig:mesh3}
 \centering
 \end{figure}
@@ -360,6 +360,10 @@ So,
 \begin{equation}\label{30}
     \mathbb P(\vec{X}=\vec{x}) = \mathbb P(X_1=x_1) \prod_{k=2}^{K} \mathbb P(X_k=x_k|X_{k-1}=x_{k-1})
 \end{equation}
+Moreover, we also assume that the Markov Property is satisfied when we traverse the spectrum in the descending order of the channel indices, i.e, the reverse direction. Mathematically,
+\begin{equation*}
+\mathbb P(\vec{X}=\vec{x})=\mathbb P(X_K=x_K)\prod_{k=1}^{K-1} \mathbb P(X_{k}=x_k|X_{k+1}=x_{k+1})
+\end{equation*}
 \textbf{Assuming there is a single PU and a single SU making observations}, we have, from the observation model,
 \begin{equation}\label{31}
     \mathbb P(Y_k|X_k = x_k)\ \sim \mathcal{CN}(0,\ \sigma_H^2x_k+\sigma_V^2)
@@ -379,7 +383,7 @@ For $X_1 = x_1$, i.e. \textbf{Initialization},
 \[V_1^{(r)}\ =\ \pi_r,\ if\ y_1\ = \phi\]
 where,
 \[m_r(y_1)\ \sim \mathcal{CN}(0,\ \sigma_H^2r+\sigma_V^2),\]
-\[\pi_r\ \in\ \Pi\ ,\ and\]
+\[\pi_r\ =\ \mathbb{P}(X_1\ =\ r)\]
 \[r\ \in\ \{0,\ 1\}\]
 Now, moving on to the \textbf{Forward Recursion aspect},
 \[V_j^{(r)}\ =\ m_r(y_j)\ max_l[a_{lr}V_{j-1}^{(l)}],\ if\ y_j\ \neq\ \phi\]
@@ -463,7 +467,7 @@ Therefore,
 \subsection{System Model}
 The system model comprises a \textbf{2D Markov Chain: one across time and one across frequency bands - all the frequency bands in the wideband spectrum of interest are sensed by the SU in each sampling round $t$}. We'll see the next extension of this work (PU Occupancy Behavior Estimation with Time and Channel Markovian Correlation and Incomplete Information) in Section 4 of this document.
 \\The \textbf{transition probabilities matrix} for PU Occupancy Behavior transitions, i.e $0\longrightarrow1$ or $1\longrightarrow0$ across both time and frequency is given by,
-\[A\ =\ [a_{mnr}]\ such\ that\ a_{mnr}\ =\ \mathbb P(x_{tk}\ =\ r\ |\ x_{t-1,k}\ =\ m,\ x_{t,k-1}\ =\ n]\]
+\[A\ is\ a\ matrix\ of\ elements\ a_{mnr}\ =\ [A]_{mnr}\ such\ that\ a_{mnr}\ =\ \mathbb P(x_{tk}\ =\ r\ |\ x_{t-1,k}\ =\ m,\ x_{t,k-1}\ =\ n)\]
 where,
 \[r,\ m,\ n\ \in\ \{0,1\}\ represents\ the\ PU\ occupancy\ state\ in\ a\ particular\ channel\ at\ a\ particular\ time\]
 \[t\ \in\ \{2,\ 3,\ 4,\ .....,\ T\}\ represents\ the\ temporal\ index\]
@@ -661,7 +665,7 @@ The simulation parameters and methodologies are detailed below.
     \item Markovian correlation across both the time indices as well as the channel indices: The same model \[\theta\ =\ (A,\ B,\ \Pi)\] is used for both the chains.
     \item A customized Viterbi algorithm to account for missing information has been implemented in Python in order to verify the functionality of the proposed algorithm.
     \item A Channel Selection Strategy Generator has been implemented in Python to emulate a Channel Recommendation System such as an RL agent or a Multi-Armed Bandit.
-    \item \[\mathbb P(Occupied\ |\ Idle)\ =\ p\ =\ \mathbb P(X_j=1\ |\ X_i=1)\] is varied from $0.03$ to \[\mathbb P(Occupied)\ =\ \mathbb P(X_i=1)\ =\ 0.6\] and the corresponding detection accuracies of the sensed and the un-sensed channels are plotted.
+    \item \[\mathbb P(Occupied\ |\ Idle)\ =\ p\ =\ \mathbb P(X_j=1\ |\ X_i=0)\] is varied from $0.03$ to \[\mathbb P(Occupied)\ =\ \mathbb P(X_i=1)\ =\ 0.6\] and the corresponding detection accuracies of the sensed and the un-sensed channels are plotted.
 \end{itemize}
 \section{DARPA SC2 DSRC Incumbent Spectrum Occupancy Behavior}
 The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic scenario is modelled after a WLAN transceiver emulating PU-PU RF communications. The operational requirement of competitor radio nodes in a given DSRC scenario is that there should be no interference with the Incumbents' communications. The center frequency and bandwidth of the DSRC incumbent are not fixed and are not predefined. The competitor radio nodes should detect and workaround the Incumbents' spectrum occupancy behaviour.
@@ -694,86 +698,6 @@ The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic sc
 \end{figure}
 \clearpage
 \section{Markov Chain Parameter Estimation: Static PU with Markovian correlation across the channel indices with complete information}
-\subsection{Assumptions}
-\begin{enumerate}
-    \item There's only one Primary User (PU) in the wideband spectrum of interest.
-    \item There's only one Secondary User (SU) making observations of the PU occupancy in the wideband spectrum of interest.
-    \item If $B\ =\ \{b_1,\ b_2,\ b_3,\ .....,\ b_K\}$ represents the set of all sub-bands in the wideband spectrum of interest, then it's assumed that considering energy detection, for any band $b_k\ \in\ B$, $\mathbb E[|X_k(i)|^2]\ =\ 1$ if it is occupied by the PU, else $\mathbb E[|X_k(i)|^2]\ =\ 0$.
-    \item The noise samples $V_k(i)$ are i.i.d Gaussian with zero mean and variance $\sigma_V^2$ independent of PU occupancy state in the wideband spectrum of interest. Furthermore, the noise samples are i.i.d across frequency and across observation rounds.
-    \item Furthermore, the PU occupancy behavior is assumed to be static during the estimation period of our algorithm.
-    \item A Markov chain exists across the channel indices whose parameters are to be estimated in this section.
-\end{enumerate}
-\subsection{Observation Model}
-\begin{equation}\label{51}
-    y(n) = \sum_{m=0}^{M-1} h(m)x(n-m) + v(n)
-\end{equation}
-Here, $y(n)$ is the wideband signal observed at the SU receiver expressed as a convolution of the PU signal $x(n)$ with the channel impulse response $h(n)$ added with a noise term v(n).
-Equation (\ref{51}) can be written in the frequency domain by taking a K-point DFT which decomposes the observed wideband signal into K discrete narrow-band components as shown below,
-\begin{equation}\label{52}
-    Y_k(i) = H_kX_k(i) + V_k(i)
-\end{equation}
-where,
-\\$i\ \in\ \{1,\ 2,\ 3,\ .........,\ T\}$ represents the index of the observation
-\\\textbf{NOTE}: Multiple observations of all the frequency bands are made by the SU for training the algorithm and averaging the results over numerous iterations. However, the PU occupancy behavior in this case remains static over time.
-\\$k\ \in\ \{1,\ 2,\ 3,\ .........,\ K\}$ represents the index of the sub-band
-\\$V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ represents the zero-mean additive Gaussian noise sample
-\\$H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$ represents the $k^{th}$ DFT coefficient of the impulse response $h(n)$ of the channel in between the PU and the SU receiver
-\\The PU occupancy behavior in each sub-band $b_k\ \in\ B$ is modelled as $X_k$ taking two possible values $0\ and\ 1$. Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components can be modelled as a vector of size $|B|\ =\ K$ such that,
-\begin{equation}\label{53}
-    \vec{X} = [X_1, X_2, X_3, ........., X_K]^T \in \{0,1\}^K
-\end{equation}
-\subsection{System Model}
-The true states encapsulate the actual behavior of the PU which is an unobserved Markov process and the measurements at the SU are noisy observations of the true states which are modelled to be the observed states of a Hidden Markov Model.
-For some sub-band $j\ \in\ \{2,\ 3,\ 4,\ .....,\ K\}$, the system is assumed to satisfy the Markov property as shown below,
-\[\mathbb P(X_{j}(i)|X_{j-1}(i),\ X_{j-2}(i),\ .....,\ X_1(i))\ =\ \mathbb P(X_{j}(i)|X_{j-1}(i)),\ for\ j>1,\]
-\[And,\ we\ will\ use\ \mathbb P(X_1(i))\ for\ j=1.\]
-Since \textbf{the PU is assumed to be static in the period of our estimation}, we can write the above assumption as,
-\[\mathbb P(X_{j}|X_{j-1},\ X_{j-2},\ .....,\ X_1)\ =\ \mathbb P(X_{j}|X_{j-1}),\ for\ j>1,\]
-\[And,\ we\ will\ use\ \mathbb P(X_1)\ for\ j=1.\]
-Now, we know that,
-\[\vec{X}\ =\ [X_1,\ X_2,\ X_3,\ ......,\ X_K]^T\] which realizes as,
-\[\vec{x}\ =\ [x_1,\ x_2,\ x_3,\ ......,\ x_K]^T\]
-So, the probability of the realized state sequence (i.e. the path) is given as,
-\begin{equation}\label{54}
-    \mathbb P(\vec{X}=\vec{x}) = \mathbb P(X_1=x_1) \prod_{k=2}^{K} \mathbb P(X_k=x_k|X_{k-1}=x_{k-1})
-\end{equation}
-Now, let's expand on the observation model. With a realization $x_k\ in\ \{0,1\}$ of $X_k$, we have from assumption 3 that,
-\[\mathbb E[|X_k(i)|^2]\ =\ x_k,\ given\ X_k\ during\ observation\ cycle\ i\ has\ realized\ as\ x_k\]
-Taking the expectation operator on both sides of equation (\ref{52}) given $X_k$ has realized as $x_k$, we have,
-\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ \mathbb E[H_kx_k]\ +\ \mathbb E[V_k(i)]\]
-\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ \mathbb E[H_k]\mathbb E[x_k]\ +\ \mathbb E[V_k(i)]\]
-\[\mathbb E[Y_k(i)\ |\ X_k(i)=x_k]\ =\ 0\ +\ 0\]
-\begin{equation}\label{55}
-    \mathbb E[Y_k(i) | X_k(i) = x_k] = 0
-\end{equation}
-because, as already discussed, $V_k(i)\ \sim\ \mathcal{CN}(0,\ \sigma_V^2)$ and $H_k\ \sim\ \mathcal{CN}(0,\ \sigma_H^2)$.
-\\Furthermore, the variance of $Y_k(i)$ given $X_k$ at observation cycle $i$ has realized as $x_k$, is calculated to be, 
-\begin{equation*}
-    Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[(Y_k(i) | X_k(i) = x_k)^2] - [\mathbb E[Y_k(i) | X_k(i) = x_k]]^2
-\end{equation*}
-\begin{equation*}
-    Var[Y_k(i) | X_k(i) = x_k] = \mathbb E[|H_kX_k(i)|^2 + |V_k(i)|^2 + 2H_kX_k(i)V_k(i)] - (0)^2
-\end{equation*}
-\begin{equation*}
-    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2\mathbb E[|X_k(i)|^2] + \sigma_V^2 + 2\mathbb E[H_k]\mathbb E[X_k(i)]\mathbb E[V_k(i)]
-\end{equation*}
-\begin{equation}\label{56}
-    Var[Y_k(i) | X_k(i) = x_k] = \sigma_H^2x_k + \sigma_V^2
-\end{equation}
-Therefore, the emission probabilities can be extracted as follows,
-\begin{equation}\label{57}
-    m_{X_k(i)=x_k=l}(Y_k(i)=y_k)\ \sim \mathcal{CN}(0,\ \sigma_H^2l + \sigma_V^2)
-\end{equation}
-The state transition probabilities of this Markov chain across the channel indices are unknown and we will estimate the state transition probabilities matrix using the estimator detailed in subsection D.
-Let us define a few other terms in order to proceed.
-\begin{equation}\label{58}
-    A\ =\ \{a_{rl}\}\ is\ the\ state\ transition\ probability\ matrix
-\end{equation}
-where,
-\[a_{rl}\ =\ \mathbb P(X_j=l\ |\ X_i=r)\]
-\begin{equation}\label{59}
-    \Pi\ =\ \mathbb P(X_1\ =\ 1)\ is\ the\ initial\ PU\ occupancy\ probability
-\end{equation}
 \subsection{The Estimator}
 Before diving into the algorithm, let us first define the Forward and Backward probabilities that will be employed in our estimation algorithm.
 Let,
@@ -781,135 +705,239 @@ Let,
 \[X_{i+1}\ =\ X_j\ =\ x_j\ be\ the\ PU\ Occupancy\ state\ of\ the\ channel\ adjacent\ to\ channel\ b_i\]
 \subsubsection{Forward Probabilities}
 Let, $F(j,\ l)$ represent the probability of being in state $x_j=l$ after observing $y_1,\ y_2,\ y_3,\ ......,\ y_i,\ y_j$.
-\begin{equation}\label{60}
+\begin{equation}\label{51}
     F(j,\ l)\ \triangleq \ \mathbb P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l)
 \end{equation}
-Using the definition of Marginal Probability, equation (\ref{60}) can be written as,
-\begin{equation}\label{61}
+Using the definition of Marginal Probability, equation (\ref{51}) can be written as,
+\begin{equation}\label{52}
     F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ \mathbb P(y_1,\ y_2,\ y_3,\ ....,\ y_i,\ y_j,\ x_j=l,\ x_i=r)
 \end{equation}
-Using the definition of conditional probability, equation (\ref{61}) can be written as,
-\begin{equation}\label{62}
+Using the definition of conditional probability, equation (\ref{52}) can be written as,
+\begin{equation}\label{53}
     F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ \mathbb P(x_j=l,\ y_j\ |\ y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)\mathbb P(y_1,\ y_2,\ y_3,\ .....,\ y_i,\ x_i=r)
 \end{equation}
-Using the Markov property and definition of Forward Probability outlined in equation (\ref{60}), we can write equation (\ref{62}) as follows,
-\begin{equation}\label{63}
+Using the Markov property and definition of Forward Probability outlined in equation (\ref{51}), we can write equation (\ref{53}) as follows,
+\begin{equation}\label{54}
     F(j,\ l)\ = \ \sum_{r\in\{0,1\}}\ \mathbb P(x_j=l,\ y_j\ |\ x_i=r)F(i,\ r)
 \end{equation}
 \subsubsection{Backward Probabilities}
 Let $B(j,\ r)$ represent the probability of observing $y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K$ given state $x_i\ =\ r$.
-\begin{equation}\label{64}
+\begin{equation}\label{55}
     B(j,\ r)\ \triangleq\ \mathbb P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ x_i\ =\ r)
 \end{equation}
 Using the definition of Marginal Probabilities,
-\begin{equation}\label{65}
+\begin{equation}\label{56}
     B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_j,\ y_{j+1},\ y_{j+2},\ ......,\ y_K,\ x_j=l\ |\ x_i\ =\ r)
 \end{equation}
-Now, re-arranging the terms in equation (\ref{65}), we get,
-\begin{equation}\label{66}
+Now, re-arranging the terms in equation (\ref{56}), we get,
+\begin{equation}\label{57}
     B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_{j+1},\ y_{j+2},\ ......,\ y_K,\ y_j,\ x_j=l\ |\ x_i\ =\ r)
 \end{equation}
 Now, we know that,
 \begin{equation*}
     \mathbb P(A,\ B\ |\ C)\ =\ \mathbb P(A\ |\ B,\ C)\mathbb P(B\ |\ C)
 \end{equation*}
-Using this, we can write equation (\ref{66}) as,
-\begin{equation}\label{67}
+Using this, we can write equation (\ref{57}) as,
+\begin{equation}\label{58}
     B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |\ y_j,\ x_j=l,\ x_i\ =\ r)\mathbb P(y_j,\ x_j=l\ |\ x_i=r)
 \end{equation}
-Now, using the Markov property, equation (\ref{67}) can be written as,
-\begin{equation}\label{68}
+Now, using the Markov property, equation (\ref{58}) can be written as,
+\begin{equation}\label{59}
     B(j,\ r)\ =\ \sum_{l\in\{0,1\}} \mathbb P(y_{j+1},\ y_{j+2},\ ......,\ y_K\ |x_j=l)\mathbb P(y_j,\ x_j=l\ |\ x_i=r)
 \end{equation}
-Now, using the definition of Backward Probability outlined in equation (\ref{64}),
-\begin{equation}\label{69}
+Now, using the definition of Backward Probability outlined in equation (\ref{55}),
+\begin{equation}\label{60}
     B(j,\ r)\ =\ \sum_{l\in\{0,1\}} B(j+1,\ l)\mathbb P(y_j,\ x_j=l\ |\ x_i=r)
 \end{equation}
 \subsubsection{Deriving the analytical expressions for the parameter estimation algorithm}
-Equations (\ref{63}) and (\ref{69}) represent a \textbf{Cross Iteration Dependency Relationship} between Forward Probabilities across adjacent channels and between Backward Probabilities across adjacent channels, respectively. Both equations (\ref{63}) and (\ref{69}) have a common term, i.e. $\mathbb P(x_j=l,\ y_j\ |\ x_i=r)$ which can be simplified for our estimation as follows.
-\\Using,
-\begin{equation*}
-    \mathbb P(A,\ B\ |\ C)\ =\ \mathbb P(B\ |\ A,\ C)\mathbb P(A\ |\ C)
-\end{equation*}
-The common term can be written as,
+The HMM parameter estimation algorithm for our application can be derived using the Expectation-Maximization route.
+\\The optimization objective is as follows,
+\begin{equation}\label{61}
+    A\ =\ argmax_{A}\ \mathbb{P}(\vec{y}\ |\ A)
+\end{equation}
+where,
+\\$A$ is the state transition probability matrix
+\[[A]_{lr}\ =\ a_{lr}\ =\ \mathbb{P}(x_j\ =\ r\ |\ x_i\ =\ l)\]
+Converting this into an $argmax$ operation over log,
+\begin{equation}\label{62}
+    A\ =\ argmax_{A}\ log\ [\mathbb{P}(\vec{y}\ |\ A)]
+\end{equation}
+Using the definition of Marginal Probabilities,
+\begin{equation}\label{63}
+    A\ =\ argmax_{A}\ log\ [\sum_{\vec{x}}\ \mathbb{P}(\vec{x},\ \vec{y}\ |\ A)]
+\end{equation}
+This $argmax$ operation can be done over the joint probability distribution because the conditional is directly proportional to the joint as shown below.
+\begin{equation}\label{64}
+    A\ =\ argmax_{A}\ log\ [\sum_{\vec{x}}\ \mathbb{P}(\vec{x},\ \vec{y},\ A)]
+\end{equation}
+Explicitly specifying the summation range over the set of all possible state sequences,
+\begin{equation}\label{65}
+    A\ =\ argmax_{A}\ log\ [\sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k,\ \vec{y},\ A)]
+\end{equation}
+where,
+\[|X|\ =\ 2^{|B|}\ =\ 2^K\]
+Multiply and divide by $\alpha_k$ where $0 \leq \alpha_k \leq 1$ and $\sum_{k}\ \alpha_k\ =\ 1$ in order to convert equation (\ref{65}) into a form of the Jensen's inequality.
+\begin{equation}\label{66}
+    A\ =\ argmax_{A}\ log\ [\sum_{k\ =\ 1}^{|X|}\ \alpha_k \frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{\alpha_k}]
+\end{equation}
+We know from Jensen's inequality that for any concave function $f(x)$, for any $x_i\ \in\ dom(f)\ (convex)$, and for any $0 \leq\ \theta_i\ \leq\ 1$ such that $\sum_i\ \theta_i\ =\ 1$,
+\[f(\sum_i\ \theta_i x_i)\ \geq\ \sum_i\ \theta_i f(x_i)\]
+Since the log function is concave, we can apply Jensen's inequality to equation (\ref{66}) as follows,
+\begin{equation}\label{67}
+    argmax_{A}\ log\ [\sum_{k\ =\ 1}^{|X|}\ \alpha_k \frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{\alpha_k}]\ \geq\ argmax_A\ \sum_{k=1}^{|X|}\ \alpha_k\ log\ [\frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{\alpha_k}]
+\end{equation}
+Now, $\alpha_k$ can be a Probability Mass Function because,
+\[0\ \leq\ \alpha_k\ \leq\ 1\]
+\[\sum_{k}\ \alpha_k\ =\ 1\]
+Here, equation (\ref{67}) resembles,
+\[f(\mathbb{E}[X])\ \geq\ \mathbb{E}[f(X)]\ for\ a\ concave\ function\ f(x)\]
+The inequality holds only when $X$ is a degenerate random variable.
+So, it is evident from equation (\ref{67}) that in order to ensure that equality holds, 
+\begin{equation}\label{68}
+    \frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{\alpha_k}\ =\ c\ with\ probability\ 1
+\end{equation}
+where, $c$ is a constant.
+\\Therefore,
+\begin{equation}\label{69}
+    \alpha_k\ =\ \frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{c}
+\end{equation}
+We know that,
+\[\sum_k\ \alpha_k\ =\ 1\]
+Using this,
 \begin{equation}\label{70}
-    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \mathbb P(y_j\ |\ x_j=l,\ x_i=r)\mathbb P(x_j=l\ |\ x_i=r)
+    c\ =\ \sum_k\ \mathbb{P}(\vec{x}_k,\ \vec{y},\ A)
 \end{equation}
-Since, observation $y_j$ depends only on the state of channel $j$, i.e. $x_j$ and using our System Model, equation (\ref{70}) can be written as,
+Now, using these results,
 \begin{equation}\label{71}
-    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ m_{l}(y_j)a_{rl}
+    \alpha_k\ =\ \frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{\sum_k\ \mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}
 \end{equation}
-We know the emission probabilities from equation (\ref{57}) as,
-\[m_l(y_j)\ \sim\ \mathcal{CN}(0,\ \sigma_H^2l + \sigma_V^2)\]
-Now, we can find a reasonably good estimate of $\mathbb P(x_j=l,\ y_j\ |\ x_i=r)$ using the following expression.
-\begin{equation*}
-    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{number\ of\ transitions\ from\ x_i=r\ to\ x_j=l\ emitting\ symbol\ y_j}{total\ number\ of\ transitions\ from\ x_i=r}
-\end{equation*}
-Mathematically, the above equation can be written as,
+Using the definition of Marginal Probabilities,
 \begin{equation}\label{72}
-    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}} n(x_i=r,\Tilde{y},x_j=s)}
+    \alpha_k\ =\ \frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{\mathbb{P}(\vec{y},\ A)}\ =\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ A)
 \end{equation}
-Assuming we have multiple estimates of the state sequence, we can weight the count using the probability of that state sequence, i.e. $\mathbb P(path)\ =\ \mathbb P(\vec{X}=\vec{x}\ |\ \vec{Y}=\vec{y})$,
+So, now the optimization problem becomes,
 \begin{equation}\label{73}
-    \mathbb P(x_j=l,\ y_j\ |\ x_i=r)\ =\ \frac{\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}
+    A\ =\ argmax_A\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ log\ [\frac{\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)}{\mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})}]
 \end{equation}
-Now, the term $\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)$ which is common in both the numerator and denominator can be expressed using the definition of Conditional Probability as follows.
+Here, $\hat{A}$ is the previous estimate of the state transition probability matrix [This will turn out to be an iterative algorithm, i.e. the evaluation and re-estimation repeats until suitable convergence].
+We don't care about the denominator in the above optimization problem,
 \begin{equation}\label{74}
-    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{\vec{x}}\ \mathbb P(\vec{x},\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)
+    A\ =\ argmax_A\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ log\ [\mathbb{P}(\vec{x}_k,\ \vec{y},\ A)]
 \end{equation}
-Equation (\ref{74}) can now be written as,
+Using the HMM System Model,
 \begin{equation}\label{75}
-    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{\vec{x}}\ \sum_{k=0}^{n}\ \mathbb P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
+    A\ =\ argmax_A\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ log\ [\prod_{i\ =\ 1}^K\ \mathbb{P}(y_i\ |\ x_i)\ \mathbb{P}(x_i\ |\ x_{i-1},\ \hat{A})]
 \end{equation}
-Re-arranging the summation operators,
+where, if $i\ =\ 1$,
+\[\mathbb{P}(x_i\ |\ x_{i-1},\ \hat{A})\ =\ \mathbb{P}(X_1\ =\ x_1)\]
+Using the properties of logarithms,
 \begin{equation}\label{76}
-    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \sum_{\vec{x}}\ \mathbb P(\vec{x},\ \vec{y},\ x_k=r,\ x_{k+1}=l,\ y_k=y_j)
+    A\ =\ argmax_A\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ \sum_{i\ =\ 1}^K\ log\ [\mathbb{P}(y_i\ |\ x_i)]\ +\ log\ [\mathbb{P}(x_i\ |\ x_{i-1},\ \hat{A})]
 \end{equation}
-Using the definition of Marginal Probability, we get,
+Using indicator random variables to expand the state and observation associations,
 \begin{equation}\label{77}
-    \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(\vec{y},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j)
+    \begin{aligned}
+        A\ =\ argmax_A\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ \sum_{l\ \in\ \{0,\ 1\}}\ \sum_{r\ \in\ \{0,\ 1\}}\ \sum_{i\ =\ 1}^{K}\ \sum_{j\ =\ 1}^{K}\ I\{x_i\ =\ r\ and\ y_j\ =\ y_i\}\ log\ [m_r(y_i)]\ \\+\ I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}\ log\ [a_{lr}]
+    \end{aligned}
 \end{equation}
-Now, equation (\ref{77}) can be re-written as follows,
+Using Lagrange multipliers to find the solution, the Lagrangian is given as follows,
 \begin{equation}\label{78}
     \begin{aligned}
-        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r,\ x_{k}=l,\ y_k=y_j,\\y_{k+1},\ y_{k+2},\ ...,\ y_K)
+        \mathcal{L}\ =\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ \sum_{l\ \in\ \{0,\ 1\}}\ \sum_{r\ \in\ \{0,\ 1\}}\ \sum_{i\ =\ 1}^{K}\ \sum_{j\ =\ 1}^{K}\ I\{x_i\ =\ r\ and\ y_j\ =\ y_i\}\ log\ [m_r(y_i)]\ +\ \\I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}\ log\ [a_{lr}]\ +\ \sum_{l\ \in\ \{0,\ 1\}}\ \lambda_i(1-\sum_{r\ \in\ \{0,\ 1\}}\ a_{lr})
     \end{aligned}
 \end{equation}
-Extracting the independent terms, equation (\ref{78}) can be written as,
+Differentiating with respect to $a_{lr}$ and equating it to 0,
 \begin{equation}\label{79}
-    \begin{aligned}
-        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\\mathbb P(x_{k}=l,\ y_k=y_j\ |\ y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\\mathbb P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
-    \end{aligned}
+    \frac{\partial}{\partial a_{lr}}\mathcal{L}\ =\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ \frac{1}{a_{lr}}\sum_{i\ =\ 1}^{K}\ I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}\ -\ \lambda_i\ =\ 0
 \end{equation}
-Using the Markov property, equation (\ref{79}) can be written as follows,
+Simplifying this, we get,
 \begin{equation}\label{80}
-    \begin{aligned}
-        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ \mathbb P(y_1,\ y_2,\ ...,\ y_{k-1},\ x_{k-1}=r)\\\mathbb P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)\\\mathbb P(y_{k+1},\ y_{k+2},\ ...,\ y_K\ |\ x_k=l)
-    \end{aligned}
+    a_{lr}\ =\ \frac{1}{\lambda_i} \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A}) \sum_{i\ =\ 1}^{K}\ I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}
 \end{equation}
-Based on our definitions of Forward Probability and Backward Probability outlined in equations (\ref{60}) and (\ref{64}), we can write equation (\ref{80}) as follows,
+Differentiating with respect to our Lagrange multiplier $\lambda_i$ and equating it to 0,
 \begin{equation}\label{81}
+    \frac{\partial}{\partial \lambda_i}\mathcal{L}\ =\ (1-\sum_{r\ \in\ \{0,\ 1\}}\ a_{lr}) =\ 0
+\end{equation}
+Simplifying this using equation (\ref{80}), we get,
+\begin{equation}\label{82}
+    \lambda_i\ =\ \sum_{r\ \in\ \{0,\ 1\}}\ \sum_{k\ =\ 1}\ \mathbb{P}(\vec{x}\ |\ \vec{y},\ \hat{A})\ \sum_{i\ =\ 1}^{K}\ I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}
+\end{equation}
+Using the definition of Marginal Probabilities, we can write equation (\ref{82}) as follows,
+\begin{equation}\label{83}
+    \lambda_i\ =\ \sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}\ |\ \vec{y},\ \hat{A})\ \sum_{i\ =\ 1}^{K}\ I\{x_{i-1}\ =\ l\}
+\end{equation}
+Using equation (\ref{83}) in equation (\ref{80}), we get,
+\begin{equation}\label{84}
+    a_{lr}\ =\ \frac{\sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A}) \sum_{i\ =\ 1}^{K}\ I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}}{\sum_{k\ =\ 1}^{|X|}\ \mathbb{P}(\vec{x}\ |\ \vec{y},\ \hat{A})\ \sum_{i\ =\ 1}^{K}\ I\{x_{i-1}\ =\ l\}}
+\end{equation}
+Let's simplify equation (\ref{84}) further to remove the summation over all possible state sequences,
+\begin{equation}\label{85}
+    a_{lr}\ =\ \frac{\sum_{k\ =\ 1}^{|X|}\ \sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{x}_k\ |\ \vec{y},\ \hat{A})\ I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}}{\sum_{k\ =\ 1}^{|X|}\ \sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{x}\ |\ \vec{y},\ \hat{A})\ I\{x_{i-1}\ =\ l\}}
+\end{equation}
+Using the definition of Conditional Probability,
+\begin{equation}\label{86}
+    a_{lr}\ =\ \frac{\sum_{k\ =\ 1}^{|X|}\ \sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{x}_k,\ \vec{y},\ \hat{A})\ I\{x_{i-1}\ =\ l\ and\ x_i\ =\ r\}}{\sum_{k\ =\ 1}^{|X|}\ \sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{x},\ \vec{y},\ \hat{A})\ I\{x_{i-1}\ =\ l\}}
+\end{equation}
+Combining the Indicator with the Joint,
+\begin{equation}\label{87}
+    a_{lr}\ =\ \frac{\sum_{k\ =\ 1}^{|X|}\ \sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{x}_k,\ \vec{y},\ \hat{A},\ x_{i-1}\ =\ l,\ x_i\ =\ r)}{\sum_{k\ =\ 1}^{|X|}\ \sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{x},\ \vec{y},\ \hat{A},\ x_{i-1}\ =\ l)}
+\end{equation}
+Using the definition of Marginal Probabilities,
+\begin{equation}\label{88}
+    a_{lr}\ =\ \frac{\sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{y},\ \hat{A},\ x_{i-1}\ =\ l,\ x_i\ =\ r)}{\sum_{i\ =\ 1}^{K}\ \mathbb{P}(\vec{y},\ \hat{A},\ x_{i-1}\ =\ l)}
+\end{equation}
+Expanding the observation vector and using the definition of Marginal Probabilities to modify the denominator,
+\begin{equation}\label{89}
+    a_{lr}\ =\ \frac{\sum_{i\ =\ 1}^{K}\ \mathbb{P}(y_1,\ y_2,\ ....,\ y_{i-1},\ x_{i-1}\ =\ l,\ y_i,\ x_i\ =\ r,\ y_{i+1},\ y_{i+2},\ ....,\ y_K,\ \hat{A})}{\sum_{r\ \in\ \{0,\ 1\}}\ \sum_{i\ =\ 1}^{K}\ \mathbb{P}(y_1,\ y_2,\ ....,\ y_{i-1},\ x_{i-1}\ =\ l,x_i\ =\ r,\ y_i,\ y_{i+1},\ y_{i+2},\ ....,\ y_K,\ \hat{A})}
+\end{equation}
+Extracting the independent terms and creating conditionals,
+\begin{equation}\label{90}
     \begin{aligned}
-        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)\mathbb P(x_{k}=l,\ y_k=y_j\ |\ x_{k-1}=r)B(k+1,\ l)
+        a_{lr}\ =\ \frac{\sum_{i=1}^{K}\mathbb{P}(y_1,..,y_{i-1},x_{i-1}=l)\mathbb{P}(y_i,x_i=r|y_1,..,y_{i-1},x_{i-1}=l,\hat{A})\mathbb{P}(y_{i+1},..,y_K|x_i=r)}{\sum_{r\in\{0,1\}}\sum_{i=1}^{K}\mathbb{P}(y_1,..,y_{i-1},x_{i-1}=l)\mathbb{P}(x_i=r,y_i|y_1,..,y_{i-1},x_{i-1}=l,\hat{A})\mathbb{P}(y_{i+1},..,y_K|x_i=r)}
     \end{aligned}
 \end{equation}
-Using equation (\ref{71}), equation (\ref{81}) can be written as,
-\begin{equation}\label{82}
+Using the properties of the assumed Markov Chain model,
+\begin{equation}\label{91}
     \begin{aligned}
-        \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)
+        a_{lr}\ =\ \frac{\sum_{i=1}^{K}\mathbb{P}(y_1,..,y_{i-1},x_{i-1}=l)\mathbb{P}(y_i,x_i=r|x_{i-1}=l,\hat{A})\mathbb{P}(y_{i+1},..,y_K|x_i=r)}{\sum_{r\in\{0,1\}}\sum_{i=1}^{K}\mathbb{P}(y_1,..,y_{i-1},x_{i-1}=l)\mathbb{P}(x_i=r,y_i|x_{i-1}=l,\hat{A})\mathbb{P}(y_{i+1},..,y_K|x_i=r)}
+    \end{aligned}
+\end{equation}
+Now, we know that,
+\[P(y_i,\ x_i\ =\ r\ |\ x_{i-1}\ =\ l,\ \hat{A})\ =\ m_r(y_i)a_{lr}\]
+Using this to re-write equation (\ref{92}),
+\begin{equation}\label{92}
+    \begin{aligned}
+        a_{lr}\ =\ \frac{\sum_{i=1}^{K}\mathbb{P}(y_1,..,y_{i-1},x_{i-1}=l)m_r(y_i)a_{lr}\mathbb{P}(y_{i+1},..,y_K|x_i=r)}{\sum_{r\in\{0,1\}}\sum_{i=1}^{K}\mathbb{P}(y_1,..,y_{i-1},x_{i-1}=l)m_r(y_i)a_{lr}\mathbb{P}(y_{i+1},..,y_K|x_i=r)}
+    \end{aligned}
+\end{equation}
+We know from our definitions of Forward and Backward Probabilities defined in equations (\ref{51}) and (\ref{55}) respectively that,
+\[\mathbb{P}(y_1,..,y_{i-1},x_{i-1}=l)\ =\ F(i-1,\ l)\]
+\[\mathbb{P}(y_{i+1},..,y_K|x_i=r)\ =\ B(i+1,\ r)\]
+Using these results in equation (\ref{92}),
+\begin{equation}\label{93}
+    \begin{aligned}
+        a_{lr}\ =\ \frac{\sum_{i=1}^{K}F(i-1,l)m_r(y_i)a_{lr}B(i+1,r)}{\sum_{r\in\{0,1\}}\sum_{i=1}^{K}F(i-1,l)m_r(y_i)a_{lr}B(i+1,r)}
     \end{aligned}
 \end{equation}
 \subsection{The Algorithm}
-Based on the analytical expressions derived in the previous subsection, we have arrived at the following algorithm.
-\\\textbf{Initialization}: Initial estimates of $a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$
-\\\textbf{Iteration}: \[a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r)\ =\ \frac{1}{m_l(y_j)}\ \frac{\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ \sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\Tilde{y},x_j=s)}\]
+\textbf{Known Parameters}: 
+\begin{itemize}
+    \item Variance of the channel impulse response, i.e. $\sigma_H^2$
+    \item Variance of the noise, i.e. $\sigma_V^2$
+    \item Emission Probabilities = $m_l(y_i)\ \sim \mathcal{CN}(0,\ \sigma_H^2 l + \sigma_V^2)$
+\end{itemize}
+\textbf{Initialization}: Initialize the state transition probability matrix $(A)$ to some random values.
+\[\mathbb{P}(X_1\ =\ 1)\ =\ \Pi\]
+\[a_{lr}\ =\ \mathbb{P}(x_j\ =\ r\ |\ x_i\ =\ l)\]
+\textbf{Iteration}: Evaluate the Forward and Backward probabilities using current estimates of $A$, the state transition probability matrix.
+\[F(i-1,\ l)^{t}\ = \ \sum_{k\in\{0,1\}}\ m_l(y_{i-1})a_{kl}^tF(i-2,\ k)\]
+\[B(i+1,\ r)^{t}\ =\ \sum_{s\in\{0,1\}}\ m_s(y_{i+2})a_{rs}^tB(i+2,\ s)\]
+Re-estimate the elements of the state transition probability matrix.
+\[a_{lr}^{t+1}\ =\ \frac{\sum_{i=1}^{K}F(i-1,l)^{t}m_r(y_i)a_{lr}^{t}B(i+1,r)^{t}}{\sum_{r\in\{0,1\}}\sum_{i=1}^{K}F(i-1,l)^{t}m_r(y_i)a_{lr}^{t}B(i+1,r)^{t}}\]
+\textbf{Termination}: 
+\[|a_{lr}^{t+1}\ -\ a_{lr}^t| \leq \epsilon\]
 where,
-\[\sum_{\vec{x}}\ \mathbb P(\vec{x}\ |\ \vec{y})\ n(x_i=r,\ x_j=l,\ y_j)\ =\ \frac{1}{\mathbb P(\vec{y})}\ \sum_{k=0}^{n}\ F(k-1,\ r)m_l(y_j)a_{rl}B(k+1,\ l)\]
-The new estimates of $a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$ are then used in the next iteration.
-\\Concretely,
-\[a_{rl}(t+1)\ =\ \frac{a_{rl}(t)\sum_{k=0}^{n}\ F(k-1,\ r)B(k+1,\ l)}{\sum_{s\in\{0,1\}}\ \sum_{\Tilde{y}\in\vec{y}}\ m_s(\Tilde{y})a_{rs}(t)\sum_{k=0}^{n}\ F(k-1,\ r)B(k+1,\ s)}\]
-\\\textbf{Termination}: Terminate the algorithm when there's no appreciable change in the estimates of $a_{rl}\ =\ \mathbb P(x_j=l\ |\ x_i=r),\ \forall\ i,\ j\in B\ and\ \forall\ l,\ r\in \{0,1\}$. Mathematically speaking, terminate the algorithm if,
-\[|a_{rl}(t+1)\ -\ a_{rl}(t)|\ <\ \epsilon,\ where,\ t\ is\ the\ iteration\ counter,\ \forall\ l,\ r\in\{0,1\},\ and\ \forall\ \epsilon\ >\ 0\]
+$t$ is the iteration counter, $\forall\ l,\ r\ \in\ \{0,\ 1\}$, and for any $\epsilon > 0$
 \subsection{Simulation Results}
 The algorithm outlined in the previous subsection will be implemented in Python and its results would be detailed in this subsection.
 \section{External References}

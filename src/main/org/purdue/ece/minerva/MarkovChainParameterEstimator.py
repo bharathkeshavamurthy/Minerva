@@ -30,10 +30,10 @@ class MarkovChainParameterEstimator(object):
     NUMBER_OF_FREQUENCY_BANDS = 18
 
     # Number of observations made by the SU during the simulation period
-    NUMBER_OF_SAMPLES = 100
+    NUMBER_OF_SAMPLES = 250
 
     # Number of cycles in order to smoothen the plot
-    NUMBER_OF_CYCLES = 1
+    NUMBER_OF_CYCLES = 50
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -396,7 +396,7 @@ if __name__ == '__main__':
     markovChainParameterEstimator.allocate_observations()
     # Before, we go ahead and estimate the state transition probabilities matrix, let's set them to some initial values
     # P(Occupied|Idle) initial assumption
-    p_initial = 0.01
+    p_initial = 0.001
     markovChainParameterEstimator.p_initial = p_initial
     # P(Idle|Occupied) initial assumption
     q_initial = (p_initial * (1 - pi)) / pi

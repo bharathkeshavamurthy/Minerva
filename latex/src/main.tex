@@ -637,8 +637,8 @@ The PU Occupancy Behavior Estimation algorithm detailed analytically in the prev
     \[\Pi\ =\ \mathbb P(Occupied)\ =\ \mathbb P(X_i=1)\ =\ 0.6\]
     \[\mathbb P(Occupied|Idle)\ =\ \mathbb P(X_j=1|X_i=0)\ =\ p\ is\ varied\ from\ 0.03\ to\ 0.6\ (independence)\]
     \[\mathbb P(X_j=1)\ =\ \mathbb P(X_j=1|X_i=0)\mathbb P(X_i=0)\ +\ \mathbb P(X_j=1|X_i=1)\mathbb P(X_i=1)\]
-    \[\Pi\ =\ \mathbb P(1-\Pi)\ +\ (1\ -\ q)\Pi\]
-    \[\mathbb P(Idle|Occupied)\ =\ \mathbb P(X_j=0|X_i=1)\ =\ q\ =\ \frac{\mathbb P(1-\Pi)}{\Pi}\ varies\ as\ p\ varies\]
+    \[\Pi\ =\ p(1-\Pi)\ +\ (1\ -\ q)\Pi\]
+    \[\mathbb P(Idle|Occupied)\ =\ \mathbb P(X_j=0|X_i=1)\ =\ q\ =\ \frac{p(1-\Pi)}{\Pi}\ varies\ as\ p\ varies\]
 \end{itemize}
 \begin{figure}[t]
 \includegraphics[width=1.0\textwidth]{Detection_Accuracy_vs_p_Iteration_1.png}
@@ -939,7 +939,23 @@ Re-estimate the elements of the state transition probability matrix.
 where,
 $t$ is the iteration counter, $\forall\ l,\ r\ \in\ \{0,\ 1\}$, and for any $\epsilon > 0$
 \subsection{Simulation Results}
-The algorithm outlined in the previous subsection will be implemented in Python and its results would be detailed in this subsection.
+The algorithm outlined in the previous subsection has been implemented in Python and its results are detailed in this subsection.
+\begin{itemize}
+    \item Number of frequency bands / channels = 18
+    \item Number of observation vectors = 100
+    \item Number of iterative cycles for averaging = 50
+    \item SNR (signal ON) = 19.03 dB
+\end{itemize}
+For an actual value of
+\[\mathbb{P}(Occupied\ |\ Idle)\ =\ p\ =\ 0.35\]
+and starting with an initial random assignment of $\hat{p}\ =\ 0.01$, we see that the Markov Chain Parameter Estimator algorithm in the previous subsection converges to a value of $\hat{p}\ =\ 0.3449$ in under 15 iterations across 100 observation vectors averaged out over 50 cycles.
+\\A plot of $Mean\ Square\ Error\ =\ \mathbb{E}[(p\ -\ \hat{p})^2]$ versus the $Number\ of\ Iterations$ is shown in Figure 16 for the algorithm described in the previous subsection.
+\begin{figure}[t]
+\includegraphics[width=1.0\textwidth]{Mean_Square_Error_vs_Iterations.png}
+\caption{Mean Square Error v/s Number of Iterations - A plot of convergence of our variant of EM for HMMs in order to estimate the parameters of the Markov Chain.}
+\label{fig:mesh16}
+\centering
+\end{figure}
 \section{External References}
 \begin{enumerate}
     \item \textbf{Fast Spectrum Sensing: A Combination of Channel Correlation and Markov Model}: https://ieeexplore.ieee.org/document/6956794

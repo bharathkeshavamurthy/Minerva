@@ -40,7 +40,8 @@ class PUOccupancyBehaviorEstimatorScrimmage(object):
     VARIANCE_OF_AWGN = 1
 
     # Variance of the Channel Impulse Response which is a zero mean Gaussian
-    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 120
+    # SNR = 10log_10(80/1) = 19.03 dB
+    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
 
     # Number of frequency bands/channels in the wideband spectrum of interest
     NUMBER_OF_FREQUENCY_BANDS = 18

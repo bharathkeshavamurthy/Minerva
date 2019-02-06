@@ -34,9 +34,8 @@ class PUOccupancyBehaviorEstimator(object):
 
     # Variance of the Channel Impulse Response which is a zero mean Gaussian
     # Channel impulse response samples are realizations of a circular symmetric complex random variable CN(0,\sigma_H^2)
-    # 20 dB SNR
-    # SNR = 10log_10(100/1) = 10 * 2 = 20 dB
-    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 100
+    # SNR = 10log_10(80/1) = 19.03 dB
+    VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
 
     # Number of frequency bands/channels in the wideband spectrum of interest
     NUMBER_OF_FREQUENCY_BANDS = 18

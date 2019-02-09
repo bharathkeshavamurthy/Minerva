@@ -33,7 +33,7 @@ class MarkovChainParameterEstimator(object):
     NUMBER_OF_SAMPLES = 250
 
     # Number of cycles in order to smoothen the plot
-    NUMBER_OF_CYCLES = 50
+    NUMBER_OF_CYCLES = 1
 
     # Variance of the Additive White Gaussian Noise Samples
     VARIANCE_OF_AWGN = 1
@@ -351,12 +351,12 @@ class MarkovChainParameterEstimator(object):
                 averaging_sum += entry[_index]
             y_axis.append(averaging_sum/self.NUMBER_OF_CYCLES)
         fig, ax = plt.subplots()
-        ax.plot(x_axis, y_axis, linewidth=1.0, color='m')
+        ax.plot(x_axis, y_axis, linewidth=1.0, linestyle='--', marker='o', color='m')
         fig.suptitle(
             'Mean Square Error Convergence of the Markov Correlated Parameter Estimation Algorithm for a Static PU '
-            'with Complete Information', fontsize=10)
-        ax.set_xlabel('Number of Iterations (x100 observation vectors)', fontsize=10)
-        ax.set_ylabel('Mean Square Error', fontsize=10)
+            'with Complete Information', fontsize=12)
+        ax.set_xlabel('Number of Iterations (x250 observation vectors)', fontsize=14)
+        ax.set_ylabel(r'$log\ (\mathbb{E}\ [\hat{p}-p])$', fontsize=14)
         plt.show()
         for previous_state in OccupancyState:
             for next_state in OccupancyState:

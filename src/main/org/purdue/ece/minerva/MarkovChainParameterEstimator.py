@@ -30,7 +30,7 @@ class MarkovChainParameterEstimator(object):
     NUMBER_OF_FREQUENCY_BANDS = 18
 
     # Number of observations made by the SU during the simulation period
-    NUMBER_OF_SAMPLES = 250
+    NUMBER_OF_SAMPLES = 300
 
     # Number of cycles in order to smoothen the plot
     NUMBER_OF_CYCLES = 1
@@ -46,7 +46,7 @@ class MarkovChainParameterEstimator(object):
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
 
     # Confidence bound for termination
-    CONFIDENCE_BOUND = 10
+    CONFIDENCE_BOUND = 7
 
     # Initialization sequence
     def __init__(self):
@@ -351,12 +351,13 @@ class MarkovChainParameterEstimator(object):
                 averaging_sum += entry[_index]
             y_axis.append(averaging_sum/self.NUMBER_OF_CYCLES)
         fig, ax = plt.subplots()
-        ax.plot(x_axis, y_axis, linewidth=1.0, linestyle='--', marker='o', color='m')
+        ax.plot(x_axis, y_axis, linewidth=1.0, linestyle='--', marker='o', color='b')
         fig.suptitle(
             'Mean Square Error Convergence of the Markov Correlated Parameter Estimation Algorithm for a Static PU '
             'with Complete Information', fontsize=12)
         ax.set_xlabel('Number of Iterations (x250 observation vectors)', fontsize=14)
-        ax.set_ylabel(r'$log\ (\mathbb{E}\ [\hat{p}-p])$', fontsize=14)
+        ax.set_ylabel('Mean Square Error - $\mathbb{E}\ [(p\ -\ \hat{p})^2]$', fontsize=14)
+        plt.yscale('log')
         plt.show()
         for previous_state in OccupancyState:
             for next_state in OccupancyState:
@@ -396,7 +397,7 @@ if __name__ == '__main__':
     markovChainParameterEstimator.allocate_observations()
     # Before, we go ahead and estimate the state transition probabilities matrix, let's set them to some initial values
     # P(Occupied|Idle) initial assumption
-    p_initial = 0.001
+    p_initial = 0.00001
     markovChainParameterEstimator.p_initial = p_initial
     # P(Idle|Occupied) initial assumption
     q_initial = (p_initial * (1 - pi)) / pi

@@ -123,5 +123,5 @@ class SpatialMarkovChainVisualizer(object):
 # Run Trigger
 if __name__ == '__main__':
     # Instance creation for visualization
-    spatio_temporal_markov_chain_visualizer = SpatialMarkovChainVisualizer()
-    spatio_temporal_markov_chain_visualizer.visualize()
+    spatio_markov_chain_visualizer = SpatialMarkovChainVisualizer()
+    spatio_markov_chain_visualizer.visualize()

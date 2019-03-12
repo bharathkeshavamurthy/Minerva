@@ -332,7 +332,8 @@ class MarkovChainParameterEstimator(object):
                             numerator_sum/denominator_sum)
                 iteration += 1
                 print('[INFO] MarkovChainParameterEstimator estimate_parameters: Iteration [', iteration-1,
-                      '] - P(Occupied|Idle) Estimate = [', self.transition_probabilities[0][1][iteration-1], ']')
+                      '] - P(Occupied|Idle) Estimate = [', self.transition_probabilities[0][1][iteration-1],
+                      '] and P(Idle|Occupied) Estimate = [', self.transition_probabilities[1][0][iteration-1], ']')
             if iteration > max_number_of_iterations:
                 max_number_of_iterations = iteration
             collection_of_estimates.append(self.get_converged_transition_matrix())
@@ -382,7 +383,7 @@ if __name__ == '__main__':
     # Steady State Probability P(Occupied) = P(X_i = 1)
     pi = markovChainParameterEstimator.start_probabilities.occupied
     # P(Occupied | Idle)
-    p = 0.35
+    p = 0.30
     markovChainParameterEstimator.true_p_value = p
     # P(Idle|Occupied)
     q = (p * (1 - pi)) / pi

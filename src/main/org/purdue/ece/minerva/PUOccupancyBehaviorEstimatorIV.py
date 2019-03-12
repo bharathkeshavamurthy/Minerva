@@ -115,7 +115,7 @@ class PUOccupancyBehaviorEstimatorIV(object):
     # Generate the true states with Markovian across channels and Markovian across time
     # Arguments: p -> P(1|0); q -> P(0|1); and pi -> P(1)
     def generate_true_pu_occupancy_states(self, p_val, q_val, pi_val):
-        # True PU Occupancy states collection will be a list of self.NUMBER_OF_CHANNELS rows each row ...
+        # True PU Occupancy states collection will be a list of self.NUMBER_OF_CHANNELS rows, each row ...
         # ... with self.NUMBER_OF_SAMPLING_ROUNDS columns
         self.true_pu_occupancy_states.append(self.get_initial_states_temporal_variation(p_val, q_val, pi_val))
         # t = 0 and k = 0

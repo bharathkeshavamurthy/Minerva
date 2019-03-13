@@ -10,6 +10,8 @@
 from enum import Enum
 from collections import namedtuple
 import numpy
+import random
+import itertools
 import scipy.stats
 
 
@@ -110,12 +112,60 @@ class MarkovChain(object):
 
 #######################################################################################################################
 
+# A Utility class for all to use...
+class Util(object):
+
+    # Initialization sequence
+    def __init__(self):
+        print('[INFO] Util Initialization: Bringing things up...')
+
+    # Construct the complete start probabilities dictionary
+    @staticmethod
+    def construct_start_probabilities_dict(pi):
+        return {0: (1 - pi), 1: pi}
+
+    # Construct the complete transition probability matrix from P(Occupied|Idle), i.e. 'p' and P(Occupied), i.e. 'pi'
+    @staticmethod
+    def construct_transition_probability_matrix(p, pi):
+        # P(Idle|Occupied)
+        q = (p * (1 - pi)) / pi
+        return {0: {1: p, 0: 1 - p}, 1: {0: q, 1: 1 - q}}
+
+    # Generate the action set based on the SU sensing limitations and the Number of Channels in the discretized...
+    # ...spectrum of interest
+    @staticmethod
+    def get_action_set(number_of_channels, limitation):
+        # Return this
+        action_set = []
+        # Discretize the spectrum
+        discretized_spectrum_of_interest = [k for k in range(0, number_of_channels)]
+        # Combinatorial Analysis for #limitation channels
+        combinations = itertools.combinations(discretized_spectrum_of_interest, limitation)
+        for combination in combinations:
+            action = [k-k for k in range(0, number_of_channels)]
+            # Extract the digits (channels) from the consolidated combination extracted in the previous step
+            channels = [int(digit) for digit in str(combination)]
+            for channel in discretized_spectrum_of_interest:
+                if channel in channels:
+                    action[channel] = 1
+            action_set.append(action)
+        return action_set
+
+    # Termination sequence
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('[INFO] Util Termination: Tearing things down...')
+
+#######################################################################################################################
+
+
+#######################################################################################################################
+
 # This entity encapsulates the Channel object - simulates the Channel, i.e. Complex AWGN and Complex Impulse Response
 class Channel(object):
 
     # Initialization sequence
-    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _noise_mean, _noise_variance,
-                 _impulse_response_mean, _impulse_response_variance):
+    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _noise_mean,
+                 _noise_variance, _impulse_response_mean, _impulse_response_variance):
         print('[INFO] Channel Initialization: Bringing things up...')
         # Noise Statistics
         self.noise_mean = _noise_mean
@@ -132,8 +182,10 @@ class Channel(object):
         self.impulse_response_variance = _impulse_response_variance
         # Number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
-        # Number of sampling rounds undertaken by the SU
+        # Number of sampling rounds undertaken by the SU per episode
         self.number_of_sampling_rounds = _number_of_sampling_rounds
+        # Number of episodes of in which the POMDP agent interacts with the radio environment
+        self.number_of_episodes = _number_of_episodes
         # Channel Impulse Response used in the Observation Model
         self.impulse_response = self.get_impulse_response()
         # The Complex AWGN used in the Observation Model
@@ -142,31 +194,40 @@ class Channel(object):
     # Generate the Channel Impulse Response samples
     def get_impulse_response(self):
         channel_impulse_response_samples = []
-        for frequency_band in range(0, self.number_of_channels):
-            mu_channel_impulse_response, std_channel_impulse_response = self.impulse_response_mean, numpy.sqrt(
-                self.impulse_response_variance)
-            # The Re and Im parts of the channel impulse response samples are IID and distributed as N(0,\sigma_H^2/2)
-            real_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
-                                                                        (std_channel_impulse_response / numpy.sqrt(2)),
-                                                                        self.number_of_sampling_rounds)
-            img_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
-                                                                       (std_channel_impulse_response / numpy.sqrt(2)),
-                                                                       self.number_of_sampling_rounds)
-            channel_impulse_response_samples[frequency_band] = real_channel_impulse_response_samples + (
-                    1j * img_channel_impulse_response_samples)
+        for k in range(0, self.number_of_episodes):
+            channel_impulse_response_samples[k] = []
+        for episode in range(0, self.number_of_episodes):
+            for frequency_band in range(0, self.number_of_channels):
+                mu_channel_impulse_response, std_channel_impulse_response = self.impulse_response_mean, numpy.sqrt(
+                    self.impulse_response_variance)
+                # The Re and Im parts of the channel impulse response samples are IID and distributed as...
+                # ...N(0,\sigma_H^2/2)
+                real_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
+                                                                            (std_channel_impulse_response /
+                                                                             numpy.sqrt(2)),
+                                                                            self.number_of_sampling_rounds)
+                img_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
+                                                                           (std_channel_impulse_response /
+                                                                            numpy.sqrt(2)),
+                                                                           self.number_of_sampling_rounds)
+                channel_impulse_response_samples[episode][frequency_band] = real_channel_impulse_response_samples + (
+                        1j * img_channel_impulse_response_samples)
         return channel_impulse_response_samples
 
     # Generate the Complex AWGN samples
     def get_noise(self):
         noise_samples = []
-        for frequency_band in range(0, self.number_of_channels):
-            mu_noise, std_noise = self.noise_mean, numpy.sqrt(self.noise_variance)
-            # The Re and Im parts of the noise samples are IID and distributed as N(0,\sigma_V^2/2)
-            real_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)),
-                                                     self.number_of_sampling_rounds)
-            img_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)),
-                                                    self.number_of_sampling_rounds)
-            noise_samples[frequency_band] = real_noise_samples + (1j * img_noise_samples)
+        for k in range(0, self.number_of_episodes):
+            noise_samples = []
+        for episode in range(0, self.number_of_episodes):
+            for frequency_band in range(0, self.number_of_channels):
+                mu_noise, std_noise = self.noise_mean, numpy.sqrt(self.noise_variance)
+                # The Re and Im parts of the noise samples are IID and distributed as N(0,\sigma_V^2/2)
+                real_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)),
+                                                         self.number_of_sampling_rounds)
+                img_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)),
+                                                        self.number_of_sampling_rounds)
+                noise_samples[episode][frequency_band] = real_noise_samples + (1j * img_noise_samples)
         return noise_samples
 
     # Termination sequence
@@ -182,12 +243,12 @@ class Channel(object):
 class PrimaryUser(object):
 
     # Initialization sequence
-    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _spatial_markov_chain, _temporal_markov_chain):
+    def __init__(self, _number_of_channels, _number_of_episodes, _spatial_markov_chain, _temporal_markov_chain):
         print('[INFO] PrimaryUser Initialization: Bringing things up...')
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
         # The number of sampling rounds undertaken by the Secondary User during its operation
-        self.number_of_sampling_rounds = _number_of_sampling_rounds
+        self.number_of_episodes = _number_of_episodes
         # The Markov Chain across channels
         self.spatial_markov_chain = _spatial_markov_chain
         # The Markov Chain across rounds
@@ -206,7 +267,7 @@ class PrimaryUser(object):
         initial_state_vector.append(previous)
         # Based on the state of band-0 at time-0 and the (p_val, q_val) values, generate the states of the remaining...
         # ...bands
-        for _loop_iterator in range(1, self.number_of_sampling_rounds):
+        for _loop_iterator in range(1, self.number_of_episodes):
             seed = numpy.random.random_sample()
             if previous == 1 and seed < q_val:
                 previous = 0
@@ -260,7 +321,7 @@ class PrimaryUser(object):
         # Go on and fill in the remaining cells in the Occupancy Behavior Matrix
         # Use the definitions of Conditional Probabilities to realize the math - P(A|B,C)
         for channel_index in range(1, self.number_of_channels):
-            for round_index in range(1, self.number_of_sampling_rounds):
+            for round_index in range(1, self.number_of_episodes):
                 previous_temporal_state = self.occupancy_behavior_collection[channel_index][round_index - 1]
                 previous_spatial_state = self.occupancy_behavior_collection[channel_index - 1][round_index]
                 probability_occupied_temporal = temporal_transition_probabilities_matrix[previous_temporal_state][1]
@@ -285,19 +346,22 @@ class PrimaryUser(object):
 class SecondaryUser(object):
 
     # Initialization sequence
-    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _channel, _true_pu_occupancy_states):
+    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _channel, _true_pu_occupancy_states,
+                 _limitation):
         print('[INFO] SecondaryUser Initialization: Bringing things up...')
         # The channel passed down by the Adaptive Intelligence top-level wrapper
         self.channel = _channel
         # Number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
-        # Number of sampling rounds undertaken by the SU
+        # Number of sampling rounds undertaken by the SU per episode
         self.number_of_sampling_rounds = _number_of_sampling_rounds
         # Occupancy Status of the cells based on simulated PU behavior - needed to simulate SU observations
         self.true_pu_occupancy_states = _true_pu_occupancy_states
+        # A limit on the number of channels that can be sensed by the SU due to physical design constraints
+        self.limitation = _limitation
 
     # The Secondary User making observations of the channels in the spectrum of interest
-    def make_observations(self, channel_selection_strategy):
+    def make_observations(self, episode, channel_selection_strategy):
         observation_samples = []
         for band in range(0, self.number_of_channels):
             obs_per_band = [k - k for k in range(0, self.number_of_sampling_rounds)]
@@ -308,9 +372,9 @@ class SecondaryUser(object):
                 for count in range(0, self.number_of_sampling_rounds):
                     # channel_selection_strategy[1] = ACTIVE_SAMPLING_ROUNDS
                     if count in channel_selection_strategy[1]:
-                        obs_per_band[count] = (self.channel.impulse_response[band][
+                        obs_per_band[count] = (self.channel.impulse_response[episode][band][
                                                    count] * self.true_pu_occupancy_states[band][count] +
-                                               self.channel.noise[band][count])
+                                               self.channel.noise[episode][band][count])
                     else:
                         # Empty Place-holder value is 0
                         obs_per_band[count] = 0
@@ -588,8 +652,8 @@ class ParameterEstimator(object):
 
 #######################################################################################################################
 
+# The Markov Chain State Estimator algorithm - Viterbi Algorithm
 class StateEstimator(object):
-
     # Value function named tuple
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
 
@@ -599,7 +663,7 @@ class StateEstimator(object):
         print('[INFO] StateEstimator Initialization: Bringing things up...')
         # Number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
-        # Number of sampling rounds undertaken by the SU
+        # Number of sampling rounds undertaken by the SU per episode
         self.number_of_sampling_rounds = _number_of_sampling_rounds
         # The Observation Samples
         self.observation_samples = _observation_samples
@@ -645,6 +709,10 @@ class StateEstimator(object):
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     # Output a collection consisting of the required parameters of interest
     def estimate_pu_occupancy_states(self):
+        # Variable reference to get rid of the idiotic "prior-referenced usage' warning
+        previous_state = None
+        # Variable reference to get rid of the idiotic "prior-referenced usage' warning
+        max_value = None
         estimated_states_array = []
         for sampling_round in range(0, self.number_of_sampling_rounds):
             estimated_states = []
@@ -702,13 +770,19 @@ class StateEstimator(object):
                     estimated_states.append(self.value_from_name(k))
                     previous_state = k
                     break
+            # Doesn't happen but adding this to remove the warnings
+            if previous_state is None or max_value is None:
+                print('[ERROR] StateEstimator estimate_pu_occupancy_states: previous_state AND/OR max_value members '
+                      'are invalid! Returning junk results! Please look into this!')
+                # Return junk
+                return [[k-k for k in range(0, self.number_of_channels)], 0]
             # Backtracking
             for i in range(len(value_function_collection) - 2, -1, -1):
                 estimated_states.insert(0, self.value_from_name(
                     value_function_collection[i + 1][previous_state].previous_state))
                 previous_state = value_function_collection[i + 1][previous_state].previous_state
             estimated_states_array.append(estimated_states)
-        return estimated_states_array
+        return [estimated_states_array, max_value]
 
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -744,7 +818,7 @@ class Sweepstakes(object):
         false_alarm_count = 0
         actual_occupancy_count = 0
         actual_idle_count = 0
-        for i in range(0, len(system_belief) - 1):
+        for i in range(0, len(system_belief)):
             if system_state[i] == 1:
                 actual_occupancy_count += 1
                 if system_belief[i] == 1:
@@ -762,6 +836,7 @@ class Sweepstakes(object):
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] Sweepstakes Termination: Tearing things down...')
+
 
 #######################################################################################################################
 
@@ -788,6 +863,11 @@ class Oracle(object):
     def get_return(self):
         return self.number_of_episodes
 
+    # Windowed return for regret analysis
+    @staticmethod
+    def get_windowed_return(window_size):
+        return window_size
+
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] Oracle Termination: Tearing things down...')
@@ -797,32 +877,26 @@ class Oracle(object):
 
 #######################################################################################################################
 
-# This entity encapsulates the POMDP Approximate Point-based Value Iteration algorithm named The PERSEUS algorithm
-# Training to fine-tune the belief space -> Perform backup until convergence -> Re-sample using the most recent policy
-class PERSEUS(object):
-
-    # Initialization sequence
-    def __init__(self):
-        print('[INFO] PERSEUS Initialization: Bringing things up...')
-
-    # Termination sequence
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] PERSEUS Termination: Tearing things down...')
-
-
-#######################################################################################################################
-
-
-#######################################################################################################################
-
 
 # Top-level Executive class
+# This entity encapsulates the POMDP Approximate Point-based Value Iteration algorithm named The PERSEUS algorithm
+# Training to fine-tune the belief space -> Perform backup until convergence -> Re-sample using the most recent policy
+# References to the ParameterEstimation algorithm and the StateEstimation algorithm in the belief analysis phase
 class AdaptiveIntelligence(object):
     # Number of channels in the discretized spectrum of interest
     NUMBER_OF_CHANNELS = 18
 
-    # Number of sampling rounds undertaken by the Secondary User during its operation
+    # Number of sampling rounds undertaken by the Secondary User per episode
     NUMBER_OF_SAMPLING_ROUNDS = 250
+
+    # Number of episodes during which the SU interacts with the radio environment
+    NUMBER_OF_EPISODES = 1000
+
+    # Exploration period of the POMDP agent to find a set of reachable beliefs
+    EXPLORATION_PERIOD = 250
+
+    # Priority Threshold during exploration to classify a belief as reachable/viable/important
+    PRIORITY_THRESHOLD = 5
 
     # Mean of the Complex AWGN
     NOISE_MEAN = 0.0
@@ -836,28 +910,216 @@ class AdaptiveIntelligence(object):
     # Variance of the Complex Channel Impulse Response
     IMPULSE_RESPONSE_VARIANCE = 80.0
 
+    # False Alarm Cost
+    MU = -1.0
+
+    # Missed Detection Cost
+    NU = -10.0
+
+    # SU Sensing Limitation
+    # The SU can sense 5 bands out of 18 -> 28%
+    LIMITATION = 5
+
+    # Parameter Estimation Convergence Threshold
+    EPSILON = 0.00001
+
+    # Convergence Confidence Metric for the Parameter Estimation algorithm
+    CONFIDENCE_BOUND = 10
+
+    # Discount Factor
+    GAMMA = 0.9
+
     # Initialization sequence
     def __init__(self):
         print('[INFO] AdaptiveIntelligence Initialization: Bringing things up...')
         # P(Occupied) - The steady state probability of being occupied
         self.pi = 0.6
         # P(Occupied|Idle) - The transition probability parameter
-        self.p = 0.03
+        self.p = 0.3
+        # Initial Estimate of P(Occupied|Idle) a.k.a 'p'
+        self.initial_p = 0.000005
+        # The Utility object
+        self.util = Util()
+        # Initial Transition Probabilities_Matrix
+        self.initial_transition_probabilities_matrix = self.util.construct_transition_probability_matrix(self.initial_p,
+                                                                                                         self.pi)
+        # Start Probabilities Dict
+        self.start_probabilities_dict = self.util.construct_start_probabilities_dict(self.pi)
         # Setup the Spatial Markov Chain
         self.spatial_markov_chain = self.setup_markov_chain(self.pi, self.p, MarkovianCorrelationClass.spatial)
         # Setup the Temporal Markov Chain
         self.temporal_markov_chain = self.setup_markov_chain(self.pi, self.p,
                                                              MarkovianCorrelationClass.temporal)
         # Channel
-        self.channel = Channel(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.NOISE_MEAN,
-                               self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_MEAN, self.IMPULSE_RESPONSE_VARIANCE)
+        self.channel = Channel(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.NUMBER_OF_EPISODES,
+                               self.NOISE_MEAN, self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_MEAN,
+                               self.IMPULSE_RESPONSE_VARIANCE)
+        # The Emission Evaluator
+        self.emission_evaluator = EmissionEvaluator(self.IMPULSE_RESPONSE_VARIANCE, self.NOISE_VARIANCE)
         # Primary User
-        self.primary_user = PrimaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
+        self.primary_user = PrimaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES,
                                         self.spatial_markov_chain, self.temporal_markov_chain)
         self.primary_user.simulate_occupancy_behavior()
         # Secondary User
         self.secondary_user = SecondaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.channel,
-                                            self.primary_user.occupancy_behavior_collection)
+                                            self.primary_user.occupancy_behavior_collection, self.LIMITATION)
+        # Sweepstakes - The Reward Analyzer
+        self.sweepstakes = Sweepstakes(self.primary_user, self.MU, self.NU)
+        # The Oracle
+        self.oracle = Oracle(self.NUMBER_OF_EPISODES)
+        # Spatial Parameter Estimator - Modified Baum-Welch / Modified EM
+        self.spatial_parameter_estimator = ParameterEstimator(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
+                                                              self.initial_transition_probabilities_matrix,
+                                                              self.start_probabilities_dict, None,
+                                                              self.emission_evaluator, self.EPSILON,
+                                                              self.CONFIDENCE_BOUND)
+        # State Estimator
+        self.state_estimator = StateEstimator(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, None,
+                                              self.start_probabilities_dict,
+                                              self.initial_transition_probabilities_matrix,
+                                              self.emission_evaluator)
+
+    # Randomly explore the environment and collect a set of beliefs B of reachable belief points
+    # TODO: An "ordered random" exploration strategy - What if I want to explore based on my most recent optimal...
+    # ...strategy as a part of the modified PERSEUS strategy
+    def random_exploration(self, policy):
+        # Priority Tracking Collection
+        belief_count_map = dict()
+        if policy is None:
+            print('[INFO] AdaptiveIntelligence random_exploration: No order to the chaos...using a truly random '
+                  'exploration strategy')
+        # Random Exploration
+        for iteration in range(0, self.EXPLORATION_PERIOD):
+            sampling_array = [k - k for k in range(0, self.NUMBER_OF_CHANNELS)]
+            for count in range(0, self.LIMITATION):
+                sampling_array[random.choice([k for k in range(0, self.NUMBER_OF_CHANNELS)])] = 1
+            observations = self.secondary_user.make_observations(iteration, sampling_array)
+            self.spatial_parameter_estimator.observation_samples = observations
+            self.state_estimator.observation_samples = observations
+            transition_matrix = self.util.construct_transition_probability_matrix(self.spatial_parameter_estimator
+                                                                                  .estimate_parameters(), self.pi)
+            self.state_estimator.transition_probabilities = transition_matrix
+            belief_information = self.state_estimator.estimate_pu_occupancy_states()
+            previous_count = belief_count_map[belief_information[0]]
+            if previous_count is None:
+                previous_count = 0
+            belief_count_map[belief_information] = [previous_count + 1, belief_information[1]]
+        # Filtering
+        reachable_beliefs = dict()
+        for key, value in belief_count_map:
+            if value[0] >= self.PRIORITY_THRESHOLD:
+                reachable_beliefs[key] = value[1]
+        return reachable_beliefs
+
+    # Initialization
+    @staticmethod
+    def initialize(reachable_beliefs):
+        # V_0 for the reachable beliefs
+        value_function_collection = dict()
+        for belief_vector in reachable_beliefs.keys():
+            # V_0 = {1 / (1-GAMMA)} * min_{s, a} r(s, a)
+            # The worst r(s, a) irrespective of the initial action policy / beliefs is w.r.t P_FA = 1 and P_MD = 1 ->...
+            # ... min_{s, a} r(s, a) = -1(1) + -10(1) = -11
+            # V_0 = (1 / 0.1 ) * -11 = -110
+            value_function_collection[[belief_vector]] = -110
+        return value_function_collection
+
+    # The Backup stage
+    # TODO: The same reachable beliefs are used throughout...Can we re-sample at regular intervals instead?
+    def backup(self, stage_number, reachable_beliefs, previous_stage_value_function_collection):
+        # Return these
+        next_stage_value_function_collection = dict()
+        belief_changes = 0
+        stage_specific_reward = dict()
+        # Reduced set of beliefs - \tilda{B}
+        reduced_set_of_beliefs = []
+        # \tilda{B} = B, initially
+        for key in reachable_beliefs.keys():
+            reduced_set_of_beliefs.append(key)
+        # Iterate until \tilda{B} becomes empty
+        while len(reduced_set_of_beliefs) is not 0:
+            # Sample a b \in \tilda{B} uniformly at random
+            belief = random.choice(reduced_set_of_beliefs)
+            belief_value = reachable_beliefs[belief]
+            action_set = self.util.get_action_set(self.NUMBER_OF_CHANNELS, self.LIMITATION)
+            max_value = -110
+            negative_case_max_value = -110
+            associated_max_reward = -110
+            for action in action_set:
+                # Make observations and assign them to the ParameterEstimator and the StateEstimator
+                observations = self.secondary_user.make_observations(stage_number, action)
+                self.spatial_parameter_estimator.observation_samples = observations
+                self.state_estimator.observation_samples = observations
+                # Estimate the transition statistics
+                transition_probability_matrix = self.spatial_parameter_estimator.estimate_parameters()
+                # Assign the transition statistics to the StateEstimator
+                self.state_estimator.transition_probabilities = transition_probability_matrix
+                # Estimate the state of the system
+                estimated_state = self.state_estimator.estimate_pu_occupancy_states()[0]
+                # Find the reward from that action and the corresponding observation
+                reward = self.sweepstakes.roll(estimated_state, self.primary_user
+                                               .occupancy_behavior_collection[stage_number])
+                emission_probability = 1
+                for i in range(0, len(observations[0])):
+                    emission_probability = emission_probability * \
+                                           self.emission_evaluator.get_emission_probabilities(estimated_state[i],
+                                                                                              observations[0][i])
+                stage_value = (belief_value * reward) + (self.GAMMA * emission_probability
+                                                         * previous_stage_value_function_collection[belief])
+                # Finding max and argmax here...
+                if stage_value > max_value:
+                    max_value = stage_value
+                    associated_max_reward = reward
+                negative_case_value = belief_value * stage_value
+                if negative_case_value > negative_case_max_value:
+                    negative_case_max_value = negative_case_value
+                    associated_max_reward = reward
+            # The bad direction
+            if (belief_value * max_value) <= previous_stage_value_function_collection[belief]:
+                next_stage_value_function_collection[belief] = negative_case_max_value
+                multiplier = negative_case_max_value
+                stage_specific_reward[belief] = associated_max_reward
+            else:
+                next_stage_value_function_collection[belief] = (belief_value * max_value)
+                multiplier = max_value
+                stage_specific_reward[belief] = associated_max_reward
+            reduced_set_of_beliefs.remove(belief)
+            belief_changes += 1
+            for other_belief in reduced_set_of_beliefs:
+                belief_val = reachable_beliefs[other_belief]
+                if (belief_val * multiplier) > previous_stage_value_function_collection[other_belief]:
+                    reduced_set_of_beliefs.remove(other_belief)
+                    belief_changes += 1
+                    next_stage_value_function_collection[other_belief] = (belief_val * max_value)
+                    stage_specific_reward[belief] = associated_max_reward
+        return [next_stage_value_function_collection, belief_changes, stage_specific_reward]
+
+    # The PERSEUS algorithm
+    # Calls to Random Exploration, Initialization, and Backup stages
+    def run_perseus(self):
+        # Random Exploration
+        reachable_beliefs = self.random_exploration(None)
+        # Initialization
+        initial_value_function_collection = self.initialize(reachable_beliefs)
+        # Relevant collections
+        previous_value_function_collection = initial_value_function_collection
+        stage_number = 0
+        belief_changes = -1
+        stage_specific_reward = dict()
+        # Check for termination condition here...
+        while belief_changes is not 0:
+            stage_number += 1
+            # Backup to find \alpha -> Get V_{n+1} and #BeliefChanges
+            backup_results = self.backup(stage_number, reachable_beliefs, previous_value_function_collection)
+            next_value_function_collection = backup_results[0]
+            belief_changes = backup_results[1]
+            stage_specific_reward = backup_results[2]
+            previous_value_function_collection = next_value_function_collection
+        perseus_cumulative_reward = 0
+        if len(stage_specific_reward.values()) == len(reachable_beliefs):
+            for value in stage_specific_reward.values():
+                perseus_cumulative_reward += value
+        return perseus_cumulative_reward
 
     # Setup the Markov Chain
     @staticmethod
@@ -869,8 +1131,21 @@ class AdaptiveIntelligence(object):
         transient_markov_chain_object.set_transition_probability_parameter(_p)
         return transient_markov_chain_object
 
+    # Regret Analysis
+    def get_regret(self):
+        optimal_reward = self.oracle.get_return()
+        pomdp_reward_upon_convergence = self.run_perseus()
+        return abs(optimal_reward - pomdp_reward_upon_convergence)
+
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] AdaptiveIntelligence Termination: Tearing things down...')
 
 #######################################################################################################################
+
+
+# Run Trigger
+if __name__ == '__main__':
+    print('[INFO] AdaptiveIntelligence main: Starting system simulation...')
+    adaptive_intelligent_agent = AdaptiveIntelligence()
+    print('[INFO] AdaptiveIntelligence main: Regret: ', adaptive_intelligent_agent.get_regret())

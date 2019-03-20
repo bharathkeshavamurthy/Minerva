@@ -15,8 +15,6 @@ import itertools
 import scipy.stats
 
 
-#######################################################################################################################
-
 # Markovian Correlation Class Enumeration
 class MarkovianCorrelationClass(Enum):
     # Markovian Correlation across channel indices
@@ -27,10 +25,6 @@ class MarkovianCorrelationClass(Enum):
     invalid = 2
 
 
-#######################################################################################################################
-
-#######################################################################################################################
-
 # OccupancyState Enumeration
 # Based on Energy Detection, E[|X_k(i)|^2] = 1, if Occupied ; else, E[|X_k(i)|^2] = 0
 class OccupancyState(Enum):
@@ -39,10 +33,6 @@ class OccupancyState(Enum):
     # Occupancy state OCCUPIED:
     occupied = 1
 
-
-#######################################################################################################################
-
-#######################################################################################################################
 
 # The Markov Chain object that can be used via extension or replication in order to imply Markovian correlation...
 # ...across either the channel indices or the time indices
@@ -108,10 +98,6 @@ class MarkovChain(object):
         print('[INFO] MarkovChain Termination: Tearing things down...')
 
 
-#######################################################################################################################
-
-#######################################################################################################################
-
 # A Utility class for all to use...
 class Util(object):
 
@@ -155,10 +141,6 @@ class Util(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] Util Termination: Tearing things down...')
 
-#######################################################################################################################
-
-
-#######################################################################################################################
 
 # This entity encapsulates the Channel object - simulates the Channel, i.e. Complex AWGN and Complex Impulse Response
 class Channel(object):
@@ -195,7 +177,7 @@ class Channel(object):
     def get_impulse_response(self):
         channel_impulse_response_samples = []
         for k in range(0, self.number_of_episodes):
-            channel_impulse_response_samples[k] = []
+            channel_impulse_response_samples.append(dict())
         for episode in range(0, self.number_of_episodes):
             for frequency_band in range(0, self.number_of_channels):
                 mu_channel_impulse_response, std_channel_impulse_response = self.impulse_response_mean, numpy.sqrt(
@@ -218,7 +200,7 @@ class Channel(object):
     def get_noise(self):
         noise_samples = []
         for k in range(0, self.number_of_episodes):
-            noise_samples = []
+            noise_samples.append(dict())
         for episode in range(0, self.number_of_episodes):
             for frequency_band in range(0, self.number_of_channels):
                 mu_noise, std_noise = self.noise_mean, numpy.sqrt(self.noise_variance)
@@ -234,10 +216,6 @@ class Channel(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] Channel Termination: Tearing things down...')
 
-
-#######################################################################################################################
-
-#######################################################################################################################
 
 # This class encapsulates the Licensed User dynamically occupying the discretized spectrum under analysis
 class PrimaryUser(object):
@@ -296,7 +274,7 @@ class PrimaryUser(object):
             # Default Values
             spatial_start_probabilities = {1: 0.6, 0: 0.4}
             temporal_start_probabilities = {1: 0.6, 0: 0.4}
-            print('[INFO] PrimaryUser get_occupancy_behavior: Modified System Steady State Probabilities - ',
+            print('[WARN] PrimaryUser get_occupancy_behavior: Modified System Steady State Probabilities - ',
                   str(temporal_start_probabilities))
         # Everything's alright with the system steady-state statistics - Start simulating the PU Occupancy Behavior
         # This is global and system-specific. So, it doesn't matter which chain's steady-state probabilities is used...
@@ -339,10 +317,7 @@ class PrimaryUser(object):
         print('[INFO] PrimaryUser Termination: Tearing things down...')
 
 
-#######################################################################################################################
-
-#######################################################################################################################
-
+# This entity emulates a Secondary User (SU) intelligently accessing the spectrum un-occupied by the licensed user (PU)
 class SecondaryUser(object):
 
     # Initialization sequence
@@ -387,8 +362,6 @@ class SecondaryUser(object):
         print('[INFO] SecondaryUser Termination: Tearing things down...')
 
 
-#######################################################################################################################
-
 # This entity evaluates the emission probabilities, i.e. P(y|x)
 class EmissionEvaluator(object):
 
@@ -424,8 +397,6 @@ class EmissionEvaluator(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] EmissionEvaluator Termination: Tearing things down...')
 
-
-#######################################################################################################################
 
 # The Markov Chain Parameter Estimator Algorithm (modified EM - Baum-Welch)
 class ParameterEstimator(object):
@@ -648,10 +619,6 @@ class ParameterEstimator(object):
         print('[INFO] ParameterEstimator Termination: Tearing things down...')
 
 
-#######################################################################################################################
-
-#######################################################################################################################
-
 # The Markov Chain State Estimator algorithm - Viterbi Algorithm
 class StateEstimator(object):
     # Value function named tuple
@@ -789,10 +756,6 @@ class StateEstimator(object):
         print('[INFO] StateEstimator Termination: Tearing things down...')
 
 
-#######################################################################################################################
-
-#######################################################################################################################
-
 # This entity encapsulates the agent which provides rewards based on the state of the system and the action taken by...
 # ...the POMDP agent
 class Sweepstakes(object):
@@ -838,11 +801,6 @@ class Sweepstakes(object):
         print('[INFO] Sweepstakes Termination: Tearing things down...')
 
 
-#######################################################################################################################
-
-
-#######################################################################################################################
-
 # This entity encapsulates an Oracle which knows the best possible channels to use in each episode.
 # Hence, the policy followed by this Oracle is the most optimal policy
 # The action policy achieved by the POMDP agent will be evaluated/benchmarked against the Oracle's policy thereby...
@@ -871,11 +829,6 @@ class Oracle(object):
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] Oracle Termination: Tearing things down...')
-
-
-#######################################################################################################################
-
-#######################################################################################################################
 
 
 # Top-level Executive class
@@ -917,8 +870,7 @@ class AdaptiveIntelligence(object):
     NU = -10.0
 
     # SU Sensing Limitation
-    # The SU can sense 5 bands out of 18 -> 28%
-    LIMITATION = 5
+    LIMITATION = 4
 
     # Parameter Estimation Convergence Threshold
     EPSILON = 0.00001
@@ -1140,8 +1092,6 @@ class AdaptiveIntelligence(object):
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] AdaptiveIntelligence Termination: Tearing things down...')
-
-#######################################################################################################################
 
 
 # Run Trigger

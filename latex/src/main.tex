@@ -697,7 +697,7 @@ The Dynamic Short Range Communication (DSRC) Incumbent in a DARPA SC2 traffic sc
 \centering
 \end{figure}
 \clearpage
-\section{Markov Chain Parameter Estimation: Static PU with Markovian correlation across the channel indices with complete information}
+\section{Markov Chain Parameter Estimation: Static PU with Markovian correlation across the channel indices with complete information}\label{VI}
 \subsection{The Estimator}
 Before diving into the algorithm, let us first define the Forward and Backward probabilities that will be employed in our estimation algorithm.
 Let,
@@ -942,20 +942,227 @@ $t$ is the iteration counter, $\forall\ l,\ r\ \in\ \{0,\ 1\}$, and for any $\ep
 The algorithm outlined in the previous subsection has been implemented in Python and its results are detailed in this subsection.
 \begin{itemize}
     \item Number of frequency bands / channels = 18
-    \item Number of observation vectors = 100
-    \item Number of iterative cycles for averaging = 50
+    \item Number of observation vectors = 300
     \item SNR (signal ON) = 19.03 dB
+    \item Convergence Threshold ($\epsilon$) = $10^{-5}$
+    \item Initial Assignment of $\mathbb{P}(Occupied\ |\ Idle)\ =\ p$ = $10^{-5}$
+    \item True value of $\mathbb{P}(Occupied\ |\ Idle)\ =\ p$ = 0.30
+    \item Convergence repeat (confidence) threshold = 7
 \end{itemize}
 For an actual value of
-\[\mathbb{P}(Occupied\ |\ Idle)\ =\ p\ =\ 0.35\]
-and starting with an initial random assignment of $\hat{p}\ =\ 0.01$, we see that the Markov Chain Parameter Estimator algorithm in the previous subsection converges to a value of $\hat{p}\ =\ 0.3449$ in under 15 iterations across 100 observation vectors averaged out over 50 cycles.
+\[\mathbb{P}(Occupied\ |\ Idle)\ =\ p\ =\ 0.30\]
+and starting with an initial random assignment of $\hat{p}\ =\ 10^{-5}$, we see that the Markov Chain Parameter Estimator algorithm in the previous subsection converges to a value of $\hat{p}\ =\ 0.2922942008349906$ in 150 iterations across 300 observation vectors.
 \\A plot of $Mean\ Square\ Error\ =\ \mathbb{E}[(p\ -\ \hat{p})^2]$ versus the $Number\ of\ Iterations$ is shown in Figure 16 for the algorithm described in the previous subsection.
 \begin{figure}[t]
-\includegraphics[width=1.0\textwidth]{Mean_Square_Error_vs_Iterations.png}
+\includegraphics[width=1.0\textwidth]{Mean_Square_Plot_Log_Scale.png}
 \caption{Mean Square Error v/s Number of Iterations - A plot of convergence of our variant of EM for HMMs in order to estimate the parameters of the Markov Chain.}
 \label{fig:mesh16}
 \centering
 \end{figure}
+\section{Modelling the SU Spectrum Access Behavior as a Partially Observable Markov Decision Process (POMDP)}
+\subsection{POMDP Agent Model}
+Partially Observable Markov Decision Processes (POMDPs) model the repeated interactions of an agent with a stochastic environment, parts of which are hidden (un-observable or observable with noise or both) from the agent's view, in order to maximize the utility of a specific task.
+\\The following are important points to note about POMDPs in general and the POMDP model used in this work.
+\begin{itemize}
+    \item The agent's role is to perform tasks by choosing \textbf{actions} that fulfill the given task(s) in the best possible way.
+    \item The run-time or the interaction-time of the POMDP is quantized into discrete time-steps termed \textbf{episodes} and the agent executes an action at the start of each time-step.
+    \item Upon executing an action, the agent receives a scalar parameter value termed the \textbf{reward} from the environment and the goal of the agent is to maximize the long-term cumulative (finite-horizon or infinite horizon) reward it can get.
+    \item The agent's limited observational capabilities and/or the agent's noisy observations result in a level of uncertainty at the agent's end regarding the \textbf{state} of the environment and the exact effect of executing an action on the environment.
+    \item Notations: \begin{itemize}
+        \item $\mathcal{X}$ denotes the finite, discrete \textbf{State Space} and $\vec{x} \in \mathcal{X}$ represents an element of this space
+        \item $\mathcal{A}$ denotes the finite, discrete \textbf{Action Space} and $a \in \mathcal{A}$ represents an element of this space
+        \item $\mathcal{Y}$ denotes the continuous \textbf{Observation Space} and $\vec{y} \in \mathcal{Y}$ represents an element of this space
+    \end{itemize}
+    \item The \textbf{Transition Model} of the POMDP, i.e. $\mathbb{P}(\vec{x}'|\vec{x},\ a)$ is unknown and will be learnt during interactions using the Parameter Estimation Algorithm detailed in Section \ref{VI}.
+    \item The \textbf{Emission Model} of the POMDP, i.e. $\mathbb{P}(\vec{y}|\vec{x},\ a)$ is given from the System Model and Observation Model detailed in the previous sections of this work.
+    \item Given the POMDP Transition model (learnt over time) and the POMDP Emission model (known from the assumed System Model and the assumed Observation Model), the POMDP for SU spectrum access behavior in the presence of a PU can be converted to a \textbf{Belief state MDP}.
+    \item The POMDP agent assumes an initial belief $\vec{b}_0$ where, $\mathbb{P}(\vec{b}_0)\ =\ \frac{1}{|\mathcal{X}|}$, i.e. Uniform distribution over the State Space.
+    \item At the beginning of each episode, the agent takes an action $a \in \mathcal{A}$, observes $\vec{y} \in \mathcal{Y}$, and updates its belief as follows.
+    \[b_a^{\vec{y}}(\vec{x}')\ =\ \mathbb{P}(\vec{x}'|\vec{y},\ a,\ \vec{b})\]
+    Using the definition of Conditional Probability,
+    \[b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{x}',\ \vec{y},\ a,\ \vec{b})}{\mathbb{P}(\vec{y},\ a,\ \vec{b})}\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a,\ \vec{b})\mathbb{P}(\vec{x}',\ a,\ \vec{b})}{\mathbb{P}(\vec{y},\ a,\ \vec{b})}\]
+    Using the definition of Marginal Probability,
+    \[b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a,\ \vec{b})\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x},\ \vec{x}',\ a,\ \vec{b})}{\mathbb{P}(\vec{y}|a,\ \vec{b})\mathbb{P}(a,\ \vec{b})}\]
+    Again, using the definition of Conditional Probability,
+    \[b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a,\ \vec{b})\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a,\ \vec{b})\mathbb{P}(\vec{x},\ a,\ \vec{b})}{\mathbb{P}(\vec{y}|a,\ \vec{b})\mathbb{P}(a,\ \vec{b})}\]
+    Since the state transitions of the environment and the agent's observations of the environment do not depend on the agent's belief $\vec{b}$ given the action executed $a$,
+    \[b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)\mathbb{P}(\vec{x}|a,\ \vec{b})\mathbb{P}(a,\ \vec{b})}{\mathbb{P}(\vec{y}|a,\ \vec{b})\mathbb{P}(a,\ \vec{b})}\]
+    Re-arranging,
+    \[b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a)}{\mathbb{P}(\vec{y}|a,\ \vec{b})}\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)\mathbb{P}(\vec{x}|a,\ \vec{b})\]
+    where,
+    \\$b(\vec{x})\ =\ \mathbb{P}(\vec{x}|a,\ \vec{b})$ is the probability (degree of certainty or "belief") assigned to world state $\vec{x} \in \mathcal{X}$ by belief state $\vec{b}$
+    \\Note here that $b(\vec{x})$ like any valid probability measure satisfies the Kolmogorav's axioms as shown below.
+    \[\sum_{\vec{x} \in \mathcal{X}}\ b(\vec{x})\ =\ 1\]
+    \[0 \leq b(\vec{x}) \leq 1\]
+    Finally,
+    \[b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a)}{\mathbb{P}(\vec{y}|a,\ \vec{b})}\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})\]
+    The denominator $\mathbb{P}(\vec{y}|a,\ \vec{b})$ needs to be described using the POMDP's Transition Model and Emission Model. This is done as shown below.
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \frac{\mathbb{P}(\vec{y},\ a,\ \vec{b})}{\mathbb{P}(a,\ \vec{b})}\]
+    Using the definition of Marginal Probability,
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \frac{\sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{x}',\ \vec{y},\ a,\ \vec{b})}{\mathbb{P}(a,\ \vec{b})}\]
+    Now, using the definition of Conditional Probability in order to bring out the POMDP's Emission Model,
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \frac{\sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a,\ \vec{b})\mathbb{P}(\vec{x}',\ a,\ \vec{b})}{\mathbb{P}(a,\ \vec{b})}\]
+    Using the definition of Marginal Probability and Removing the independent variables from the terms, we get,
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \frac{\sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x},\ \vec{x}',\ a,\ \vec{b})}{\mathbb{P}(a,\ \vec{b})}\]
+    Now, using the definition of Conditional Probability in order to bring in the POMDP's Transition Model,
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \frac{\sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a,\ \vec{b})\mathbb{P}(a,\ \vec{b},\ \vec{x})}{\mathbb{P}(a,\ \vec{b})}\]
+    Since environment state transitions do not depend on the POMDP agent's beliefs,
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \frac{\sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)\mathbb{P}(a,\ \vec{b},\ \vec{x})}{\mathbb{P}(a,\ \vec{b})}\]
+    Simplifying further,
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \frac{\sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)\mathbb{P}(\vec{x}|a,\ \vec{b})\mathbb{P}(a,\ \vec{b})}{\mathbb{P}(a,\ \vec{b})}\]
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)\mathbb{P}(\vec{x}|a,\ \vec{b})\]
+    But, as we saw earlier, $\mathbb{P}(\vec{x}|a,\ \vec{b})\ =\ b(\vec{x})$,
+    \[\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})\]
+    Combining these results, the belief update step is outlined below.
+    \begin{equation}\label{94}
+        b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a)}{\mathbb{P}(\vec{y}|a,\ \vec{b})}\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})
+    \end{equation}
+    where,
+    \begin{equation}\label{95}
+        \mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})
+    \end{equation}
+    \item The \textbf{action policy} denoted by $\pi: \mathcal{B} \rightarrow \mathcal{A}$ maps the beliefs $\vec{b} \in \mathcal{B}$ to actions $a \in \mathcal{A}$ in order to satisfy the agent's goal of maximizing the cumulative long-term reward associated with the fulfillment of the given task.
+    \item The \textbf{belief-space} is an $|\mathcal{X}|-1$ dimensional simplex.
+    \\NOTE: An $n$-simplex is an n-dimensional polytope which is the convex-hull of its $(n+1)$ vertices.
+    \item A policy $\pi$ is characterized by a \textbf{value function} $V^{\pi}: \mathcal{B} \rightarrow \mathbb{R}$ which is defined as the expected discounted future reward $V^{\pi}(\vec{b})$ the agent can accumulate by following policy $\pi$ starting from belief $\vec{b}$.
+    \begin{equation}\label{96}
+        V^{\pi}(\vec{b})\ =\ \mathbb{E}_{\pi}\Big[\sum_{t=0}^{\infty}\ \gamma^t R(\vec{b}_t,\ \pi(\vec{b}_t))|\vec{b}_0=\vec{b}\Big]
+    \end{equation}
+    where,
+    \begin{equation}\label{97}
+       R(b_t,\ \pi(\vec{b}_t)\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ \pi(\vec{b}_t))b_t(\vec{x})
+    \end{equation}
+    Furthermore, here,
+    \\$R(\vec{b}_t,\ \pi(\vec{b}_t))\ \triangleq\ $The average / expected reward for policy $\pi$ and belief $\vec{b}_t$,
+    \\$R(\vec{x},\ \pi(\vec{b}_t))\ \triangleq\ $The world reward for state $\vec{x} \in \mathcal{X}$ and action $a\ =\ \pi(\vec{b}_t) \in \mathcal{A}$,
+    \\$b_t(\vec{x})$ is the "belief" of being in state $\vec{x}$, and
+    \\$\gamma\ \triangleq\ $The discount factor such that $0 < \gamma < 1$.
+    \item Before we jump into evaluating or solving for an optimal policy, let's define a \textbf{policy tree}. A policy tree is a complete $t$-step \textbf{non-stationary policy} for \textbf{finite-horizon POMDPs}.
+    \item The \textbf{optimal policy} $\pi^*$ specifies the optimal action to execute in the current episode, assuming the POMDP agent acts optimally in future episodes too. Let's derive a mathematical expression for the value function of the optimal policy at a particular belief state $\vec{b} \in \mathcal{B}$ as follows.
+    \\For a 1-step policy tree $p$,
+    \[V_p(\vec{b})\ =\ R(\vec{b},\ a(p))\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x})\]
+    For a general $t$-step policy tree $p$,
+    \[V_p(\vec{b})\ =\ R(\vec{b},\ a(p)) + \gamma \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|a(p),\ \vec{b}) \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a(p))V(\vec{b}_{a(p)}^{\vec{y}})\]
+    \[V_p(\vec{b})\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x}) + \gamma \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|a(p),\ \vec{b}) \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a(p))V(\vec{b}_{a(p)}^{\vec{y}})\]
+    Re-arranging the summation operators,
+    \[V_p(\vec{b})\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x}) + \gamma \sum_{\vec{x}' \in \mathcal{X}}\ \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{x}'|a(p),\ \vec{b})\mathbb{P}(\vec{y}|\vec{x}',\ a(p))V(\vec{b}_{a(p)}^{\vec{y}})\]
+    Using the definition of Conditional Probability and the definition of Marginal Probability,
+    \[V_p(\vec{b})\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x}) + \gamma \sum_{\vec{x}' \in \mathcal{X}}\ \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a(p))\sum_{\vec{x} \in \mathcal{X}}\ \frac{\mathbb{P}(\vec{x},\ \vec{x}',\ a(p),\ \vec{b})}{\mathbb{P}(a(p),\ \vec{b})}V(\vec{b}_{a(p)}^{\vec{y}})\]
+    Again, using the definition of Conditional Probability and removing the independent variables from the probability terms,
+    \[V_p(\vec{b})\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a(p))\sum_{\vec{x} \in \mathcal{X}}\ \frac{\mathbb{P}(\vec{x}'|a(p),\ \vec{x})\mathbb{P}(\vec{x},\ a(p),\ \vec{b})}{\mathbb{P}(a(p),\ \vec{b})}V(\vec{b}_{a(p)}^{\vec{y}})\]
+    Using the definition of Conditional Probability once again and simplifying further,
+    \[V_p(\vec{b})\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a(p))\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|a(p),\ \vec{x})\mathbb{P}(\vec{x}|a(p),\ \vec{b})V(\vec{b}_{a(p)}^{\vec{y}})\]
+    Now, from (\ref{95}), we know that,
+    \begin{equation*}
+        \mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})
+    \end{equation*}
+    Using this result,
+    \begin{equation}\label{98}
+        V_p(\vec{b})\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a(p),\ \vec{b})V(\vec{b}_{a(p)}^{\vec{y}})
+    \end{equation}
+    As defined earlier, an optimal policy involves choosing an action $a \in \mathcal{A}$ in each episode that maximizes the value function for a specific belief $\vec{b} \in \mathcal{B}$ of the POMDP agent.
+    \\Hence, we can frame an optimization problem as follows.
+    \\Generalizing for a \textbf{stationary policy} for \textbf{infinite-horizon POMDPs}, equation (\ref{98}) can be written as,
+    \begin{equation}\label{99}
+        V^*(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a)b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a,\ \vec{b})\ V^*(\vec{b}_a^{\vec{y}})\Big],\ \forall \vec{b} \in \mathcal{B}
+    \end{equation}
+    \item For finite-horizon POMDPs, $V^*$ is piece-wise linear and convex (PWLC) and for infinite-horizon POMDPs, $V^*$ can be approximated by a piece-wise linear and convex function.
+    \item The Value Function in episode $n$ is parameterized by a set of vectors / hyperplanes $\{\vec{\alpha}^i_n\},\ i\ =\ 0,\ 1,\ ...,\ |V_n|$. Each vector is associated with an action and this action is the optimal one to take in the current episode. Each vector defines a region of the belief space for which it is maximizing element of $V_n$ [\ref{Ref. 17}].
+    \item Given a set of vectors $\{\vec{\alpha}_n^i\},\ i\ =\ 0,\ 1,\ ...,\ |V_n|$ at time-step n,
+    \begin{equation}\label{100}
+        V_n(\vec{b})\ =\ max_{\vec{\alpha}^i_n}\ \vec{b} \cdot \vec{\alpha}^i_n
+    \end{equation}
+    \[\pi(\vec{b})\ =\ a(\vec{\alpha}^i_n)\]
+    From equation (\ref{99}),
+    \begin{equation*}
+        V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a)b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a,\ \vec{b})\ V_n(\vec{b}_a^{\vec{y}})\Big],\ \forall \vec{b} \in \mathcal{B}
+    \end{equation*}
+    Simplifying the notation,
+    \begin{equation*}
+        V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a,\ \vec{b})\ V_n(\vec{b}_a^{\vec{y}})\Big],\ \forall \vec{b} \in \mathcal{B}
+    \end{equation*}
+    From equation (\ref{100}),
+    \begin{equation*}
+        V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a,\ \vec{b})\ max_{\vec{\alpha}^i_n}\ \vec{b} \cdot \vec{\alpha}^i_n\Big],\ \forall \vec{b} \in \mathcal{B}
+    \end{equation*}
+    \begin{equation*}
+        V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a,\ \vec{b})\ max_{\vec{\alpha}^i_n}\ \sum_{\vec{x}' \in \mathcal{X}}\ b_a^{\vec{y}}(\vec{x}')\vec{\alpha}_n^i(\vec{x}')\Big],\ \forall \vec{b} \in \mathcal{B}
+    \end{equation*}
+    From equation (\ref{94}), we have that,
+    \begin{equation*}
+        b_a^{\vec{y}}(\vec{x}')\mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})
+    \end{equation*}
+    \begin{equation*}
+            V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ max_{\vec{\alpha}^i_n}\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})\vec{\alpha}_n^i(\vec{x}')\Big]
+    \end{equation*}
+    Let,
+    \[g_{\vec{y,\ a}}^i(\vec{x})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\mathbb{P}(\vec{x}'|\vec{x},\ a)\vec{\alpha}_n^i(\vec{x}')\]
+    Then, we have,
+    \begin{equation*}
+            V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ max_{\vec{g}_{\vec{y},\ a}^i}\ \vec{b} \cdot \vec{g}_{\vec{y},\ a}^i\Big]
+    \end{equation*}
+    \begin{equation*}
+            V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \vec{b} \cdot \vec{R}(a) + max_{a \in \mathcal{A}}\ \gamma \sum_{\vec{y} \in \mathcal{Y}}\ max_{\vec{g}_{\vec{y},\ a}^i}\ \vec{b} \cdot \vec{g}_{\vec{y},\ a}^i
+    \end{equation*}
+    \begin{equation*}
+            V_{n+1}(\vec{b})\ =\ \vec{b} \cdot argmax_{a \in \mathcal{A}}\ \vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ argmax_{a \in \mathcal{A}}\ \vec{b} \cdot argmax_{\vec{g}_{\vec{y},\ a}^i}\ \vec{b} \cdot \vec{g}_{\vec{y},\ a}^i
+    \end{equation*}
+    Now, the $backup(\vec{b})$ is given by,
+    \begin{equation}\label{101}
+            backup(\vec{b})\ =\ argmax_{\vec{g}_a^b}\ \vec{b} \cdot \vec{g}_a^b
+    \end{equation}
+    where,
+    \[\vec{g}_a^b\ =\ \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ argmax_{\vec{g}_{\vec{y},\ a}^i}\ \vec{b} \cdot \vec{g}_{\vec{y},\ a}^i\]
+\end{itemize}
+\subsection{Related Work}
+\begin{itemize}
+    \item \textbf{Exact Value Iteration}: Reference [\ref{Ref. 18}] details a few Exact Value Iteration algorithms to solve for the optimal policy in POMDPs.
+    \begin{itemize}
+        \item Given a set of policy trees $\Bar{\nu}$, [\ref{Ref. 18}] defines a unique minimal subset of $\Bar{\nu}$ denoted $\nu$ called a \textbf{parsimonious representation of the value function} and a policy tree is deemed useful if it's a part of this parsimonious representation of the value function.
+        \item To construct the parsimonious representation of the value function, the \textbf{Exhaustive Enumeration} strategy involves two phases: Generation and Pruning. The generation phase involves constructing a larger representation of $\nu_t$ denoted by $\nu_t^+$ from $\nu_{t-1}$, the set of useful $(t-1)$-step policy trees while the pruning phase requires one linear program for each element of the starting set of policy trees to produce the parsimonious representation of $V_t$.
+        \item The Exhaustive Enumeration strategy is exponential in the observation space, i.e. $|\mathcal{A}||\nu_{t-1}|^{|\Omega|}$. So, the authors in [\ref{Ref. 18}] propose the \textbf{Witness Algorithm}.
+        \item The Witness Algorithm avoids generating $\nu_t^+$, instead computes the elements of $\nu_t$ directly. The Witness Algorithm involves computing for each action $a$, a set $Q_t^a$ of $t$-step policy trees that have $a$ at the root, taking a union of all the $Q_t^a$ sets for all actions, and then pruning it to obtain $\nu_t$.
+        \item However, the Witness Algorithm is untenable for problems with continuous observation spaces, large state spaces, and hence, large belief spaces.
+    \end{itemize}
+    \item \textbf{Approximate Value Iteration}: Reference [\ref{Ref. 17}] details a few Approximate Value Iteration algorithms to solve for the optimal policy in computationally expensive POMDP problems.
+    \begin{itemize}
+        \item The Exact Value Iteration Algorithms are generally intractable for large problems because these algorithms involve determining the optimal action for every belief in the belief space $\mathcal{B}$.
+        \item Instead, for large problems, a more prudent approach would be to perform the backup procedure only over a set of "reachable beliefs". It is shown in [\ref{Ref. 17}] that approximate point-based methods which perform backup steps over a reduced set of so-called "reachable beliefs" can find successful policies for the POMDP.
+        \item One approach would be the \textbf{Point-Based Value Iteration (PBVI) Algorithm} which involves the following steps:
+        \begin{itemize}
+            \item Start with a small set of beliefs $B_0$ and perform a series of backups on $B_0$
+            \item Expand $B_0$ to $B_1$ by sampling more beliefs. Arbitrarily speaking, the belief set $B_t$ is expanded to $B_{t+1}$ by simulating actions for all $b \in B_t$ and keeping only the belief points that are the farthest away from the points already in $B_{t+1}$
+            \item The algorithm then performs a series of backups on $B_{t+1}$ and then expands it to $B_{t+2}$ by employing the "farthest-distance sampling" approach. This continues until a satisfactory condition is reached or until the computation time expires.
+        \end{itemize}
+        \item The problem with the PBVI Algorithm is that it involves computing the distance between all $b \in B_t$ and furthermore, it also involves backing-up on all $b \in B_t$ generating $|B_t|$ vectors. This may turn out to be computationally expensive or intractable for problems requiring large $|B_t|$.
+        \item Another approach which would solve the problems encountered by the PBVI algorithm is the PERSEUS algorithm [\ref{Ref. 17}]. The PERSEUS algorithm does not involve computing distances between all belief points in $B_t$ and furthermore, it does not involve performing backups on all $b \in B_t$. Instead, the PERSEUS algorithm involves backing-up only on a subset of $B_t$ while ensuring that the computed solution is effective for the entire set $B_t$.
+        \item By performing backups only on a subset of $B_t$ while ensuring optimality/near-optimality for the entire set $B_t$ curbs the increase in the number of vectors as the algorithm progresses.
+    \end{itemize}
+\end{itemize}
+Now, that we've motivated the PERSEUS algorithm for use in our framework, let's discuss it in more detail.
+\subsection{The PERSEUS Algorithm}
+\begin{itemize}
+    \item The PERSEUS Algorithm is a Randomized Approximate Point-Based Value Iteration Algorithm that involves the following steps:
+    \begin{itemize}
+        \item In the exploration period, the POMDP agent randomly explores the radio environment and comes up with a set of "reachable beliefs" $B$.
+        \item \textbf{Initialization}: All the elements in the initial value function $V_0$ are set to $\frac{1}{1-\gamma}min_{\vec{x},\ a}\ R(\vec{x},\ a)$ based on the ideas laid down in [\ref{Ref. 19}].
+        \item Arbitrarily, considering the $n$-th time-step, the \textbf{Backup} procedure involves the following,
+        \begin{itemize}
+            \item Initialize the set of unimproved belief points $\Tilde{B}\ =\ B$ and $V_{n+1}\ =\ \phi$
+            \item Sample a belief point $\vec{b} \in \Tilde{B}$ uniformly at random and compute $\vec{\alpha}\ =\ backup(\vec{b})$ as described by equation (\ref{101})
+            \item If $\vec{b} \cdot \vec{\alpha} \geq V_n(\vec{b})$, then add $\vec{\alpha}$ to $V_{n+1}$, else add $\vec{\alpha}'\ =\ argmax_{\vec{\alpha_n^i}}\ \vec{b} \cdot \vec{\alpha_n^i}$ to $V_{n+1}$
+            \item Remove all the improved points from $\Tilde{B}$, i.e. all the belief points $\vec{b} \in \Tilde{B}$ for which $\vec{b} \cdot \vec{\alpha} \geq V_n(\vec{b})$ are removed from $\Tilde{B}$
+            \item Stop when $\Tilde{B}$ is empty
+        \end{itemize}
+        \item The backup steps are performed until the convergence condition is met, i.e. if the number of policy changes between $V_{n}$ and $V_{n+1}$ is less than a certain threshold $\eta$, we terminate the algorithm.
+        \item An extension to the PERSEUS algorithm outlined in (\ref{Ref. 17}) is to re-learn the set of "reachable beliefs" by allowing the POMDP agent to explore the radio environment with the most recent policy under the following circumstances:
+        \begin{itemize}
+            \item At the end of every $N$-th backup stage, or
+            \item When the cumulative reward from the radio environment, i.e. a measure of the achieved throughput observed over a fixed period of time, drops below a certain threshold
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\subsection{Experimental Results of the Complete POMDP Framework}
 \section{External References}
 \begin{enumerate}
     \item \textbf{Fast Spectrum Sensing: A Combination of Channel Correlation and Markov Model}: https://ieeexplore.ieee.org/document/6956794
@@ -986,6 +1193,12 @@ and starting with an initial random assignment of $\hat{p}\ =\ 0.01$, we see tha
     [\textit{https://ieeexplore.ieee.org/document/823977/}]
     \item \textbf{Approximate Viterbi Decoding for 2D-Hidden Markov Models}: A 2D Viterbi algorithm is developed for applications in handwriting recognition.\newline
     [\textit{https://ieeexplore.ieee.org/document/859261}]
+    \item \textbf{Perseus: Randomized Point-based Value Iteration for POMDPs}: A Randomised Point-Based Value Iteration for POMDPs which involves solving a belief state MDP iteratively by first forming a set of reachable beliefs and then updating the value functions until convergence by performing a number of backup stages in order to identify a vector (with a corresponding optimal action in a particular time-step) that is the maximizing element of the value function.\newline
+    [\textit{https://arxiv.org/pdf/1109.2145.pdf}]\label{Ref. 17}
+    \item \textbf{Planning and acting in partially observable stochastic domains}: This work details Exact Value Iteration algorithms like the Witness algorithm while also outlining some characteristics of Exhaustive Enumeration techniques to solve for the optimal policy in POMDPs.
+    [\textit{https://people.csail.mit.edu/lpk/papers/aij98-pomdp.pdf}]\label{Ref. 18}
+    \item \textbf{Speeding Up the Convergence of Value Iteration in Partially Observable Markov Decision Processes}: This work describes a technique for accelerating the convergence of value iteration algorithms involved in solving for the optimal policies of POMDPs.
+    [\textit{https://arxiv.org/pdf/1106.0251.pdf}]\label{Ref. 19}
 \end{enumerate}
 \end{document}
 \bibliographystyle{IEEEtran}

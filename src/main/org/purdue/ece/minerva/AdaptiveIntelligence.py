@@ -260,6 +260,8 @@ class PrimaryUser(object):
 
     # Get the spatial and temporal occupancy behavior of the Primary User based on the statistics shared during the...
     # ...creation of the Spatial Markov Chain and the Temporal Markov Chain
+    # TODO: This seems to be a weird way to generate the true_pu_occupancy_states - use a dict() with channels as...
+    # ...keys and [] as values
     def simulate_occupancy_behavior(self):
         # Extracting the statistics from the objects for easy use in this method
         spatial_transition_probabilities_matrix = self.spatial_markov_chain.transition_probabilities
@@ -339,20 +341,11 @@ class SecondaryUser(object):
     def make_observations(self, episode, channel_selection_strategy):
         observation_samples = []
         for band in range(0, self.number_of_channels):
-            obs_per_band = [k - k for k in range(0, self.number_of_sampling_rounds)]
-            # I'm sensing a smaller subset of channels
-            # However, I'm sensing across all time steps / rounds / time indices for the bands that are being sensed!
-            # channel_selection_strategy[0] = ACTIVE_CHANNELS
-            if band in channel_selection_strategy[0]:
-                for count in range(0, self.number_of_sampling_rounds):
-                    # channel_selection_strategy[1] = ACTIVE_SAMPLING_ROUNDS
-                    if count in channel_selection_strategy[1]:
-                        obs_per_band[count] = (self.channel.impulse_response[episode][band][
-                                                   count] * self.true_pu_occupancy_states[band][count] +
-                                               self.channel.noise[episode][band][count])
-                    else:
-                        # Empty Place-holder value is 0
-                        obs_per_band[count] = 0
+            obs_per_band = [k-k for k in range(0, self.number_of_sampling_rounds)]
+            if channel_selection_strategy[band] == 1:
+                obs_per_band = (self.channel.impulse_response[episode][band] *
+                                self.true_pu_occupancy_states[band][episode]) + \
+                               self.channel.noise[episode][band]
             observation_samples.append(obs_per_band)
         # The observation_samples member is a kxt matrix
         return observation_samples
@@ -379,7 +372,7 @@ class EmissionEvaluator(object):
         # The Empty Place-Holder value is 0
         if observation_sample == 0:
             return 1
-        # Normal Viterbi code
+        # Normal Emission Estimation using the distribution of the observations given the state
         else:
             # Idea: P(A, B|C) = P(A|B, C)P(B|C) = P(A|C)P(B|C) because the real and imaginary components are independent
             # P(\Re(y_k(i)), \Im(y_k(i))|x_k) = P(\Re(y_k(i))|x_k)P(\Im(y_k(i)|x_k)
@@ -403,10 +396,13 @@ class ParameterEstimator(object):
 
     # Initialization sequence
     def __init__(self, _number_of_chain_links, _number_of_repetitions, _transition_probabilities, _start_probabilities,
-                 _observation_samples, _emission_evaluator, _epsilon, _confidence_bound):
+                 _observation_samples, _emission_evaluator, _epsilon, _confidence_bound, _util):
         print('[INFO] ParameterEstimator Initialization: Bringing things up...')
         # Transition Statistics of the Chain under analysis
-        self.transition_probabilities = _transition_probabilities
+        self.transition_probabilities = {0: {0: [_transition_probabilities[0][0]],
+                                             1: [_transition_probabilities[0][1]]},
+                                         1: {0: [_transition_probabilities[1][0]],
+                                             1: [_transition_probabilities[1][1]]}}
         # Threshold for convergence
         self.epsilon = _epsilon
         # Number of links in the Chain under analysis
@@ -424,11 +420,13 @@ class ParameterEstimator(object):
         # The forward probabilities collection across simulation time
         self.forward_probabilities = []
         for k in range(0, self.number_of_chain_links):
-            self.forward_probabilities[k] = dict()
+            self.forward_probabilities.append(dict())
         # The backward probabilities collection across simulation time
         self.backward_probabilities = []
         for k in range(0, self.number_of_chain_links):
-            self.backward_probabilities[k] = dict()
+            self.backward_probabilities.append(dict())
+        # The Utility instance for some general tasks
+        self.util = _util
 
     # Convergence check
     def has_it_converged(self, iteration):
@@ -445,7 +443,7 @@ class ParameterEstimator(object):
 
     # Get the Emission Probabilities -> P(y|x)
     def get_emission_probabilities(self, state, observation_sample):
-        return self.emission_evaluator.get_emission_probability(state, observation_sample)
+        return self.emission_evaluator.get_emission_probabilities(state, observation_sample)
 
     # Construct the transition probabilities matrix in order to pass it to the state estimator
     def construct_transition_probabilities_matrix(self, iteration):
@@ -671,7 +669,7 @@ class StateEstimator(object):
 
     # Get the Emission Probabilities -> P(y|x)
     def get_emission_probabilities(self, state, observation_sample):
-        return self.emission_evaluator.get_emission_probability(state, observation_sample)
+        return self.emission_evaluator.get_emission_probabilities(state, observation_sample)
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     # Output a collection consisting of the required parameters of interest
@@ -691,8 +689,8 @@ class StateEstimator(object):
             # INITIALIZATION : The array of initial probabilities is known
             # FORWARD RECURSION
             value_function_collection = []
-            for x in range(len(reduced_observation_vector)):
-                value_function_collection[x] = dict()
+            for x in range(0, len(reduced_observation_vector)):
+                value_function_collection.append(dict())
             for state in OccupancyState:
                 current_value = self.get_emission_probabilities(state.value, reduced_observation_vector[0]) * \
                                 self.get_start_probabilities(state.name)
@@ -749,7 +747,7 @@ class StateEstimator(object):
                     value_function_collection[i + 1][previous_state].previous_state))
                 previous_state = value_function_collection[i + 1][previous_state].previous_state
             estimated_states_array.append(estimated_states)
-        return [estimated_states_array, max_value]
+        return [estimated_states_array[self.number_of_sampling_rounds-1], max_value]
 
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -837,46 +835,43 @@ class Oracle(object):
 # References to the ParameterEstimation algorithm and the StateEstimation algorithm in the belief analysis phase
 class AdaptiveIntelligence(object):
     # Number of channels in the discretized spectrum of interest
-    NUMBER_OF_CHANNELS = 18
+    NUMBER_OF_CHANNELS = 5
 
     # Number of sampling rounds undertaken by the Secondary User per episode
-    NUMBER_OF_SAMPLING_ROUNDS = 250
+    NUMBER_OF_SAMPLING_ROUNDS = 25
 
     # Number of episodes during which the SU interacts with the radio environment
-    NUMBER_OF_EPISODES = 1000
+    NUMBER_OF_EPISODES = 100
 
     # Exploration period of the POMDP agent to find a set of reachable beliefs
-    EXPLORATION_PERIOD = 250
-
-    # Priority Threshold during exploration to classify a belief as reachable/viable/important
-    PRIORITY_THRESHOLD = 5
+    EXPLORATION_PERIOD = 20
 
     # Mean of the Complex AWGN
-    NOISE_MEAN = 0.0
+    NOISE_MEAN = 0
 
     # Variance of the Complex AWGN
-    NOISE_VARIANCE = 1.0
+    NOISE_VARIANCE = 1
 
     # Mean of the Complex Channel Impulse Response
-    IMPULSE_RESPONSE_MEAN = 0.0
+    IMPULSE_RESPONSE_MEAN = 0
 
     # Variance of the Complex Channel Impulse Response
-    IMPULSE_RESPONSE_VARIANCE = 80.0
+    IMPULSE_RESPONSE_VARIANCE = 80
 
     # False Alarm Cost
-    MU = -1.0
+    MU = -1
 
     # Missed Detection Cost
-    NU = -10.0
+    NU = -10
 
     # SU Sensing Limitation
     LIMITATION = 4
 
     # Parameter Estimation Convergence Threshold
-    EPSILON = 0.00001
+    EPSILON = 0.001
 
     # Convergence Confidence Metric for the Parameter Estimation algorithm
-    CONFIDENCE_BOUND = 10
+    CONFIDENCE_BOUND = 1
 
     # Discount Factor
     GAMMA = 0.9
@@ -919,12 +914,12 @@ class AdaptiveIntelligence(object):
         self.sweepstakes = Sweepstakes(self.primary_user, self.MU, self.NU)
         # The Oracle
         self.oracle = Oracle(self.NUMBER_OF_EPISODES)
-        # Spatial Parameter Estimator - Modified Baum-Welch / Modified EM
-        self.spatial_parameter_estimator = ParameterEstimator(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
-                                                              self.initial_transition_probabilities_matrix,
-                                                              self.start_probabilities_dict, None,
-                                                              self.emission_evaluator, self.EPSILON,
-                                                              self.CONFIDENCE_BOUND)
+        # Parameter Estimator - Modified Baum-Welch / Modified EM
+        self.parameter_estimator = ParameterEstimator(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
+                                                      self.initial_transition_probabilities_matrix,
+                                                      self.start_probabilities_dict, None,
+                                                      self.emission_evaluator, self.EPSILON,
+                                                      self.CONFIDENCE_BOUND, self.util)
         # State Estimator
         self.state_estimator = StateEstimator(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, None,
                                               self.start_probabilities_dict,
@@ -935,8 +930,10 @@ class AdaptiveIntelligence(object):
     # TODO: An "ordered random" exploration strategy - What if I want to explore based on my most recent optimal...
     # ...strategy as a part of the modified PERSEUS strategy
     def random_exploration(self, policy):
+        # The Discretized Spectrum of Interest
+        discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
         # Priority Tracking Collection
-        belief_count_map = dict()
+        reachable_beliefs = dict()
         if policy is None:
             print('[INFO] AdaptiveIntelligence random_exploration: No order to the chaos...using a truly random '
                   'exploration strategy')
@@ -944,23 +941,16 @@ class AdaptiveIntelligence(object):
         for iteration in range(0, self.EXPLORATION_PERIOD):
             sampling_array = [k - k for k in range(0, self.NUMBER_OF_CHANNELS)]
             for count in range(0, self.LIMITATION):
-                sampling_array[random.choice([k for k in range(0, self.NUMBER_OF_CHANNELS)])] = 1
+                sampling_array[random.choice(discretized_spectrum)] = 1
             observations = self.secondary_user.make_observations(iteration, sampling_array)
-            self.spatial_parameter_estimator.observation_samples = observations
+            self.parameter_estimator.observation_samples = observations
             self.state_estimator.observation_samples = observations
-            transition_matrix = self.util.construct_transition_probability_matrix(self.spatial_parameter_estimator
+            transition_matrix = self.util.construct_transition_probability_matrix(self.parameter_estimator
                                                                                   .estimate_parameters(), self.pi)
             self.state_estimator.transition_probabilities = transition_matrix
             belief_information = self.state_estimator.estimate_pu_occupancy_states()
-            previous_count = belief_count_map[belief_information[0]]
-            if previous_count is None:
-                previous_count = 0
-            belief_count_map[belief_information] = [previous_count + 1, belief_information[1]]
-        # Filtering
-        reachable_beliefs = dict()
-        for key, value in belief_count_map:
-            if value[0] >= self.PRIORITY_THRESHOLD:
-                reachable_beliefs[key] = value[1]
+            belief_key = "".join(map(str, belief_information[0]))
+            reachable_beliefs[belief_key] = belief_information
         return reachable_beliefs
 
     # Initialization
@@ -968,12 +958,12 @@ class AdaptiveIntelligence(object):
     def initialize(reachable_beliefs):
         # V_0 for the reachable beliefs
         value_function_collection = dict()
-        for belief_vector in reachable_beliefs.keys():
+        for belief_key in reachable_beliefs.keys():
             # V_0 = {1 / (1-GAMMA)} * min_{s, a} r(s, a)
             # The worst r(s, a) irrespective of the initial action policy / beliefs is w.r.t P_FA = 1 and P_MD = 1 ->...
             # ... min_{s, a} r(s, a) = -1(1) + -10(1) = -11
             # V_0 = (1 / 0.1 ) * -11 = -110
-            value_function_collection[[belief_vector]] = -110
+            value_function_collection[belief_key] = -110
         return value_function_collection
 
     # The Backup stage
@@ -1000,10 +990,10 @@ class AdaptiveIntelligence(object):
             for action in action_set:
                 # Make observations and assign them to the ParameterEstimator and the StateEstimator
                 observations = self.secondary_user.make_observations(stage_number, action)
-                self.spatial_parameter_estimator.observation_samples = observations
+                self.parameter_estimator.observation_samples = observations
                 self.state_estimator.observation_samples = observations
                 # Estimate the transition statistics
-                transition_probability_matrix = self.spatial_parameter_estimator.estimate_parameters()
+                transition_probability_matrix = self.parameter_estimator.estimate_parameters()
                 # Assign the transition statistics to the StateEstimator
                 self.state_estimator.transition_probabilities = transition_probability_matrix
                 # Estimate the state of the system

@@ -128,7 +128,7 @@ class Util(object):
         # Combinatorial Analysis for #limitation channels
         combinations = itertools.combinations(discretized_spectrum_of_interest, limitation)
         for combination in combinations:
-            action = [k-k for k in range(0, number_of_channels)]
+            action = [k - k for k in range(0, number_of_channels)]
             # Extract the digits (channels) from the consolidated combination extracted in the previous step
             channels = [int(digit) for digit in str(combination)]
             for channel in discretized_spectrum_of_interest:
@@ -341,7 +341,7 @@ class SecondaryUser(object):
     def make_observations(self, episode, channel_selection_strategy):
         observation_samples = []
         for band in range(0, self.number_of_channels):
-            obs_per_band = [k-k for k in range(0, self.number_of_sampling_rounds)]
+            obs_per_band = [k - k for k in range(0, self.number_of_sampling_rounds)]
             if channel_selection_strategy[band] == 1:
                 obs_per_band = (self.channel.impulse_response[episode][band] *
                                 self.true_pu_occupancy_states[band][episode]) + \
@@ -676,8 +676,6 @@ class StateEstimator(object):
     def estimate_pu_occupancy_states(self):
         # Variable reference to get rid of the idiotic "prior-referenced usage' warning
         previous_state = None
-        # Variable reference to get rid of the idiotic "prior-referenced usage' warning
-        max_value = None
         estimated_states_array = []
         for sampling_round in range(0, self.number_of_sampling_rounds):
             estimated_states = []
@@ -740,14 +738,14 @@ class StateEstimator(object):
                 print('[ERROR] StateEstimator estimate_pu_occupancy_states: previous_state AND/OR max_value members '
                       'are invalid! Returning junk results! Please look into this!')
                 # Return junk
-                return [[k-k for k in range(0, self.number_of_channels)], 0]
+                return [[k - k for k in range(0, self.number_of_channels)], 0]
             # Backtracking
             for i in range(len(value_function_collection) - 2, -1, -1):
                 estimated_states.insert(0, self.value_from_name(
                     value_function_collection[i + 1][previous_state].previous_state))
                 previous_state = value_function_collection[i + 1][previous_state].previous_state
             estimated_states_array.append(estimated_states)
-        return [estimated_states_array[self.number_of_sampling_rounds-1], max_value]
+        return estimated_states_array[self.number_of_sampling_rounds - 1]
 
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -759,25 +757,23 @@ class StateEstimator(object):
 class Sweepstakes(object):
 
     # Initialization sequence
-    # _lambda = False_Alarm_Cost
     # _nu = Missed_Detection_Cost
-    def __init__(self, _primary_user, _mu, _nu):
+    def __init__(self, _primary_user, _mu):
         print('[INFO] Sweepstakes Initialization: Bringing things up...')
         # The Primary User
         self.primary_user = _primary_user
-        # False_Alarm_Cost
-        self.mu = _mu
         # Missed_Detection_Cost
-        self.nu = _nu
+        self.mu = _mu
 
     # Get Reward based on the system state and the action taken by the POMDP agent
     # The system_belief member is created by the action taken by the POMDP agent
-    # Reward = Probability_of_detection + False_Alarm_Cost*Probability_of_false_alarm + ...
-    # ...Missed_Detection_Cost*Probability_of_missed_detection
+    # Reward = (1-Probability_of_false_alarm) + Missed_Detection_Cost*Probability_of_missed_detection
     def roll(self, system_belief, system_state):
+        # Used to evaluate Missed Detection Probability
         correct_detection_count = 0
-        false_alarm_count = 0
         actual_occupancy_count = 0
+        # Used to evaluate False Alarm Probability
+        false_alarm_count = 0
         actual_idle_count = 0
         for i in range(0, len(system_belief)):
             if system_state[i] == 1:
@@ -788,11 +784,9 @@ class Sweepstakes(object):
                 actual_idle_count += 1
                 if system_belief[i] == 1:
                     false_alarm_count += 1
-        # Reward = Probability_of_detection + False_Alarm_Cost*Probability_of_false_alarm + ...
-        # ...Missed_Detection_Cost*Probability_of_missed_detection
-        return (correct_detection_count / actual_occupancy_count) + \
-               (self.mu * (false_alarm_count / actual_idle_count)) + \
-               (self.nu * (1 - (correct_detection_count / actual_occupancy_count)))
+        # Reward = (1-Probability_of_false_alarm) + Missed_Detection_Cost*Probability_of_missed_detection
+        return (1 - (false_alarm_count / actual_idle_count)) + \
+               (self.mu * (1 - (correct_detection_count / actual_occupancy_count)))
 
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -814,7 +808,7 @@ class Oracle(object):
     # Get the long term reward by following the optimal policy - This is the Oracle. She knows everything.
     # P_FA = 0
     # P_MD = 0
-    # Return = Sum_{1}^{number_of_episodes}\ [1 + 0 + 0] = number_of_episodes
+    # Return = Sum_{1}^{number_of_episodes}\ [1] = number_of_episodes
     # Episodic Reward = 1
     def get_return(self):
         return self.number_of_episodes
@@ -838,7 +832,7 @@ class AdaptiveIntelligence(object):
     NUMBER_OF_CHANNELS = 5
 
     # Number of sampling rounds undertaken by the Secondary User per episode
-    NUMBER_OF_SAMPLING_ROUNDS = 25
+    NUMBER_OF_SAMPLING_ROUNDS = 10
 
     # Number of episodes during which the SU interacts with the radio environment
     NUMBER_OF_EPISODES = 100
@@ -861,11 +855,8 @@ class AdaptiveIntelligence(object):
     # False Alarm Cost
     MU = -1
 
-    # Missed Detection Cost
-    NU = -10
-
     # SU Sensing Limitation
-    LIMITATION = 4
+    LIMITATION = 2
 
     # Parameter Estimation Convergence Threshold
     EPSILON = 0.001
@@ -911,7 +902,7 @@ class AdaptiveIntelligence(object):
         self.secondary_user = SecondaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.channel,
                                             self.primary_user.occupancy_behavior_collection, self.LIMITATION)
         # Sweepstakes - The Reward Analyzer
-        self.sweepstakes = Sweepstakes(self.primary_user, self.MU, self.NU)
+        self.sweepstakes = Sweepstakes(self.primary_user, self.MU)
         # The Oracle
         self.oracle = Oracle(self.NUMBER_OF_EPISODES)
         # Parameter Estimator - Modified Baum-Welch / Modified EM
@@ -927,31 +918,84 @@ class AdaptiveIntelligence(object):
                                               self.emission_evaluator)
 
     # Randomly explore the environment and collect a set of beliefs B of reachable belief points
-    # TODO: An "ordered random" exploration strategy - What if I want to explore based on my most recent optimal...
     # ...strategy as a part of the modified PERSEUS strategy
     def random_exploration(self, policy):
-        # The Discretized Spectrum of Interest
-        discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
-        # Priority Tracking Collection
         reachable_beliefs = dict()
-        if policy is None:
-            print('[INFO] AdaptiveIntelligence random_exploration: No order to the chaos...using a truly random '
-                  'exploration strategy')
-        # Random Exploration
-        for iteration in range(0, self.EXPLORATION_PERIOD):
-            sampling_array = [k - k for k in range(0, self.NUMBER_OF_CHANNELS)]
-            for count in range(0, self.LIMITATION):
-                sampling_array[random.choice(discretized_spectrum)] = 1
-            observations = self.secondary_user.make_observations(iteration, sampling_array)
+        discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
+        state_space_size = 2 ** self.NUMBER_OF_CHANNELS
+        # All possible states
+        all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.NUMBER_OF_CHANNELS)))
+        # Uniform belief assignment to all states in the state space
+        initial_belief_vector = dict()
+        for state in all_possible_states:
+            state_key = ''.join(str(k) for k in state)
+            initial_belief_vector[state_key] = 1 / state_space_size
+        previous_belief_vector = initial_belief_vector
+        reachable_beliefs['0'] = initial_belief_vector
+        if policy is not None:
+            # TODO: An "ordered random" exploration strategy
+            print(
+                '[WARN] AdaptiveIntelligence random_exploration: Specific policy exploration is yet to be implemented')
+        print('[INFO] AdaptiveIntelligence random_exploration: Using a truly random exploration strategy')
+        # Start exploring
+        for episode in range(0, self.EXPLORATION_PERIOD):
+            # Choose an action
+            action = [k - k for k in range(0, self.NUMBER_OF_CHANNELS)]
+            # SU has limited sensing capabilities
+            for capability in range(0, self.LIMITATION):
+                action[random.choice(discretized_spectrum)] = 1
+            # Perform the sensing action and make the observations
+            observations = self.secondary_user.make_observations(episode, action)
             self.parameter_estimator.observation_samples = observations
-            self.state_estimator.observation_samples = observations
-            transition_matrix = self.util.construct_transition_probability_matrix(self.parameter_estimator
-                                                                                  .estimate_parameters(), self.pi)
-            self.state_estimator.transition_probabilities = transition_matrix
-            belief_information = self.state_estimator.estimate_pu_occupancy_states()
-            belief_key = "".join(map(str, belief_information[0]))
-            reachable_beliefs[belief_key] = belief_information
+            transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
+                self.parameter_estimator.estimate_parameters(), self.pi)
+            # Perform the Belief Update
+            updated_belief_vector = dict()
+            for state in all_possible_states:
+                state_key = ''.join(str(k) for k in state)
+                updated_belief_vector[state_key] = self.belief_update(observations, previous_belief_vector, state,
+                                                                      transition_probabilities_matrix)
+            # Add the new belief vector to the reachable beliefs set
+            reachable_beliefs[str(episode)] = updated_belief_vector
         return reachable_beliefs
+
+    # Belief Update sequence
+    def belief_update(self, observations, previous_belief_vector, new_state, transition_probabilities_matrix):
+        multiplier = 0
+        denominator = 0
+        # All possible states
+        all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.NUMBER_OF_CHANNELS)))
+        for prev_state in all_possible_states:
+            multiplier += self.get_transition_probability(prev_state, new_state, transition_probabilities_matrix) * \
+                          previous_belief_vector[''.join(str(k) for k in prev_state)]
+        numerator = self.get_emission_probability(observations, new_state) * multiplier
+        for next_state in all_possible_states:
+            emission_probability = self.get_emission_probability(observations, next_state)
+            multiplier = 0
+            for prev_state in all_possible_states:
+                multiplier += self.get_transition_probability(prev_state, next_state, transition_probabilities_matrix) \
+                              * previous_belief_vector[''.join(str(k) for k in prev_state)]
+            denominator += emission_probability * multiplier
+        return numerator / denominator
+
+    # Get Emission Probabilities for the Belief Update sequence
+    def get_emission_probability(self, observations, state):
+        emission_probability = 1
+        for index in range(0, self.NUMBER_OF_CHANNELS):
+            emission_probability = emission_probability * self.emission_evaluator.get_emission_probabilities(
+                state[index], observations[index][0])
+        return emission_probability
+
+    # Get State Transition Probabilities for the Belief Update sequence
+    def get_transition_probability(self, prev_state, next_state, transition_probabilities_matrix):
+        transition_probability = transition_probabilities_matrix[next_state[0]][prev_state[0]]
+        for index in range(1, self.NUMBER_OF_CHANNELS):
+            state_probability = (lambda: 1 - self.pi, lambda: self.pi)[next_state[index] == 1]()
+            transition_probability = transition_probability * ((transition_probabilities_matrix[next_state[index]][
+                                                                    prev_state[index]] *
+                                                                transition_probabilities_matrix[next_state[index]][
+                                                                    next_state[index - 1]]) / state_probability)
+        return transition_probability
 
     # Initialization
     @staticmethod
@@ -959,82 +1003,90 @@ class AdaptiveIntelligence(object):
         # V_0 for the reachable beliefs
         value_function_collection = dict()
         for belief_key in reachable_beliefs.keys():
-            # V_0 = {1 / (1-GAMMA)} * min_{s, a} r(s, a)
-            # The worst r(s, a) irrespective of the initial action policy / beliefs is w.r.t P_FA = 1 and P_MD = 1 ->...
-            # ... min_{s, a} r(s, a) = -1(1) + -10(1) = -11
-            # V_0 = (1 / 0.1 ) * -11 = -110
-            value_function_collection[belief_key] = -110
+            value_function_collection[belief_key] = (-10, None)
         return value_function_collection
 
     # The Backup stage
     # TODO: The same reachable beliefs are used throughout...Can we re-sample at regular intervals instead?
     def backup(self, stage_number, reachable_beliefs, previous_stage_value_function_collection):
-        # Return these
+        discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
+        unimproved_belief_points = reachable_beliefs
         next_stage_value_function_collection = dict()
-        belief_changes = 0
-        stage_specific_reward = dict()
-        # Reduced set of beliefs - \tilda{B}
-        reduced_set_of_beliefs = []
-        # \tilda{B} = B, initially
-        for key in reachable_beliefs.keys():
-            reduced_set_of_beliefs.append(key)
-        # Iterate until \tilda{B} becomes empty
-        while len(reduced_set_of_beliefs) is not 0:
-            # Sample a b \in \tilda{B} uniformly at random
-            belief = random.choice(reduced_set_of_beliefs)
-            belief_value = reachable_beliefs[belief]
-            action_set = self.util.get_action_set(self.NUMBER_OF_CHANNELS, self.LIMITATION)
-            max_value = -110
-            negative_case_max_value = -110
-            associated_max_reward = -110
+        # All possible actions
+        action_set = list(map(list, itertools.product(discretized_spectrum, repeat=self.LIMITATION)))
+        # All possible states
+        all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.NUMBER_OF_CHANNELS)))
+        number_of_belief_changes = 0
+        # While there are still some un-improved belief points
+        while len(unimproved_belief_points) is not 0:
+            belief_sample_key = random.choice(unimproved_belief_points.keys)
+            belief_sample = unimproved_belief_points[belief_sample_key]
+            max_value_function = -100
+            max_action = None
             for action in action_set:
-                # Make observations and assign them to the ParameterEstimator and the StateEstimator
-                observations = self.secondary_user.make_observations(stage_number, action)
-                self.parameter_estimator.observation_samples = observations
-                self.state_estimator.observation_samples = observations
-                # Estimate the transition statistics
-                transition_probability_matrix = self.parameter_estimator.estimate_parameters()
-                # Assign the transition statistics to the StateEstimator
+                # Make observations based on the chosen action
+                observation_samples = self.secondary_user.make_observations(stage_number, action)
+                # Estimate the Model Parameters
+                self.parameter_estimator.observation_samples = observation_samples
+                transition_probability_matrix = self.util.construct_transition_probability_matrix(
+                    self.parameter_estimator.estimate_parameters(), self.pi)
+                # Estimate the System State
+                self.state_estimator.observation_samples = observation_samples
                 self.state_estimator.transition_probabilities = transition_probability_matrix
-                # Estimate the state of the system
-                estimated_state = self.state_estimator.estimate_pu_occupancy_states()[0]
-                # Find the reward from that action and the corresponding observation
-                reward = self.sweepstakes.roll(estimated_state, self.primary_user
-                                               .occupancy_behavior_collection[stage_number])
-                emission_probability = 1
-                for i in range(0, len(observations[0])):
-                    emission_probability = emission_probability * \
-                                           self.emission_evaluator.get_emission_probabilities(estimated_state[i],
-                                                                                              observations[0][i])
-                stage_value = (belief_value * reward) + (self.GAMMA * emission_probability
-                                                         * previous_stage_value_function_collection[belief])
-                # Finding max and argmax here...
-                if stage_value > max_value:
-                    max_value = stage_value
-                    associated_max_reward = reward
-                negative_case_value = belief_value * stage_value
-                if negative_case_value > negative_case_max_value:
-                    negative_case_max_value = negative_case_value
-                    associated_max_reward = reward
-            # The bad direction
-            if (belief_value * max_value) <= previous_stage_value_function_collection[belief]:
-                next_stage_value_function_collection[belief] = negative_case_max_value
-                multiplier = negative_case_max_value
-                stage_specific_reward[belief] = associated_max_reward
+                estimated_system_state = self.state_estimator.estimate_pu_occupancy_states()
+                reward_sum = 0
+                normalization_constant = 0
+                for state in all_possible_states:
+                    emission_probability = self.get_emission_probability(observation_samples, state)
+                    multiplier = 0
+                    for prev_state in all_possible_states:
+                        multiplier += self.get_transition_probability(prev_state, state,
+                                                                      transition_probability_matrix) * \
+                                      belief_sample[''.join(str(k) for k in prev_state)]
+                    normalization_constant += emission_probability * multiplier
+                    reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_sample[
+                        ''.join(str(k) for k in state)]
+                internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
+                if internal_term > max_value_function:
+                    max_value_function = internal_term
+                    max_action = action
+            if max_value_function > previous_stage_value_function_collection[belief_sample_key]:
+                del unimproved_belief_points[belief_sample_key]
+                next_stage_value_function_collection[belief_sample_key] = (max_value_function, max_action)
+                number_of_belief_changes += 1
             else:
-                next_stage_value_function_collection[belief] = (belief_value * max_value)
-                multiplier = max_value
-                stage_specific_reward[belief] = associated_max_reward
-            reduced_set_of_beliefs.remove(belief)
-            belief_changes += 1
-            for other_belief in reduced_set_of_beliefs:
-                belief_val = reachable_beliefs[other_belief]
-                if (belief_val * multiplier) > previous_stage_value_function_collection[other_belief]:
-                    reduced_set_of_beliefs.remove(other_belief)
-                    belief_changes += 1
-                    next_stage_value_function_collection[other_belief] = (belief_val * max_value)
-                    stage_specific_reward[belief] = associated_max_reward
-        return [next_stage_value_function_collection, belief_changes, stage_specific_reward]
+                next_stage_value_function_collection[belief_sample_key] = previous_stage_value_function_collection[
+                    belief_sample_key]
+                del unimproved_belief_points[belief_sample_key]
+                max_action = previous_stage_value_function_collection[belief_sample_key][1]
+            for belief_point_key, belief_point in unimproved_belief_points:
+                normalization_constant = 0
+                reward_sum = 0
+                observation_samples = self.secondary_user.make_observations(stage_number, max_action)
+                # Estimate the Model Parameters
+                self.parameter_estimator.observation_samples = observation_samples
+                transition_probability_matrix = self.util.construct_transition_probability_matrix(
+                    self.parameter_estimator.estimate_parameters(), self.pi)
+                # Estimate the System State
+                self.state_estimator.observation_samples = observation_samples
+                self.state_estimator.transition_probabilities = transition_probability_matrix
+                estimated_system_state = self.state_estimator.estimate_pu_occupancy_states()
+                for state in all_possible_states:
+                    emission_probability = self.get_emission_probability(observation_samples, state)
+                    multiplier = 0
+                    for prev_state in all_possible_states:
+                        multiplier += self.get_transition_probability(prev_state, state,
+                                                                      transition_probability_matrix) * \
+                                      belief_point[''.join(str(k) for k in prev_state)]
+                    normalization_constant += emission_probability * multiplier
+                    reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_point[
+                        ''.join(str(k) for k in state)]
+                internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
+                if internal_term > previous_stage_value_function_collection[belief_point_key]:
+                    del unimproved_belief_points[belief_point_key]
+                    next_stage_value_function_collection[belief_point_key] = internal_term
+                    number_of_belief_changes += 1
+        return [next_stage_value_function_collection, number_of_belief_changes]
 
     # The PERSEUS algorithm
     # Calls to Random Exploration, Initialization, and Backup stages
@@ -1045,23 +1097,19 @@ class AdaptiveIntelligence(object):
         initial_value_function_collection = self.initialize(reachable_beliefs)
         # Relevant collections
         previous_value_function_collection = initial_value_function_collection
-        stage_number = 0
+        stage_number = self.EXPLORATION_PERIOD
         belief_changes = -1
-        stage_specific_reward = dict()
         # Check for termination condition here...
         while belief_changes is not 0:
             stage_number += 1
+            if stage_number == self.NUMBER_OF_EPISODES:
+                return 0
             # Backup to find \alpha -> Get V_{n+1} and #BeliefChanges
             backup_results = self.backup(stage_number, reachable_beliefs, previous_value_function_collection)
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
-            stage_specific_reward = backup_results[2]
             previous_value_function_collection = next_value_function_collection
-        perseus_cumulative_reward = 0
-        if len(stage_specific_reward.values()) == len(reachable_beliefs):
-            for value in stage_specific_reward.values():
-                perseus_cumulative_reward += value
-        return perseus_cumulative_reward
+        return 0
 
     # Setup the Markov Chain
     @staticmethod

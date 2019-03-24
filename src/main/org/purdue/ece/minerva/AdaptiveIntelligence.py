@@ -784,9 +784,14 @@ class Sweepstakes(object):
                 actual_idle_count += 1
                 if system_belief[i] == 1:
                     false_alarm_count += 1
+        false_alarm_probability = (lambda: 0,
+                                   lambda: (false_alarm_count / actual_idle_count))[actual_idle_count is
+                                                                                    not 0]()
+        missed_detection_probability = (lambda: 0,
+                                        lambda: 1 - (correct_detection_count / actual_occupancy_count))[
+            actual_occupancy_count is not 0]()
         # Reward = (1-Probability_of_false_alarm) + Missed_Detection_Cost*Probability_of_missed_detection
-        return (1 - (false_alarm_count / actual_idle_count)) + \
-               (self.mu * (1 - (correct_detection_count / actual_occupancy_count)))
+        return (1 - false_alarm_probability) + (self.mu * missed_detection_probability)
 
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -835,10 +840,10 @@ class AdaptiveIntelligence(object):
     NUMBER_OF_SAMPLING_ROUNDS = 10
 
     # Number of episodes during which the SU interacts with the radio environment
-    NUMBER_OF_EPISODES = 100
+    NUMBER_OF_EPISODES = 10
 
     # Exploration period of the POMDP agent to find a set of reachable beliefs
-    EXPLORATION_PERIOD = 20
+    EXPLORATION_PERIOD = 3
 
     # Mean of the Complex AWGN
     NOISE_MEAN = 0
@@ -856,7 +861,7 @@ class AdaptiveIntelligence(object):
     MU = -1
 
     # SU Sensing Limitation
-    LIMITATION = 2
+    LIMITATION = 1
 
     # Parameter Estimation Convergence Threshold
     EPSILON = 0.001
@@ -957,6 +962,8 @@ class AdaptiveIntelligence(object):
                                                                       transition_probabilities_matrix)
             # Add the new belief vector to the reachable beliefs set
             reachable_beliefs[str(episode)] = updated_belief_vector
+            print('[INFO] AdaptiveIntelligence random_exploration: {}% Exploration '
+                  'completed'.format(int(((episode + 1)/self.EXPLORATION_PERIOD) * 100)))
         return reachable_beliefs
 
     # Belief Update sequence
@@ -1019,13 +1026,17 @@ class AdaptiveIntelligence(object):
         number_of_belief_changes = 0
         # While there are still some un-improved belief points
         while len(unimproved_belief_points) is not 0:
-            belief_sample_key = random.choice(unimproved_belief_points.keys)
+            print('[DEBUG] AdaptiveIntelligence backup: Size of unimproved belief set = {}'.format(
+                len(unimproved_belief_points)))
+            belief_sample_key = random.choice(list(unimproved_belief_points.keys()))
             belief_sample = unimproved_belief_points[belief_sample_key]
             max_value_function = -100
             max_action = None
             for action in action_set:
+                su_compliant_action = [(lambda: 0, lambda: 1)[discretized_spectrum[k] in action]() for k in
+                                       range(0, self.NUMBER_OF_CHANNELS)]
                 # Make observations based on the chosen action
-                observation_samples = self.secondary_user.make_observations(stage_number, action)
+                observation_samples = self.secondary_user.make_observations(stage_number, su_compliant_action)
                 # Estimate the Model Parameters
                 self.parameter_estimator.observation_samples = observation_samples
                 transition_probability_matrix = self.util.construct_transition_probability_matrix(
@@ -1049,8 +1060,8 @@ class AdaptiveIntelligence(object):
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
                 if internal_term > max_value_function:
                     max_value_function = internal_term
-                    max_action = action
-            if max_value_function > previous_stage_value_function_collection[belief_sample_key]:
+                    max_action = su_compliant_action
+            if max_value_function > previous_stage_value_function_collection[belief_sample_key][0]:
                 del unimproved_belief_points[belief_sample_key]
                 next_stage_value_function_collection[belief_sample_key] = (max_value_function, max_action)
                 number_of_belief_changes += 1
@@ -1059,7 +1070,8 @@ class AdaptiveIntelligence(object):
                     belief_sample_key]
                 del unimproved_belief_points[belief_sample_key]
                 max_action = previous_stage_value_function_collection[belief_sample_key][1]
-            for belief_point_key, belief_point in unimproved_belief_points:
+            for belief_point_key, belief_point in list(unimproved_belief_points.keys()), list(
+                    unimproved_belief_points.values()):
                 normalization_constant = 0
                 reward_sum = 0
                 observation_samples = self.secondary_user.make_observations(stage_number, max_action)
@@ -1082,7 +1094,7 @@ class AdaptiveIntelligence(object):
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_point[
                         ''.join(str(k) for k in state)]
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
-                if internal_term > previous_stage_value_function_collection[belief_point_key]:
+                if internal_term > previous_stage_value_function_collection[belief_point_key][0]:
                     del unimproved_belief_points[belief_point_key]
                     next_stage_value_function_collection[belief_point_key] = internal_term
                     number_of_belief_changes += 1

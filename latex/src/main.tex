@@ -964,8 +964,8 @@ and starting with an initial random assignment of $\hat{p}\ =\ 10^{-5}$, we see 
 Partially Observable Markov Decision Processes (POMDPs) model the repeated interactions of an agent with a stochastic environment, parts of which are hidden (un-observable or observable with noise or both) from the agent's view, in order to maximize the utility of a specific task.
 \\The following are important points to note about POMDPs in general and the POMDP model used in this work.
 \begin{itemize}
-    \item The agent's role is to perform tasks by choosing \textbf{actions} that fulfill the given task(s) in the best possible way.
-    \item The run-time or the interaction-time of the POMDP is quantized into discrete time-steps termed \textbf{episodes} and the agent executes an action at the start of each time-step.
+    \item The agent's role is to perform tasks by choosing \textbf{actions} that fulfill the given tasks in the best possible way.
+    \item The run-time or the interaction-time of the POMDP is quantized into discrete time-steps termed \textbf{episodes} and the agent executes an action at the start of each episode.
     \item Upon executing an action, the agent receives a scalar parameter value termed the \textbf{reward} from the environment and the goal of the agent is to maximize the long-term cumulative (finite-horizon or infinite horizon) reward it can get.
     \item The agent's limited observational capabilities and/or the agent's noisy observations result in a level of uncertainty at the agent's end regarding the \textbf{state} of the environment and the exact effect of executing an action on the environment.
     \item Notations: \begin{itemize}
@@ -991,7 +991,7 @@ Partially Observable Markov Decision Processes (POMDPs) model the repeated inter
     \[b_a^{\vec{y}}(\vec{x}')\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',\ a)}{\mathbb{P}(\vec{y}|a,\ \vec{b})}\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)\mathbb{P}(\vec{x}|a,\ \vec{b})\]
     where,
     \\$b(\vec{x})\ =\ \mathbb{P}(\vec{x}|a,\ \vec{b})$ is the probability (degree of certainty or "belief") assigned to world state $\vec{x} \in \mathcal{X}$ by belief state $\vec{b}$
-    \\Note here that $b(\vec{x})$ like any valid probability measure satisfies the Kolmogorav's axioms as shown below.
+    \\Note here that $b(\vec{x})$ like any valid probability measure satisfies the Kolmogorov's axioms as shown below.
     \[\sum_{\vec{x} \in \mathcal{X}}\ b(\vec{x})\ =\ 1\]
     \[0 \leq b(\vec{x}) \leq 1\]
     Finally,
@@ -1021,7 +1021,7 @@ Partially Observable Markov Decision Processes (POMDPs) model the repeated inter
     \begin{equation}\label{95}
         \mathbb{P}(\vec{y}|a,\ \vec{b})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})
     \end{equation}
-    \item The \textbf{action policy} denoted by $\pi: \mathcal{B} \rightarrow \mathcal{A}$ maps the beliefs $\vec{b} \in \mathcal{B}$ to actions $a \in \mathcal{A}$ in order to satisfy the agent's goal of maximizing the cumulative long-term reward associated with the fulfillment of the given task.
+    \item The \textbf{action policy} denoted by $\pi: \mathcal{B} \rightarrow \mathcal{A}$ maps the belief vectors $\vec{b} \in \mathcal{B}$ to actions $a \in \mathcal{A}$ in order to satisfy the agent's goal of maximizing the cumulative long-term reward associated with the fulfillment of the given task.
     \item The \textbf{belief-space} is an $|\mathcal{X}|-1$ dimensional simplex.
     \\NOTE: An $n$-simplex is an n-dimensional polytope which is the convex-hull of its $(n+1)$ vertices.
     \item A policy $\pi$ is characterized by a \textbf{value function} $V^{\pi}: \mathcal{B} \rightarrow \mathbb{R}$ which is defined as the expected discounted future reward $V^{\pi}(\vec{b})$ the agent can accumulate by following policy $\pi$ starting from belief $\vec{b}$.
@@ -1033,7 +1033,7 @@ Partially Observable Markov Decision Processes (POMDPs) model the repeated inter
        R(b_t,\ \pi(\vec{b}_t)\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ \pi(\vec{b}_t))b_t(\vec{x})
     \end{equation}
     Furthermore, here,
-    \\$R(\vec{b}_t,\ \pi(\vec{b}_t))\ \triangleq\ $The average / expected reward for policy $\pi$ and belief $\vec{b}_t$,
+    \\$R(\vec{b}_t,\ \pi(\vec{b}_t))\ \triangleq\ $The expected reward for policy $\pi$ and belief vector $\vec{b}_t$,
     \\$R(\vec{x},\ \pi(\vec{b}_t))\ \triangleq\ $The world reward for state $\vec{x} \in \mathcal{X}$ and action $a\ =\ \pi(\vec{b}_t) \in \mathcal{A}$,
     \\$b_t(\vec{x})$ is the "belief" of being in state $\vec{x}$, and
     \\$\gamma\ \triangleq\ $The discount factor such that $0 < \gamma < 1$.
@@ -1060,14 +1060,14 @@ Partially Observable Markov Decision Processes (POMDPs) model the repeated inter
     \begin{equation}\label{98}
         V_p(\vec{b})\ =\ \sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a(p))b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a(p),\ \vec{b})V(\vec{b}_{a(p)}^{\vec{y}})
     \end{equation}
-    As defined earlier, an optimal policy involves choosing an action $a \in \mathcal{A}$ in each episode that maximizes the value function for a specific belief $\vec{b} \in \mathcal{B}$ of the POMDP agent.
+    As defined earlier, an optimal policy involves choosing an action $a \in \mathcal{A}$ in each episode that maximizes the value function for a specific belief vector $\vec{b} \in \mathcal{B}$ of the POMDP agent.
     \\Hence, we can frame an optimization problem as follows.
     \\Generalizing for a \textbf{stationary policy} for \textbf{infinite-horizon POMDPs}, equation (\ref{98}) can be written as,
     \begin{equation}\label{99}
         V^*(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\sum_{\vec{x} \in \mathcal{X}}\ R(\vec{x},\ a)b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ \mathbb{P}(\vec{y}|a,\ \vec{b})\ V^*(\vec{b}_a^{\vec{y}})\Big],\ \forall \vec{b} \in \mathcal{B}
     \end{equation}
     \item For finite-horizon POMDPs, $V^*$ is piece-wise linear and convex (PWLC) and for infinite-horizon POMDPs, $V^*$ can be approximated by a piece-wise linear and convex function.
-    \item The Value Function in episode $n$ is parameterized by a set of vectors / hyperplanes $\{\vec{\alpha}^i_n\},\ i\ =\ 0,\ 1,\ ...,\ |V_n|$. Each vector is associated with an action and this action is the optimal one to take in the current episode. Each vector defines a region of the belief space for which it is maximizing element of $V_n$ [\ref{Ref. 17}].
+    \item The Value Function in episode $n$ is parameterized by a set of vectors or hyperplanes $\{\vec{\alpha}^i_n\},\ i\ =\ 0,\ 1,\ ...,\ |V_n|$. Each vector is associated with an action and this action is the optimal one to take in the current episode. Each vector defines a region of the belief space for which it is maximizing element of $V_n$ [\ref{Ref. 17}].
     \item Given a set of vectors $\{\vec{\alpha}_n^i\},\ i\ =\ 0,\ 1,\ ...,\ |V_n|$ at time-step n,
     \begin{equation}\label{100}
         V_n(\vec{b})\ =\ max_{\vec{\alpha}^i_n}\ \vec{b} \cdot \vec{\alpha}^i_n
@@ -1096,7 +1096,7 @@ Partially Observable Markov Decision Processes (POMDPs) model the repeated inter
             V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ max_{\vec{\alpha}^i_n}\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\sum_{\vec{x} \in \mathcal{X}}\ \mathbb{P}(\vec{x}'|\vec{x},\ a)b(\vec{x})\vec{\alpha}_n^i(\vec{x}')\Big]
     \end{equation*}
     Let,
-    \[g_{\vec{y,\ a}}^i(\vec{x})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\mathbb{P}(\vec{x}'|\vec{x},\ a)\vec{\alpha}_n^i(\vec{x}')\]
+    \[g_{\vec{y},\ a}^i(\vec{x})\ =\ \sum_{\vec{x}' \in \mathcal{X}}\ \mathbb{P}(\vec{y}|\vec{x}',\ a)\mathbb{P}(\vec{x}'|\vec{x},\ a)\vec{\alpha}_n^i(\vec{x}')\]
     Then, we have,
     \begin{equation*}
             V_{n+1}(\vec{b})\ =\ max_{a \in \mathcal{A}}\ \Big[\vec{b} \cdot \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ max_{\vec{g}_{\vec{y},\ a}^i}\ \vec{b} \cdot \vec{g}_{\vec{y},\ a}^i\Big]
@@ -1109,10 +1109,10 @@ Partially Observable Markov Decision Processes (POMDPs) model the repeated inter
     \end{equation*}
     Now, the $backup(\vec{b})$ is given by,
     \begin{equation}\label{101}
-            backup(\vec{b})\ =\ argmax_{\vec{g}_a^b}\ \vec{b} \cdot \vec{g}_a^b
+            backup(\vec{b})\ =\ argmax_{\vec{g}_a^{\vec{b}}}\ \vec{b} \cdot \vec{g}_a^{\vec{b}}
     \end{equation}
     where,
-    \[\vec{g}_a^b\ =\ \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ argmax_{\vec{g}_{\vec{y},\ a}^i}\ \vec{b} \cdot \vec{g}_{\vec{y},\ a}^i\]
+    \[\vec{g}_a^{\vec{b}}\ =\ \vec{R}(a) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\ argmax_{\vec{g}_{\vec{y},\ a}^i}\ \vec{b} \cdot \vec{g}_{\vec{y},\ a}^i\]
 \end{itemize}
 \subsection{Related Work}
 \begin{itemize}
@@ -1144,13 +1144,13 @@ Now, that we've motivated the PERSEUS algorithm for use in our framework, let's 
 \begin{itemize}
     \item The PERSEUS Algorithm is a Randomized Approximate Point-Based Value Iteration Algorithm that involves the following steps:
     \begin{itemize}
-        \item In the exploration period, the POMDP agent randomly explores the radio environment and comes up with a set of "reachable beliefs" $B$.
+        \item \textbf{Random Exploration}: In the exploration period, the POMDP agent randomly explores the radio environment and comes up with a set of "reachable beliefs" $B$.
         \item \textbf{Initialization}: All the elements in the initial value function $V_0$ are set to $\frac{1}{1-\gamma}min_{\vec{x},\ a}\ R(\vec{x},\ a)$ based on the ideas laid down in [\ref{Ref. 19}].
         \item Arbitrarily, considering the $n$-th time-step, the \textbf{Backup} procedure involves the following,
         \begin{itemize}
             \item Initialize the set of unimproved belief points $\Tilde{B}\ =\ B$ and $V_{n+1}\ =\ \phi$
             \item Sample a belief point $\vec{b} \in \Tilde{B}$ uniformly at random and compute $\vec{\alpha}\ =\ backup(\vec{b})$ as described by equation (\ref{101})
-            \item If $\vec{b} \cdot \vec{\alpha} \geq V_n(\vec{b})$, then add $\vec{\alpha}$ to $V_{n+1}$, else add $\vec{\alpha}'\ =\ argmax_{\vec{\alpha_n^i}}\ \vec{b} \cdot \vec{\alpha_n^i}$ to $V_{n+1}$
+            \item If $\vec{b} \cdot \vec{\alpha} \geq V_n(\vec{b})$, then add $\vec{\alpha}$ to $V_{n+1}$, else add $\vec{\alpha}'\ =\ argmax_{\vec{\alpha}_n^i}\ \vec{b} \cdot \vec{\alpha}_n^i$ to $V_{n+1}$
             \item Remove all the improved points from $\Tilde{B}$, i.e. all the belief points $\vec{b} \in \Tilde{B}$ for which $\vec{b} \cdot \vec{\alpha} \geq V_n(\vec{b})$ are removed from $\Tilde{B}$
             \item Stop when $\Tilde{B}$ is empty
         \end{itemize}

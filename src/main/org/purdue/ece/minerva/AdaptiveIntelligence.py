@@ -1070,8 +1070,7 @@ class AdaptiveIntelligence(object):
                     belief_sample_key]
                 del unimproved_belief_points[belief_sample_key]
                 max_action = previous_stage_value_function_collection[belief_sample_key][1]
-            for belief_point_key, belief_point in list(unimproved_belief_points.keys()), list(
-                    unimproved_belief_points.values()):
+            for belief_point_key in list(unimproved_belief_points.keys()):
                 normalization_constant = 0
                 reward_sum = 0
                 observation_samples = self.secondary_user.make_observations(stage_number, max_action)
@@ -1089,10 +1088,10 @@ class AdaptiveIntelligence(object):
                     for prev_state in all_possible_states:
                         multiplier += self.get_transition_probability(prev_state, state,
                                                                       transition_probability_matrix) * \
-                                      belief_point[''.join(str(k) for k in prev_state)]
+                                      unimproved_belief_points[belief_point_key][''.join(str(k) for k in prev_state)]
                     normalization_constant += emission_probability * multiplier
-                    reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_point[
-                        ''.join(str(k) for k in state)]
+                    reward_sum += self.sweepstakes.roll(estimated_system_state, state) * unimproved_belief_points[
+                        belief_point_key][''.join(str(k) for k in state)]
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
                 if internal_term > previous_stage_value_function_collection[belief_point_key][0]:
                     del unimproved_belief_points[belief_point_key]

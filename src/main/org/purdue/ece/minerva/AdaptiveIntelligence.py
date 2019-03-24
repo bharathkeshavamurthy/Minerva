@@ -13,6 +13,7 @@ import numpy
 import random
 import itertools
 import scipy.stats
+from matplotlib import pyplot as plt
 
 
 # Markovian Correlation Class Enumeration
@@ -766,23 +767,23 @@ class Sweepstakes(object):
         self.mu = _mu
 
     # Get Reward based on the system state and the action taken by the POMDP agent
-    # The system_belief member is created by the action taken by the POMDP agent
+    # The estimated_state member is created by the action taken by the POMDP agent
     # Reward = (1-Probability_of_false_alarm) + Missed_Detection_Cost*Probability_of_missed_detection
-    def roll(self, system_belief, system_state):
+    def roll(self, estimated_state, system_state):
         # Used to evaluate Missed Detection Probability
         correct_detection_count = 0
         actual_occupancy_count = 0
         # Used to evaluate False Alarm Probability
         false_alarm_count = 0
         actual_idle_count = 0
-        for i in range(0, len(system_belief)):
+        for i in range(0, len(estimated_state)):
             if system_state[i] == 1:
                 actual_occupancy_count += 1
-                if system_belief[i] == 1:
+                if estimated_state[i] == 1:
                     correct_detection_count += 1
             else:
                 actual_idle_count += 1
-                if system_belief[i] == 1:
+                if estimated_state[i] == 1:
                     false_alarm_count += 1
         false_alarm_probability = (lambda: 0,
                                    lambda: (false_alarm_count / actual_idle_count))[actual_idle_count is
@@ -921,6 +922,8 @@ class AdaptiveIntelligence(object):
                                               self.start_probabilities_dict,
                                               self.initial_transition_probabilities_matrix,
                                               self.emission_evaluator)
+        # Utilities as the algorithm progresses towards optimality
+        self.utilities = []
 
     # Randomly explore the environment and collect a set of beliefs B of reachable belief points
     # ...strategy as a part of the modified PERSEUS strategy
@@ -1005,19 +1008,21 @@ class AdaptiveIntelligence(object):
         return transition_probability
 
     # Initialization
-    @staticmethod
-    def initialize(reachable_beliefs):
+    def initialize(self, reachable_beliefs):
         # V_0 for the reachable beliefs
         value_function_collection = dict()
+        default_action = [k-k for k in range(0, self.NUMBER_OF_CHANNELS)]
         for belief_key in reachable_beliefs.keys():
-            value_function_collection[belief_key] = (-10, None)
+            value_function_collection[belief_key] = (-10, default_action)
         return value_function_collection
 
     # The Backup stage
     # TODO: The same reachable beliefs are used throughout...Can we re-sample at regular intervals instead?
     def backup(self, stage_number, reachable_beliefs, previous_stage_value_function_collection):
         discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
-        unimproved_belief_points = reachable_beliefs
+        unimproved_belief_points = {}
+        for key, value in reachable_beliefs.items():
+            unimproved_belief_points[key] = value
         next_stage_value_function_collection = dict()
         # All possible actions
         action_set = list(map(list, itertools.product(discretized_spectrum, repeat=self.LIMITATION)))
@@ -1095,7 +1100,7 @@ class AdaptiveIntelligence(object):
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
                 if internal_term > previous_stage_value_function_collection[belief_point_key][0]:
                     del unimproved_belief_points[belief_point_key]
-                    next_stage_value_function_collection[belief_point_key] = internal_term
+                    next_stage_value_function_collection[belief_point_key] = (internal_term, max_action)
                     number_of_belief_changes += 1
         return [next_stage_value_function_collection, number_of_belief_changes]
 
@@ -1112,15 +1117,36 @@ class AdaptiveIntelligence(object):
         belief_changes = -1
         # Check for termination condition here...
         while belief_changes is not 0:
+            self.utilities.append(self.calculate_utility(previous_value_function_collection))
             stage_number += 1
             if stage_number == self.NUMBER_OF_EPISODES:
                 return 0
             # Backup to find \alpha -> Get V_{n+1} and #BeliefChanges
             backup_results = self.backup(stage_number, reachable_beliefs, previous_value_function_collection)
+            print('[DEBUG] AdaptiveIntelligence run_perseus: Backup for stage {} completed...'.format(
+                stage_number - self.EXPLORATION_PERIOD))
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
-            previous_value_function_collection = next_value_function_collection
-        return 0
+            if len(next_value_function_collection) is not 0:
+                previous_value_function_collection = next_value_function_collection
+        self.utilities.append(self.calculate_utility(previous_value_function_collection))
+
+    # Calculate Utility
+    def calculate_utility(self, policy_collection):
+        utility = 0
+        for key, value in policy_collection.items():
+            system_state = []
+            for channel in range(0, self.NUMBER_OF_CHANNELS):
+                system_state.append(self.primary_user.occupancy_behavior_collection[channel][int(key)])
+            observation_samples = self.secondary_user.make_observations(int(key), value[1])
+            self.parameter_estimator.observation_samples = observation_samples
+            transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
+                self.parameter_estimator.estimate_parameters(), self.pi)
+            self.state_estimator.observation_samples = observation_samples
+            self.state_estimator.transition_probabilities = transition_probabilities_matrix
+            estimated_state = self.state_estimator.estimate_pu_occupancy_states()
+            utility += self.sweepstakes.roll(estimated_state, system_state)
+        return utility
 
     # Setup the Markov Chain
     @staticmethod
@@ -1133,10 +1159,19 @@ class AdaptiveIntelligence(object):
         return transient_markov_chain_object
 
     # Regret Analysis
-    def get_regret(self):
-        optimal_reward = self.oracle.get_return()
-        pomdp_reward_upon_convergence = self.run_perseus()
-        return abs(optimal_reward - pomdp_reward_upon_convergence)
+    def analyze_regret(self):
+        x_axis = []
+        y_axis = []
+        for k in range(0, len(self.utilities)):
+            x_axis.append(k)
+            y_axis.append(self.oracle.get_windowed_return(self.EXPLORATION_PERIOD) - self.utilities[k])
+        fig, ax = plt.subplots()
+        ax.plot(x_axis, y_axis, linewidth=1.0, linestyle='--', marker='o', color='b')
+        fig.suptitle('Regret convergence plot of the PERSEUS algorithm for a Double Markov Chain PU Behavioral Model',
+                     fontsize=12)
+        ax.set_xlabel('Stages -->', fontsize=14)
+        ax.set_ylabel('Regret', fontsize=14)
+        plt.show()
 
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -1147,4 +1182,7 @@ class AdaptiveIntelligence(object):
 if __name__ == '__main__':
     print('[INFO] AdaptiveIntelligence main: Starting system simulation...')
     adaptive_intelligent_agent = AdaptiveIntelligence()
-    print('[INFO] AdaptiveIntelligence main: Regret: ', adaptive_intelligent_agent.get_regret())
+    # Run PERSEUS
+    adaptive_intelligent_agent.run_perseus()
+    # Plot the Regret Analysis
+    adaptive_intelligent_agent.analyze_regret()

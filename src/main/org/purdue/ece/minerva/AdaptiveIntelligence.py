@@ -1023,7 +1023,11 @@ class AdaptiveIntelligence(object):
         unimproved_belief_points = {}
         for key, value in reachable_beliefs.items():
             unimproved_belief_points[key] = value
+        # This assignment will help me in the utility calculation within each backup stage
         next_stage_value_function_collection = dict()
+        # A simple dict copy - just to be safe from mutations
+        for k, v in previous_stage_value_function_collection.items():
+            next_stage_value_function_collection[k] = v
         # All possible actions
         action_set = list(map(list, itertools.product(discretized_spectrum, repeat=self.LIMITATION)))
         # All possible states
@@ -1067,12 +1071,14 @@ class AdaptiveIntelligence(object):
                     max_value_function = internal_term
                     max_action = su_compliant_action
             if max_value_function > previous_stage_value_function_collection[belief_sample_key][0]:
+                # Note here that del mutates the contents of the dict for everyone who has a reference to it
                 del unimproved_belief_points[belief_sample_key]
                 next_stage_value_function_collection[belief_sample_key] = (max_value_function, max_action)
                 number_of_belief_changes += 1
             else:
                 next_stage_value_function_collection[belief_sample_key] = previous_stage_value_function_collection[
                     belief_sample_key]
+                # Note here that del mutates the contents of the dict for everyone who has a reference to it
                 del unimproved_belief_points[belief_sample_key]
                 max_action = previous_stage_value_function_collection[belief_sample_key][1]
             for belief_point_key in list(unimproved_belief_points.keys()):
@@ -1099,9 +1105,12 @@ class AdaptiveIntelligence(object):
                         belief_point_key][''.join(str(k) for k in state)]
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
                 if internal_term > previous_stage_value_function_collection[belief_point_key][0]:
+                    # Note here that del mutates the contents of the dict for everyone who has a reference to it
                     del unimproved_belief_points[belief_point_key]
                     next_stage_value_function_collection[belief_point_key] = (internal_term, max_action)
                     number_of_belief_changes += 1
+            print('[DEBUG] AdaptiveIntelligence backup: Adding the utility metric within the Backup stage...')
+            self.utilities.append(self.calculate_utility(next_stage_value_function_collection))
         return [next_stage_value_function_collection, number_of_belief_changes]
 
     # The PERSEUS algorithm
@@ -1115,12 +1124,14 @@ class AdaptiveIntelligence(object):
         previous_value_function_collection = initial_value_function_collection
         stage_number = self.EXPLORATION_PERIOD
         belief_changes = -1
+        # Utility addition for the initial value function
+        print('[DEBUG] AdaptiveIntelligence run_perseus: Adding the utility metric for the initial value function...')
+        self.utilities.append(self.calculate_utility(previous_value_function_collection))
         # Check for termination condition here...
         while belief_changes is not 0:
-            self.utilities.append(self.calculate_utility(previous_value_function_collection))
             stage_number += 1
             if stage_number == self.NUMBER_OF_EPISODES:
-                return 0
+                return
             # Backup to find \alpha -> Get V_{n+1} and #BeliefChanges
             backup_results = self.backup(stage_number, reachable_beliefs, previous_value_function_collection)
             print('[DEBUG] AdaptiveIntelligence run_perseus: Backup for stage {} completed...'.format(
@@ -1129,7 +1140,6 @@ class AdaptiveIntelligence(object):
             belief_changes = backup_results[1]
             if len(next_value_function_collection) is not 0:
                 previous_value_function_collection = next_value_function_collection
-        self.utilities.append(self.calculate_utility(previous_value_function_collection))
 
     # Calculate Utility
     def calculate_utility(self, policy_collection):
@@ -1160,13 +1170,15 @@ class AdaptiveIntelligence(object):
 
     # Regret Analysis
     def analyze_regret(self):
+        print('[INFO] AdaptiveIntelligence analyze_regret: Plotting the Regret Convergence Plot for the PERSEUS '
+              'algorithm employed for PU Behavioral Analysis with Double Markov Chain assumptions...')
         x_axis = []
         y_axis = []
         for k in range(0, len(self.utilities)):
             x_axis.append(k)
             y_axis.append(self.oracle.get_windowed_return(self.EXPLORATION_PERIOD) - self.utilities[k])
         fig, ax = plt.subplots()
-        ax.plot(x_axis, y_axis, linewidth=1.0, linestyle='--', marker='o', color='b')
+        ax.plot(x_axis, y_axis, linewidth=1.0, marker='o', color='r')
         fig.suptitle('Regret convergence plot of the PERSEUS algorithm for a Double Markov Chain PU Behavioral Model',
                      fontsize=12)
         ax.set_xlabel('Stages -->', fontsize=14)
@@ -1186,3 +1198,4 @@ if __name__ == '__main__':
     adaptive_intelligent_agent.run_perseus()
     # Plot the Regret Analysis
     adaptive_intelligent_agent.analyze_regret()
+    print('[INFO] AdaptiveIntelligence main: System Simulation terminated...')

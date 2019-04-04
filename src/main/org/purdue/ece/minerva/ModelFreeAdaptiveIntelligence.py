@@ -833,18 +833,18 @@ class Oracle(object):
 # This entity encapsulates the POMDP Approximate Point-based Value Iteration algorithm named The PERSEUS algorithm
 # Training to fine-tune the belief space -> Perform backup until convergence -> Re-sample using the most recent policy
 # References to the ParameterEstimation algorithm and the StateEstimation algorithm in the belief analysis phase
-class AdaptiveIntelligence(object):
+class ModelFreeAdaptiveIntelligence(object):
     # Number of channels in the discretized spectrum of interest
-    NUMBER_OF_CHANNELS = 5
+    NUMBER_OF_CHANNELS = 18
 
     # Number of sampling rounds undertaken by the Secondary User per episode
-    NUMBER_OF_SAMPLING_ROUNDS = 10
+    NUMBER_OF_SAMPLING_ROUNDS = 250
 
     # Number of episodes during which the SU interacts with the radio environment
-    NUMBER_OF_EPISODES = 10
+    NUMBER_OF_EPISODES = 1000
 
     # Exploration period of the POMDP agent to find a set of reachable beliefs
-    EXPLORATION_PERIOD = 3
+    EXPLORATION_PERIOD = 100
 
     # Mean of the Complex AWGN
     NOISE_MEAN = 0
@@ -865,10 +865,10 @@ class AdaptiveIntelligence(object):
     LIMITATION = 1
 
     # Parameter Estimation Convergence Threshold
-    EPSILON = 0.001
+    EPSILON = 0.00001
 
     # Convergence Confidence Metric for the Parameter Estimation algorithm
-    CONFIDENCE_BOUND = 1
+    CONFIDENCE_BOUND = 10
 
     # Discount Factor
     GAMMA = 0.9
@@ -929,10 +929,14 @@ class AdaptiveIntelligence(object):
     # ...strategy as a part of the modified PERSEUS strategy
     def random_exploration(self, policy):
         reachable_beliefs = dict()
-        discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
         state_space_size = 2 ** self.NUMBER_OF_CHANNELS
         # All possible states
         all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.NUMBER_OF_CHANNELS)))
+        # All possible actions based on my SU sensing limitations
+        all_possible_actions = []
+        for state in all_possible_states:
+            if sum(state) == self.LIMITATION:
+                all_possible_actions.append(state)
         # Uniform belief assignment to all states in the state space
         initial_belief_vector = dict()
         for state in all_possible_states:
@@ -947,13 +951,8 @@ class AdaptiveIntelligence(object):
         print('[INFO] AdaptiveIntelligence random_exploration: Using a truly random exploration strategy')
         # Start exploring
         for episode in range(0, self.EXPLORATION_PERIOD):
-            # Choose an action
-            action = [k - k for k in range(0, self.NUMBER_OF_CHANNELS)]
-            # SU has limited sensing capabilities
-            for capability in range(0, self.LIMITATION):
-                action[random.choice(discretized_spectrum)] = 1
             # Perform the sensing action and make the observations
-            observations = self.secondary_user.make_observations(episode, action)
+            observations = self.secondary_user.make_observations(episode, random.choice(all_possible_actions))
             self.parameter_estimator.observation_samples = observations
             transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
                 self.parameter_estimator.estimate_parameters(), self.pi)
@@ -1019,7 +1018,6 @@ class AdaptiveIntelligence(object):
     # The Backup stage
     # TODO: The same reachable beliefs are used throughout...Can we re-sample at regular intervals instead?
     def backup(self, stage_number, reachable_beliefs, previous_stage_value_function_collection):
-        discretized_spectrum = [k for k in range(0, self.NUMBER_OF_CHANNELS)]
         unimproved_belief_points = {}
         for key, value in reachable_beliefs.items():
             unimproved_belief_points[key] = value
@@ -1028,10 +1026,13 @@ class AdaptiveIntelligence(object):
         # A simple dict copy - just to be safe from mutations
         for k, v in previous_stage_value_function_collection.items():
             next_stage_value_function_collection[k] = v
-        # All possible actions
-        action_set = list(map(list, itertools.product(discretized_spectrum, repeat=self.LIMITATION)))
         # All possible states
         all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.NUMBER_OF_CHANNELS)))
+        # All possible actions based on my SU sensing limitations
+        all_possible_actions = []
+        for state in all_possible_states:
+            if sum(state) == self.LIMITATION:
+                all_possible_actions.append(state)
         number_of_belief_changes = 0
         # While there are still some un-improved belief points
         while len(unimproved_belief_points) is not 0:
@@ -1041,11 +1042,9 @@ class AdaptiveIntelligence(object):
             belief_sample = unimproved_belief_points[belief_sample_key]
             max_value_function = -100
             max_action = None
-            for action in action_set:
-                su_compliant_action = [(lambda: 0, lambda: 1)[discretized_spectrum[k] in action]() for k in
-                                       range(0, self.NUMBER_OF_CHANNELS)]
+            for action in all_possible_actions:
                 # Make observations based on the chosen action
-                observation_samples = self.secondary_user.make_observations(stage_number, su_compliant_action)
+                observation_samples = self.secondary_user.make_observations(stage_number, action)
                 # Estimate the Model Parameters
                 self.parameter_estimator.observation_samples = observation_samples
                 transition_probability_matrix = self.util.construct_transition_probability_matrix(
@@ -1069,7 +1068,7 @@ class AdaptiveIntelligence(object):
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
                 if internal_term > max_value_function:
                     max_value_function = internal_term
-                    max_action = su_compliant_action
+                    max_action = action
             if max_value_function > previous_stage_value_function_collection[belief_sample_key][0]:
                 # Note here that del mutates the contents of the dict for everyone who has a reference to it
                 del unimproved_belief_points[belief_sample_key]
@@ -1193,7 +1192,7 @@ class AdaptiveIntelligence(object):
 # Run Trigger
 if __name__ == '__main__':
     print('[INFO] AdaptiveIntelligence main: Starting system simulation...')
-    adaptive_intelligent_agent = AdaptiveIntelligence()
+    adaptive_intelligent_agent = ModelFreeAdaptiveIntelligence()
     # Run PERSEUS
     adaptive_intelligent_agent.run_perseus()
     # Plot the Regret Analysis

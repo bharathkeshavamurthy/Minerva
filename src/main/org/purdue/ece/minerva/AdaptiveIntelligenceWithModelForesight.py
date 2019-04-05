@@ -912,7 +912,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 confidence += 1
             else:
                 confidence = 0
-                print('[DEBUG] AdaptiveIntelligence run_perseus: Confidence Fallback - {}'.format(confidence))
+                print('[DEBUG] AdaptiveIntelligence run_perseus: Confidence Stagnation/Fallback - {}'.format(confidence))
             stage_number += 1
             # We've reached the end of our allowed interaction time with the radio environment
             if stage_number == self.NUMBER_OF_EPISODES:

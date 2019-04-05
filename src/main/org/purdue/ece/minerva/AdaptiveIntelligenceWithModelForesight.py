@@ -591,7 +591,7 @@ class Oracle(object):
 # References to the ParameterEstimation algorithm and the StateEstimation algorithm in the belief analysis phase
 class AdaptiveIntelligenceWithModelForesight(object):
     # Number of channels in the discretized spectrum of interest
-    NUMBER_OF_CHANNELS = 5
+    NUMBER_OF_CHANNELS = 8
 
     # Number of sampling rounds undertaken by the Secondary User per episode
     NUMBER_OF_SAMPLING_ROUNDS = 25
@@ -600,7 +600,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
     NUMBER_OF_EPISODES = 100
 
     # Exploration period of the POMDP agent to find a set of reachable beliefs
-    EXPLORATION_PERIOD = 5
+    EXPLORATION_PERIOD = 8
 
     # Mean of the Complex AWGN
     NOISE_MEAN = 0
@@ -619,9 +619,6 @@ class AdaptiveIntelligenceWithModelForesight(object):
 
     # SU Sensing Limitation
     LIMITATION = 3
-
-    # Parameter Estimation Convergence Threshold
-    EPSILON = 0.00001
 
     # Convergence Confidence Metric for the Parameter Estimation algorithm
     CONFIDENCE_BOUND = 10
@@ -820,6 +817,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
             max_value_function = -10 ** 9
             max_action = None
             for action in all_possible_actions:
+                new_belief_vector = {}
                 # Make observations based on the chosen action
                 observation_samples = self.secondary_user.make_observations(stage_number, action)
                 # Estimate the System State
@@ -837,7 +835,19 @@ class AdaptiveIntelligenceWithModelForesight(object):
                     normalization_constant += emission_probability * multiplier
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_sample[
                         ''.join(str(k) for k in state)]
-                internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
+                # Belief Update
+                for state in all_possible_states:
+                    state_key = ''.join(str(k) for k in state)
+                    new_belief_vector[state_key] = self.belief_update(observation_samples, belief_sample, state,
+                                                                      self.transition_probabilities_matrix)
+                highest_belief_key = max(new_belief_vector, key=new_belief_vector.get)
+                # You could've used an OrderedDict here to simplify operations
+                # Find the closest pilot belief and its associated value function
+                relevant_data = {episode_key: belief[highest_belief_key] for episode_key, belief in
+                                 reachable_beliefs.items()}
+                pilot_belief_key = max(relevant_data, key=relevant_data.get)
+                internal_term = reward_sum + (self.GAMMA * normalization_constant *
+                                              previous_stage_value_function_collection[pilot_belief_key][0])
                 if internal_term > max_value_function:
                     max_value_function = internal_term
                     max_action = action
@@ -900,6 +910,9 @@ class AdaptiveIntelligenceWithModelForesight(object):
             if belief_changes is 0:
                 print('[DEBUG] AdaptiveIntelligence run_perseus: Confidence Update - {}'.format(confidence))
                 confidence += 1
+            else:
+                confidence = 0
+                print('[DEBUG] AdaptiveIntelligence run_perseus: Confidence Fallback - {}'.format(confidence))
             stage_number += 1
             # We've reached the end of our allowed interaction time with the radio environment
             if stage_number == self.NUMBER_OF_EPISODES:

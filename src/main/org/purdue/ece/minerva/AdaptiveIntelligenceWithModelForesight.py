@@ -838,10 +838,10 @@ class AdaptiveIntelligenceWithModelForesight(object):
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_sample[
                         ''.join(str(k) for k in state)]
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
-                if internal_term > max_value_function:
+                if internal_term >= max_value_function:
                     max_value_function = internal_term
                     max_action = action
-            if max_value_function > previous_stage_value_function_collection[belief_sample_key][0]:
+            if max_value_function >= previous_stage_value_function_collection[belief_sample_key][0]:
                 # Note here that del mutates the contents of the dict for everyone who has a reference to it
                 del unimproved_belief_points[belief_sample_key]
                 next_stage_value_function_collection[belief_sample_key] = (max_value_function, max_action)
@@ -870,7 +870,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * unimproved_belief_points[
                         belief_point_key][''.join(str(k) for k in state)]
                 internal_term = reward_sum + (self.GAMMA * normalization_constant * -10)
-                if internal_term > previous_stage_value_function_collection[belief_point_key][0]:
+                if internal_term >= previous_stage_value_function_collection[belief_point_key][0]:
                     # Note here that del mutates the contents of the dict for everyone who has a reference to it
                     del unimproved_belief_points[belief_point_key]
                     next_stage_value_function_collection[belief_point_key] = (internal_term, max_action)
@@ -893,8 +893,12 @@ class AdaptiveIntelligenceWithModelForesight(object):
         # Utility addition for the initial value function
         print('[DEBUG] AdaptiveIntelligence run_perseus: Adding the utility metric for the initial value function...')
         self.utilities.append(self.calculate_utility(previous_value_function_collection))
+        # Local confidence check for modelling policy convergence
+        confidence = 0
         # Check for termination condition here...
-        while belief_changes is not 0:
+        while confidence < self.CONFIDENCE_BOUND:
+            if belief_changes is 0:
+                confidence += 1
             stage_number += 1
             # We've reached the end of our allowed interaction time with the radio environment
             if stage_number == self.NUMBER_OF_EPISODES:
@@ -908,7 +912,6 @@ class AdaptiveIntelligenceWithModelForesight(object):
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
             if len(next_value_function_collection) is not 0:
-                print('[WARN] AdaptiveIntelligence run_perseus: Length of value function is zero...! Just a warning!')
                 previous_value_function_collection = next_value_function_collection
 
     # Regret Analysis

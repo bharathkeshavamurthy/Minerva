@@ -123,15 +123,6 @@ class Util(object):
         q = (p * (1 - pi)) / pi
         return {0: {1: p, 0: 1 - p}, 1: {0: q, 1: 1 - q}}
 
-    # Validate the calculated belief
-    @staticmethod
-    def validate_belief(belief):
-        # Belief Validity Check
-        if (0.90 <= sum([v for v in belief.values()]) <= 1.0) is False:
-            raise ArithmeticError(
-                'The belief is a probability distribution over the state space. It should satisfy '
-                'Kolmogorav\'s axioms of probability')
-
     # Generate the action set based on the SU sensing limitations and the Number of Channels in the discretized...
     # ...spectrum of interest
     @staticmethod
@@ -151,6 +142,22 @@ class Util(object):
                     action[channel] = 1
             action_set.append(action)
         return action_set
+
+    #  Normalize the belief
+    def normalize(self, belief, belief_sum):
+        normalized_sum = 0
+        for key in belief.keys():
+            belief[key] /= belief_sum
+            normalized_sum += belief[key]
+        return belief, self.validate_belief(normalized_sum)
+
+    # Perform belief validation
+    @staticmethod
+    def validate_belief(normalized_sum):
+        # Interval to account for precision errors
+        if 0.90 <= normalized_sum <= 1.10:
+            return True
+        return False
 
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -304,15 +311,7 @@ class PrimaryUser(object):
         # Use the definitions of Conditional Probabilities to realize the math - P(A|B,C)
         for channel_index in range(1, self.number_of_channels):
             for round_index in range(1, self.number_of_episodes):
-                previous_temporal_state = self.occupancy_behavior_collection[channel_index][round_index - 1]
-                previous_spatial_state = self.occupancy_behavior_collection[channel_index - 1][round_index]
-                probability_occupied_temporal = temporal_transition_probabilities_matrix[previous_temporal_state][1]
-                probability_occupied_spatial = spatial_transition_probabilities_matrix[previous_spatial_state][1]
-                probability_occupied = (probability_occupied_spatial * self.util.get_state_probability(
-                    previous_spatial_state, spatial_start_probabilities[1])) + (probability_occupied_temporal *
-                                                                                self.util.get_state_probability(
-                                                                                    previous_temporal_state,
-                                                                                    temporal_start_probabilities[1]))
+                probability_occupied = pi_val
                 seed = numpy.random.random_sample()
                 if seed < probability_occupied:
                     previous_state = 1
@@ -611,7 +610,7 @@ class Oracle(object):
 # References to the ParameterEstimation algorithm and the StateEstimation algorithm in the belief analysis phase
 class AdaptiveIntelligenceWithModelForesight(object):
     # Number of channels in the discretized spectrum of interest
-    NUMBER_OF_CHANNELS = 8
+    NUMBER_OF_CHANNELS = 5
 
     # Number of sampling rounds undertaken by the Secondary User per episode
     NUMBER_OF_SAMPLING_ROUNDS = 250
@@ -638,7 +637,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
     MU = -1
 
     # SU Sensing Limitation
-    LIMITATION = 5
+    LIMITATION = 3
 
     # Convergence Confidence Metric for the Parameter Estimation algorithm
     CONFIDENCE_BOUND = 10
@@ -727,12 +726,8 @@ class AdaptiveIntelligenceWithModelForesight(object):
     def get_transition_probability(self, prev_state, next_state, transition_probabilities_matrix):
         transition_probability = transition_probabilities_matrix[prev_state[0]][next_state[0]]
         for index in range(1, self.NUMBER_OF_CHANNELS):
-            transition_probability = transition_probability * \
-                                     ((transition_probabilities_matrix[prev_state[index]][next_state[index]] *
-                                       self.util.get_state_probability(prev_state[index], self.pi)) + (
-                                              transition_probabilities_matrix[next_state[index - 1]][
-                                                  next_state[index]] *
-                                              self.util.get_state_probability(next_state[index - 1], self.pi)))
+            transition_probability = transition_probability * self.util.get_state_probability(next_state[index],
+                                                                                              self.pi)
         return transition_probability
 
     # Get the normalization constant
@@ -787,20 +782,26 @@ class AdaptiveIntelligenceWithModelForesight(object):
             observations = self.secondary_user.make_observations(episode, random.choice(self.all_possible_actions))
             # Perform the Belief Update
             updated_belief_vector = dict()
+            # Belief sum for this updated belief vector
+            belief_sum = 0
             # Calculate the denominator which is nothing but the normalization constant
             denominator = self.get_normalization_constant(previous_belief_vector, observations)
             # Possible next states to update the belief, i.e. b(\vec{x}')
             for state in self.all_possible_states:
                 state_key = ''.join(str(k) for k in state)
-                updated_belief_vector[state_key] = self.belief_update(observations, previous_belief_vector, state,
-                                                                      self.transition_probabilities_matrix,
-                                                                      denominator)
-            # Belief Validation
-            self.util.validate_belief(updated_belief_vector)
+                belief_val = self.belief_update(observations, previous_belief_vector, state,
+                                                self.transition_probabilities_matrix, denominator)
+                belief_sum += belief_val
+                updated_belief_vector[state_key] = belief_val
+            # Normalization to get valid belief vectors (satisfying axioms of probability measures)
+            updated_belief_information = self.util.normalize(updated_belief_vector, belief_sum)
+            if updated_belief_information[1] is False:
+                raise ArithmeticError('The belief is a probability distribution over the state space. It should sum '
+                                      'to one!')
             # Add the new belief vector to the reachable beliefs set
-            reachable_beliefs[str(episode)] = updated_belief_vector
+            reachable_beliefs[str(episode)] = updated_belief_information[0]
             print('[DEBUG] AdaptiveIntelligence random_exploration: Adding new belief to the reachable_beliefs '
-                  'collection - {}'.format(str(updated_belief_vector)))
+                  'collection - {}'.format(str(updated_belief_information[0])))
             print('[INFO] AdaptiveIntelligence random_exploration: {}% Exploration '
                   'completed'.format(int(((episode + 1) / self.EXPLORATION_PERIOD) * 100)))
         return reachable_beliefs
@@ -853,6 +854,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
             max_action = None
             for action in self.all_possible_actions:
                 new_belief_vector = {}
+                new_belief_sum = 0
                 # Make observations based on the chosen action
                 observation_samples = self.secondary_user.make_observations(stage_number, action)
                 # Estimate the System State
@@ -875,11 +877,18 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 # Belief Update
                 for state in self.all_possible_states:
                     state_key = ''.join(str(k) for k in state)
-                    new_belief_vector[state_key] = self.belief_update(observation_samples, belief_sample, state,
-                                                                      self.transition_probabilities_matrix,
-                                                                      denominator_for_belief_update)
-                # Validation
-                self.util.validate_belief(new_belief_vector)
+                    value_of_belief = self.belief_update(observation_samples, belief_sample, state,
+                                                         self.transition_probabilities_matrix,
+                                                         denominator_for_belief_update)
+                    new_belief_sum += value_of_belief
+                    new_belief_vector[state_key] = value_of_belief
+                # Normalization to get valid belief vectors (satisfying axioms of probability measures)
+                new_normalized_belief_information = self.util.normalize(new_belief_vector, new_belief_sum)
+                if new_normalized_belief_information[1] is False:
+                    raise ArithmeticError('The belief is a probability distribution over the state space. It should '
+                                          'sum to one!')
+                # Updated re-assignment
+                new_belief_vector = new_normalized_belief_information[0]
                 print('[DEBUG] AdaptiveIntelligence backup: New Belief encountered during this backup '
                       'stage - {}'.format(str(new_belief_vector)))
                 highest_belief_key = max(new_belief_vector, key=new_belief_vector.get)
@@ -928,6 +937,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * unimproved_belief_points[
                         belief_point_key][''.join(str(k) for k in state)]
                 new_aux_belief_vector = {}
+                new_aux_belief_sum = 0
                 aux_belief_sample = unimproved_belief_points[belief_point_key]
                 # The denominator for the auxiliary belief update sequence
                 denominator_for_aux_belief_update = self.get_normalization_constant(aux_belief_sample,
@@ -935,11 +945,18 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 # Belief Update
                 for state in self.all_possible_states:
                     state_key = ''.join(str(k) for k in state)
-                    new_aux_belief_vector[state_key] = self.belief_update(observation_samples, aux_belief_sample, state,
-                                                                          self.transition_probabilities_matrix,
-                                                                          denominator_for_aux_belief_update)
-                # Belief Validation
-                self.util.validate_belief(new_aux_belief_vector)
+                    new_aux_belief_val = self.belief_update(observation_samples, aux_belief_sample, state,
+                                                            self.transition_probabilities_matrix,
+                                                            denominator_for_aux_belief_update)
+                    new_aux_belief_sum += new_aux_belief_val
+                    new_aux_belief_vector[state_key] = new_aux_belief_val
+                # Normalization to get valid belief vectors (satisfying axioms of probability measures)
+                new_aux_normalized_belief_information = self.util.normalize(new_aux_belief_vector, new_aux_belief_sum)
+                if new_aux_normalized_belief_information[1] is False:
+                    raise ArithmeticError('The belief is a probability distribution over the state space. It should '
+                                          'sum to one!')
+                # Updated re-assignment
+                new_aux_belief_vector = new_aux_normalized_belief_information[0]
                 print('[DEBUG] AdaptiveIntelligence backup: New Belief encountered during this backup '
                       'stage - {}'.format(str(new_aux_belief_vector)))
                 highest_belief_key = max(new_aux_belief_vector, key=new_aux_belief_vector.get)

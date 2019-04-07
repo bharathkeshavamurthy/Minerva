@@ -111,12 +111,26 @@ class Util(object):
     def construct_start_probabilities_dict(pi):
         return {0: (1 - pi), 1: pi}
 
+    # Get the steady state probability for the state passed as argument
+    @staticmethod
+    def get_state_probability(state, pi):
+        return (lambda: 1 - pi, lambda: pi)[state == 1]()
+
     # Construct the complete transition probability matrix from P(Occupied|Idle), i.e. 'p' and P(Occupied), i.e. 'pi'
     @staticmethod
     def construct_transition_probability_matrix(p, pi):
         # P(Idle|Occupied)
         q = (p * (1 - pi)) / pi
         return {0: {1: p, 0: 1 - p}, 1: {0: q, 1: 1 - q}}
+
+    # Validate the calculated belief
+    @staticmethod
+    def validate_belief(belief):
+        # Belief Validity Check
+        if (0.90 <= sum([v for v in belief.values()]) <= 1.0) is False:
+            raise ArithmeticError(
+                'The belief is a probability distribution over the state space. It should satisfy '
+                'Kolmogorav\'s axioms of probability')
 
     # Generate the action set based on the SU sensing limitations and the Number of Channels in the discretized...
     # ...spectrum of interest
@@ -208,7 +222,7 @@ class Channel(object):
 class PrimaryUser(object):
 
     # Initialization sequence
-    def __init__(self, _number_of_channels, _number_of_episodes, _spatial_markov_chain, _temporal_markov_chain):
+    def __init__(self, _number_of_channels, _number_of_episodes, _spatial_markov_chain, _temporal_markov_chain, _util):
         print('[INFO] PrimaryUser Initialization: Bringing things up...')
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
@@ -220,6 +234,8 @@ class PrimaryUser(object):
         self.temporal_markov_chain = _temporal_markov_chain
         # Occupancy Behavior Collection
         self.occupancy_behavior_collection = []
+        # The Utility class
+        self.util = _util
 
     # Generate the initial states for k = 0 across time
     # Note here that I'm using the Temporal Correlation Statistics
@@ -292,7 +308,11 @@ class PrimaryUser(object):
                 previous_spatial_state = self.occupancy_behavior_collection[channel_index - 1][round_index]
                 probability_occupied_temporal = temporal_transition_probabilities_matrix[previous_temporal_state][1]
                 probability_occupied_spatial = spatial_transition_probabilities_matrix[previous_spatial_state][1]
-                probability_occupied = (probability_occupied_spatial * probability_occupied_temporal) / pi_val
+                probability_occupied = (probability_occupied_spatial * self.util.get_state_probability(
+                    previous_spatial_state, spatial_start_probabilities[1])) + (probability_occupied_temporal *
+                                                                                self.util.get_state_probability(
+                                                                                    previous_temporal_state,
+                                                                                    temporal_start_probabilities[1]))
                 seed = numpy.random.random_sample()
                 if seed < probability_occupied:
                     previous_state = 1
@@ -591,7 +611,7 @@ class Oracle(object):
 # References to the ParameterEstimation algorithm and the StateEstimation algorithm in the belief analysis phase
 class AdaptiveIntelligenceWithModelForesight(object):
     # Number of channels in the discretized spectrum of interest
-    NUMBER_OF_CHANNELS = 5
+    NUMBER_OF_CHANNELS = 8
 
     # Number of sampling rounds undertaken by the Secondary User per episode
     NUMBER_OF_SAMPLING_ROUNDS = 250
@@ -600,7 +620,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
     NUMBER_OF_EPISODES = 1000
 
     # Exploration period of the POMDP agent to find a set of reachable beliefs
-    EXPLORATION_PERIOD = 5
+    EXPLORATION_PERIOD = 25
 
     # Mean of the Complex AWGN
     NOISE_MEAN = 0
@@ -621,7 +641,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
     LIMITATION = 5
 
     # Convergence Confidence Metric for the Parameter Estimation algorithm
-    CONFIDENCE_BOUND = 5
+    CONFIDENCE_BOUND = 10
 
     # Discount Factor
     GAMMA = 0.9
@@ -662,7 +682,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
         self.emission_evaluator = EmissionEvaluator(self.IMPULSE_RESPONSE_VARIANCE, self.NOISE_VARIANCE)
         # Primary User
         self.primary_user = PrimaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES,
-                                        self.spatial_markov_chain, self.temporal_markov_chain)
+                                        self.spatial_markov_chain, self.temporal_markov_chain, self.util)
         self.primary_user.simulate_occupancy_behavior()
         # Secondary User
         self.secondary_user = SecondaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.channel,
@@ -707,18 +727,32 @@ class AdaptiveIntelligenceWithModelForesight(object):
     def get_transition_probability(self, prev_state, next_state, transition_probabilities_matrix):
         transition_probability = transition_probabilities_matrix[prev_state[0]][next_state[0]]
         for index in range(1, self.NUMBER_OF_CHANNELS):
-            state_probability = (lambda: 1 - self.pi, lambda: self.pi)[next_state[index] == 1]()
-            transition_probability = transition_probability * ((transition_probabilities_matrix[prev_state[index]][
-                                                                    next_state[index]] *
-                                                                transition_probabilities_matrix[
-                                                                    next_state[index - 1]][
-                                                                    next_state[index]]) / state_probability)
+            transition_probability = transition_probability * \
+                                     ((transition_probabilities_matrix[prev_state[index]][next_state[index]] *
+                                       self.util.get_state_probability(prev_state[index], self.pi)) + (
+                                              transition_probabilities_matrix[next_state[index - 1]][
+                                                  next_state[index]] *
+                                              self.util.get_state_probability(next_state[index - 1], self.pi)))
         return transition_probability
 
+    # Get the normalization constant
+    def get_normalization_constant(self, previous_belief_vector, observations):
+        # The normalization constant
+        normalization_constant = 0
+        # Calculate the normalization constant in the belief update formula
+        for _next_state in self.all_possible_states:
+            multiplier = 0
+            for _prev_state in self.all_possible_states:
+                multiplier += self.get_transition_probability(_prev_state, _next_state,
+                                                              self.transition_probabilities_matrix) * \
+                              previous_belief_vector[''.join(str(k) for k in _prev_state)]
+            normalization_constant += self.get_emission_probability(observations, _next_state) * multiplier
+        return normalization_constant
+
     # Belief Update sequence
-    def belief_update(self, observations, previous_belief_vector, new_state, transition_probabilities_matrix):
+    def belief_update(self, observations, previous_belief_vector, new_state,
+                      transition_probabilities_matrix, normalization_constant):
         multiplier = 0
-        denominator = 0
         # Calculate the numerator in the belief update formula
         # \vec{x} \in \mathcal{X} in your belief update rule
         for prev_state in self.all_possible_states:
@@ -727,16 +761,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                                                           transition_probabilities_matrix) * previous_belief_vector[
                               ''.join(str(k) for k in prev_state)]
         numerator = self.get_emission_probability(observations, new_state) * multiplier
-        # Calculate the denominator in the belief update formula
-        for _next_state in self.all_possible_states:
-            multiplier = 0
-            for _prev_state in self.all_possible_states:
-                multiplier += self.get_transition_probability(_prev_state,
-                                                              _next_state,
-                                                              transition_probabilities_matrix) * previous_belief_vector[
-                                  ''.join(str(k) for k in _prev_state)]
-            denominator += self.get_emission_probability(observations, _next_state) * multiplier
-        return numerator / denominator
+        return numerator / normalization_constant
 
     # Randomly explore the environment and collect a set of beliefs B of reachable belief points
     # ...strategy as a part of the modified PERSEUS strategy
@@ -757,20 +782,21 @@ class AdaptiveIntelligenceWithModelForesight(object):
         print('[DEBUG] AdaptiveIntelligence random_exploration: Initial Belief Vector - {}'.format(str(
             initial_belief_vector)))
         # Start exploring
-        for episode in range(0, self.EXPLORATION_PERIOD):
+        for episode in range(1, self.EXPLORATION_PERIOD):
             # Perform the sensing action and make the observations
             observations = self.secondary_user.make_observations(episode, random.choice(self.all_possible_actions))
             # Perform the Belief Update
             updated_belief_vector = dict()
-            # Possible next states
+            # Calculate the denominator which is nothing but the normalization constant
+            denominator = self.get_normalization_constant(previous_belief_vector, observations)
+            # Possible next states to update the belief, i.e. b(\vec{x}')
             for state in self.all_possible_states:
                 state_key = ''.join(str(k) for k in state)
                 updated_belief_vector[state_key] = self.belief_update(observations, previous_belief_vector, state,
-                                                                      self.transition_probabilities_matrix)
-            # Check the validity of the belief
-            if sum([v for v in updated_belief_vector.values()]) != 1.0:
-                raise ArithmeticError('The belief is a PROBABILITY DISTRIBUTION over the '
-                                      'state space - it should sum to 1!')
+                                                                      self.transition_probabilities_matrix,
+                                                                      denominator)
+            # Belief Validation
+            self.util.validate_belief(updated_belief_vector)
             # Add the new belief vector to the reachable beliefs set
             reachable_beliefs[str(episode)] = updated_belief_vector
             print('[DEBUG] AdaptiveIntelligence random_exploration: Adding new belief to the reachable_beliefs '
@@ -844,15 +870,16 @@ class AdaptiveIntelligenceWithModelForesight(object):
                     normalization_constant += emission_probability * multiplier
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_sample[
                         ''.join(str(k) for k in state)]
+                # The denominator for belief update
+                denominator_for_belief_update = self.get_normalization_constant(belief_sample, observation_samples)
                 # Belief Update
                 for state in self.all_possible_states:
                     state_key = ''.join(str(k) for k in state)
                     new_belief_vector[state_key] = self.belief_update(observation_samples, belief_sample, state,
-                                                                      self.transition_probabilities_matrix)
-                # Check the validity of the belief
-                if sum([v for v in new_belief_vector.values()]) is not 1:
-                    raise ArithmeticError('The belief is a PROBABILITY DISTRIBUTION over the '
-                                          'state space - it should sum to 1!')
+                                                                      self.transition_probabilities_matrix,
+                                                                      denominator_for_belief_update)
+                # Validation
+                self.util.validate_belief(new_belief_vector)
                 print('[DEBUG] AdaptiveIntelligence backup: New Belief encountered during this backup '
                       'stage - {}'.format(str(new_belief_vector)))
                 highest_belief_key = max(new_belief_vector, key=new_belief_vector.get)
@@ -866,7 +893,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 if internal_term > max_value_function:
                     max_value_function = internal_term
                     max_action = action
-            if max_value_function > previous_stage_value_function_collection[belief_sample_key][0]:
+            if round(max_value_function, 5) > round(previous_stage_value_function_collection[belief_sample_key][0], 5):
                 print('[DEBUG] AdaptiveIntelligence backup: [Action: {} and New_Value_Function: {}] pair improves '
                       'the existing policy - '
                       'Corresponding sequence triggered!'.format(str(max_action), str(max_value_function) + ' > ' +
@@ -902,15 +929,17 @@ class AdaptiveIntelligenceWithModelForesight(object):
                         belief_point_key][''.join(str(k) for k in state)]
                 new_aux_belief_vector = {}
                 aux_belief_sample = unimproved_belief_points[belief_point_key]
+                # The denominator for the auxiliary belief update sequence
+                denominator_for_aux_belief_update = self.get_normalization_constant(aux_belief_sample,
+                                                                                    observation_samples)
                 # Belief Update
                 for state in self.all_possible_states:
                     state_key = ''.join(str(k) for k in state)
                     new_aux_belief_vector[state_key] = self.belief_update(observation_samples, aux_belief_sample, state,
-                                                                          self.transition_probabilities_matrix)
-                # Check the validity of the belief
-                if sum([v for v in new_aux_belief_vector.values()]) is not 1:
-                    raise ArithmeticError('The belief is a PROBABILITY DISTRIBUTION over the '
-                                          'state space - it should sum to 1!')
+                                                                          self.transition_probabilities_matrix,
+                                                                          denominator_for_aux_belief_update)
+                # Belief Validation
+                self.util.validate_belief(new_aux_belief_vector)
                 print('[DEBUG] AdaptiveIntelligence backup: New Belief encountered during this backup '
                       'stage - {}'.format(str(new_aux_belief_vector)))
                 highest_belief_key = max(new_aux_belief_vector, key=new_aux_belief_vector.get)
@@ -921,7 +950,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 aux_pilot_belief_key = max(relevant_data, key=relevant_data.get)
                 internal_term = reward_sum + (self.GAMMA * normalization_constant *
                                               previous_stage_value_function_collection[aux_pilot_belief_key][0])
-                if internal_term > previous_stage_value_function_collection[belief_point_key][0]:
+                if round(internal_term, 5) > round(previous_stage_value_function_collection[belief_point_key][0], 5):
                     # Note here that del mutates the contents of the dict for everyone who has a reference to it
                     print('[DEBUG] AdaptiveIntelligence backup: Auxiliary points improved by action {} with {}'.format(
                         str(max_action),

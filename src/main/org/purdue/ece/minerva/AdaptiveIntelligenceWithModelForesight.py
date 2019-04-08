@@ -1001,7 +1001,6 @@ class AdaptiveIntelligenceWithModelForesight(object):
         # Relevant collections
         previous_value_function_collection = initial_value_function_collection
         stage_number = self.EXPLORATION_PERIOD - 1
-        belief_changes = -1
         # Utility addition for the initial value function
         utility = self.calculate_utility(previous_value_function_collection)
         print('[DEBUG] AdaptiveIntelligence run_perseus: Adding the utility metric for the initial value '
@@ -1012,13 +1011,6 @@ class AdaptiveIntelligenceWithModelForesight(object):
         # Check for termination condition here...
         while confidence < self.CONFIDENCE_BOUND:
             self.value_function_changes_array.append(previous_value_function_collection[self.belief_choice][0])
-            if belief_changes is 0:
-                print('[DEBUG] AdaptiveIntelligence run_perseus: Confidence Update - {}'.format(confidence))
-                confidence += 1
-            else:
-                confidence = 0
-                print(
-                    '[DEBUG] AdaptiveIntelligence run_perseus: Confidence Stagnation/Fallback - {}'.format(confidence))
             stage_number += 1
             # We've reached the end of our allowed interaction time with the radio environment
             if stage_number == self.NUMBER_OF_EPISODES:
@@ -1034,6 +1026,13 @@ class AdaptiveIntelligenceWithModelForesight(object):
             self.policy_changes.append(belief_changes)
             if len(next_value_function_collection) is not 0:
                 previous_value_function_collection = next_value_function_collection
+            if belief_changes is 0:
+                print('[DEBUG] AdaptiveIntelligence run_perseus: Confidence Update - {}'.format(confidence))
+                confidence += 1
+            else:
+                confidence = 0
+                print(
+                    '[DEBUG] AdaptiveIntelligence run_perseus: Confidence Stagnation/Fallback - {}'.format(confidence))
 
     # Regret Analysis
     def analyze_regret(self):

@@ -445,7 +445,6 @@ class StateEstimator(object):
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     # Output a collection consisting of the required parameters of interest
     def estimate_pu_occupancy_states(self):
-        # Variable reference to get rid of the idiotic "prior-referenced usage' warning
         previous_state = None
         estimated_states_array = []
         for sampling_round in range(0, self.number_of_sampling_rounds):
@@ -504,7 +503,6 @@ class StateEstimator(object):
                     estimated_states.append(self.value_from_name(k))
                     previous_state = k
                     break
-            # Doesn't happen but adding this to remove the warnings
             if previous_state is None or max_value is None:
                 print('[ERROR] StateEstimator estimate_pu_occupancy_states: previous_state AND/OR max_value members '
                       'are invalid! Returning junk results! Please look into this!')
@@ -640,7 +638,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
     LIMITATION = 3
 
     # Convergence Confidence Metric for the Parameter Estimation algorithm
-    CONFIDENCE_BOUND = 10
+    CONFIDENCE_BOUND = 5
 
     # Discount Factor
     GAMMA = 0.9
@@ -902,7 +900,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 if internal_term > max_value_function:
                     max_value_function = internal_term
                     max_action = action
-            if round(max_value_function, 5) > round(previous_stage_value_function_collection[belief_sample_key][0], 5):
+            if round(max_value_function, 3) > round(previous_stage_value_function_collection[belief_sample_key][0], 3):
                 print('[DEBUG] AdaptiveIntelligence backup: [Action: {} and New_Value_Function: {}] pair improves '
                       'the existing policy - '
                       'Corresponding sequence triggered!'.format(str(max_action), str(max_value_function) + ' > ' +
@@ -967,7 +965,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 aux_pilot_belief_key = max(relevant_data, key=relevant_data.get)
                 internal_term = reward_sum + (self.GAMMA * normalization_constant *
                                               previous_stage_value_function_collection[aux_pilot_belief_key][0])
-                if round(internal_term, 5) > round(previous_stage_value_function_collection[belief_point_key][0], 5):
+                if round(internal_term, 3) > round(previous_stage_value_function_collection[belief_point_key][0], 3):
                     # Note here that del mutates the contents of the dict for everyone who has a reference to it
                     print('[DEBUG] AdaptiveIntelligence backup: Auxiliary points improved by action {} with {}'.format(
                         str(max_action),

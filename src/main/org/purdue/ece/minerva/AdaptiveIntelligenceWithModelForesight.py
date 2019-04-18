@@ -608,7 +608,7 @@ class Oracle(object):
 # References to the ParameterEstimation algorithm and the StateEstimation algorithm in the belief analysis phase
 class AdaptiveIntelligenceWithModelForesight(object):
     # Number of channels in the discretized spectrum of interest
-    NUMBER_OF_CHANNELS = 5
+    NUMBER_OF_CHANNELS = 10
 
     # Number of sampling rounds undertaken by the Secondary User per episode
     NUMBER_OF_SAMPLING_ROUNDS = 250
@@ -635,7 +635,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
     MU = -1
 
     # SU Sensing Limitation
-    LIMITATION = 3
+    LIMITATION = 5
 
     # Convergence Confidence Metric for the Parameter Estimation algorithm
     CONFIDENCE_BOUND = 5

@@ -1281,4 +1281,6 @@ if __name__ == '__main__':
     pool.close()
     # Join with the main thread - termination
     pool.join()
+    # Post-Processing
+    post_processor(result_collection, episodes_count, exploration_duration)
     print('[INFO] AdaptiveIntelligence main: System Simulation terminated...')

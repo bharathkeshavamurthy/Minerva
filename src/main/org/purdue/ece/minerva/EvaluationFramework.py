@@ -1740,6 +1740,17 @@ class AdaptiveIntelligenceWithModelForesight(object):
                 confidence = 0
                 print('[DEBUG] AdaptiveIntelligenceWithModelForesight run_perseus: '
                       'Confidence Stagnation/Fallback - {}'.format(confidence))
+        optimal_utilities = []
+        for episode_number, results_tuple in previous_value_function_collection.items():
+            system_state = []
+            for channel in range(0, self.number_of_channels):
+                system_state.append(self.primary_user.occupancy_behavior_collection[channel][int(episode_number)])
+            optimal_action = results_tuple[1]
+            observation_samples = self.secondary_user.make_observations(int(episode_number), optimal_action)
+            self.state_estimator.observation_samples = observation_samples
+            estimated_states = self.state_estimator.estimate_pu_occupancy_states()
+            optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
+        return optimal_utilities
 
     # Termination sequence
     # Signed off by bkeshava on 01-May-2019
@@ -1753,11 +1764,24 @@ class AdaptiveIntelligenceWithModelForesight(object):
 # Concurrent Model Learning with no simplification whatsoever
 class ModelFreeAdaptiveIntelligence(object):
 
+    # Setup the Markov Chain
+    @staticmethod
+    def setup_markov_chain(_pi, _p, _correlation_class):
+        print('[INFO] ModelFreeAdaptiveIntelligence setup_markov_chain: Setting up the Markov Chain...')
+        transient_markov_chain_object = MarkovChain()
+        transient_markov_chain_object.set_markovian_correlation_class(_correlation_class)
+        transient_markov_chain_object.set_start_probability_parameter(_pi)
+        transient_markov_chain_object.set_transition_probability_parameter(_p)
+        return transient_markov_chain_object
+
+    # Initialization sequence
     # Initialization sequence
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
                  _limitation, _confidence_bound, _gamma, _epsilon):
         print('[INFO] ModelFreeAdaptiveIntelligence Initialization: Bringing things up...')
+        # The Utility object
+        self.util = Util()
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
         # The number of sampling rounds in each episode
@@ -1782,19 +1806,17 @@ class ModelFreeAdaptiveIntelligence(object):
         self.confidence_bound = _confidence_bound
         # The discount factor employed in the Bellman equation
         self.gamma = _gamma
-        # The convergence threshold employed in the parameter estimation algorithm
-        self.epsilon = _epsilon
         # P(Occupied) - The steady state probability of being occupied
         self.pi = 0.6
         # P(Occupied|Idle) - The transition probability parameter
         self.p = 0.3
-        # Initial Estimate of P(Occupied|Idle) a.k.a 'p'
+        # The initial estimate of P(Occupied|Idle) a.k.a 'p'
         self.initial_p = 0.000005
-        # The Utility object
-        self.util = Util()
         # Initial Transition Probabilities_Matrix
         self.initial_transition_probabilities_matrix = self.util.construct_transition_probability_matrix(self.initial_p,
                                                                                                          self.pi)
+        # The convergence threshold for the parameter estimator
+        self.epsilon = _epsilon
         # Start Probabilities Dict
         self.start_probabilities_dict = self.util.construct_start_probabilities_dict(self.pi)
         # Setup the Spatial Markov Chain
@@ -1820,6 +1842,7 @@ class ModelFreeAdaptiveIntelligence(object):
         self.sweepstakes = Sweepstakes(self.primary_user, self.penalty)
         # The Oracle
         self.oracle = Oracle(self.number_of_episodes)
+        # Parameter Estimator
         # Parameter Estimator - Modified Baum-Welch / Modified EM
         self.parameter_estimator = ParameterEstimator(self.number_of_channels, self.number_of_sampling_rounds,
                                                       self.initial_transition_probabilities_matrix,
@@ -1833,100 +1856,158 @@ class ModelFreeAdaptiveIntelligence(object):
                                               self.emission_evaluator)
         # Utilities as the algorithm progresses towards optimality
         self.utilities = []
+        # The number of policy changes as the algorithm progresses towards optimality
+        self.policy_changes = []
+        # Belief choice for value function tracking
+        self.belief_choice = None
+        # The progression of the value function as the algorithm progresses towards optimality
+        self.value_function_changes_array = []
+        # All possible states
+        self.all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.number_of_channels)))
+        # All possible actions based on my SU sensing limitations
+        self.all_possible_actions = []
+        for state in self.all_possible_states:
+            if sum(state) == self.limitation:
+                self.all_possible_actions.append(state)
+
+    # Get Emission Probabilities for the Belief Update sequence
+    def get_emission_probability(self, observations, state):
+        emission_probability = 1
+        # round_choice to introduce some randomness into the emission evaluations
+        round_choice = random.choice([k for k in range(0, self.number_of_sampling_rounds)])
+        # Given the system state, the emissions are independent of each other
+        for index in range(0, self.number_of_channels):
+            emission_probability = emission_probability * self.emission_evaluator.get_emission_probabilities(
+                state[index], observations[index][round_choice])
+        return emission_probability
+
+    # Get State Transition Probabilities for the Belief Update sequence
+    def get_transition_probability(self, prev_state, next_state, transition_probabilities_matrix):
+        # Temporal/Episodic change for the first channel
+        transition_probability = transition_probabilities_matrix[prev_state[0]][next_state[0]]
+        for index in range(1, self.number_of_channels):
+            transition_probability = transition_probability * transition_probabilities_matrix[next_state[index - 1]][
+                next_state[index]]
+        return transition_probability
+
+    # Get the normalization constant
+    def get_normalization_constant(self, previous_belief_vector, observations, transition_probabilities_matrix):
+        # The normalization constant
+        normalization_constant = 0
+        # Calculate the normalization constant in the belief update formula
+        for _next_state in self.all_possible_states:
+            multiplier = 0
+            for _prev_state in self.all_possible_states:
+                multiplier += self.get_transition_probability(_prev_state, _next_state,
+                                                              transition_probabilities_matrix) * \
+                              previous_belief_vector[''.join(str(k) for k in _prev_state)]
+            normalization_constant += self.get_emission_probability(observations, _next_state) * multiplier
+        return normalization_constant
+
+    # Belief Update sequence
+    def belief_update(self, observations, previous_belief_vector, new_state,
+                      transition_probabilities_matrix, normalization_constant):
+        multiplier = 0
+        # Calculate the numerator in the belief update formula
+        # \vec{x} \in \mathcal{X} in your belief update rule
+        for prev_state in self.all_possible_states:
+            multiplier += self.get_transition_probability(prev_state,
+                                                          new_state,
+                                                          transition_probabilities_matrix) * previous_belief_vector[
+                              ''.join(str(k) for k in prev_state)]
+        numerator = self.get_emission_probability(observations, new_state) * multiplier
+        return numerator / normalization_constant
 
     # Randomly explore the environment and collect a set of beliefs B of reachable belief points
     # ...strategy as a part of the modified PERSEUS strategy
     def random_exploration(self, policy):
         reachable_beliefs = dict()
         state_space_size = 2 ** self.number_of_channels
-        # All possible states
-        all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.number_of_channels)))
-        # All possible actions based on my SU sensing limitations
-        all_possible_actions = []
-        for state in all_possible_states:
-            if sum(state) == self.limitation:
-                all_possible_actions.append(state)
         # Uniform belief assignment to all states in the state space
         initial_belief_vector = dict()
-        for state in all_possible_states:
+        for state in self.all_possible_states:
             state_key = ''.join(str(k) for k in state)
             initial_belief_vector[state_key] = 1 / state_space_size
         previous_belief_vector = initial_belief_vector
         reachable_beliefs['0'] = initial_belief_vector
         if policy is not None:
-            # TODO: An "ordered random" exploration strategy
-            print(
-                '[WARN] ModelFreeAdaptiveIntelligence random_exploration: Specific policy exploration is yet to be implemented')
-        print('[INFO] ModelFreeAdaptiveIntelligence random_exploration: Using a truly random exploration strategy')
+            print('[WARN] ModelFreeAdaptiveIntelligence random_exploration: '
+                  'Specific policy exploration is yet to be implemented')
+        print('[INFO] ModelFreeAdaptiveIntelligence random_exploration: '
+              'Using a truly random exploration strategy')
         # Start exploring
-        for episode in range(0, self.exploration_period):
+        for episode in range(1, self.exploration_period):
             # Perform the sensing action and make the observations
-            observations = self.secondary_user.make_observations(episode, random.choice(all_possible_actions))
+            # Making observations by choosing a random sensing action
+            observations = self.secondary_user.make_observations(episode, random.choice(self.all_possible_actions))
+            # Set the observations in the ParameterEstimator
             self.parameter_estimator.observation_samples = observations
+            # Estimate the transition probabilities matrix
             transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
                 self.parameter_estimator.estimate_parameters(), self.pi)
             # Perform the Belief Update
             updated_belief_vector = dict()
-            for state in all_possible_states:
+            # Belief sum for this updated belief vector
+            belief_sum = 0
+            # Calculate the denominator which is nothing but the normalization constant
+            # Calculate normalization constant only once...
+            denominator = self.get_normalization_constant(previous_belief_vector, observations,
+                                                          transition_probabilities_matrix)
+            # Possible next states to update the belief, i.e. b(\vec{x}')
+            for state in self.all_possible_states:
                 state_key = ''.join(str(k) for k in state)
-                updated_belief_vector[state_key] = self.belief_update(observations, previous_belief_vector, state,
-                                                                      transition_probabilities_matrix)
+                belief_val = self.belief_update(observations, previous_belief_vector, state,
+                                                transition_probabilities_matrix, denominator)
+                # Belief sum for Kolmogorov validation
+                belief_sum += belief_val
+                updated_belief_vector[state_key] = belief_val
+            # Normalization to get valid belief vectors (satisfying axioms of probability measures)
+            updated_belief_information = self.util.normalize(updated_belief_vector, belief_sum)
+            if updated_belief_information[1] is False:
+                raise ArithmeticError('The belief is a probability distribution over the state space. It should sum '
+                                      'to one!')
             # Add the new belief vector to the reachable beliefs set
-            reachable_beliefs[str(episode)] = updated_belief_vector
+            reachable_beliefs[str(episode)] = updated_belief_information[0]
             print('[INFO] ModelFreeAdaptiveIntelligence random_exploration: {}% Exploration '
                   'completed'.format(int(((episode + 1) / self.exploration_period) * 100)))
         return reachable_beliefs
-
-    # Belief Update sequence
-    def belief_update(self, observations, previous_belief_vector, new_state, transition_probabilities_matrix):
-        multiplier = 0
-        denominator = 0
-        # All possible states
-        all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.number_of_channels)))
-        for prev_state in all_possible_states:
-            multiplier += self.get_transition_probability(prev_state, new_state, transition_probabilities_matrix) * \
-                          previous_belief_vector[''.join(str(k) for k in prev_state)]
-        numerator = self.get_emission_probability(observations, new_state) * multiplier
-        for next_state in all_possible_states:
-            emission_probability = self.get_emission_probability(observations, next_state)
-            multiplier = 0
-            for prev_state in all_possible_states:
-                multiplier += self.get_transition_probability(prev_state, next_state, transition_probabilities_matrix) \
-                              * previous_belief_vector[''.join(str(k) for k in prev_state)]
-            denominator += emission_probability * multiplier
-        return numerator / denominator
-
-    # Get Emission Probabilities for the Belief Update sequence
-    def get_emission_probability(self, observations, state):
-        emission_probability = 1
-        for index in range(0, self.number_of_channels):
-            emission_probability = emission_probability * self.emission_evaluator.get_emission_probabilities(
-                state[index], observations[index][0])
-        return emission_probability
-
-    # Get State Transition Probabilities for the Belief Update sequence
-    def get_transition_probability(self, prev_state, next_state, transition_probabilities_matrix):
-        transition_probability = transition_probabilities_matrix[next_state[0]][prev_state[0]]
-        for index in range(1, self.number_of_channels):
-            state_probability = (lambda: 1 - self.pi, lambda: self.pi)[next_state[index] == 1]()
-            transition_probability = transition_probability * ((transition_probabilities_matrix[next_state[index]][
-                                                                    prev_state[index]] *
-                                                                transition_probabilities_matrix[next_state[index]][
-                                                                    next_state[index - 1]]) / state_probability)
-        return transition_probability
 
     # Initialization
     def initialize(self, reachable_beliefs):
         # V_0 for the reachable beliefs
         value_function_collection = dict()
+        # Default action is not sensing anything - a blind guess from just the noise
         default_action = [k - k for k in range(0, self.number_of_channels)]
         for belief_key in reachable_beliefs.keys():
             value_function_collection[belief_key] = (-10, default_action)
         return value_function_collection
 
+    # Calculate Utility
+    def calculate_utility(self, policy_collection):
+        utility = 0
+        for key, value in policy_collection.items():
+            system_state = []
+            for channel in range(0, self.number_of_channels):
+                # int(key) refers to the episode number
+                system_state.append(self.primary_user.occupancy_behavior_collection[channel][int(key)])
+            # In that episode, the POMDP agent believed that the system is in a certain probabilistic distribution...
+            # over the state vector, i.e. the belief, and based on this it recommended the best possible action to be...
+            # taken in that state - obtained by going through the backup procedure...
+            observation_samples = self.secondary_user.make_observations(int(key), value[1])
+            self.parameter_estimator.observation_samples = observation_samples
+            transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
+                self.parameter_estimator.estimate_parameters(), self.pi)
+            self.state_estimator.transition_probabilities = transition_probabilities_matrix
+            self.state_estimator.observation_samples = observation_samples
+            estimated_state = self.state_estimator.estimate_pu_occupancy_states()
+            print('[DEBUG] ModelFreeAdaptiveIntelligence calculate_utility: '
+                  'Estimated PU Occupancy states - {}'.format(str(estimated_state)))
+            utility += self.sweepstakes.roll(estimated_state, system_state)
+        return utility
+
     # The Backup stage
-    # TODO: The same reachable beliefs are used throughout...Can we re-sample at regular intervals instead?
     def backup(self, stage_number, reachable_beliefs, previous_stage_value_function_collection):
+        # Just a reassignment because the reachable_beliefs turns out to be a mutable collection
         unimproved_belief_points = {}
         for key, value in reachable_beliefs.items():
             unimproved_belief_points[key] = value
@@ -1935,50 +2016,74 @@ class ModelFreeAdaptiveIntelligence(object):
         # A simple dict copy - just to be safe from mutations
         for k, v in previous_stage_value_function_collection.items():
             next_stage_value_function_collection[k] = v
-        # All possible states
-        all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.number_of_channels)))
-        # All possible actions based on my SU sensing limitations
-        all_possible_actions = []
-        for state in all_possible_states:
-            if sum(state) == self.limitation:
-                all_possible_actions.append(state)
         number_of_belief_changes = 0
         # While there are still some un-improved belief points
         while len(unimproved_belief_points) is not 0:
-            print('[DEBUG] ModelFreeAdaptiveIntelligence backup: Size of unimproved belief set = {}'.format(
-                len(unimproved_belief_points)))
+            print('[INFO] ModelFreeAdaptiveIntelligence backup: '
+                  'Size of unimproved belief set = {}'.format(len(unimproved_belief_points)))
+            # Sample a belief point uniformly at random from \tilde{B}
             belief_sample_key = random.choice(list(unimproved_belief_points.keys()))
             belief_sample = unimproved_belief_points[belief_sample_key]
-            max_value_function = -100
+            max_value_function = -10 ** 9
             max_action = None
-            for action in all_possible_actions:
+            for action in self.all_possible_actions:
+                new_belief_vector = {}
+                new_belief_sum = 0
                 # Make observations based on the chosen action
                 observation_samples = self.secondary_user.make_observations(stage_number, action)
-                # Estimate the Model Parameters
                 self.parameter_estimator.observation_samples = observation_samples
-                transition_probability_matrix = self.util.construct_transition_probability_matrix(
+                transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
                     self.parameter_estimator.estimate_parameters(), self.pi)
                 # Estimate the System State
+                self.state_estimator.transition_probabilities = transition_probabilities_matrix
                 self.state_estimator.observation_samples = observation_samples
-                self.state_estimator.transition_probabilities = transition_probability_matrix
                 estimated_system_state = self.state_estimator.estimate_pu_occupancy_states()
+                print('[DEBUG] ModelFreeAdaptiveIntelligence backup: '
+                      'Estimated PU Occupancy states - {}'.format(str(estimated_system_state)))
                 reward_sum = 0
                 normalization_constant = 0
-                for state in all_possible_states:
+                for state in self.all_possible_states:
                     emission_probability = self.get_emission_probability(observation_samples, state)
                     multiplier = 0
-                    for prev_state in all_possible_states:
+                    for prev_state in self.all_possible_states:
                         multiplier += self.get_transition_probability(prev_state, state,
-                                                                      transition_probability_matrix) * \
+                                                                      transition_probabilities_matrix) * \
                                       belief_sample[''.join(str(k) for k in prev_state)]
                     normalization_constant += emission_probability * multiplier
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_sample[
                         ''.join(str(k) for k in state)]
-                internal_term = reward_sum + (self.gamma * normalization_constant * -10)
+                # Belief Update
+                for state in self.all_possible_states:
+                    state_key = ''.join(str(k) for k in state)
+                    value_of_belief = self.belief_update(observation_samples, belief_sample, state,
+                                                         transition_probabilities_matrix,
+                                                         normalization_constant)
+                    new_belief_sum += value_of_belief
+                    new_belief_vector[state_key] = value_of_belief
+                # Normalization to get valid belief vectors (satisfying axioms of probability measures)
+                new_normalized_belief_information = self.util.normalize(new_belief_vector, new_belief_sum)
+                if new_normalized_belief_information[1] is False:
+                    raise ArithmeticError('The belief is a probability distribution over the state space. It should '
+                                          'sum to one!')
+                # Updated re-assignment
+                new_belief_vector = new_normalized_belief_information[0]
+                highest_belief_key = max(new_belief_vector, key=new_belief_vector.get)
+                # You could've used an OrderedDict here to simplify operations
+                # Find the closest pilot belief and its associated value function
+                relevant_data = {episode_key: belief[highest_belief_key] for episode_key, belief in
+                                 reachable_beliefs.items()}
+                pilot_belief_key = max(relevant_data, key=relevant_data.get)
+                internal_term = reward_sum + (self.gamma * normalization_constant *
+                                              previous_stage_value_function_collection[pilot_belief_key][0])
                 if internal_term > max_value_function:
                     max_value_function = internal_term
                     max_action = action
-            if max_value_function > previous_stage_value_function_collection[belief_sample_key][0]:
+            if round(max_value_function, 3) > round(previous_stage_value_function_collection[belief_sample_key][0], 3):
+                print('[DEBUG] ModelFreeAdaptiveIntelligence backup: '
+                      '[Action: {} and New_Value_Function: {}] pair improves the existing policy - '
+                      'Corresponding sequence triggered!'.format(str(max_action), str(max_value_function) + ' > ' +
+                                                                 str(previous_stage_value_function_collection[
+                                                                         belief_sample_key][0])))
                 # Note here that del mutates the contents of the dict for everyone who has a reference to it
                 del unimproved_belief_points[belief_sample_key]
                 next_stage_value_function_collection[belief_sample_key] = (max_value_function, max_action)
@@ -1990,94 +2095,139 @@ class ModelFreeAdaptiveIntelligence(object):
                 del unimproved_belief_points[belief_sample_key]
                 max_action = previous_stage_value_function_collection[belief_sample_key][1]
             for belief_point_key in list(unimproved_belief_points.keys()):
+                print('[DEBUG] ModelFreeAdaptiveIntelligence backup: '
+                      'Improving the other belief points...')
                 normalization_constant = 0
                 reward_sum = 0
                 observation_samples = self.secondary_user.make_observations(stage_number, max_action)
-                # Estimate the Model Parameters
                 self.parameter_estimator.observation_samples = observation_samples
-                transition_probability_matrix = self.util.construct_transition_probability_matrix(
+                transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
                     self.parameter_estimator.estimate_parameters(), self.pi)
                 # Estimate the System State
+                self.state_estimator.transition_probabilities = transition_probabilities_matrix
                 self.state_estimator.observation_samples = observation_samples
-                self.state_estimator.transition_probabilities = transition_probability_matrix
                 estimated_system_state = self.state_estimator.estimate_pu_occupancy_states()
-                for state in all_possible_states:
+                print('[DEBUG] ModelFreeAdaptiveIntelligence backup: '
+                      'Estimated PU Occupancy states - {}'.format(str(estimated_system_state)))
+                for state in self.all_possible_states:
                     emission_probability = self.get_emission_probability(observation_samples, state)
                     multiplier = 0
-                    for prev_state in all_possible_states:
+                    for prev_state in self.all_possible_states:
                         multiplier += self.get_transition_probability(prev_state, state,
-                                                                      transition_probability_matrix) * \
+                                                                      transition_probabilities_matrix) * \
                                       unimproved_belief_points[belief_point_key][''.join(str(k) for k in prev_state)]
                     normalization_constant += emission_probability * multiplier
                     reward_sum += self.sweepstakes.roll(estimated_system_state, state) * unimproved_belief_points[
                         belief_point_key][''.join(str(k) for k in state)]
-                internal_term = reward_sum + (self.gamma * normalization_constant * -10)
-                if internal_term > previous_stage_value_function_collection[belief_point_key][0]:
+                new_aux_belief_vector = {}
+                new_aux_belief_sum = 0
+                aux_belief_sample = unimproved_belief_points[belief_point_key]
+                # Belief Update
+                for state in self.all_possible_states:
+                    state_key = ''.join(str(k) for k in state)
+                    new_aux_belief_val = self.belief_update(observation_samples, aux_belief_sample, state,
+                                                            transition_probabilities_matrix,
+                                                            normalization_constant)
+                    new_aux_belief_sum += new_aux_belief_val
+                    new_aux_belief_vector[state_key] = new_aux_belief_val
+                # Normalization to get valid belief vectors (satisfying axioms of probability measures)
+                new_aux_normalized_belief_information = self.util.normalize(new_aux_belief_vector, new_aux_belief_sum)
+                if new_aux_normalized_belief_information[1] is False:
+                    raise ArithmeticError('The belief is a probability distribution over the state space. It should '
+                                          'sum to one!')
+                # Updated re-assignment
+                new_aux_belief_vector = new_aux_normalized_belief_information[0]
+                highest_belief_key = max(new_aux_belief_vector, key=new_aux_belief_vector.get)
+                # You could've used an OrderedDict here to simplify operations
+                # Find the closest pilot belief and its associated value function
+                relevant_data = {episode_key: belief[highest_belief_key] for episode_key, belief in
+                                 reachable_beliefs.items()}
+                aux_pilot_belief_key = max(relevant_data, key=relevant_data.get)
+                internal_term = reward_sum + (self.gamma * normalization_constant *
+                                              previous_stage_value_function_collection[aux_pilot_belief_key][0])
+                if round(internal_term, 3) > round(previous_stage_value_function_collection[belief_point_key][0], 3):
                     # Note here that del mutates the contents of the dict for everyone who has a reference to it
+                    print('[DEBUG] ModelFreeAdaptiveIntelligence backup: Auxiliary points improved '
+                          'by action {} with {}'.format(str(max_action), str(internal_term) + ' > ' +
+                                                        str(previous_stage_value_function_collection[
+                                                                belief_point_key][0])))
                     del unimproved_belief_points[belief_point_key]
                     next_stage_value_function_collection[belief_point_key] = (internal_term, max_action)
                     number_of_belief_changes += 1
-            print('[DEBUG] ModelFreeAdaptiveIntelligence backup: Adding the utility metric within the Backup stage...')
-            self.utilities.append(self.calculate_utility(next_stage_value_function_collection))
+            utility = self.calculate_utility(next_stage_value_function_collection)
+            print('[INFO] ModelFreeAdaptiveIntelligence backup: '
+                  'Logging all the relevant metrics within this Backup stage - [Utility: {}, #policy_changes: {}, '
+                  'sampled_value_function: {}]'.format(utility, number_of_belief_changes,
+                                                       next_stage_value_function_collection[self.belief_choice][0]))
+            self.utilities.append(utility)
         return [next_stage_value_function_collection, number_of_belief_changes]
 
     # The PERSEUS algorithm
     # Calls to Random Exploration, Initialization, and Backup stages
     def run_perseus(self):
-        # Random Exploration
+        # Random Exploration - Get the set of reachable beliefs by randomly interacting with the radio environment
         reachable_beliefs = self.random_exploration(None)
-        # Initialization
+        # Belief choice for value function tracking (visualization component)
+        self.belief_choice = (lambda: self.belief_choice,
+                              lambda: random.choice([
+                                  k for k in reachable_beliefs.keys()]))[self.belief_choice is None]()
+        # Initialization - Initializing to -10 for all beliefs in the reachable beliefs set
         initial_value_function_collection = self.initialize(reachable_beliefs)
         # Relevant collections
         previous_value_function_collection = initial_value_function_collection
-        stage_number = self.exploration_period
-        belief_changes = -1
+        stage_number = self.exploration_period - 1
         # Utility addition for the initial value function
-        print(
-            '[DEBUG] ModelFreeAdaptiveIntelligence run_perseus: Adding the utility metric for the initial value function...')
-        self.utilities.append(self.calculate_utility(previous_value_function_collection))
+        utility = self.calculate_utility(previous_value_function_collection)
+        print('[DEBUG] ModelFreeAdaptiveIntelligence run_perseus: '
+              'Adding the utility metric for the initial value function - {}'.format(utility))
+        self.utilities.append(utility)
+        # Local confidence check for modelling policy convergence
+        confidence = 0
         # Check for termination condition here...
-        while belief_changes is not 0:
+        while confidence < self.confidence_bound:
+            self.value_function_changes_array.append(previous_value_function_collection[self.belief_choice][0])
             stage_number += 1
+            # We've reached the end of our allowed interaction time with the radio environment
             if stage_number == self.number_of_episodes:
+                print('[WARN] ModelFreeAdaptiveIntelligence run_perseus: '
+                      'We have reached the end of our allowed interaction time with the radio environment!')
                 return
             # Backup to find \alpha -> Get V_{n+1} and #BeliefChanges
             backup_results = self.backup(stage_number, reachable_beliefs, previous_value_function_collection)
-            print('[DEBUG] ModelFreeAdaptiveIntelligence run_perseus: Backup for stage {} completed...'.format(
-                stage_number - self.exploration_period))
+            print(
+                '[DEBUG] ModelFreeAdaptiveIntelligence run_perseus: '
+                'Backup for stage {} completed...'.format(stage_number - self.exploration_period + 1))
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
+            self.policy_changes.append(belief_changes)
             if len(next_value_function_collection) is not 0:
                 previous_value_function_collection = next_value_function_collection
-
-    # Calculate Utility
-    def calculate_utility(self, policy_collection):
-        utility = 0
-        for key, value in policy_collection.items():
+            if belief_changes is 0:
+                print('[DEBUG] ModelFreeAdaptiveIntelligence run_perseus: '
+                      'Confidence Update - {}'.format(confidence))
+                confidence += 1
+            else:
+                confidence = 0
+                print('[DEBUG] ModelFreeAdaptiveIntelligence run_perseus: '
+                      'Confidence Stagnation/Fallback - {}'.format(confidence))
+        optimal_utilities = []
+        for episode_number, results_tuple in previous_value_function_collection.items():
             system_state = []
             for channel in range(0, self.number_of_channels):
-                system_state.append(self.primary_user.occupancy_behavior_collection[channel][int(key)])
-            observation_samples = self.secondary_user.make_observations(int(key), value[1])
+                system_state.append(self.primary_user.occupancy_behavior_collection[channel][int(episode_number)])
+            optimal_action = results_tuple[1]
+            observation_samples = self.secondary_user.make_observations(int(episode_number), optimal_action)
             self.parameter_estimator.observation_samples = observation_samples
             transition_probabilities_matrix = self.util.construct_transition_probability_matrix(
                 self.parameter_estimator.estimate_parameters(), self.pi)
-            self.state_estimator.observation_samples = observation_samples
             self.state_estimator.transition_probabilities = transition_probabilities_matrix
-            estimated_state = self.state_estimator.estimate_pu_occupancy_states()
-            utility += self.sweepstakes.roll(estimated_state, system_state)
-        return utility
-
-    # Setup the Markov Chain
-    @staticmethod
-    def setup_markov_chain(_pi, _p, _correlation_class):
-        print('[INFO] ModelFreeAdaptiveIntelligence setup_markov_chain: Setting up the Markov Chain...')
-        transient_markov_chain_object = MarkovChain()
-        transient_markov_chain_object.set_markovian_correlation_class(_correlation_class)
-        transient_markov_chain_object.set_start_probability_parameter(_pi)
-        transient_markov_chain_object.set_transition_probability_parameter(_p)
-        return transient_markov_chain_object
+            self.state_estimator.observation_samples = observation_samples
+            estimated_states = self.state_estimator.estimate_pu_occupancy_states()
+            optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
+        return optimal_utilities
 
     # Termination sequence
+    # Signed off by bkeshava on 01-May-2019
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] ModelFreeAdaptiveIntelligence Termination: Tearing things down...')
 
@@ -2092,7 +2242,8 @@ class AdaptiveIntelligenceWithModelForesightSimplified(object):
     @staticmethod
     def setup_markov_chain(_pi, _p, _correlation_class):
         print(
-            '[INFO] AdaptiveIntelligenceWithModelForesightSimplified setup_markov_chain: Setting up the Markov Chain...')
+            '[INFO] AdaptiveIntelligenceWithModelForesightSimplified setup_markov_chain: '
+            'Setting up the Markov Chain...')
         transient_markov_chain_object = MarkovChain()
         transient_markov_chain_object.set_markovian_correlation_class(_correlation_class)
         transient_markov_chain_object.set_start_probability_parameter(_pi)
@@ -2528,6 +2679,17 @@ class AdaptiveIntelligenceWithModelForesightSimplified(object):
                 confidence = 0
                 print('[DEBUG] AdaptiveIntelligenceWithModelForesightSimplified run_perseus: '
                       'Confidence Stagnation/Fallback - {}'.format(confidence))
+        optimal_utilities = []
+        for episode_number, results_tuple in previous_value_function_collection.items():
+            system_state = []
+            for channel in range(0, self.number_of_channels):
+                system_state.append(self.primary_user.occupancy_behavior_collection[channel][int(episode_number)])
+            optimal_action = results_tuple[1]
+            observation_samples = self.secondary_user.make_observations(int(episode_number), optimal_action)
+            self.state_estimator.observation_samples = observation_samples
+            estimated_states = self.state_estimator.estimate_pu_occupancy_states()
+            optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
+        return optimal_utilities
 
     # Termination sequence
     # Signed off by bkeshava on 01-May-2019

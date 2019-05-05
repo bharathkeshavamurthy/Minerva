@@ -98,20 +98,22 @@ Hidden Markov Model, POMDP, and the PERSEUS Algorithm
 \section{Introduction}
 \section{System Model}
 \nm{add figure with system model}
-\subsection{The Observation Model}
-We consider a network consisting of $P$ licensed users termed the Primary Users (PUs) and one cognitive radio node termed the Secondary User (SU) equipped with a spectrum sensor. The objective of the SU is to opportunistically access portions of the spectrum left unused by the PUs in order to maximize its own throughput. To this end, the SU should learn to intelligently access spectrum holes (white-spaces) intending to maximize its throughput while maintaining strict non-interference compliance with incumbent transmissions. The wideband signal observed at the SU receiver is denoted as $y(n)$ and is given by
+\subsection{\sst{The Observation}\add{Signal} Model}
+\nm{This is still not an observation model, since the SU observes only a subset of frequencies..}
+We consider a network consisting of $P$ licensed users termed the Primary Users (PUs) and one cognitive radio node termed the Secondary User (SU) equipped with a spectrum sensor. The objective of the SU is to opportunistically access portions of the spectrum left unused by the PUs in order to maximize its own throughput. To this end, the SU should learn \add{how} to intelligently access spectrum holes (white-spaces) intending to maximize its throughput while maintaining strict non-interference compliance with incumbent transmissions.
+ The wideband signal \sst{observed}\add{received} at the SU receiver \add{at time $n$} is denoted as $y(n)$ and is given by
 \begin{equation}\label{1}
     y(n)\ =\ \sum_{p=1}^{P}\sum_{l=0}^{L_{p}-1} h_{p}(l)x_{p}(n-l) + v(n),
 \end{equation}
-where $y(n)$ is expressed as a convolution of the signal $x_{p}(n)$ of the $p$th PU with the channel impulse response $h_{p}(n)$, and $v(n)$ denotes additive white Gaussian noise (AWGN) with variances $\sigma_v^2$. Eq. (\ref{1}) can be written in the frequency domain by taking a K-point DFT which decomposes the observed wideband signal into $K$ discrete narrow-band components as
+where $y(n)$ is expressed as a convolution of the signal $x_{p}(n)$ of the $p$th PU with the channel impulse response $h_{p}(n)$, and $v(n)$ denotes additive white Gaussian noise (AWGN) with variances $\sigma_v^2$. Eq. (\ref{1}) can be written in the frequency domain by taking a $K$-point DFT which decomposes the observed wideband signal into $K$ discrete narrow-band components as
 \begin{equation}\label{2}
     Y_k(i)\ =\ \sum_{p=1}^{P}H_{p,k}(i)X_{p,k}(i)+V_k(i),
 \end{equation}
-where $i \in \{1,2,3,\dots,T\}$ represents the index of the observation; $k \in \{1,2,3,\dots,K\}$ represents the index of the components in the frequency domain; $V_k(i) \sim \mathcal{CN}(0,\sigma_V^2)$ represents a circularly symmetric additive complex Gaussian noise sample, i.i.d across channel indices and across time indices; $X_{p,k}(i)$ is the signal of the $p$th PU in the frequency domain, and $H_{p,k}(i)$ is its frequency domain channel. The noise samples are assumed to be independent of the occupancy state of the channels. We further assume that the $P$ PUs employ an orthogonal access to the spectrum (e.g., OFDMA) so that $X_{p,k}(i)X_{q,k}(i)=0,\ \forall p\neq q$. Thus, letting $p_k$ be the index of the PU that contributes to the signal in the $k$th spectrum band (possibly, $p_k=0$ if no PU is transmitting in the $k$th spectrum band), and letting  $H_{k}=H_{p_k,k}$ and $X_{k}(i)=X_{p_k,k}(i)$, we can rewrite \eqref{2} as
+where $i \in \{1,2,3,\dots,T\}$ represents the \add{time} index\sst{ of the observation}; $k \in \{1,2,3,\dots,K\}$ represents the index of the components in the frequency domain; $V_k(i) \sim \mathcal{CN}(0,\sigma_V^2)$ represents a circularly symmetric additive complex Gaussian noise sample, i.i.d across channel indices and across time indices; $X_{p,k}(i)$ is the signal of the $p$th PU in the frequency domain, and $H_{p,k}(i)$ is its frequency domain channel. The noise samples are assumed to be independent of the occupancy state of the channels. We further assume that the $P$ PUs employ an orthogonal access to the spectrum (e.g., OFDMA) so that $X_{p,k}(i)X_{q,k}(i)=0,\ \forall p\neq q$. Thus, letting $p_k$ be the index of the PU that contributes to the signal in the $k$th spectrum band (possibly, $p_k=0$ if no PU is transmitting in the $k$th spectrum band), and letting  $H_{k}=H_{p_k,k}$ and $X_{k}(i)=X_{p_k,k}(i)$, we can rewrite \eqref{2} as
 \begin{equation}\label{3}
     Y_k(i)\ =\ H_{k}(i)X_{k}(i) + V_k(i).
 \end{equation}
-Thus, $H_k(i)$ represents the $k$th DFT coefficient of the impulse response $h_{p_k,k}(n)$ of the channel in between the PU operating on the $k$th spectrum band and the SU, in time index $i$; we model it as a zero-mean circularly symmetric complex Gaussian random variable with variance $\sigma_H^2$, $H_k \sim \mathcal{CN}(0,\sigma_H^2)$, independent across frequency bands and independent of the occupancy state of the channels.
+Thus, $H_k(i)$ represents the $k$th DFT coefficient of the impulse response $h_{p_k,k}(n)$ of the channel in between the PU operating on the $k$th spectrum band and the SU, in time index $i$; we model it as a zero-mean circularly symmetric complex Gaussian random variable with variance $\sigma_H^2$, $H_k \sim \mathcal{CN}(0,\sigma_H^2)$, \sst{independent}\add{i.i.d.} across frequency bands, \add{over time}, and independent of the occupancy state of the channels.
 \subsection{PU Spectrum occupancy model}
 We now introduce the model of PU occupancy over time and across the frequency domain. We model each $X_k(i)$ as
 \begin{equation}\label{4}
@@ -119,7 +121,9 @@ We now introduce the model of PU occupancy over time and across the frequency do
 \end{equation}
 where $P_{tx}$ is the transmission power of the PUs, $S_k(i)$ is the transmitted symbol, modeled as a 
 constant amplitude signal, $|S_k(i)|=1$, i.i.d. over time and across frequency bands;\footnote{In the case where
-$S_k(i)$ does not have constant amplitude, we may approximate $H_{k}(i)S_{k}(i)$ as complex Gaussian, without any modification to the subsequent analysis. $B_k(i)\in\{0,1\}$ is the binary spectrum occupancy variable, with $B_k(i)=1$ if the $k$th spectrum band is occupied by a PU at time $i$, and $B_k(i)=0$ otherwise.} Therefore, the PU occupancy behavior in the entire wideband spectrum of interest discretized into narrow-band frequency components, at time index $i$ can be modeled as the vector 
+$S_k(i)$ does not have constant amplitude, we may approximate $H_{k}(i)S_{k}(i)$ as complex Gaussian \add{with zero mean and variance $\sigma_H^2\mathbb E[|S_{k}(i)|^2]$}, without any modification to the subsequent analysis. \sst{$B_k(i)\in\{0,1\}$ is the binary spectrum occupancy variable, with $B_k(i)=1$ if the $k$th spectrum band is occupied by a PU at time $i$, and $B_k(i)=0$ otherwise.}}
+\add{$B_k(i)\in\{0,1\}$ is the binary spectrum occupancy variable, with $B_k(i)=1$ if the $k$th spectrum band is occupied by a PU at time $i$, and $B_k(i)=0$ otherwise.}
+ Therefore, the PU occupancy behavior in the entire wideband spectrum of interest \add{at time index $i$}, discretized into narrow-band frequency components, \sst{at time index $i$} can be modeled as the vector 
 \begin{equation}\label{5}
     \vec{B}(i)\ =\ [B_1(i),B_2(i),B_3(i),\cdots,B_K(i)]^T \in \{0,1\}^K.
 \end{equation}
@@ -131,33 +135,53 @@ we model the spectrum occupancy dynamics as a Markov process: given $\vec{B}(i)$
     \end{aligned}
 \end{equation}
 Additionally, when joining the spectrum pool, PUs occupy a number of adjacent spectrum bands, and may vary their spectrum needs depending on traffic demands, channel conditions, etc. To capture this behavior, we model $\vec{B}(i)$ as having Markovian correlation across sub-bands as,
-\begin{equation}\label{7}
-    \begin{aligned}
-         \mathbb{P}(\vec{B}(i+1)|\vec{B}(i))\ =\ 
-         \prod_{k=1}^K\ \mathbb{P}(B_{k+1}(i+1)|B_{k+1}(i),B_{k}(i+1)).
-    \end{aligned}
-\end{equation}
-That is, $B_{k+1}(i+1)$ depends on the  occupancy state of the adjacent spectrum band $B_{k}(i+1)$ at the same time, and that of the same spectrum band $k+1$ in the previous time index $i$. The true states encapsulate the actual occupancy behavior of the PU and the measurements at the SU are noisy observations of these true states which are modeled to be the observed states of a Hidden Markov Model (HMM). Owing to physical design limitations at the SU's spectrum sensor \nm{citation?}, not all sub-bands in the discretized spectrum can be sensed. Let $\kappa$ with $1\leq \kappa\leq K$ be the number of spectrum bands that can be sensed by the SU at any time, capturing the spectrum sensing constraint. Let $\mathcal K_{i}\subseteq\{1,2,\dots,K\}$ with $|\mathcal K_i|\leq \kappa$ be the set of indices corresponding to the spectrum bands sensed by the SU, which is part of our design. Then, we model the emission process of the HMM as
+\nm{use "align" instead of "equation"}
+\begin{align}\label{7}
+&         \mathbb{P}(\vec{B}(i+1)|\vec{B}(i))\\&=
+\nonumber
+         \add{\mathbb{P}(B_{1}(i+1)|B_{1}(i))}
+         \prod_{k=\add{2}}^{K}\ \mathbb{P}(B_{\add{k}}(i+1)|B_{\add{k}}(i),B_{k\add{-1}}(i+1)).
+\end{align}
+That is, \add{the spectrum occupancy at time $i+1$ in frequency band $k$,}
+$B_{k}(i+1)$, depends on the  occupancy state of the adjacent spectrum band at the same time, $B_{k-1}(i+1)$, and that of the same spectrum band $k$ in the previous time index $i$, \add{$B_{k}(i)$}.
+
+\add{\subsection{Spectrum sensing model}
+In order to detect the available spectrum holes, the SU performs spectrum sensing. However,}
+owing to physical design limitations at the SU's spectrum sensor \nm{citation?}, not all sub-bands in the discretized spectrum can be sensed.
+\add{Therefore, due to limited sensing capabilities, the SU can sense only $\kappa$ out of $K$ spectrum bands at any given time, with $1\leq \kappa\leq K$.}
+\sst{Let $\kappa$ with $1\leq \kappa\leq K$ be the number of spectrum bands that can be sensed by the SU at any time, capturing the spectrum sensing constraint.} Let $\mathcal K_{i}\subseteq\{1,2,\dots,K\}$ with $|\mathcal K_i|\leq \kappa$ be the set of indices corresponding to the spectrum bands sensed by the SU \add{at time $i$},  which is part of our design. Then, we model the emission process of the HMM as
 \begin{equation}\label{8}
-    \vec{Y}(i)\ =\ [Y_k(i)]_{k\in\mathcal K_i}.
+    \vec{Y}(i)\ =\ [Y_k(i)]_{k\in\mathcal K_i},
 \end{equation}
+\add{where $Y_k(i)$ is given by \eqref{3}.}
+
+The true states \add{$\vec{B}(i)$} encapsulate the actual occupancy behavior of the PU and the measurements at the SU are noisy observations of these true states which are modeled to be the observed states of a Hidden Markov Model (HMM).
 Given the spectrum occupancy vector $\vec{B}(i)$ and the set of sensed spectrum bands $\mathcal K_i$, the probability density function of $\vec{Y}(i)$ is expressed as
 \begin{equation}\label{9}
     f(\vec{Y}(i)|\vec{B}(i),\mathcal K_i)=\prod_{k\in\mathcal K_i}f(Y_k(i)|B_k(i)),
 \end{equation}
-owing to the channels, noise and transmitted symbols across frequency bands. Moreover,
+owing to the \add{independence of} channels, noise and transmitted symbols across frequency bands. 
+\nm{it should not be too difficult to incorporate channel correlation across frequency bands}
+Moreover,
 \begin{equation}\label{10}
  Y_k(i)|B_k(i)\sim \mathcal{CN}(0,\sigma_H^2P_{tx}B_k(i)+\sigma_V^2).
 \end{equation}
 Now, we model the spectrum access scheme of the SU as a Partially Observable Markov Decision Process (POMDP) wherein the goal of the POMDP agent is to devise an optimal sensing and access policy in order to maximize its throughput while maintaining strict non-interference compliance with incumbent transmissions.
+
 \subsection{The POMDP Agent Model}
-The agent's limited observational capabilities coupled with its noisy observations result in an increased level of uncertainty at the agent's end about the occupancy state of the spectrum under consideration and the exact effect of executing an action on the radio environment. The transition model of the underlying MDP as described in the previous subsection, is denoted by $A$ and is learnt by the agent by interacting with the radio environment. The emission model $B$ is given by (\ref{9}), with $f(Y_k(i)|B_k(i))$ given by \eqref{10}. We model the POMDP as a tuple $(\mathcal{X},\mathcal{A},\mathcal{Y},A,B)$ where $\mathcal{X}\equiv\{0,1\}^K$ represents the state space of the underlying MDP with states $\vec{x}$ given by all possible realizations of the spectrum occupancy vector as given by (\ref{3}), $\mathcal{A}$ represents the action space of the agent, given by all $\left(\begin{array}{c}K\\\kappa\end{array}\right)$ possible combinations in which the $\kappa$ spectrum bands are chosen to be sensed out of $K$ at any given time index; and $\mathcal{Y}$ represents the observation space of the agent based on the Observation Model outlined in the previous subsection. The run-time or interaction time of the agent is quantized into discrete time indices. At the beginning of each time index $i$, the agent selects $\kappa$ spectrum bands out of $K$, thus defining the sensing set $\mathcal K_i$, performs spectrum sensing  on these spectrum bands, observes $\vec{y} \in \mathcal{Y}$, and updates its belief $\forall \vec{x}'$ as
+The agent's limited observational capabilities coupled with its noisy observations \add{and limited sensing capabilities} result in an increased level of uncertainty at the agent's end about the occupancy state of the spectrum under consideration and the exact effect of executing an action on the radio environment. The transition model of the underlying MDP as described in the previous subsection \add{(transition model of $\vec{B}(i)$)}, is denoted by $A$ and is learnt by the agent by interacting with the radio environment. The emission model \add{is denoted as and} $B$\nm{change notation, you use $B$ already for occuancy vector} is given by (\ref{9}), with $f(Y_k(i)|B_k(i))$ given by \eqref{10}. We model the POMDP as a tuple \nm{dont change notation, keep using $B$ for your states}
+ $(\add{\mathcal B},\mathcal{A},\mathcal{Y},A,B)$ where $\add{\mathcal{B}}\equiv\{0,1\}^K$ represents the state space of the underlying MDP with states \sst{$\vec{x}$}\add{$\vec{B}$} given by all possible realizations of the spectrum occupancy vector as given by (\ref{3}), $\mathcal{A}$ represents the action space of the agent, given by all $\left(\begin{array}{c}K\\\kappa\end{array}\right)$ possible combinations in which the $\kappa$ spectrum bands are chosen to be sensed out of $K$ at any given time index; and $\mathcal{Y}$ represents the observation space of the agent based on the \sst{Observation Model}\add{observation model}\nm{no need for capitals} outlined in the previous subsection. \sst{The run-time or interaction time of the agent is quantized into discrete time indices.} \nm{confusing,, yu have already introduced $i$}
+ At the beginning of each time index $i$, the agent selects $\kappa$ spectrum bands out of $K$, thus defining the sensing set $\mathcal K_i$, performs spectrum sensing  on these spectrum bands, observes \sst{$\vec{y} \in \mathcal{Y}$}\add{$ \vec{Y}(i)\in \mathcal{Y}$}\nm{keep consistent with the notation}, and updates its belief 
+ \add{of the current spectrum occupancy $ \vec{B}(i)$ as}
+\sst{ $\forall \vec{x}'$} as
 \begin{equation}\label{11}
     \begin{aligned}
-        b_a^{\vec{y}}(\vec{x}')\ =\ \mathbb{P}(\vec{x}'|\vec{y},a,\vec{b})\ =\ \frac{\mathbb{P}(\vec{y}|\vec{x}',a)}{\mathbb{P}(\vec{y}|a,\vec{b})}\sum_{\vec{x} \in \mathcal{X}}\mathbb{P}(\vec{x}'|\vec{x},a)b(\vec{x}),
+        b_a^{\add{\vec{Y}(i)}}(\add{\vec{b}}')\ =\ \mathbb{P}(\add{\vec{B}(i)=\vec{b}}'|\add{\vec{Y}(i)},\add{\mathcal K_i,}a\nm{what is this?},\add{b}\nm{no need for vec})\ =\ 
+        \nm{fix:}\frac{\mathbb{P}(\vec{y}|\vec{x}',a)}{\mathbb{P}(\vec{y}|a,\vec{b})}\sum_{\vec{x} \in \mathcal{X}}\mathbb{P}(\vec{x}'|\vec{x},a)b(\vec{x}),
     \end{aligned}
 \end{equation}
-where, $\mathbb{P}(\vec{y}|a,\vec{b})$ is the normalization constant, $\vec{b} \in \mathcal{B}$ represents the belief vector of the agent, i.e. a probability distribution over all states, in the previous time-step, $b(\vec{x}) \in \vec{b}$ is termed the belief and it represents the degree of certainty assigned to world state $\vec{x} \in \mathcal{X}$ by the belief vector $\vec{b}$.
+\nm{fix notation as suggested}
+where, $\mathbb{P}(\vec{y}|a,\vec{b})$ is \sst{the normalization constant}\add{given by \eqref{9}}, \sst{$\vec{b} \in \mathcal{B}$} \add{$b \in \mathcal{B}$} represents the belief \sst{vector} of the agent \add{prior to the observation $\vec{Y}(i)$}, i.e. a probability distribution over all states, in the previous time-step\nm{previous time step or current one?}, $b(\vec{x}) \in \vec{b}$ is termed the belief and it represents the degree of certainty assigned to world state $\vec{x} \in \mathcal{X}$ by the belief vector $\vec{b}$.
 Considering sub-band $k$, the set of available actions to the agent at time index $i$ is given by
 \begin{equation}\label{12}
     a_k(i)\ =\ 
@@ -167,14 +191,17 @@ Considering sub-band $k$, the set of available actions to the agent at time inde
     \end{cases}
 \end{equation}
 Based on the number of truly idle sub-bands found accounting for the throughput maximization aspect of our end-goal and a penalty for missed detections accounting for the incumbent non-interference constraint, the reward to the agent is modelled as
+\nm{you still did not explain how you decide which one are occupied and which ones are not based on the belief. That would be your spectrum access. Given the belief, how do you make that decision?}
+\add{Given the belief $b_i$, the SU uses a threshold based mechanism to access the spectrum: if $\mathbb P(B_k(i)=0|b_i)>\tau$, then the $k$th spectrum band is detected as idle and it is accessed by the SU; otherwise, it is detected as occupied and is left unused. Therefore, the probability of false alarm and misdetection are given by .....
+}\nm{fill the rest}
 \begin{equation}\label{13}
     R(\vec{x}(i),a(i))\ =\ (1 - P_{FA}(i)) + \lambda P_{MD}(i),
 \end{equation}
-where, $P_{FA}(i)$ represents the False Alarm Probability across all channels at time index $i$, $P_{MD}(i)$ represents the Missed Detection Probability across all channels at time index $i$, and $\lambda < 0$ represent the cost term penalizing the agent for missed detections, i.e. interference with the incumbent. The action policy of the agent $\pi: \mathcal{B} \rightarrow \mathcal{A}$ maps the belief vectors $\vec{b} \in \mathcal{B}$ to actions $a \in \mathcal{A}$ and is characterized by a Value Function
+where, $P_{FA}(i)$ represents the False Alarm Probability\nm{no need to capitalize} across all channels\nm{how do you deinfe PFA and PMD? How do you compute them? Why do you assume they are the same across all channels?} at time index $i$, $P_{MD}(i)$ represents the Missed Detection Probability across all channels at time index $i$, and $\lambda < 0$ represent the cost term penalizing the agent for missed detections, i.e. interference with the incumbent. The action policy of the agent $\pi: \mathcal{B} \rightarrow \mathcal{A}$ maps the belief vectors $\vec{b} \in \mathcal{B}$ to actions $a \in \mathcal{A}$ and is characterized by a Value Function
 \begin{equation}\label{14}
     V^{\pi}(\vec{b})\ =\ \mathbb{E}_{\pi}\Big[\sum_{i=0}^{\infty}\ \gamma^i R(\vec{b}_i,\ \pi(\vec{b}_i))|\vec{b}_0=\vec{b}\Big],
 \end{equation}
-where, $0 < \gamma < 1$ is the discount factor, $\pi(\vec{b}_i)$ is the action taken by the agent at time index $i$ under policy $\pi$, and $\vec{b}_0$ is the initial belief vector. The optimal policy $\pi^*$ specifies the optimal action to take at the current time index assuming that the agent behaves optimally at future time indices as well. It is evident from equation (\ref{14}) that we have an infinite-horizon discounted reward problem formulation and in order to solve for the optimal policy we need to solve the modified Bellman equation given as
+where, $0 < \gamma < 1$ is the discount factor, $\pi(\vec{b}_i)$ is the action taken by the agent at time index $i$ under policy $\pi$, and $\vec{b}_0$ is the initial belief vector. The optimal policy $\pi^*$ specifies the optimal action to take at the current time index assuming that the agent behaves optimally at future time indices as well. It is evident from equation (\ref{14}) that we have an infinite-horizon discounted reward problem formulation and in order to solve for the optimal policy we need to solve the modified\nm{why modified?} Bellman equation given as
 \begin{equation}\label{15}
     V^*(\vec{b})\ =\ \max_{a \in \mathcal{A}}\Big[\sum_{\vec{x} \in \mathcal{X}}R(\vec{x},a)b(\vec{x}) + \gamma \sum_{\vec{y} \in \mathcal{Y}}\mathbb{P}(\vec{y}|a,\vec{b})V^*(\vec{b}_a^{\vec{y}})\Big],
 \end{equation}

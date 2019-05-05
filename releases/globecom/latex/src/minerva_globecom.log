@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2017.3.9)  22 APR 2019 16:16
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2017.3.9)  5 MAY 2019 11:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -780,14 +780,7 @@ Document Style - pseudocode environments for use with the `algorithmicx' style
 \c@theorem=\count147
 \c@assumption=\count148
 \c@remark=\count149
- (./minerva_globecom.aux
-
-LaTeX Warning: Label `3' multiply defined.
-
-
-LaTeX Warning: Label `8' multiply defined.
-
-)
+ (./minerva_globecom.aux)
 \openout1 = `minerva_globecom.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 84.
@@ -862,57 +855,65 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for U+msa on input line 107.
+LaTeX Font Info:    Try loading font information for U+msa on input line 103.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 107.
+LaTeX Font Info:    Try loading font information for U+msb on input line 103.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
-] [2]
+]
+Overfull \hbox (2.94278pt too wide) in paragraph at lines 144--144
+[] 
+ []
+
+
+Overfull \hbox (297.96251pt too wide) detected at line 182
+[] []
+ []
+
+[2]
 No file minerva_globecom.bbl.
 [3
 
-] (./minerva_globecom.aux)
-
-LaTeX Warning: There were multiply-defined labels.
-
- ) 
+] (./minerva_globecom.aux) ) 
 Here is how much of TeX's memory you used:
- 15375 strings out of 493027
- 288928 string characters out of 6134070
- 355930 words of memory out of 5000000
- 18550 multiletter control sequences out of 15000+600000
+ 15376 strings out of 493027
+ 288932 string characters out of 6134070
+ 346898 words of memory out of 5000000
+ 18551 multiletter control sequences out of 15000+600000
  118470 words of font info for 143 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,12n,54p,955b,237s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
-xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
-live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive
-/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2
-015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/201
-5/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2015/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2015/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2015/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/
-fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-d
-ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/
-type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw
-/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utm
-ri8a.pfb>
-Output written on minerva_globecom.pdf (3 pages, 193023 bytes).
+ 55i,12n,54p,998b,315s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips
+/base/8r.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmex10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mmi10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+mi5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
+6.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.
+pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pf
+b></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></u
+sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/
+local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loc
+al/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loca
+l/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/
+texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/te
+xlive/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/loca
+l/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/
+2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texm
+f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fon
+ts/type1/urw/times/utmri8a.pfb>
+Output written on minerva_globecom.pdf (3 pages, 211764 bytes).
 PDF statistics:
- 86 PDF objects out of 1000 (max. 8388607)
- 63 compressed objects within 1 object stream
+ 94 PDF objects out of 1000 (max. 8388607)
+ 69 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

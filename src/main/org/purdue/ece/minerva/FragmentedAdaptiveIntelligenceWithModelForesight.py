@@ -252,7 +252,7 @@ class Channel(object):
                     mu_channel_impulse_response, std_channel_impulse_response, self.number_of_sampling_rounds)
         return channel_impulse_response_samples
 
-    # Generate the Complex AWGN samples
+    # Generate the AWGN samples
     # Signed off by bkeshava on 01-May-2019
     def get_noise(self):
         noise_samples = []

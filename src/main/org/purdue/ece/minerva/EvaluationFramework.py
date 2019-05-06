@@ -7,8 +7,8 @@
 # a. Viterbi algorithm with complete observations
 # b. Viterbi algorithm with incomplete observations (use different channel selection heuristics - 1-gap/2-gap...)
 # c. The correlation coefficient based algorithm in the state-of-the-art
-# d. PERSEUS algorithm with model foresight: 6 channels per process: 18 channels in the spectrum cumulatively
-# e. PERSEUS algorithm with concurrent model learning: 6 channels per process: 18 channels in the spectrum cumulatively
+# d. PERSEUS algorithm with concurrent model learning: 6 channels per process: 18 channels in the spectrum cumulatively
+# e. PERSEUS algorithm with model foresight: 6 channels per process: 18 channels in the spectrum cumulatively
 # f. PERSEUS algorithm with model foresight: 6 channels per process: 18 channels in the spectrum cumulatively
 # ...and simplified belief update procedure (up to a Hamming distance of 2 in each process - 22 allowed transitions)
 # g. Independent channels with complete information - Use Neyman-Pearson detection to estimate the occupancy states
@@ -23,8 +23,10 @@ import warnings
 import functools
 import itertools
 import scipy.stats
+import multiprocessing
 from enum import Enum
 from collections import namedtuple
+from matplotlib import pyplot as plt
 
 
 # This is a decorator which can be used to mark functions as deprecated.
@@ -420,6 +422,17 @@ class SecondaryUser(object):
         # The observation_samples member is a kxt matrix
         return observation_samples
 
+    # The observation procedure required for the Neyman-Pearson detector
+    def make_sampled_observations_across_all_episodes(self):
+        observation_samples = []
+        for band in range(0, self.number_of_channels):
+            obs_per_band = list()
+            for episode in range(0, self.number_of_episodes):
+                obs_per_band.append((self.channel.impulse_response[episode][band] *
+                                     self.true_pu_occupancy_states[band][episode]) + self.channel.noise[episode][band])
+            observation_samples.append(obs_per_band)
+        return observation_samples
+
     # Termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] SecondaryUser Termination: Tearing things down...')
@@ -606,7 +619,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
     # Initialization Sequence
     def __init__(self, _number_of_channels, _number_of_episodes, _emission_evaluator, _true_pu_occupancy_states,
                  _observation_samples, _spatial_start_probabilities, _temporal_start_probabilities,
-                 _spatial_transition_probabilities_matrix, _temporal_transition_probabilities_matrix, _mu):
+                 _spatial_transition_probabilities_matrix, _temporal_transition_probabilities_matrix, _mu, _agent_id):
         print('[INFO] DoubleMarkovChainViterbiAlgorithm Initialization: Bringing things up ...')
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
@@ -627,6 +640,8 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         self.transition_probabilities_matrix = _spatial_transition_probabilities_matrix
         # The missed detections penalty term
         self.mu = _mu
+        # The agent ID
+        self.agent_id = _agent_id
 
     # Get the start probabilities from the named tuple - a simple getter utility method exclusive to this class
     def get_start_probabilities(self, state):
@@ -702,7 +717,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                 occupancies += 1
                 if estimated_state_vector[channel] == 0:
                     missed_detections += 1
-        return ((lambda: false_alarms / idle_count, lambda: 0)[idle_count == 0]()) + (self.mu * (
+        return ((lambda: (1 - (false_alarms / idle_count)), lambda: 1)[idle_count == 0]()) + (self.mu * (
             (lambda: missed_detections / occupancies, lambda: 0)[occupancies == 0]()))
 
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
@@ -859,7 +874,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         for time_index in range(0, self.number_of_episodes):
             utilities.append(self.get_episodic_utility([estimated_states[k][time_index] for k in range(
                 0, self.number_of_channels)], time_index))
-        return utilities
+        return {'id': self.agent_id, 'utilities': utilities}
 
     # Get enumeration field value from name
     @staticmethod
@@ -1337,7 +1352,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
     # Initialization sequence
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
-                 _limitation, _confidence_bound, _gamma):
+                 _limitation, _confidence_bound, _gamma, _agent_id):
         print('[INFO] AdaptiveIntelligenceWithModelForesight Initialization: Bringing things up...')
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
@@ -1416,6 +1431,8 @@ class AdaptiveIntelligenceWithModelForesight(object):
         for state in self.all_possible_states:
             if sum(state) == self.limitation:
                 self.all_possible_actions.append(state)
+        # The agent id
+        self.agent_id = _agent_id
 
     # Get Emission Probabilities for the Belief Update sequence
     def get_emission_probability(self, observations, state):
@@ -1750,7 +1767,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
             self.state_estimator.observation_samples = observation_samples
             estimated_states = self.state_estimator.estimate_pu_occupancy_states()
             optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
-        return optimal_utilities
+        return {'id': self.agent_id, 'utilities': optimal_utilities}
 
     # Termination sequence
     # Signed off by bkeshava on 01-May-2019
@@ -1778,7 +1795,7 @@ class ModelFreeAdaptiveIntelligence(object):
     # Initialization sequence
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
-                 _limitation, _confidence_bound, _gamma, _epsilon):
+                 _limitation, _confidence_bound, _gamma, _epsilon, _agent_id):
         print('[INFO] ModelFreeAdaptiveIntelligence Initialization: Bringing things up...')
         # The Utility object
         self.util = Util()
@@ -1869,6 +1886,8 @@ class ModelFreeAdaptiveIntelligence(object):
         for state in self.all_possible_states:
             if sum(state) == self.limitation:
                 self.all_possible_actions.append(state)
+        # The agent id
+        self.agent_id = _agent_id
 
     # Get Emission Probabilities for the Belief Update sequence
     def get_emission_probability(self, observations, state):
@@ -2224,7 +2243,7 @@ class ModelFreeAdaptiveIntelligence(object):
             self.state_estimator.observation_samples = observation_samples
             estimated_states = self.state_estimator.estimate_pu_occupancy_states()
             optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
-        return optimal_utilities
+        return {'id': self.agent_id, 'utilities': optimal_utilities}
 
     # Termination sequence
     # Signed off by bkeshava on 01-May-2019
@@ -2254,7 +2273,7 @@ class AdaptiveIntelligenceWithModelForesightSimplified(object):
     # Initialization sequence
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
-                 _limitation, _confidence_bound, _gamma, _transition_threshold):
+                 _limitation, _confidence_bound, _gamma, _transition_threshold, _agent_id):
         print('[INFO] AdaptiveIntelligenceWithModelForesightSimplified Initialization: Bringing things up...')
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
@@ -2337,6 +2356,8 @@ class AdaptiveIntelligenceWithModelForesightSimplified(object):
                 self.all_possible_actions.append(state)
         # Maximum number of channel changes allowed
         self.max_allowed_transitions = math.ceil(self.transition_threshold * self.number_of_channels)
+        # The agent id
+        self.agent_id = _agent_id
 
     # Get Emission Probabilities for the Belief Update sequence
     def get_emission_probability(self, observations, state):
@@ -2689,12 +2710,81 @@ class AdaptiveIntelligenceWithModelForesightSimplified(object):
             self.state_estimator.observation_samples = observation_samples
             estimated_states = self.state_estimator.estimate_pu_occupancy_states()
             optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
-        return optimal_utilities
+        return {'id': self.agent_id, 'utilities': optimal_utilities}
 
     # Termination sequence
     # Signed off by bkeshava on 01-May-2019
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] AdaptiveIntelligenceWithModelForesightSimplified Termination: Tearing things down...')
+
+
+# A Neyman-Pearson Detector assuming independence among channels
+# The channels are actually Markov correlated
+# But, this class helps me evaluate the performance if I assume independence
+# The signal model is s[n] = A (occupancy)
+# The observation model is x[n] = w[n], null hypothesis, and
+#                          x[n] = A + w[n], alternative hypothesis
+class NeymanPearsonDetector(object):
+
+    # The initialization sequence
+    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _false_alarm_probability,
+                 _noise_mean, _noise_variance, _observations, _true_pu_occupancy_states, _penalty, _agent_id):
+        print('[INFO] NeymanPearsonDetector Initialization: Bringing things up...')
+        # The number of channels in the discretized spectrum of interest
+        self.number_of_channels = _number_of_channels
+        # The number of sampling rounds per episode
+        self.number_of_sampling_rounds = _number_of_sampling_rounds
+        # The number of episodes of interaction of this agent with the radio environment
+        self.number_of_episodes = _number_of_episodes
+        # The false alarm probability constraint
+        self.false_alarm_probability = _false_alarm_probability
+        # The mean of the AWGN samples
+        self.noise_mean = _noise_mean
+        if self.noise_mean is not 0:
+            print('[WARN] NeymanPearsonDetector Initialization: The observation model assumes zero mean additive white '
+                  'Gaussian noise samples...')
+            self.noise_mean = 0
+        # The variance of the AWGN samples
+        self.noise_variance = _noise_variance
+        # The observations made by the Secondary User
+        self.observations = _observations
+        # The true PU occupancy states - Markov correlation is left unexploited here...
+        self.true_pu_occupancy_states = _true_pu_occupancy_states
+        # The threshold for the Likelihood Ratio Test (LRT)
+        self.threshold = math.sqrt(self.noise_variance / self.number_of_sampling_rounds) * scipy.stats.norm.ppf(
+            1 - self.false_alarm_probability, loc=self.noise_mean, scale=math.sqrt(self.noise_variance))
+        # The penalty for missed detections
+        self.penalty = _penalty
+        # The agent id
+        self.agent_id = _agent_id
+
+    # Detect occupancy across episodes by averaging out noisy observations over numerous sampling rounds
+    # Likelihood Ratio Test (LRT) based on a test statistic with the threshold determined from the P_FA constraint
+    def get_utilities(self):
+        utilities = []
+        for episode in range(0, self.number_of_episodes):
+            estimated_states = []
+            occupancies = 0
+            idle_count = 0
+            false_alarms = 0
+            missed_detections = 0
+            for channel in range(0, self.number_of_channels):
+                test_statistic = sum(self.observations[channel][episode]) / self.number_of_sampling_rounds
+                estimated_states[channel] = (lambda: 0, lambda: 1)[test_statistic >= self.threshold]()
+                if self.true_pu_occupancy_states[channel][episode] == 1:
+                    occupancies += 1
+                    if estimated_states[channel] == 0:
+                        missed_detections += 1
+                if self.true_pu_occupancy_states[channel][episode] == 0:
+                    idle_count += 1
+                    if estimated_states[channel] == 1:
+                        false_alarms += 1
+            episodic_false_alarm_probability = (lambda: 0, lambda: false_alarms/idle_count)[idle_count is not 0]()
+            episodic_missed_detection_probability = (lambda: 0, lambda: missed_detections/occupancies)[
+                occupancies is not 0]()
+            utilities.append((1 - episodic_false_alarm_probability) +
+                             (self.penalty * episodic_missed_detection_probability))
+        return {'id': self.agent_id, 'utilities': utilities}
 
 
 # This class encapsulates the complete evaluation framework detailed in the header of this script.
@@ -2706,7 +2796,7 @@ class EvaluationFramework(object):
     NUMBER_OF_SAMPLING_ROUNDS = 250
 
     # The number of periods of interaction of the agent with the radio environment
-    NUMBER_OF_EPISODES = 1000
+    NUMBER_OF_EPISODES = 100
 
     # The mean of the AWGN samples
     NOISE_MEAN = 0
@@ -2722,6 +2812,9 @@ class EvaluationFramework(object):
 
     # The Secondary User's sensing limitation w.r.t the number of channels it can sense simultaneously in an episode
     SPATIAL_SENSING_LIMITATION = 9
+
+    # Limitation per fragment
+    FRAGMENTED_SPATIAL_SENSING_LIMITATION = 3
 
     # The exploration period of the PERSEUS algorithm
     EXPLORATION_PERIOD = 100
@@ -2742,6 +2835,18 @@ class EvaluationFramework(object):
     # The choice of heuristic for the constrained non-POMDP agent
     HEURISTIC_CHOICE = 3
 
+    # The penalty for missed detections
+    PENALTY = -1
+
+    # The convergence threshold for the parameter estimation algorithm
+    CONVERGENCE_THRESHOLD = 0.00001
+
+    # The constraint on false alarm probability for the Neyman-Pearson detector
+    FALSE_ALARM_PROBABILITY_CONSTRAINT = 0.7
+
+    # The number of agents being evaluated in this script
+    NUMBER_OF_AGENTS = 7
+
     # Setup the Markov Chain
     # Signed off by bkeshava on 01-May-2019
     @staticmethod
@@ -2752,6 +2857,96 @@ class EvaluationFramework(object):
         transient_markov_chain_object.set_start_probability_parameter(_pi)
         transient_markov_chain_object.set_transition_probability_parameter(_p)
         return transient_markov_chain_object
+
+    # A worker bee with task delegations based on the job-id
+    def worker(self, job_id):
+        if job_id == 0:
+            print('[INFO] EvaluationFramework worker: Starting job thread for the unconstrained non-POMDP agent!')
+            # The unconstrained global observation samples
+            unconstrained_global_observations = self.secondary_user.observe_everything_unconstrained()
+            # The unconstrained double Markov chain state estimator
+            unconstrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
+                self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
+                self.primary_user.occupancy_behavior_collection, unconstrained_global_observations,
+                self.spatial_start_probabilities, self.temporal_start_probabilities,
+                self.spatial_transition_probability_matrix,
+                self.temporal_transition_probability_matrix, self.PENALTY, job_id)
+            return unconstrained_non_pomdp_agent.estimate_pu_occupancy_states()
+        elif job_id == 1:
+            print('[INFO] EvaluationFramework worker: Starting job thread for the constrained POMDP agent!')
+            # The channel selection heuristic generator
+            # Setting the number of iterations for random sensing to 1
+            # I don't want to employ random sensing just yet...
+            # Let's stick to patterned heuristics
+            channel_selection_heuristic_generator = ChannelSelectionStrategyGenerator(self.NUMBER_OF_CHANNELS, 1)
+            # Get the channel sensing strategy
+            sensing_heuristic = channel_selection_heuristic_generator.uniform_sensing()[self.HEURISTIC_CHOICE]
+            # The constrained channel sensing heuristics based observation samples
+            constrained_global_observations = self.secondary_user.observe_everything_with_spatial_constraints(
+                sensing_heuristic)
+            # The constrained double Markov chain state estimator
+            constrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
+                self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
+                self.primary_user.occupancy_behavior_collection, constrained_global_observations,
+                self.spatial_start_probabilities, self.temporal_start_probabilities,
+                self.spatial_transition_probability_matrix,
+                self.temporal_transition_probability_matrix, self.PENALTY, job_id)
+            return constrained_non_pomdp_agent.estimate_pu_occupancy_states()
+        elif job_id == 2:
+            print('[INFO] EvaluationFramework worker: Starting job thread for the channel correlation based clustering '
+                  'and MAP estimation algorithm in the state-of-the-art!')
+            return NotImplementedError('This agent is yet to be implemented. Please check back later!')
+        elif job_id == 3:
+            print('[INFO] EvaluationFramework worker: Starting job thread for the model-free PERSEUS POMDP agent!')
+            model_free_perseus = ModelFreeAdaptiveIntelligence(self.FRAGMENT_SIZE, self.NUMBER_OF_SAMPLING_ROUNDS,
+                                                               self.NUMBER_OF_EPISODES, self.EXPLORATION_PERIOD,
+                                                               self.NOISE_MEAN, self.NOISE_VARIANCE,
+                                                               self.IMPULSE_RESPONSE_MEAN,
+                                                               self.IMPULSE_RESPONSE_VARIANCE, self.PENALTY,
+                                                               self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
+                                                               self.CONFIDENCE_BOUND, self.DISCOUNT_FACTOR,
+                                                               self.CONVERGENCE_THRESHOLD, job_id)
+            return model_free_perseus.run_perseus()
+        elif job_id == 4:
+            print('[INFO] EvaluationFramework worker: Starting job thread for the PERSEUS POMDP agent with model '
+                  'foresight')
+            perseus_with_model_foresight = AdaptiveIntelligenceWithModelForesight(self.FRAGMENT_SIZE,
+                                                                                  self.NUMBER_OF_SAMPLING_ROUNDS,
+                                                                                  self.NUMBER_OF_EPISODES,
+                                                                                  self.EXPLORATION_PERIOD,
+                                                                                  self.NOISE_MEAN, self.NOISE_VARIANCE,
+                                                                                  self.IMPULSE_RESPONSE_MEAN,
+                                                                                  self.IMPULSE_RESPONSE_VARIANCE,
+                                                                                  self.PENALTY,
+                                                                                  self.
+                                                                                  FRAGMENTED_SPATIAL_SENSING_LIMITATION,
+                                                                                  self.CONFIDENCE_BOUND,
+                                                                                  self.DISCOUNT_FACTOR, job_id)
+            return perseus_with_model_foresight.run_perseus()
+        elif job_id == 5:
+            print('[INFO] EvaluationFramework worker: Starting job thread for the PERSEUS POMDP agent with model '
+                  'foresight and belief update simplification')
+            perseus_with_model_foresight_simplified = AdaptiveIntelligenceWithModelForesightSimplified(
+                self.FRAGMENT_SIZE, self.NUMBER_OF_SAMPLING_ROUNDS, self.NUMBER_OF_EPISODES,
+                self.EXPLORATION_PERIOD, self.NOISE_MEAN, self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_MEAN,
+                self.IMPULSE_RESPONSE_VARIANCE, self.PENALTY, self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
+                self.CONFIDENCE_BOUND, self.DISCOUNT_FACTOR, self.TRANSITION_THRESHOLD, job_id)
+            return perseus_with_model_foresight_simplified.run_perseus()
+        elif job_id == 6:
+            print('[INFO] EvaluationFramework worker: Starting job thread for the Neyman-Pearson detector!')
+            sampled_observations_across_all_episodes = self.secondary_user.\
+                make_sampled_observations_across_all_episodes()
+            neyman_pearson_detector = NeymanPearsonDetector(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
+                                                            self.NUMBER_OF_EPISODES,
+                                                            self.FALSE_ALARM_PROBABILITY_CONSTRAINT,
+                                                            self.NOISE_MEAN, self.NOISE_VARIANCE,
+                                                            sampled_observations_across_all_episodes,
+                                                            self.primary_user.occupancy_behavior_collection,
+                                                            self.PENALTY, job_id)
+            return neyman_pearson_detector.get_utilities()
+        else:
+            print('[INFO] EvaluationFramework worker: Invalid job_id - {}'.format(job_id))
+        return None
 
     # Initialize the Evaluation Process
     # Context Manager method for Instance Creation
@@ -2784,77 +2979,59 @@ class EvaluationFramework(object):
                                         self.temporal_markov_chain, self.util)
         # Simulate the Primary User behavior
         self.primary_user.simulate_occupancy_behavior()
-        # The channel selection heuristic generator
-        # Setting the number of iterations for random sensing to 1
-        # I don't want to employ random sensing just yet...
-        # Let's stick to patterned heuristics
-        self.channel_selection_heuristic_generator = ChannelSelectionStrategyGenerator(self.NUMBER_OF_CHANNELS, 1)
-        # Get the channel sensing strategy
-        self.sensing_heuristic = self.channel_selection_heuristic_generator.uniform_sensing()[self.HEURISTIC_CHOICE]
+
         # The Secondary User
         self.secondary_user = SecondaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
                                             self.NUMBER_OF_EPISODES, self.channel,
                                             self.primary_user.occupancy_behavior_collection,
                                             self.SPATIAL_SENSING_LIMITATION)
-        # The unconstrained global observation samples
-        self.unconstrained_global_observations = self.secondary_user.observe_everything_unconstrained()
-        # The constrained channel sensing heuristics based observation samples
-        self.constrained_global_observations = self.secondary_user.observe_everything_with_spatial_constraints(
-            self.sensing_heuristic)
         # The emission evaluator
         self.emission_evaluator = EmissionEvaluator(self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_VARIANCE)
-        # The unconstrained double Markov chain state estimator
-        self.unconstrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
-            self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
-            self.primary_user.occupancy_behavior_collection, self.unconstrained_global_observations,
-            self.spatial_start_probabilities, self.temporal_start_probabilities,
-            self.spatial_transition_probability_matrix, self.temporal_transition_probability_matrix)
-        # The constrained double Markov chain state estimator
-        self.constrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
-            self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
-            self.primary_user.occupancy_behavior_collection, self.constrained_global_observations,
-            self.spatial_start_probabilities, self.temporal_start_probabilities,
-            self.spatial_transition_probability_matrix, self.temporal_transition_probability_matrix)
+        # Colors
+        self.colors = ['b', 'r', 'y', 'k', 'g', 'c', 'm']
+        # Job-ID: Label Map
+        self.job_id_map = {0: 'Unconstrained Non-POMDP Agent',
+                           1: 'Constrained POMDP Agent',
+                           2: 'State-of-the-art',
+                           3: 'Model-Free PERSEUS',
+                           4: 'PERSEUS with Model-Foresight',
+                           5: 'PERSEUS with Model-Foresight and Belief-Update Simplification',
+                           6: 'Neyman-Pearson Detector with Independence Assumptions'}
 
-    # Enter the Evaluation Process
-    # Context Manager method called after Instance Creation
-    def __enter__(self):
-        print('[INFO] EvaluationFramework Setup: Entering the evaluation process...')
-
-    # MAP Estimation assuming a Markovian Correlation across the channels and across the episodes
-    # The SU can sense all the channels - no sensing limitations [complete observations]
-    @staticmethod
-    def evaluate_unconstrained_non_pomdp():
-        return None
-
-    # MAP Estimation assuming a Markovian Correlation across the channels and across the episodes
-    # Sensing limitations are imposed - use channel select
-    @staticmethod
-    def evaluate_constrained_heuristic_non_pomdp():
-        return None
-
-    @staticmethod
-    def evaluate_state_of_the_art():
-        return None
-
-    @staticmethod
-    def evaluate_precog_perseus():
-        return None
-
-    @staticmethod
-    def evaluate_myopic_concurrent_perseus():
-        return None
-
-    @staticmethod
-    def evaluate_myopic_concurrent_simplified_perseus():
-        return None
-
-    @staticmethod
-    def evaluate_independent_neyman_pearson():
-        return None
+    # Start the evaluation
+    def evaluate(self):
+        print('[INFO] EvaluationFramework evaluate: Beginning the evaluation of the Minerva framework!')
+        # The x-axis corresponds to the episodes of interaction
+        x_axis = [k + 1 for k in range(0, self.NUMBER_OF_EPISODES)]
+        # The job_ids/tokens for the various agents
+        job_ids = [k for k in range(0, self.NUMBER_OF_AGENTS)]
+        # Create a job pool for all the agents under evaluation
+        pool = multiprocessing.Pool(self.NUMBER_OF_AGENTS)
+        # Run the workers and gather the results
+        result_collection = pool.map(self.worker, (job_id for job_id in job_ids))
+        # Close the job pool
+        pool.close()
+        # Join with the main thread
+        pool.join()
+        # The color index
+        color_index = 0
+        # The figure
+        fig, ax = plt.subplots()
+        for result in result_collection:
+            color_index += 1
+            for job_id, utilities in result.items():
+                if job_id == 3 or job_id == 4 or job_id == 5:
+                    # Joining the utilities of the fragments for the POMDP agents
+                    utilities = utilities * math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE)
+                ax.plot(x_axis, utilities, linewidth=1.0, marker='o', color=self.colors[color_index],
+                        label=self.job_id_map[job_id])
+        fig.suptitle('Evaluation of the obtained utilities per episode for various agents', fontsize=14)
+        ax.set_xlabel('Episode Number -->', fontsize=14)
+        ax.set_ylabel('Obtained Episodic Utility -->', fontsize=14)
+        ax.legend()
+        plt.show()
 
     # Exit the Evaluation Process
     # Context Manager method for tearing things down
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] EvaluationFramework Termination: Tearing things down...')
-

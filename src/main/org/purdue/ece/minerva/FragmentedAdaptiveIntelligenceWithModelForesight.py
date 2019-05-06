@@ -205,7 +205,7 @@ class Util(object):
         print('[INFO] Util Termination: Tearing things down...')
 
 
-# This entity encapsulates the Channel object - simulates the Channel, i.e. Complex AWGN and Complex Impulse Response
+# This entity encapsulates the Channel object - simulates the Channel
 # Signed off by bkeshava on 01-May-2019
 class Channel(object):
 
@@ -217,14 +217,14 @@ class Channel(object):
         # Noise Statistics
         self.noise_mean = _noise_mean
         if self.noise_mean is not 0:
-            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Complex, Additive, White, Gaussian '
+            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Additive, White, Gaussian '
                   'Noise...')
             self.noise_mean = 0
         self.noise_variance = _noise_variance
         # Channel Impulse Response Statistics
         self.impulse_response_mean = _impulse_response_mean
         if self.impulse_response_mean is not 0:
-            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Complex, Gaussian Impulse Response...')
+            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Gaussian Impulse Response...')
             self.impulse_response_mean = 0
         self.impulse_response_variance = _impulse_response_variance
         # Number of channels in the discretized spectrum of interest
@@ -235,7 +235,7 @@ class Channel(object):
         self.number_of_episodes = _number_of_episodes
         # Channel Impulse Response used in the Observation Model
         self.impulse_response = self.get_impulse_response()
-        # The Complex AWGN used in the Observation Model
+        # The AWGN used in the Observation Model
         self.noise = self.get_noise()
 
     # Generate the Channel Impulse Response samples
@@ -425,9 +425,9 @@ class EmissionEvaluator(object):
     # Signed off by bkeshava on 01-May-2019
     def __init__(self, _impulse_response_variance, _noise_variance):
         print('[INFO] EmissionEvaluator Initialization: Bringing things up...')
-        # Variance of the Channel Impulse Response
+        # Variance of the Channel Impulse Response samples
         self.impulse_response_variance = _impulse_response_variance
-        # Variance of the Complex AWGN
+        # Variance of the AWGN samples
         self.noise_variance = _noise_variance
 
     # Get the Emission Probabilities -> P(y|x)

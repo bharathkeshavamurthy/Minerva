@@ -193,7 +193,7 @@ class Util(object):
         print('[INFO] Util Termination: Tearing things down...')
 
 
-# This entity encapsulates the Channel object - simulates the Channel, i.e. Complex AWGN and Complex Impulse Response
+# This entity encapsulates the Channel object - simulates the Channel
 class Channel(object):
 
     # Initialization sequence
@@ -203,14 +203,14 @@ class Channel(object):
         # Noise Statistics
         self.noise_mean = _noise_mean
         if self.noise_mean is not 0:
-            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Complex, Additive, White, Gaussian '
+            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Additive, White, Gaussian '
                   'Noise...')
             self.noise_mean = 0
         self.noise_variance = _noise_variance
         # Channel Impulse Response Statistics
         self.impulse_response_mean = _impulse_response_mean
         if self.impulse_response_mean is not 0:
-            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Complex, Gaussian Impulse Response...')
+            print('[WARN] Channel Initialization: The system assumes Zero-Mean, Gaussian Impulse Response...')
             self.impulse_response_mean = 0
         self.impulse_response_variance = _impulse_response_variance
         # Number of channels in the discretized spectrum of interest
@@ -221,7 +221,7 @@ class Channel(object):
         self.number_of_episodes = _number_of_episodes
         # Channel Impulse Response used in the Observation Model
         self.impulse_response = self.get_impulse_response()
-        # The Complex AWGN used in the Observation Model
+        # The AWGN used in the Observation Model
         self.noise = self.get_noise()
 
     # Generate the Channel Impulse Response samples
@@ -415,9 +415,9 @@ class SecondaryUser(object):
         for band in range(0, self.number_of_channels):
             obs_per_band = [k - k for k in range(0, self.number_of_sampling_rounds)]
             if channel_selection_strategy[band] == 1:
-                obs_per_band = (list((numpy.array(
+                obs_per_band = list((numpy.array(
                     self.channel.impulse_response[episode][band]) * self.true_pu_occupancy_states[band][episode]) +
-                                         numpy.array(self.channel.noise[episode][band])))
+                                     numpy.array(self.channel.noise[episode][band]))
             observation_samples.append(obs_per_band)
         # The observation_samples member is a kxt matrix
         return observation_samples
@@ -582,10 +582,10 @@ class EmissionEvaluator(object):
     # Initialization sequence
     def __init__(self, _noise_variance, _impulse_response_variance):
         print('[INFO] EmissionEvaluator Initialization: Bringing things up...')
-        # Variance of the Channel Impulse Response
-        self.impulse_response_variance = _impulse_response_variance
-        # Variance of the Complex AWGN
+        # Variance of the AWGN samples
         self.noise_variance = _noise_variance
+        # Variance of the Channel Impulse Response samples
+        self.impulse_response_variance = _impulse_response_variance
 
     # Get the Emission Probabilities -> P(y|x)
     def get_emission_probabilities(self, state, observation_sample):
@@ -1396,7 +1396,7 @@ class AdaptiveIntelligenceWithModelForesight(object):
                                self.noise_mean, self.noise_variance, self.impulse_response_mean,
                                self.impulse_response_variance)
         # The Emission Evaluator
-        self.emission_evaluator = EmissionEvaluator(self.impulse_response_variance, self.noise_variance)
+        self.emission_evaluator = EmissionEvaluator(self.noise_variance, self.impulse_response_variance)
         # Primary User
         self.primary_user = PrimaryUser(self.number_of_channels, self.number_of_episodes,
                                         self.spatial_markov_chain, self.temporal_markov_chain, self.util)
@@ -1844,7 +1844,7 @@ class ModelFreeAdaptiveIntelligence(object):
                                self.noise_mean, self.noise_variance, self.impulse_response_mean,
                                self.impulse_response_variance)
         # The Emission Evaluator
-        self.emission_evaluator = EmissionEvaluator(self.impulse_response_variance, self.noise_variance)
+        self.emission_evaluator = EmissionEvaluator(self.noise_variance, self.impulse_response_variance)
         # Primary User
         self.primary_user = PrimaryUser(self.number_of_channels, self.number_of_episodes,
                                         self.spatial_markov_chain, self.temporal_markov_chain, self.util)

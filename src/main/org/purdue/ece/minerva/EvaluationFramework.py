@@ -379,11 +379,10 @@ class SecondaryUser(object):
     def observe_everything_unconstrained(self):
         observation_samples = []
         for band in range(0, self.number_of_channels):
-            obs_per_band = list()
+            obs_per_band = []
             for episode in range(0, self.number_of_episodes):
-                obs_per_band.append((self.channel.impulse_response[episode][band][0] *
-                                     self.true_pu_occupancy_states[band][episode]) +
-                                    self.channel.noise[episode][band][0])
+                obs_per_band.append((self.channel.impulse_response[episode][band][0] * self.
+                                     true_pu_occupancy_states[band][episode]) + self.channel.noise[episode][band][0])
             observation_samples.append(obs_per_band)
         # The observation_samples member is a kxt matrix
         return observation_samples
@@ -395,6 +394,7 @@ class SecondaryUser(object):
         for band in range(0, self.number_of_channels):
             obs_per_band = [k - k for k in range(0, self.number_of_episodes)]
             if band in channel_selection_heuristic:
+                obs_per_band = []
                 for episode in range(0, self.number_of_episodes):
                     obs_per_band.append((self.channel.impulse_response[episode][band][0] *
                                          self.true_pu_occupancy_states[band][episode]) +
@@ -415,9 +415,9 @@ class SecondaryUser(object):
         for band in range(0, self.number_of_channels):
             obs_per_band = [k - k for k in range(0, self.number_of_sampling_rounds)]
             if channel_selection_strategy[band] == 1:
-                obs_per_band = (self.channel.impulse_response[episode][band] *
-                                self.true_pu_occupancy_states[band][episode]) + \
-                               self.channel.noise[episode][band]
+                obs_per_band = (list((numpy.array(
+                    self.channel.impulse_response[episode][band]) * self.true_pu_occupancy_states[band][episode]) +
+                                         numpy.array(self.channel.noise[episode][band])))
             observation_samples.append(obs_per_band)
         # The observation_samples member is a kxt matrix
         return observation_samples
@@ -426,10 +426,11 @@ class SecondaryUser(object):
     def make_sampled_observations_across_all_episodes(self):
         observation_samples = []
         for band in range(0, self.number_of_channels):
-            obs_per_band = list()
+            obs_per_band = []
             for episode in range(0, self.number_of_episodes):
-                obs_per_band.append((self.channel.impulse_response[episode][band] *
-                                     self.true_pu_occupancy_states[band][episode]) + self.channel.noise[episode][band])
+                obs_per_band.append(list((numpy.array(self.channel.impulse_response[episode][band]) * self.
+                                          true_pu_occupancy_states[band][episode]) +
+                                         numpy.array(self.channel.noise[episode][band])))
             observation_samples.append(obs_per_band)
         return observation_samples
 
@@ -1303,9 +1304,6 @@ class Sweepstakes(object):
 # Hence, the policy followed by this Oracle is the most optimal policy
 # The action policy achieved by the POMDP agent will be evaluated/benchmarked against the Oracle's policy thereby...
 # ...giving us a regret metric.
-@deprecated
-# I don't need the Oracle in this framework because I'm not doing a regret analysis instead I'm doing a utility...
-# ...evaluation for various kinds of agents embedded in the SU's channel allocation engine
 class Oracle(object):
 
     # Initialization sequence
@@ -2796,7 +2794,7 @@ class EvaluationFramework(object):
     NUMBER_OF_SAMPLING_ROUNDS = 250
 
     # The number of periods of interaction of the agent with the radio environment
-    NUMBER_OF_EPISODES = 100
+    NUMBER_OF_EPISODES = 1000
 
     # The mean of the AWGN samples
     NOISE_MEAN = 0
@@ -2895,7 +2893,7 @@ class EvaluationFramework(object):
         elif job_id == 2:
             print('[INFO] EvaluationFramework worker: Starting job thread for the channel correlation based clustering '
                   'and MAP estimation algorithm in the state-of-the-art!')
-            return NotImplementedError('This agent is yet to be implemented. Please check back later!')
+            raise NotImplementedError('This agent is yet to be implemented. Please check back later!')
         elif job_id == 3:
             print('[INFO] EvaluationFramework worker: Starting job thread for the model-free PERSEUS POMDP agent!')
             model_free_perseus = ModelFreeAdaptiveIntelligence(self.FRAGMENT_SIZE, self.NUMBER_OF_SAMPLING_ROUNDS,
@@ -2972,7 +2970,7 @@ class EvaluationFramework(object):
         self.util = Util()
         # The channel instance
         self.channel = Channel(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.NUMBER_OF_EPISODES,
-                               self.NOISE_MEAN, self.IMPULSE_RESPONSE_MEAN, self.NOISE_VARIANCE,
+                               self.NOISE_MEAN, self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_MEAN,
                                self.IMPULSE_RESPONSE_VARIANCE)
         # The Primary User
         self.primary_user = PrimaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.spatial_markov_chain,
@@ -3022,7 +3020,7 @@ class EvaluationFramework(object):
             for job_id, utilities in result.items():
                 if job_id == 3 or job_id == 4 or job_id == 5:
                     # Joining the utilities of the fragments for the POMDP agents
-                    utilities = utilities * math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE)
+                    utilities = list(numpy.array(utilities) * math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE))
                 ax.plot(x_axis, utilities, linewidth=1.0, marker='o', color=self.colors[color_index],
                         label=self.job_id_map[job_id])
         fig.suptitle('Evaluation of the obtained utilities per episode for various agents', fontsize=14)
@@ -3035,3 +3033,10 @@ class EvaluationFramework(object):
     # Context Manager method for tearing things down
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] EvaluationFramework Termination: Tearing things down...')
+
+
+# Run Trigger
+if __name__ == '__main__':
+    print('[INFO] EvaluationFramework main: Starting the system simulation!')
+    evaluationFramework = EvaluationFramework()
+    evaluationFramework.evaluate()

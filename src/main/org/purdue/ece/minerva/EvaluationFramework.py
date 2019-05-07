@@ -2319,7 +2319,7 @@ class AdaptiveIntelligenceWithModelForesightSimplified(object):
                                self.noise_mean, self.noise_variance, self.impulse_response_mean,
                                self.impulse_response_variance)
         # The Emission Evaluator
-        self.emission_evaluator = EmissionEvaluator(self.impulse_response_variance, self.noise_variance)
+        self.emission_evaluator = EmissionEvaluator(self.noise_variance, self.impulse_response_variance)
         # Primary User
         self.primary_user = PrimaryUser(self.number_of_channels, self.number_of_episodes,
                                         self.spatial_markov_chain, self.temporal_markov_chain, self.util)

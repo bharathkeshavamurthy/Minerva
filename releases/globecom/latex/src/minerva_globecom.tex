@@ -62,6 +62,7 @@
 \newcommand{\nmmath}[1]{{\color{blue}\text{\bf{[NM: #1]}}}}
 \newcommand{\gs}[1]{{\color{orange}\bf{[GS: #1]}}}
 \newcommand{\remove}[1]{{\color{magenta}{\bf REMOVE: [#1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
 %\newcommand{\nm}[1]{}
 %\newcommand{\sst}[1]{}
 %\newcommand{\gs}[1]{}
@@ -153,7 +154,7 @@ The agent's limited sensing capabilities coupled with its noisy observations res
 \nonumber
 \frac{\mathbb{P}(\vec{Y}(i)|\vec{B}',\mathcal{K}_i)}{\mathbb{P}(\vec{Y}(i)|\mathcal{K}_i,b_{i-1})}\sum_{\vec{B} \in \mathcal{B}}\mathbb{P}(\vec{B}'|\vec{B},\mathcal{K}_i)b_{i-1}(\vec{B}),
 \end{align}
-where $\mathbb{P}(\vec{Y}(i)|\mathcal{K}_i,b_{i-1})$ is the normalization constant and $b_{i-1}$ represents the belief of the agent prior to the observation $\vec{Y}(i)$, defined as a probability distribution over all possible states. Given the updated belief $b_i$, the SU uses a threshold based mechanism to access the spectrum: if the test statistic for the $k$th band $T_k(b_i) = \mathbb P(B_k(i)=0|b_i) > \tau$, then the $k$th spectrum band is detected as idle and it is accessed by the SU; otherwise, it is detected as occupied and is left unused. Therefore, at time $i$, the probability of false alarm is defined as the ratio of the number of false alarms to the number of truly idle bands in the spectrum and the probability of missed detection is defined as the ratio of the number of missed detections to the number of truly occupied bands in the spectrum. Based on the number of truly idle bands detected by the SU accounting for the throughput maximization aspect of the agent's end-goal and a penalty for missed detections accounting for the incumbent non-interference constraint, the reward to the agent is modelled as
+where $\mathbb{P}(\vec{Y}(i)|\mathcal{K}_i,b_{i-1})$ is the normalization constant and $b_{i-1}$ represents the belief of the agent prior to the observation $\vec{Y}(i)$, defined as a probability distribution over all possible states. Given the action $\mathcal{K}_i$, i.e. the spectrum bands sensed by the SU at time $i$, we employ a state estimator to identify idle bands in the spectrum. If a channel $k$ in the estimated state vector $\hat{\vec{B}}$ is $0$, the SU detects the band as being idle and accesses it for the delivery of its network flows. On the other hand, if a channel $k$ in the estimated state vector is $1$, the SU detects the band as being occupied by a PU and leaves it untouched. More details about the state estimator are discussed in the Section III. \bk{I see in your previous comment that you mentioned we use a threshold based detection to determine the occupancy after the belief update - But, in the code, I use the MAP estimator to estimate the occupancy vector based on the bands I sensed - Do you think this is incorrect?} Therefore, at time $i$, the probability of false alarm is defined as the ratio of the number of false alarms to the number of truly idle bands in the spectrum and the probability of missed detection is defined as the ratio of the number of missed detections to the number of truly occupied bands in the spectrum. \bk{I need advice on how to represent the definitions of $P_{FA}$ and $P_{MD}$ mathematically here - Do I use hypothesis based definitions or do I use indicator random variables?} Based on the number of truly idle bands detected by the SU accounting for the throughput maximization aspect of the agent's end-goal and a penalty for missed detections accounting for the incumbent non-interference constraint, the reward to the agent is modelled as
 \begin{equation}\label{12}
     R(\vec{B}(i),\mathcal{K}_i)\ =\ (1 - P_{FA}(i)) + \lambda P_{MD}(i),
 \end{equation}
@@ -167,7 +168,126 @@ where $0 < \gamma < 1$ is the discount factor, $\pi(b_i)$ is the action taken by
 \end{equation}
 Given the high dimensionality of the spectrum sensing and access problem, i.e. the number of states of the underlying MDP scales exponentially with the number of bands in the spectrum, solving equation \eqref{14} using Exact Value Iteration and Policy Iteration algorithms is computationally infeasible. Additionally, solving for the optimal policy from equation \eqref{14} requires prior knowledge about the underlying MDP's transition model. Therefore, in this paper we present a framework to estimate the transition model of the underlying MDP and then utilize this learned model to solve for the optimal policy by employing Randomized Point-Based Value Iteration techniques, namely, the PERSEUS algorithm.
 \nm{All the citations should go into the file ref.bib with the specific bibtex format (you can typically get the entry from IEEE Xplore)}
+\section{Approaches and Algorithms}
+\subsection{Occupancy Behavior Transition Model Estimation}
+In real-world implementations of cognitive radio systems, the transition model of the occupancy behavior of the PUs is not known to the SUs in the network and needs to be learnt over time. The learnt model then needs to be fed back to the POMDP agent in order to solve for the optimal policy. The system can learn the model either before triggering or during the operation of the POMDP agent. Inherently, the approach constitutes solving a parameter estimation problem formulated as
+\begin{equation}\label{15}
+    A^{*}\ =\ \argmax_{A}\ \mathbb{P}([\vec{Y}(i)]_{i=1}^{\tau}|A),
+\end{equation}
+which is a Maximum Likelihood Estimation (MLE) problem, where $A$ is defined as $\mathbb{P}(\vec{B}(i+1)|\vec{B}(i))$ and $\tau$ refers to the learning period of the parameter estimator: this, as mentioned earlier, can be equal to the entire duration of the POMDP agent's interaction with the radio environment or can be a predefined parameter learning period before triggering the POMDP agent. In order to facilitate better readability, for the description of this parameter estimator, we denote $[\vec{Y}(i)]_{i=1}^{\tau}$ as \textbf{Y} and $[\vec{B}(i)]_{i=0}^{\tau}$ as \textbf{B}. Re-framing \eqref{15} as an optimization of the log-likelihood, using the definition of marginal probability, and focusing on the joint instead of the conditional, we get,
+\begin{equation}\label{16}
+    A = \argmax_{A}\ \log\Big(\sum_{\textbf{B}}\ \mathbb{P}(\textbf{B}, \textbf{Y}, A)\Big)
+\end{equation}
+In order to exploit the characteristics of the stated Markov model, we multiply and divide the operand of the logarithm by $\beta$ which from the equality constraint of Jensen's Inequality turns out to be $\mathbb{P}(\textbf{B}|\textbf{Y}, \hat{A})$. The optimization problem in \eqref{16} is then restated as,
+\begin{equation}\label{17}
+    \begin{aligned}
+        A = \argmax_{A}\ \sum_{\textbf{B}}\ \mathbb{P}(\textbf{B}|\textbf{Y}, \hat{A})\ \log(\mathbb{P}(\textbf{B}, \textbf{Y}, A))
+    \end{aligned}
+\end{equation}
+Applying the characteristics of the Markov model discussed in Section II, we write \eqref{17} as
+\begin{equation}\label{18}
+    \begin{aligned}
+        A=\argmax_{A}\sum_{\textbf{B}}\mathbb{P}(\textbf{B}|\textbf{Y},\hat{A})\sum_{L}\sum_{R}\sum_{i=1}^{\tau}\sum_{j=1}^{\tau}&\mathcal{I}\log(M_R(\vec{Y}(i)))\\
+        &+\mathcal{J}\log(a_{LR}),
+    \end{aligned}
+\end{equation}
+where $L,R \in \{0,1\}^K$ represent iterables for the occupancy state vectors,
+\begin{equation}\label{19}
+    M_R(\vec{Y}(i)) = \mathbb{P}(\vec{Y}(i)|\vec{B}(i)=R),
+\end{equation}
+represents the emission model outlined in \eqref{9},
+\begin{equation}\label{20}
+    a_{LR} = \mathbb{P}(\vec{B}(i)=R|\vec{B}(i-1)=L, \hat{A}),
+\end{equation}
+represents the unknown transition model which is the subject of this estimation, and $\mathcal{I}$ and $\mathcal{J}$ detailed below are indicator random variables introduced to bring in specificity into the estimation procedure.
+\begin{equation}\label{21}
+    \mathcal{I} = 
+    \begin{cases}
+        1, &\text{if}\ \vec{Y}(i)\ \text{and}\ \vec{B}(i)=R\\
+        0, &\text{otherwise}
+    \end{cases}
+\end{equation}
+\begin{equation}\label{22}
+    \mathcal{J} = 
+    \begin{cases}
+        1, &\text{if}\ \vec{B}(i-1)=L\ \text{and}\ \vec{B}(i)=R\\
+        0, &\text{otherwise}
+    \end{cases}
+\end{equation}
+We impose a constraint on the transition probability in \eqref{18} as 
+\begin{equation}\label{23}
+    \sum_{R}\ a_{LR} = 1,    
+\end{equation}
+and formulate the Lagrangian as
+\begin{equation}\label{24}
+    \begin{aligned}
+        \mathcal{L}=\Big\{\sum_{\textbf{B}}\mathbb{P}(\textbf{B}|\textbf{Y},\hat{A})\sum_{L}\sum_{R}\sum_{i=1}^{\tau}\sum_{j=1}^{\tau}&\mathcal{I}\log(M_R(\vec{Y}(i)))\\
+        &+\mathcal{J}\log(a_{LR})\Big\}\\
+        +\sum_{L}\lambda_L(1-\sum_Ra_{LR}).
+    \end{aligned}
+\end{equation}
+Solving for $a_{LR}$, we get,
+\begin{equation}\label{25}
+    a_{LR} = \frac{\sum_{i=1}^{\tau}\mathbb{P}(\textbf{Y},A,\vec{B}(i)=R,\vec{B}(i-1)=L)}{\sum_{i=1}^{\tau}\mathbb{P}(\textbf{Y},A,\vec{B}(i-1)=L)}.
+\end{equation}
+In order to further simplify \eqref{25} and bring it into an iterative algorithmic form, we introduce the forward and backward probabilities. We define the forward probability as
+\begin{equation}\label{26}
+    \begin{aligned}
+        F(i,R) &= \mathbb{P}([\vec{Y}(t)]_{t=1}^{i},\vec{B}(i)=R)\\
+        &= 
+        \sum_{L}\mathbb{P}(\vec{B}(i)=R,\vec{Y}(i)|\vec{B}(i-1)=L)F(i-1,L),
+    \end{aligned}
+\end{equation}
+and the backward probability as
+\begin{equation}\label{27}
+    \begin{aligned}
+        D(i,L) &= \mathbb{P}([\vec{Y}(t)]_{t=i}^{\tau}|\vec{B}(i-1)=L)\\
+        &= \sum_{R}\mathbb{P}(\vec{B}(i)=R,\vec{Y}(i)|\vec{B}(i-1)=L)D(i+1,R).
+    \end{aligned}
+\end{equation}
+Using these definitions, \eqref{25} can be rewritten as,
+\begin{equation}\label{28}
+    a_{LR} = \frac{\sum_{i=1}^{\tau}F(i-1,L)M_R(\vec{Y}(i))a_{LR}D(i+1,R)}{\sum_R\sum_{i=1}^{\tau}F(i-1,L)M_R(\vec{Y}(i))a_{LR}D(i+1,R)}.
+\end{equation}
+\bk{Add the algorithm block}
+\subsection{Occupancy Behavior State Estimation}
+During the reward evaluation phase of the POMDP agent at time $i$, the observations made based on the sensing action $\mathcal{K}_i$ are employed at a state estimator to determine the occupancy state of the spectrum bands. Based on this estimated state vector, we formulate the false alarm and missed detection metrics which allow us to capture the throughput maximization and PU non-interference requirements essential for the operation of our POMDP agent. We formulate the state estimation problem as
+\begin{equation}\label{29}
+    \vec{B}(i)^* = \argmax_{\vec{B}}\ \mathbb{P}(\vec{B}|\vec{Y}(i)),
+\end{equation}
+which is a Maximum-A-Posteriori (MAP) estimation problem. This optimization problem can be restated in terms of the value functions as
+\begin{equation}\label{30}
+    V_{i,k}^{r} = \max_{\Tilde{\textbf{B}}_{[t-1,k-1]}}\ \mathbb{P}(\Tilde{\textbf{Y}}_{[t-1,k-1]},\Tilde{\textbf{B}}_{[t-1,k-1]},Y_k(i),B_k(i)),
+\end{equation}
+where for the estimation of the occupancy in spectrum band $k$ at time $i$, 
+\begin{equation}\label{31}
+    \Tilde{\textbf{Y}}_{[t-1,k-1]} \equiv \{\ [\vec{Y}_v(i)]_{v=1}^{k-1},\ [\vec{Y}_k(t)]_{t=1}^{t-1}\ \}
+\end{equation}
+denotes the set of all essential past observations which for readability purposes is denoted simply as $\Tilde{\textbf{Y}}$ and
+\begin{equation}\label{32}
+    \Tilde{\textbf{B}}_{[t-1,k-1]} \equiv \{\ [\vec{B}_v(i)]_{v=1}^{k-1},\ [\vec{B}_k(t)]_{t=1}^{t-1}\ \}
+\end{equation}
+denotes set of all essential past states which is henceforth simply referred to as $\Tilde{\textbf{X}}$ for readability. Applying the characteristics of the Markov model detailed in \eqref{7} to \eqref{30}, we get
+\begin{equation}\label{33}
+    \begin{aligned}
+        V_{i,k}^{r} = M_r(Y_k(i))\max_{\Tilde{\textbf{B}}}\mathbb{P}(&B_k(i)=r|B_{k}(i-1)=m,\\
+        &B_{k-1}(i)=n)\mathbb{P}(\Tilde{\textbf{Y}},\Tilde{\textbf{B}}),
+    \end{aligned}
+\end{equation}
+which can be simplified further to show that,
+\begin{equation}\label{34}
+    \begin{aligned}
+        V_{i,k}^{r} = M_r(Y_k(i))\max_{m,n}\ a_{mnr}V_{i-1,k}^{m}V_{i,k-1}^{n},
+    \end{aligned}
+\end{equation}
+where
+\begin{equation}\label{35}
+    a_{mnr} = \mathbb{P}(B_k(i)=r|B_{k}(i-1)=m,B_{k-1}(i)=n),
+\end{equation}
+which can be evaluated from the estimated transition model. Next, similar to the backtracking procedure in the one dimensional Viterbi algorithm, the Trellis diagram is traversed backwards (the backtracking step) to recover the most probable previous neighbours of $B_k(i)$. This is done recursively until the entire Trellis diagram has been traversed to yield the most probable state sequence, i.e. the Viterbi path.
+\\\bk{Add the algorithm block which will include the equation for backtracking}
+\subsection{The PERSEUS Algorithm}
+As discussed in Section II of this article, solving the Bellman equation \eqref{14} for POMDPs with large state and action space using direct value iteration and policy iteration techniques is computationally infeasible \bk{citation}. Hence, we resort to approximate value iteration techniques \bk{citation} to ensure that the system scales well to a large number of bands in the spectrum of interest. For infinite-horizon POMDPs, $V^*$ in \eqref{14} can be approximated by a Piece-Wise Linear and Convex function (PWLC) \bk{citation}. The core idea behind the PERSEUS algorithm is that the value function in time index $i$ can be parameterized by a set of hyperplanes $\{\vec{\alpha}_i^{u}\}$, $u = \{0,1,2,\dots,|V_i|\}$, each of which represents a region of the belief space for which it is the maximizing element.
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,ref} 
-
 \end{document}

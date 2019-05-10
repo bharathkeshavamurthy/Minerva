@@ -39,6 +39,7 @@
 \usepackage{subfigure}
 \usepackage{pseudocode}
 \usepackage{enumerate}
+%\usepackage[linesnumbered,ruled]{algorithm2e}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \newtheorem{definition}{Definition}
@@ -49,8 +50,10 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{assumption}{Assumption}
 \newtheorem{remark}{Remark}
-\renewcommand{\algorithmicrequire}{\textbf{Initialization:}}  % Use Input in the format of Algorithm
-\renewcommand{\algorithmicensure}{\textbf{Output:}}  % Use Output in the format of 
+\renewcommand{\algorithmicrequire}{\textbf{Initialization:}}  
+% Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{\textbf{Output:}}  
+% Use Output in the format of 
 \newcommand{\rom}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
 \usepackage{color}
 \usepackage{soul,xcolor}
@@ -249,7 +252,7 @@ Using these definitions, \eqref{25} can be rewritten as,
 \begin{equation}\label{28}
     a_{LR} = \frac{\sum_{i=1}^{\tau}F(i-1,L)M_R(\vec{Y}(i))a_{LR}D(i+1,R)}{\sum_R\sum_{i=1}^{\tau}F(i-1,L)M_R(\vec{Y}(i))a_{LR}D(i+1,R)}.
 \end{equation}
-\bk{Add the algorithm block}
+\bk{Could you give me an example as to how you generally write algorithms in IEEE papers? There are many ways to do it - algorithm, algorithm2e, algorithmic, and pseudo-code. Which one do you recommend and could you please give me a sample?}
 \subsection{Occupancy Behavior State Estimation}
 During the reward evaluation phase of the POMDP agent at time $i$, the observations made based on the sensing action $\mathcal{K}_i$ are employed at a state estimator to determine the occupancy state of the spectrum bands. Based on this estimated state vector, we formulate the false alarm and missed detection metrics which allow us to capture the throughput maximization and PU non-interference requirements essential for the operation of our POMDP agent. We formulate the state estimation problem as
 \begin{equation}\label{29}
@@ -284,21 +287,25 @@ where
 \begin{equation}\label{35}
     a_{mnr} = \mathbb{P}(B_k(i)=r|B_{k}(i-1)=m,B_{k-1}(i)=n),
 \end{equation}
-which can be evaluated from the estimated transition model. Next, similar to the backtracking procedure in the one dimensional Viterbi algorithm, the Trellis diagram is traversed backwards (the backtracking step) to recover the most probable previous neighbours of $B_k(i)$. This is done recursively until the entire Trellis diagram has been traversed to yield the most probable state sequence, i.e. the Viterbi path.
-\\\bk{Add the algorithm block which will include the equation for backtracking}
+which can be evaluated from the estimated transition model. Equation \eqref{34} corresponds to the forward recursion aspect of the double Markov chain Viterbi algorithm. Next, similar to the backtracking procedure in the one dimensional (single Markov chain) Viterbi algorithm, the Trellis diagram is traversed backwards to recover the most probable previous neighbours of $B_k(i)$. This is done recursively until the entire Trellis diagram has been traversed to yield the most probable state sequence, i.e. the Viterbi path. Mathematically, the backtracking step with respect to the neighbours of $B_k(i)$ is represented as
+\begin{equation}\label{36}
+    m^*, n^* = \argmax_{m,n}\ a_{mnr}V_{i-1,k}^{m}V_{i,k-1}^{n},
+\end{equation}
+where $m^*$ is the most probable state of channel $k$ in time index $i-1$ and $n^*$ is the most probable state of channel $k-1$ in time index $i$, given that channel $k$ in time index $i$ is in state $r$; $m, n, r \in \{0,1\}$. \bk{Add the algorithm block!}
 \subsection{The PERSEUS Algorithm}
 As discussed in Section II of this article, solving the Bellman equation \eqref{14} for POMDPs with large state and action space using direct value iteration and policy iteration techniques is computationally infeasible \bk{citation}. Hence, we resort to approximate value iteration techniques \bk{citation} to ensure that the system scales well to a large number of bands in the spectrum of interest. For infinite-horizon POMDPs, $V^*$ in \eqref{14} can be approximated by a Piece-Wise Linear and Convex function (PWLC) \bk{citation}. The core idea behind the PERSEUS algorithm is that the value function in time index $i$ can be parameterized by a set of hyperplanes $\{\vec{\alpha}_i^{u}\}$, $u = \{0,1,2,\dots,|V_i|\}$, each of which represents a region of the belief space for which it is the maximizing element. The backup step is defined as the process of determining the optimal hyperplane out of the set of available hyperplanes in time index $i$ as
-\begin{equation}\label{36}
+\begin{equation}\label{37}
     \vec{\alpha}_{i}(b) = \argmax_{\vec{\alpha}_{i}^u} b \cdot \vec{\alpha}_{i}^u,
 \end{equation}
 which implies that,
-\begin{equation}\label{37}
+\begin{equation}\label{38}
     \begin{split}
         V_i(b) &= \max_{\vec{\alpha}_{i}^u} b \cdot \vec{\alpha}_{i}^u,\\
         \pi_i(b) &= a(\vec{\alpha}_i^{u*}),
     \end{split}
 \end{equation}
-where $a(\vec{\alpha}_i^{u*})$ refers to the action corresponding to the optimal hyperplane. The PERSEUS algorithm constitutes an Exploration phase wherein the POMDP agent randomly interacts with the radio environment to collect a set of so-called reachable beliefs which are to be improved and numerous iterative Backup stages. In each backup stage, the agent samples an unimproved belief point $b$ uniformly at random from the set of unimproved points and performs a backup on this sampled belief point according to \eqref{36} to determine the optimal hyperplane $\vec{\alpha}$. Considering an arbitrary time index $i$, if $V_{i+1}(b) = b \cdot \vec{\alpha} \geq V_{i}(b)$, then the belief point $b$ is said to be improved along with any other belief points $b'$ in the unimproved set for which $V_{i+1}(b') = b' \cdot \vec{\alpha} \geq V_{i}(b')$. If $V_{i+1}(b) = b \cdot \vec{\alpha} < V_{i}(b)$, then a copy of the maximizing hyperplane for $V_i(b)$ is used for $V_{i+1}(b)$ and the belief point $b$ is then removed from the set of unimproved points. The backup stage continues until the set of unimproved points is empty and the agent performs a series of backup stages until there the number of policy changes between iterations is below a specified threshold $\eta$. \bk{Add the algorithm block}
+where $a(\vec{\alpha}_i^{u*})$ refers to the action corresponding to the optimal hyperplane. The PERSEUS algorithm constitutes an Exploration phase wherein the POMDP agent randomly interacts with the radio environment to collect a set of so-called reachable beliefs which are to be improved and numerous iterative Backup stages. In each backup stage, the agent samples an unimproved belief point $b$ uniformly at random from the set of unimproved points and performs a backup on this sampled belief point according to \eqref{37} to determine the optimal hyperplane $\vec{\alpha}$. Considering an arbitrary time index $i$, if $V_{i+1}(b) = b \cdot \vec{\alpha} \geq V_{i}(b)$, then the belief point $b$ is said to be improved along with any other belief points $b'$ in the unimproved set for which $V_{i+1}(b') = b' \cdot \vec{\alpha} \geq V_{i}(b')$. If $V_{i+1}(b) = b \cdot \vec{\alpha} < V_{i}(b)$, then a copy of the maximizing hyperplane for $V_i(b)$ is used for $V_{i+1}(b)$ and the belief point $b$ is then removed from the set of unimproved points. The backup stage continues until the set of unimproved points is empty and the agent performs a series of backup stages until there the number of policy changes between iterations is below a specified threshold $\eta$. \bk{Add the algorithm block!}
+\\The belief update procedure outlined in \eqref{11} is an essential aspect of the PERSEUS algorithm which can turn into a performance bottleneck for large state spaces due to the inherent iteration over all possible states. In order to circumvent this problem, we fragment the spectrum into much smaller, independent sets of correlated channels and then run the PERSEUS algorithm on these fragments by leveraging multi-processing and multi-threading tools available at our disposal in software frameworks. Furthermore, we avoid iterating over all possible states and allow only those state transitions we deem to be the most probable - for example, we allow only those state transitions that involve a Hamming distance of up to 3 between the previous state vector and the current state vector in an 18 channel radio environment.
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,ref} 
 \end{document}

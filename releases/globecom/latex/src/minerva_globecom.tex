@@ -61,7 +61,7 @@
 %\newcommand{\sst}[1]{}
 %\newcommand{\nm}[1]{}
 \newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
-\newcommand{\bk}[1]{{\color{red}{[BK: #1]}}}
+\newcommand{\bk}[1]{{\color{magenta}{[BK: #1]}}}
 \newcommand{\nmmath}[1]{{\color{blue}\text{\bf{[NM: #1]}}}}
 \newcommand{\gs}[1]{{\color{orange}\bf{[GS: #1]}}}
 \newcommand{\remove}[1]{{\color{magenta}{\bf REMOVE: [#1]}}}
@@ -157,11 +157,23 @@ The agent's limited sensing capabilities coupled with its noisy observations res
 \nonumber
 \frac{\mathbb{P}(\vec{Y}(i)|\vec{B}',\mathcal{K}_i)}{\mathbb{P}(\vec{Y}(i)|\mathcal{K}_i,b_{i-1})}\sum_{\vec{B} \in \mathcal{B}}\mathbb{P}(\vec{B}'|\vec{B},\mathcal{K}_i)b_{i-1}(\vec{B}),
 \end{align}
-where $\mathbb{P}(\vec{Y}(i)|\mathcal{K}_i,b_{i-1})$ is the normalization constant and $b_{i-1}$ represents the belief of the agent prior to the observation $\vec{Y}(i)$, defined as a probability distribution over all possible states. Given the action $\mathcal{K}_i$, i.e. the spectrum bands sensed by the SU at time $i$, we employ a state estimator to identify idle bands in the spectrum. If a channel $k$ in the estimated state vector $\hat{\vec{B}}$ is $0$, the SU detects the band as being idle and accesses it for the delivery of its network flows. On the other hand, if a channel $k$ in the estimated state vector is $1$, the SU detects the band as being occupied by a PU and leaves it untouched. More details about the state estimator are discussed in the Section III. \bk{I see in your previous comment that you mentioned we use a threshold based detection to determine the occupancy after the belief update - But, in the code, I use the MAP estimator to estimate the occupancy vector based on the bands I sensed - Do you think this is incorrect?} Therefore, at time $i$, the probability of false alarm is defined as the ratio of the number of false alarms to the number of truly idle bands in the spectrum and the probability of missed detection is defined as the ratio of the number of missed detections to the number of truly occupied bands in the spectrum. \bk{I need advice on how to represent the definitions of $P_{FA}$ and $P_{MD}$ mathematically here - Do I use hypothesis based definitions or do I use indicator random variables?} Based on the number of truly idle bands detected by the SU accounting for the throughput maximization aspect of the agent's end-goal and a penalty for missed detections accounting for the incumbent non-interference constraint, the reward to the agent is modelled as
+where $\mathbb{P}(\vec{Y}(i)|\mathcal{K}_i,b_{i-1})$ is the normalization constant and $b_{i-1}$ represents the belief of the agent prior to the observation $\vec{Y}(i)$, defined as a probability distribution over all possible states. Given the action $\mathcal{K}_i$, i.e. the spectrum bands sensed by the SU at time $i$, we employ a state estimator to identify idle bands in the spectrum. If a channel $k$ in the estimated state vector $\hat{\vec{B}}$ is $0$, the SU detects the band as being idle and accesses it for the delivery of its network flows. On the other hand, if a channel $k$ in the estimated state vector is $1$, the SU detects the band as being occupied by a PU and leaves it untouched. More details about the state estimator are discussed in the Section III. \bk{I see in your previous comment that you mentioned we use a threshold based detection to determine the occupancy after the belief update - But, in the code, I use the MAP estimator to estimate the occupancy vector based on the bands I sensed - Do you think this is incorrect?}
+\nm{No, that is fine.. but then you need to define PFA and PMD accordingly.}
+ Therefore, at time $i$, the probability of false alarm is defined as the ratio of the number of false alarms to the number of truly idle bands in the spectrum and the probability of missed detection is defined as the ratio of the number of missed detections to the number of truly occupied bands in the spectrum. \bk{I need advice on how to represent the definitions of $P_{FA}$ and $P_{MD}$ mathematically here - Do I use hypothesis based definitions or do I use indicator random variables?}\nm{see below:} Based on the number of truly idle bands detected by the SU accounting for the throughput maximization aspect of the agent's end-goal and a penalty for missed detections accounting for the incumbent non-interference constraint, the reward to the agent is modelled as
 \begin{equation}\label{12}
     R(\vec{B}(i),\mathcal{K}_i)\ =\ (1 - P_{FA}(i)) + \lambda P_{MD}(i),
 \end{equation}
-where $\lambda < 0$ represent the cost term penalizing the agent for missed detections, i.e. interference with the incumbent. The action policy $\pi$ of the agent maps the beliefs $b_i$ to actions $\mathcal{K}_i$ at time $i$ and is characterized by a Value Function
+\add{
+the reward to the agent when the true occupancy state is $\vec{B}(i)$
+and the estimated one is $\hat \vec{B}$ is given by
+\begin{equation}\label{12}
+    R(\vec{B}(i),\hat \vec{B})\ =\ 
+    \sum_{k}(1-B_k(i))(1-\hat B_k)+\lambda B_k(i)\hat B_k,
+\end{equation}
+where the first term counts the number of frequency bands correctly detected as idle, whereas the second term counts the
+ number of frequency bands correctly detected as occupied. Thus, maximizing  
+ $R(\vec{B}(i),\hat \vec{B})$ amounts to minimizing a trade-off between false-alarm and misdetection probabilities.}
+where \add{$\lambda>0$} represent the cost term penalizing the agent for missed detections, i.e. interference with the incumbent. The action policy $\pi$ of the agent maps the beliefs $b_i$ to actions $\mathcal{K}_i$ at time $i$ and is characterized by a Value Function
 \begin{equation}\label{13}
     V^{\pi}(b)\ =\ \mathbb{E}_{\pi}\Big[\sum_{i=0}^{\infty}\ \gamma^i R(b_i,\ \pi(b_i)|b_0=b)\Big],
 \end{equation}

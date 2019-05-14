@@ -1,5 +1,5 @@
 # This entity encapsulates the overall evaluation of our adaptive, intelligent, hierarchical framework for...
-# ...Cognitive Radio System developed as a part of this research.
+# ...Cognitive Radio System developed as a part of our research funded by DARPA.
 # The evaluation includes the following:
 # Visualization - Utility over the entire interaction time of the agent with the radio environment v/s Episodes
 # Metrics: Utility - Captures both SU network throughput rewards and PU interference penalties
@@ -299,7 +299,6 @@ class PrimaryUser(object):
 
     # Get the spatial and temporal occupancy behavior of the Primary User based on the statistics shared during the...
     # ...creation of the Spatial Markov Chain and the Temporal Markov Chain
-    # ...keys and [] as values
     def simulate_occupancy_behavior(self):
         # Extracting the statistics from the objects for easy use in this method
         spatial_transition_probabilities_matrix = self.spatial_markov_chain.transition_probabilities

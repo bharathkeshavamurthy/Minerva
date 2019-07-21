@@ -357,7 +357,7 @@ class MarkovChainParameterEstimator(object):
             'Mean Square Error Convergence of the Markov Correlated Parameter Estimation Algorithm for a Static PU '
             'with Complete Information', fontsize=12)
         ax.set_xlabel('Number of Iterations (x250 observation vectors)', fontsize=14)
-        ax.set_ylabel('Mean Square Error - $\mathbb{E}\ [(p\ -\ \hat{p})^2]$', fontsize=14)
+        ax.set_ylabel(r'Mean Square Error - $\mathbb{E}\ [(p\ -\ \hat{p})^2]$', fontsize=14)
         plt.yscale('log')
         plt.show()
         for previous_state in OccupancyState:

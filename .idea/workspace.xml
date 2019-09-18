@@ -3,11 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f958ad54-6282-4908-8193-31cdedd5c478" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AdaptiveIntelligenceWithModelForesight.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AdaptiveIntelligenceWithModelForesight.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AdaptiveIntelligenceWithModelForesightSimplified.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AdaptiveIntelligenceWithModelForesightSimplified.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/FragmentedAdaptiveIntelligenceWithModelForesight.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/FragmentedAdaptiveIntelligenceWithModelForesight.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ModelFreeAdaptiveIntelligence.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ModelFreeAdaptiveIntelligence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,7 +28,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="858">
+            <state relative-caret-position="903">
               <caret line="845" selection-end-line="845" />
               <folding>
                 <element signature="e#983#995#0" expanded="true" />
@@ -60,18 +56,6 @@
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiAlgorithmEvaluationI.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectConfigurationFiles">
-    <option name="files">
-      <list>
-        <option value="$PROJECT_DIR$/.idea/Minerva.iml" />
-        <option value="$PROJECT_DIR$/.idea/misc.xml" />
-        <option value="$PROJECT_DIR$/.idea/modules.xml" />
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" />
-        <option value="$PROJECT_DIR$/.idea/dictionaries/bharathkeshavamurthy.xml" />
       </list>
     </option>
   </component>
@@ -111,6 +95,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
@@ -142,7 +127,7 @@
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.34981686" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.34981686" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -374,7 +359,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="858">
+        <state relative-caret-position="903">
           <caret line="845" selection-end-line="845" />
           <folding>
             <element signature="e#983#995#0" expanded="true" />

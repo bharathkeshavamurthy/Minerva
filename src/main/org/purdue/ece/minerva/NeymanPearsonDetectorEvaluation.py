@@ -1,27 +1,25 @@
-# This entity involves the evaluation of the Viterbi Algorithm with Complete Observations for the Cognitive Radio
-#   System developed as a part of Minerva.
+# This entity involves the evaluation of the Neyman Pearson Detector for the Cognitive Radio System developed as
+#   a part of Minerva.
 # Author: Bharath Keshavamurthy
 # Organization: School of Electrical and Computer Engineering, Purdue University, West Lafayette, IN.
 # Copyright (c) 2019. All Rights Reserved.
 
 # WIKI
-# The entity described here visualizes the performance of the "Viterbi Algorithm with Complete Observations" in a
+# The entity described here visualizes the performance of the "Neyman Pearson Detector" in a
 #   scenario wherein the Secondary User (Cognitive Radio Node) is determining the Spectrum Occupancy Behavior of the
 #   Primary User (Incumbent) over time and utilizing the spectrum holes for the flows assigned to it by the C2API.
-#   The transition, the steady-state, and the emission metrics of the underlying Markov Model are assumed to be either
-#   known or learnt beforehand by the Parameter Estimator (EM algorithm).
 
 # Visualization: Utility v Episodes
 
-# VITERBI ALGORITHM WITH COMPLETE OBSERVATIONS
+# NEYMAN PEARSON DETECTOR ASSUMING INDEPENDENCE IN A MARKOV-CORRELATED RADIO ENVIRONMENT
 
 # The imports
+import math
 import numpy
 import plotly
 import scipy.stats
 from enum import Enum
 import plotly.graph_objs as go
-from collections import namedtuple
 
 # Plotly user account credentials for visualization
 plotly.tools.set_credentials_file(username='bkeshava',
@@ -358,17 +356,16 @@ class SecondaryUser(object):
         # Occupancy Status of the cells based on simulated PU behavior - needed to simulate SU observations
         self.true_pu_occupancy_states = _true_pu_occupancy_states
 
-    # Observe everything from a global perspective for the unconstrained non-POMDP agent, i.e. Viterbi-I
-    def observe_everything_unconstrained(self):
+    # The observation procedure required for the Neyman-Pearson detector
+    def make_sampled_observations_across_all_episodes(self):
         observation_samples = []
         for band in range(0, self.number_of_channels):
             obs_per_band = []
             for episode in range(0, self.number_of_episodes):
-                obs_per_band.append((self.channel.impulse_response[band][episode][0] *
-                                     self.true_pu_occupancy_states[band][episode]
-                                     ) + self.channel.noise[band][episode][0])
+                obs_per_band.append(list((numpy.array(self.channel.impulse_response[band][episode]) * self.
+                                          true_pu_occupancy_states[band][episode]) +
+                                         numpy.array(self.channel.noise[band][episode])))
             observation_samples.append(obs_per_band)
-        # The observation_samples member is a kxt (channel x episode) matrix
         return observation_samples
 
     # The termination sequence
@@ -377,301 +374,75 @@ class SecondaryUser(object):
         # Nothing to do...
 
 
-# This entity evaluates the emission probabilities, i.e. \mathbb{P}(y|x)
-class EmissionEvaluator(object):
+# A Neyman-Pearson Detector assuming independence among channels
+# The channels are actually Markov correlated
+# But, this class helps me evaluate the performance if I assume independence
+# The signal model is s[n] = A (occupancy)
+# The observation model is x[n] = w[n], null hypothesis, and
+#                          x[n] = A + w[n], alternative hypothesis
+class NeymanPearsonDetector(object):
 
     # The initialization sequence
-    def __init__(self, _noise_variance, _impulse_response_variance):
-        print('[INFO] EmissionEvaluator Initialization: Bringing things up...')
-        # Variance of the AWGN samples
-        self.noise_variance = _noise_variance
-        # Variance of the Channel Impulse Response samples
-        self.impulse_response_variance = _impulse_response_variance
-
-    # Get the Emission Probabilities -> \mathbb{P}(y|x)
-    # THe "state" member is an enum instance of OccupancyState.
-    def get_emission_probabilities(self, state, observation_sample):
-        # If the channel is not observed, i.e. if the observation is [phi] or [0], report m_r(y_i) as 1.
-        # The Empty Place-Holder value is 0.
-        if observation_sample == 0:
-            return 1
-        # Normal Emission Estimation using the distribution of the observations given the state
-        else:
-            emission_probability = scipy.stats.norm(0,
-                                                    numpy.sqrt(
-                                                        (self.impulse_response_variance * state.value) +
-                                                        self.noise_variance)
-                                                    ).pdf(observation_sample)
-            return emission_probability
-
-    # The termination sequence
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] EmissionEvaluator Termination: Tearing things down...')
-        # Nothing to do...
-
-
-# The unconstrained non-POMDP agent, i.e. Viterbi-I
-# The double Markov Chain Viterbi Algorithm with complete observations
-class DoubleMarkovChainViterbiAlgorithm(object):
-    # Start probabilities of PU occupancy per frequency band
-    BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
-
-    # Value function named tuple
-    VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction',
-                                            ['current_value', 'previous_temporal_state', 'previous_spatial_state'])
-
-    # The initialization Sequence
-    def __init__(self, _number_of_channels, _number_of_episodes, _emission_evaluator, _true_pu_occupancy_states,
-                 _observation_samples, _spatial_start_probabilities, _temporal_start_probabilities,
-                 _spatial_transition_probabilities_matrix, _temporal_transition_probabilities_matrix, _mu):
-        print('[INFO] DoubleMarkovChainViterbiAlgorithm Initialization: Bringing things up ...')
+    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _false_alarm_probability,
+                 _noise_mean, _noise_variance, _observations, _true_pu_occupancy_states, _penalty):
+        print('[INFO] NeymanPearsonDetector Initialization: Bringing things up...')
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
-        # The number of episodes of interaction of this unconstrained non-POMDP agent with the environment
+        # The number of sampling rounds per episode
+        self.number_of_sampling_rounds = _number_of_sampling_rounds
+        # The number of episodes of interaction of this agent with the radio environment
         self.number_of_episodes = _number_of_episodes
-        # The emission evaluator
-        self.emission_evaluator = _emission_evaluator
-        # True PU Occupancy states
+        # The false alarm probability constraint
+        self.false_alarm_probability = _false_alarm_probability
+        # The mean of the AWGN samples
+        self.noise_mean = _noise_mean
+        if self.noise_mean is not 0:
+            print('[WARN] NeymanPearsonDetector Initialization: The observation model assumes zero mean additive white '
+                  'Gaussian noise samples...')
+            self.noise_mean = 0
+        # The variance of the AWGN samples
+        self.noise_variance = _noise_variance
+        # The observations made by the Secondary User
+        self.observations = _observations
+        # The true PU occupancy states - Markov correlation is left unexploited here...
         self.true_pu_occupancy_states = _true_pu_occupancy_states
-        # The observed samples at the SU receiver
-        self.observation_samples = _observation_samples
-        # The start probabilities
-        self.start_probabilities = self.BAND_START_PROBABILITIES(idle=_spatial_start_probabilities[0],
-                                                                 occupied=_spatial_start_probabilities[1])
-        # The spatial transition probabilities matrix
-        self.spatial_transition_probabilities_matrix = _spatial_transition_probabilities_matrix
-        # The temporal transition probabilities matrix
-        self.temporal_transition_probabilities_matrix = _temporal_transition_probabilities_matrix
-        # The unified transition probabilities matrix
-        # FIXME: For now, the same transition model across both chains
-        self.transition_probabilities_matrix = _spatial_transition_probabilities_matrix
-        # The missed detections penalty term
-        self.mu = _mu
+        # The threshold for the Likelihood Ratio Test (LRT)
+        self.threshold = math.sqrt(self.noise_variance / self.number_of_sampling_rounds) * scipy.stats.norm.ppf(
+            1 - self.false_alarm_probability, loc=self.noise_mean, scale=math.sqrt(self.noise_variance))
+        # The penalty for missed detections
+        self.penalty = _penalty
 
-    # Get the start probabilities from the named tuple - a simple getter utility method exclusive to this class
-    def get_start_probabilities(self, state):
-        # The "state" arg is an enum instance of OccupancyState.
-        if state == OccupancyState.OCCUPIED:
-            return self.start_probabilities.occupied
-        else:
-            return self.start_probabilities.idle
-
-    # Interpretation 1
-    # Return the transition probabilities from the transition probabilities matrix - two dimensions
-    # Using the concept of marginal probability here as I did for simulating the PrimaryUser behavior
-    # def get_transition_probabilities(self, temporal_prev_state, spatial_prev_state, current_state):
-    #     # temporal_prev_state is unused here...
-    #     print('[DEBUG] DoubleMarkovChainViterbiAlgorithm get_transition_probabilities: current_state - {}, '
-    #           'spatial_previous_state - {}, temporal_previous_state - {}'.format(current_state, spatial_prev_state,
-    #                                                                              temporal_prev_state))
-    #     return self.transition_probabilities_matrix[spatial_prev_state][current_state]
-
-    # Interpretation 2
-    # Return the transition probabilities from the transition probabilities matrix - two dimensions
-    # The two Markov Chains are independent and hence, we can treat the transitions independently.
-    # \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b, X_{k, t-1} = c) = \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b) * \\
-    #                                                           \mathbb{P}(X_{k,t} = a | X_{k, t-1} = c)
-    # The "temporal_prev_state" arg, the "spatial_prev_state" arg, and the "current_state" arg are all enum instances
-    #   of OccupancyState.
-    def get_transition_probabilities(self, temporal_prev_state, spatial_prev_state, current_state):
-        return self.spatial_transition_probabilities_matrix[spatial_prev_state.value][current_state.value] * \
-            self.temporal_transition_probabilities_matrix[temporal_prev_state.value][current_state.value]
-
-    # FIXME: For now, the same transition model across both chains {An exclusive method}
-    # Return the transition probabilities from the transition probabilities matrix - single dimension
-    # THe "previous_state" arg and the "current_state" arg are enum instances of "OccupancyState".
-    def get_transition_probabilities_single(self, previous_state, current_state):
-        return self.transition_probabilities_matrix[previous_state.value][current_state.value]
-
-    # Get the utility obtained by this unconstrained non-POMDP agent
-    def get_episodic_utility(self, estimated_state_vector, episode):
-        idle_count = 0
-        occupancies = 0
-        false_alarms = 0
-        missed_detections = 0
-        for channel in range(0, self.number_of_channels):
-            if self.true_pu_occupancy_states[channel][episode] == 0:
-                idle_count += 1
-                if estimated_state_vector[channel] == 1:
-                    false_alarms += 1
-            if self.true_pu_occupancy_states[channel][episode] == 1:
-                occupancies += 1
-                if estimated_state_vector[channel] == 0:
-                    missed_detections += 1
-        return ((lambda: (1 - (false_alarms / idle_count)), lambda: 1)[idle_count == 0]()) + (self.mu * (
-            (lambda: missed_detections / occupancies, lambda: 0)[occupancies == 0]()))
-
-    # Output the episodic utilities of this Unconstrained Double Markov Chain Viterbi Algorithm
-    def estimate_episodic_utilities(self):
-        previous_state_spatial = None
-        previous_state_temporal = None
-        # Estimated states - kxt matrix
-        estimated_states = []
-        for x in range(0, self.number_of_channels):
-            estimated_states.append([])
-        value_function_collection = []
-        # A value function collection to store and index the calculated value functions across t and k
-        for k in range(0, self.number_of_channels):
-            row = []
-            for x in range(0, self.number_of_episodes):
-                row.append(dict())
-            value_function_collection.append(row)
-        # t = 0 and k = 0 - No previous state to base the Markovian Correlation on in either dimension
-        for state in OccupancyState:
-            current_value = self.emission_evaluator.get_emission_probabilities(state,
-                                                                               self.observation_samples[0][0]) * \
-                            self.get_start_probabilities(state)
-            value_function_collection[0][0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(current_value=current_value,
-                                                                                          previous_temporal_state=None,
-                                                                                          previous_spatial_state=None)
-        # First row - Only temporal correlation
-        i = 0
-        for j in range(1, self.number_of_episodes):
-            # Trying to find the max pointer here ...
-            for state in OccupancyState:
-                # Again finishing off the [0] index first
-                max_pointer = self.get_transition_probabilities_single(OccupancyState.IDLE,
-                                                                       state) * \
-                              value_function_collection[i][j - 1][OccupancyState.IDLE.name].current_value
-                # Using IDLE as the confirmed previous state
-                confirmed_previous_state = OccupancyState.IDLE.name
-                for candidate_previous_state in OccupancyState:
-                    if candidate_previous_state.name == OccupancyState.IDLE.name:
-                        # Already done
-                        continue
-                    else:
-                        pointer = self.get_transition_probabilities_single(candidate_previous_state,
-                                                                           state) * \
-                                  value_function_collection[i][j - 1][candidate_previous_state.name].current_value
-                        if pointer > max_pointer:
-                            max_pointer = pointer
-                            confirmed_previous_state = candidate_previous_state.name
-                current_value = max_pointer * self.emission_evaluator.get_emission_probabilities(
-                    state, self.observation_samples[i][j])
-                value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
-                    current_value=current_value, previous_temporal_state=confirmed_previous_state,
-                    previous_spatial_state=None)
-        # First column - Only spatial correlation
-        j = 0
-        for i in range(1, self.number_of_channels):
-            # Trying to find the max pointer here ...
-            for state in OccupancyState:
-                # Again finishing off the [0] index first
-                max_pointer = self.get_transition_probabilities_single(OccupancyState.IDLE,
-                                                                       state) * \
-                              value_function_collection[i - 1][j][OccupancyState.IDLE.name].current_value
-                confirmed_previous_state = OccupancyState.IDLE.name
-                for candidate_previous_state in OccupancyState:
-                    if candidate_previous_state.name == OccupancyState.IDLE.name:
-                        # Already done
-                        continue
-                    else:
-                        pointer = self.get_transition_probabilities_single(candidate_previous_state,
-                                                                           state) * \
-                                  value_function_collection[i - 1][j][candidate_previous_state.name].current_value
-                        if pointer > max_pointer:
-                            max_pointer = pointer
-                            confirmed_previous_state = candidate_previous_state.name
-                current_value = max_pointer * self.emission_evaluator.get_emission_probabilities(
-                    state, self.observation_samples[i][j])
-                value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
-                    current_value=current_value, previous_temporal_state=None,
-                    previous_spatial_state=confirmed_previous_state)
-        # I'm done with the first row and first column
-        # Moving on to the other rows and columns
-        for i in range(1, self.number_of_channels):
-            # For every row, I'm going across laterally (across columns) and populating the value_function_collection
-            for j in range(1, self.number_of_episodes):
-                for state in OccupancyState:
-                    # Again finishing off the [0] index first
-                    max_pointer = self.get_transition_probabilities(OccupancyState.IDLE,
-                                                                    OccupancyState.IDLE, state) * \
-                                  value_function_collection[i][j - 1][OccupancyState.IDLE.name].current_value * \
-                                  value_function_collection[i - 1][j][OccupancyState.IDLE.name].current_value
-                    confirmed_previous_state_temporal = OccupancyState.IDLE.name
-                    confirmed_previous_state_spatial = OccupancyState.IDLE.name
-                    for candidate_previous_state_temporal in OccupancyState:
-                        for candidate_previous_state_spatial in OccupancyState:
-                            if candidate_previous_state_temporal.name == OccupancyState.IDLE.name and \
-                                    candidate_previous_state_spatial.name == OccupancyState.IDLE.name:
-                                # Already done
-                                continue
-                            else:
-                                pointer = self.get_transition_probabilities(candidate_previous_state_temporal,
-                                                                            candidate_previous_state_spatial,
-                                                                            state) * \
-                                          value_function_collection[i][j - 1][
-                                              candidate_previous_state_temporal.name].current_value * \
-                                          value_function_collection[i - 1][j][
-                                              candidate_previous_state_spatial.name].current_value
-                                if pointer > max_pointer:
-                                    max_pointer = pointer
-                                    confirmed_previous_state_temporal = candidate_previous_state_temporal.name
-                                    confirmed_previous_state_spatial = candidate_previous_state_spatial.name
-                    # Now, I have the value function for this i and this j
-                    # Populate the value function collection with this value
-                    # I found maximum of Double Markov Chain value functions from the past and now I'm multiplying it...
-                    # ...with the emission probability of this particular observation
-                    current_value = max_pointer * self.emission_evaluator.get_emission_probabilities(
-                        state,
-                        self.observation_samples[i][j])
-                    value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
-                        current_value=current_value, previous_temporal_state=confirmed_previous_state_temporal,
-                        previous_spatial_state=confirmed_previous_state_spatial)
-        # I think the forward path is perfect
-        # I have doubts in the backtrack path
-        max_value = 0
-        # Finding the max value among the named tuples
-        for _value in value_function_collection[-1][-1].values():
-            if _value.current_value > max_value:
-                max_value = _value.current_value
-        # Finding the state corresponding to this max_value and using this as the final confirmed state to ...
-        # ...backtrack and find the previous states
-        for k, v in value_function_collection[-1][-1].items():
-            if v.current_value == max_value:
-                # FIXME: Using the 'name' member to reference and deference the value function collection is not safe.
-                estimated_states[self.number_of_channels - 1].append(self.value_from_name(k))
-                previous_state_temporal = k
-                previous_state_spatial = k
-                break
-        # Backtracking
-        for i in range(self.number_of_channels - 1, -1, -1):
-            for j in range(self.number_of_episodes - 1, -1, -1):
-                if len(estimated_states[i]) == 0:
-                    estimated_states[i].insert(0, self.value_from_name(
-                        value_function_collection[i + 1][j][previous_state_spatial].previous_spatial_state))
-                    previous_state_temporal = value_function_collection[i][j][
-                        previous_state_spatial].previous_temporal_state
-                    continue
-                estimated_states[i].insert(0, self.value_from_name(
-                    value_function_collection[i][j][previous_state_temporal].previous_temporal_state))
-                previous_state_temporal = value_function_collection[i][j][
-                    previous_state_temporal].previous_temporal_state
-            previous_state_spatial = value_function_collection[i][self.number_of_episodes - 1][
-                previous_state_spatial].previous_spatial_state
+    # Detect occupancy across episodes by averaging out noisy observations over numerous sampling rounds
+    # Likelihood Ratio Test (LRT) based on a test statistic with the threshold determined from the P_{FA} constraint
+    def get_utilities(self):
         utilities = []
-        for time_index in range(0, self.number_of_episodes):
-            utilities.append(self.get_episodic_utility([estimated_states[k][time_index] for k in range(
-                0, self.number_of_channels)], time_index))
+        for episode in range(0, self.number_of_episodes):
+            estimated_states = []
+            occupancies = 0
+            idle_count = 0
+            false_alarms = 0
+            missed_detections = 0
+            for channel in range(0, self.number_of_channels):
+                test_statistic = sum(self.observations[channel][episode]) / self.number_of_sampling_rounds
+                estimated_states[channel] = (lambda: 0, lambda: 1)[test_statistic >= self.threshold]()
+                if self.true_pu_occupancy_states[channel][episode] == 1:
+                    occupancies += 1
+                    if estimated_states[channel] == 0:
+                        missed_detections += 1
+                if self.true_pu_occupancy_states[channel][episode] == 0:
+                    idle_count += 1
+                    if estimated_states[channel] == 1:
+                        false_alarms += 1
+            episodic_false_alarm_probability = (lambda: 0, lambda: false_alarms/idle_count)[idle_count is not 0]()
+            episodic_missed_detection_probability = (lambda: 0, lambda: missed_detections/occupancies)[
+                occupancies is not 0]()
+            utilities.append((1 - episodic_false_alarm_probability) +
+                             (self.penalty * episodic_missed_detection_probability))
         return utilities
 
-    # Get enumeration field value from name
-    @staticmethod
-    def value_from_name(name):
-        if name == 'OCCUPIED':
-            return OccupancyState.OCCUPIED.value
-        else:
-            return OccupancyState.IDLE.value
 
-    # The termination sequence
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] DoubleMarkovChainViterbiAlgorithm Clean-up: Cleaning things up ...')
-        # Nothing to do...
-
-
-# A class detailing the evaluation of the Viterbi-I agent (An Unconstrained Double Markov Chain Viterbi Algorithm)
-class ViterbiIEvaluation(object):
-
+# The evaluation of the Neyman Pearson Detection based non-POMDP agent
+class NeymanPearsonDetectorEvaluation(object):
     # The number of channels in the discretized spectrum of interest
     NUMBER_OF_CHANNELS = 18
 
@@ -679,10 +450,10 @@ class ViterbiIEvaluation(object):
     # FIXME: Right now, I have the PrimaryUser's behavior logged for every sampling round per episode.
     #   This translates to the SU logging observations for every sampling period per episode.
     #   Although this logic is unused as of today (18-Sept-2019), I'm keeping it in case I want to average out
-    #       the inconsistencies I get during the evaluation of this Viterbi-I algorithm.
+    #       the inconsistencies I get during the evaluation of this Neyman Pearson Detection based non-POMDP algorithm.
     NUMBER_OF_SAMPLING_ROUNDS = 1000
 
-    # The number of episodes of interaction of the unconstrained non-POMDP agent with the radio environment
+    # The number of episodes of interaction of this agent with the radio environment
     NUMBER_OF_EPISODES = 1000
 
     # The mean of the Additive, White, Gaussian Noise samples
@@ -700,13 +471,16 @@ class ViterbiIEvaluation(object):
     # The penalty term for missed detections during utility evaluation
     PENALTY = -1
 
+    # The constraint on false alarm probability for this agent
+    FALSE_ALARM_PROBABILITY_CONSTRAINT = 0.7
+
     # Plotly Scatter mode
     PLOTLY_SCATTER_MODE = 'lines+markers'
 
     # Setup the Markov Chain
     @staticmethod
     def setup_markov_chain(_correlation_class, _pi, _p):
-        print('[INFO] ViterbiIEvaluation setup_markov_chain: Setting up the Markov Chain...')
+        print('[INFO] ViterbiIIEvaluation setup_markov_chain: Setting up the Markov Chain...')
         transient_markov_chain_object = MarkovChain()
         transient_markov_chain_object.set_markovian_correlation_class(_correlation_class)
         transient_markov_chain_object.set_start_probability_parameter(_pi)
@@ -715,7 +489,7 @@ class ViterbiIEvaluation(object):
 
     # The initialization sequence
     def __init__(self):
-        print('[INFO] ViterbiIEvaluation Initialization: Bringing things up...')
+        print('[INFO] NeymanPearsonDetectorEvaluation: Bringing things up...')
         # The start probabilities for the spatial Markov chain
         self.spatial_start_probabilities = {0: 0.4, 1: 0.6}
         # The start probabilities for the temporal Markov chain
@@ -745,30 +519,29 @@ class ViterbiIEvaluation(object):
         self.secondary_user = SecondaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
                                             self.NUMBER_OF_EPISODES, self.channel,
                                             self.primary_user.occupancy_behavior_collection)
-        # The emission evaluator
-        self.emission_evaluator = EmissionEvaluator(self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_VARIANCE)
-        # The unconstrained global observation samples
-        self.unconstrained_global_observations = self.secondary_user.observe_everything_unconstrained()
-        # The unconstrained non-POMDP agent, i.e. Viterbi-I
-        self.unconstrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
-            self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
-            self.primary_user.occupancy_behavior_collection, self.unconstrained_global_observations,
-            self.spatial_start_probabilities, self.temporal_start_probabilities,
-            self.spatial_transition_probability_matrix,
-            self.temporal_transition_probability_matrix, self.PENALTY)
-        # The x-axis corresponds to the episodes of interaction
+        # Make sampled observations across all episodes
+        self.sampled_observations_across_all_episodes = \
+            self.secondary_user.make_sampled_observations_across_all_episodes()
+        # The Neyman Pearson Detection based non-POMDP agent
+        self.neyman_pearson_detection_based_non_pomdp_agent = NeymanPearsonDetector(
+            self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.NUMBER_OF_EPISODES,
+            self.FALSE_ALARM_PROBABILITY_CONSTRAINT, self.NOISE_MEAN, self.NOISE_VARIANCE,
+            self.sampled_observations_across_all_episodes, self.primary_user.occupancy_behavior_collection,
+            self.PENALTY)
+        # The x-axis corresponds to the episodes of interaction of this agent with the radio environment
         self.x_axis = [k + 1 for k in range(0, self.NUMBER_OF_EPISODES)]
-        # The y-axis corresponds to the episodic utilities of this Viterbi-I agent
-        self.y_axis = self.unconstrained_non_pomdp_agent.estimate_episodic_utilities()
+        # The y-axis corresponds to the episodic utilities obtained by this agent
+        self.y_axis = self.neyman_pearson_detection_based_non_pomdp_agent.get_utilities()
 
-    # Visualize the episodic utilities of Viterbi-I using the Plotly API
+    # Visualize the episodic utilities of Neyman Pearson Detection based non-POMDP agent using the Plotly API
     def evaluate(self):
         # Data Trace
         visualization_trace = go.Scatter(x=self.x_axis,
                                          y=self.y_axis,
                                          mode=self.PLOTLY_SCATTER_MODE)
         # Figure Layout
-        visualization_layout = dict(title='Episodic Utilities of the Viterbi Algorithm with Complete Observations',
+        visualization_layout = dict(title='Episodic Utilities of the Neyman-Pearson Detector in a Spatio-Temporal '
+                                          'Markovian PU Occupancy Behavior Model',
                                     xaxis=dict(title=r'$Episodes\ n$'),
                                     yaxis=dict(title=r'$Utility\ (1 - P_{FA}) + \mu P_{MD}$'))
         # Figure
@@ -776,19 +549,19 @@ class ViterbiIEvaluation(object):
                                     layout=visualization_layout)
         # URL
         figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Episodic_Utility_of_Unconstrained_Viterbi_Algorithm')
+                                        filename='Episodic_Utility_of_Neyman_Pearson_Detector')
         # Print the URL in case you're on an environment where a GUI is not available
         print('[INFO] ViterbiIEvaluation evaluate: Data Visualization Figure is available at {}'.format(figure_url))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] ViterbiIEvaluation Termination: Tearing things down...')
+        print('[INFO] NeymanPearsonDetectorEvaluation Termination: Tearing things down...')
         # Nothing to do...
 
 
 # Run Trigger
 if __name__ == '__main__':
-    print('[INFO] ViterbiIEvaluation main: Triggering the evaluation of the Unconstrained Non-POMDP Agent, i.e. the '
-          'Viterbi Algorithm with Complete Observations!')
-    agent = ViterbiIEvaluation()
+    print('[INFO] NeymanPearsonDetectorEvaluation main: Triggering the evaluation of the Neyman Pearson Detection based'
+          'non-POMDP agent')
+    agent = NeymanPearsonDetectorEvaluation()
     agent.evaluate()

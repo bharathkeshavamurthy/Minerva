@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f958ad54-6282-4908-8193-31cdedd5c478" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/bharathkeshavamurthy.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/bharathkeshavamurthy.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,22 +17,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="483">
-              <caret line="767" column="36" selection-start-line="767" selection-start-column="36" selection-end-line="767" selection-end-column="36" />
+            <state relative-caret-position="828">
+              <caret line="793" column="20" lean-forward="true" selection-start-line="788" selection-end-line="793" selection-end-column="20" />
               <folding>
                 <element signature="e#983#995#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="768">
-              <caret line="838" column="26" lean-forward="true" selection-end-line="843" />
-              <folding>
-                <element signature="e#1416#1428#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -44,11 +29,32 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="650">
-              <caret line="2889" column="82" lean-forward="true" selection-start-line="2884" selection-start-column="12" selection-end-line="2889" selection-end-column="82" />
+            <state relative-caret-position="384">
+              <caret line="2841" column="44" lean-forward="true" selection-start-line="2840" selection-start-column="4" selection-end-line="2841" selection-end-column="44" />
               <folding>
                 <element signature="e#1416#1427#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="858">
+              <caret line="567" selection-end-line="567" />
+              <folding>
+                <element signature="e#788#799#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="25" column="30" lean-forward="true" selection-start-line="25" selection-end-line="25" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -87,6 +93,7 @@
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py" />
       </list>
     </option>
   </component>
@@ -174,7 +181,7 @@
       <window_info anchor="right" id="R Packages" order="4" />
     </layout>
     <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.34981686" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.34981686" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -187,7 +194,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32959184" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.32959184" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32959184" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -375,8 +382,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="650">
-          <caret line="2889" column="82" lean-forward="true" selection-start-line="2884" selection-start-column="12" selection-end-line="2889" selection-end-column="82" />
+        <state relative-caret-position="384">
+          <caret line="2841" column="44" lean-forward="true" selection-start-line="2840" selection-start-column="4" selection-end-line="2841" selection-end-column="44" />
           <folding>
             <element signature="e#1416#1427#0" expanded="true" />
           </folding>
@@ -385,8 +392,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="483">
-          <caret line="767" column="36" selection-start-line="767" selection-start-column="36" selection-end-line="767" selection-end-column="36" />
+        <state relative-caret-position="828">
+          <caret line="793" column="20" lean-forward="true" selection-start-line="788" selection-end-line="793" selection-end-column="20" />
           <folding>
             <element signature="e#983#995#0" expanded="true" />
           </folding>
@@ -395,10 +402,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="768">
-          <caret line="838" column="26" lean-forward="true" selection-end-line="843" />
+        <state relative-caret-position="375">
+          <caret line="25" column="30" lean-forward="true" selection-start-line="25" selection-end-line="25" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="858">
+          <caret line="567" selection-end-line="567" />
           <folding>
-            <element signature="e#1416#1428#0" expanded="true" />
+            <element signature="e#788#799#0" expanded="true" />
           </folding>
         </state>
       </provider>

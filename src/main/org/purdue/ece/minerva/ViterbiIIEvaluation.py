@@ -11,10 +11,10 @@
 #   The transition, the steady-state, and the emission metrics of the underlying Markov Model are assumed to be either
 #   known or learnt beforehand by the Parameter Estimator (EM algorithm).
 
-#   Visualization: Utility v Episodes for four different strategies:
-#       1. Only the even channels are sensed by the SU receiver {0, 2, 4, 6, 8, 10, 12, 14, 16}
-#       3. Only channels whose indices correspond to the multiples of 3 are sensed {0, 3, 6, 9, 12, 15}
-#       4. Only channels whose indices correspond to the multiples of 4 are sensed {0, 4, 8, 12, 16}
+# Visualization: Utility v Episodes for four different strategies:
+#   1. Only the even channels are sensed by the SU receiver {0, 2, 4, 6, 8, 10, 12, 14, 16}
+#   2. Only channels whose indices correspond to the multiples of 3 are sensed {0, 3, 6, 9, 12, 15}
+#   3. Only channels whose indices correspond to the multiples of 4 are sensed {0, 4, 8, 12, 16}
 
 # VITERBI ALGORITHM WITH INCOMPLETE OBSERVATIONS
 
@@ -754,7 +754,7 @@ class ViterbiIIEvaluation(object):
 
     # The initialization sequence
     def __init__(self):
-        print('[INFO] ViterbiIIEvaluation: Bringing things up...')
+        print('[INFO] ViterbiIIEvaluation Initialization: Bringing things up...')
         # The start probabilities for the spatial Markov chain
         self.spatial_start_probabilities = {0: 0.4, 1: 0.6}
         # The start probabilities for the temporal Markov chain
@@ -831,7 +831,7 @@ class ViterbiIIEvaluation(object):
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] ViterbiIIEvaluation: Tearing things down...')
+        print('[INFO] ViterbiIIEvaluation Termination: Tearing things down...')
         # Nothing to do...
 
 

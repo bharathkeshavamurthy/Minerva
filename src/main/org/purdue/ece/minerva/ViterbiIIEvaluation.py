@@ -1,19 +1,22 @@
-# This entity involves the evaluation of the Viterbi Algorithm with Complete Observations for the Cognitive Radio
+# This entity involves the evaluation of the Viterbi Algorithm with Incomplete Observations for the Cognitive Radio
 #   System developed as a part of Minerva.
 # Author: Bharath Keshavamurthy
 # Organization: School of Electrical and Computer Engineering, Purdue University, West Lafayette, IN.
 # Copyright (c) 2019. All Rights Reserved.
 
 # WIKI
-# The entity described here visualizes the performance of the "Viterbi Algorithm with Complete Observations" in a
+# The entity described here visualizes the performance of the "Viterbi Algorithm with Incomplete Observations" in a
 #   scenario wherein the Secondary User (Cognitive Radio Node) is determining the Spectrum Occupancy Behavior of the
 #   Primary User (Incumbent) over time and utilizing the spectrum holes for the flows assigned to it by the C2API.
 #   The transition, the steady-state, and the emission metrics of the underlying Markov Model are assumed to be either
 #   known or learnt beforehand by the Parameter Estimator (EM algorithm).
 
-#   Visualization: Utility v Episodes
+#   Visualization: Utility v Episodes for four different strategies:
+#       1. Only the even channels are sensed by the SU receiver {0, 2, 4, 6, 8, 10, 12, 14, 16}
+#       3. Only channels whose indices correspond to the multiples of 3 are sensed {0, 3, 6, 9, 12, 15}
+#       4. Only channels whose indices correspond to the multiples of 4 are sensed {0, 4, 8, 12, 16}
 
-# VITERBI ALGORITHM WITH COMPLETE OBSERVATIONS
+# VITERBI ALGORITHM WITH INCOMPLETE OBSERVATIONS
 
 # The imports
 import numpy
@@ -54,7 +57,7 @@ class MarkovChain(object):
     # The initialization sequence
     def __init__(self):
         print('[INFO] MarkovChain Initialization: Initializing the Markov Chain...')
-        # The steady-state probabilities (a.k.a start probabilities for each channel / each sampling round
+        # The steady-state probabilities (a.k.a start probabilities for each channel / each episode
         #   independently in the Markov Chain)
         self.start_probabilities = dict()
         # The state transition probabilities matrix - Two states [Occupied and Idle]
@@ -168,7 +171,7 @@ class Channel(object):
         self.number_of_channels = _number_of_channels
         # Number of sampling rounds undertaken by the SU per episode
         self.number_of_sampling_rounds = _number_of_sampling_rounds
-        # Number of episodes in which the Viterbi-I agent interacts with the radio environment
+        # Number of episodes in which the Viterbi-II agent interacts with the radio environment
         self.number_of_episodes = _number_of_episodes
         # Channel Impulse Response used in the Observation Model
         self.impulse_response = self.get_impulse_response()
@@ -243,8 +246,8 @@ class PrimaryUser(object):
         if numpy.random.random_sample() > pi_val:
             previous = 0
         initial_state_vector.append(previous)
-        # Based on the state of band-0 at time-0 and the (p_val, q_val) values, generate the states of the remaining...
-        # ...bands
+        # Based on the state of band-0 at time-0 and the (p_val, q_val) values, generate the states of the remaining
+        #   bands
         for _loop_iterator in range(1, self.number_of_episodes):
             sample_value = numpy.random.random_sample()
             if previous == 1 and sample_value < q_val:
@@ -282,7 +285,7 @@ class PrimaryUser(object):
         # This is global and system-specific. So, it doesn't matter which chain's steady-state probabilities is used...
         pi_val = spatial_start_probabilities[1]
         # SINGLE CHAIN INFLUENCE along all the columns of the first row
-        # Get the Initial state vector to get things going - row 0
+        # Get the initial state vector to get things going - row 0
         self.occupancy_behavior_collection.append(
             self.get_initial_states_temporal_variation(temporal_transition_probabilities_matrix[0][1],
                                                        temporal_transition_probabilities_matrix[1][0], pi_val))
@@ -304,7 +307,7 @@ class PrimaryUser(object):
         # Interpretation #1
         # DOUBLE CHAIN INFLUENCE along all the remaining cells
         # Go on and fill in the remaining cells in the Occupancy Behavior Matrix
-        # Use the definitions of Conditional Probabilities to realize the math - P(A|B,C)
+        # Use the definitions of Conditional Probabilities to realize the math - \mathbb{P}(A|B,C)
         # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)P(C=c)
         # Using the definition of Marginal Probability in discrete distributions
         # for channel_index in range(1, self.number_of_channels):
@@ -358,22 +361,58 @@ class SecondaryUser(object):
         # Occupancy Status of the cells based on simulated PU behavior - needed to simulate SU observations
         self.true_pu_occupancy_states = _true_pu_occupancy_states
 
-    # Observe everything from a global perspective for the unconstrained non-POMDP agent, i.e. Viterbi-I
-    def observe_everything_unconstrained(self):
+    # Make observations from a global perspective for the constrained non-POMDP agent, i.e. the Viterbi-II agent
+    # The same subset of channels are observed in each episode. No temporal patterns.
+    def observe_everything_with_spatial_constraints(self, channel_selection_heuristic):
         observation_samples = []
         for band in range(0, self.number_of_channels):
-            obs_per_band = []
-            for episode in range(0, self.number_of_episodes):
-                obs_per_band.append((self.channel.impulse_response[band][episode][0] *
-                                     self.true_pu_occupancy_states[band][episode]
-                                     ) + self.channel.noise[band][episode][0])
+            obs_per_band = [k - k for k in range(0, self.number_of_episodes)]
+            if band in channel_selection_heuristic:
+                obs_per_band = []
+                for episode in range(0, self.number_of_episodes):
+                    obs_per_band.append((self.channel.impulse_response[band][episode][0] *
+                                         self.true_pu_occupancy_states[band][episode]) +
+                                        self.channel.noise[band][episode][0])
             observation_samples.append(obs_per_band)
-        # The observation_samples member is a kxt (channel x episode) matrix
+        # The observation_samples member is a kxt matrix
         return observation_samples
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] SecondaryUser Termination: Tearing things down...')
+        # Nothing to do...
+
+
+# Channel Selection Strategy Generator
+# Emulates an RL agent or a Multi-Armed Bandit
+class ChannelSelectionStrategyGenerator(object):
+
+    # The initialization sequence
+    def __init__(self, _number_of_channels):
+        print('[INFO] ChannelSelectionStrategyGenerator Initialization: Bringing things up...')
+        # The number of channels in the discretized spectrum of interest
+        self.number_of_channels = _number_of_channels
+        # The discretized spectrum of interest
+        self.discretized_spectrum = [k for k in range(0, self.number_of_channels)]
+
+    # Uniform Sensing
+    def uniform_sensing(self):
+        # Array of tuples with varying k
+        channel_selection_strategies_based_on_uniform_sensing = []
+        k = 0
+        while k < self.number_of_channels - 1:
+            i = 0
+            temp_array = []
+            while i < self.number_of_channels:
+                temp_array.append(i)
+                i = i + k + 1
+            channel_selection_strategies_based_on_uniform_sensing.append(temp_array)
+            k += 1
+        return channel_selection_strategies_based_on_uniform_sensing
+
+    # The termination sequence
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('[INFO] ChannelSelectionStrategyGenerator Termination: Cleaning things up...')
         # Nothing to do...
 
 
@@ -410,8 +449,8 @@ class EmissionEvaluator(object):
         # Nothing to do...
 
 
-# The unconstrained non-POMDP agent, i.e. Viterbi-I
-# The double Markov Chain Viterbi Algorithm with complete observations
+# The constrained non-POMDP agent, i.e. Viterbi-II
+# The double Markov Chain Viterbi Algorithm with incomplete observations
 class DoubleMarkovChainViterbiAlgorithm(object):
     # Start probabilities of PU occupancy per frequency band
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
@@ -427,7 +466,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         print('[INFO] DoubleMarkovChainViterbiAlgorithm Initialization: Bringing things up ...')
         # The number of channels in the discretized spectrum of interest
         self.number_of_channels = _number_of_channels
-        # The number of episodes of interaction of this unconstrained non-POMDP agent with the environment
+        # The number of episodes of interaction of this constrained non-POMDP agent with the environment
         self.number_of_episodes = _number_of_episodes
         # The emission evaluator
         self.emission_evaluator = _emission_evaluator
@@ -483,7 +522,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
     def get_transition_probabilities_single(self, previous_state, current_state):
         return self.transition_probabilities_matrix[previous_state.value][current_state.value]
 
-    # Get the utility obtained by this unconstrained non-POMDP agent
+    # Get the utility obtained by this constrained non-POMDP agent
     def get_episodic_utility(self, estimated_state_vector, episode):
         idle_count = 0
         occupancies = 0
@@ -501,21 +540,21 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         return ((lambda: (1 - (false_alarms / idle_count)), lambda: 1)[idle_count == 0]()) + (self.mu * (
             (lambda: missed_detections / occupancies, lambda: 0)[occupancies == 0]()))
 
-    # Output the episodic utilities of this Unconstrained Double Markov Chain Viterbi Algorithm
+    # Output the episodic utilities of this Constrained Double Markov Chain Viterbi Algorithm
     def estimate_episodic_utilities(self):
         previous_state_spatial = None
         previous_state_temporal = None
         # Estimated states - kxt matrix
         estimated_states = []
         for x in range(0, self.number_of_channels):
-            estimated_states.append([])
+            estimated_states[x] = []
         value_function_collection = []
         # A value function collection to store and index the calculated value functions across t and k
         for k in range(0, self.number_of_channels):
             row = []
             for x in range(0, self.number_of_episodes):
-                row.append(dict())
-            value_function_collection.append(row)
+                row[x] = dict()
+            value_function_collection[k] = row
         # t = 0 and k = 0 - No previous state to base the Markovian Correlation on in either dimension
         for state in OccupancyState:
             current_value = self.emission_evaluator.get_emission_probabilities(state,
@@ -669,8 +708,8 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         # Nothing to do...
 
 
-# A class detailing the evaluation of the Viterbi-I agent (An Unconstrained Double Markov Chain Viterbi Algorithm)
-class ViterbiIEvaluation(object):
+# A class detailing the evaluation of the Viterbi-II agent (A Constrained Double Markov Chain Viterbi Algorithm)
+class ViterbiIIEvaluation(object):
 
     # The number of channels in the discretized spectrum of interest
     NUMBER_OF_CHANNELS = 18
@@ -679,10 +718,10 @@ class ViterbiIEvaluation(object):
     # FIXME: Right now, I have the PrimaryUser's behavior logged for every sampling round per episode.
     #   This translates to the SU logging observations for every sampling period per episode.
     #   Although this logic is unused as of today (18-Sept-2019), I'm keeping it in case I want to average out
-    #       the inconsistencies I get during the evaluation of this Viterbi-I algorithm.
+    #       the inconsistencies I get during the evaluation of this Viterbi-II algorithm.
     NUMBER_OF_SAMPLING_ROUNDS = 1000
 
-    # The number of episodes of interaction of the unconstrained non-POMDP agent with the radio environment
+    # The number of episodes of interaction of the constrained non-POMDP agent with the radio environment
     NUMBER_OF_EPISODES = 1000
 
     # The mean of the Additive, White, Gaussian Noise samples
@@ -706,7 +745,7 @@ class ViterbiIEvaluation(object):
     # Setup the Markov Chain
     @staticmethod
     def setup_markov_chain(_correlation_class, _pi, _p):
-        print('[INFO] ViterbiIEvaluation setup_markov_chain: Setting up the Markov Chain...')
+        print('[INFO] ViterbiIIEvaluation setup_markov_chain: Setting up the Markov Chain...')
         transient_markov_chain_object = MarkovChain()
         transient_markov_chain_object.set_markovian_correlation_class(_correlation_class)
         transient_markov_chain_object.set_start_probability_parameter(_pi)
@@ -715,7 +754,7 @@ class ViterbiIEvaluation(object):
 
     # The initialization sequence
     def __init__(self):
-        print('[INFO] ViterbiIEvaluation: Bringing things up...')
+        print('[INFO] ViterbiIIEvaluation: Bringing things up...')
         # The start probabilities for the spatial Markov chain
         self.spatial_start_probabilities = {0: 0.4, 1: 0.6}
         # The start probabilities for the temporal Markov chain
@@ -747,48 +786,58 @@ class ViterbiIEvaluation(object):
                                             self.primary_user.occupancy_behavior_collection)
         # The emission evaluator
         self.emission_evaluator = EmissionEvaluator(self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_VARIANCE)
-        # The unconstrained global observation samples
-        self.unconstrained_global_observations = self.secondary_user.observe_everything_unconstrained()
-        # The unconstrained non-POMDP agent, i.e. Viterbi-I
-        self.unconstrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
-            self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
-            self.primary_user.occupancy_behavior_collection, self.unconstrained_global_observations,
-            self.spatial_start_probabilities, self.temporal_start_probabilities,
-            self.spatial_transition_probability_matrix,
-            self.temporal_transition_probability_matrix, self.PENALTY)
+        # The channel selection strategy generator
+        self.channel_selection_heuristic_generator = ChannelSelectionStrategyGenerator(self.NUMBER_OF_CHANNELS)
+        # All possible combinational heuristics of the SU's observations
+        self.observation_heuristics = self.channel_selection_heuristic_generator.uniform_sensing()
         # The x-axis corresponds to the episodes of interaction
         self.x_axis = [k + 1 for k in range(0, self.NUMBER_OF_EPISODES)]
-        # The y-axis corresponds to the episodic utilities of this Viterbi-I agent
-        self.y_axis = self.unconstrained_non_pomdp_agent.estimate_episodic_utilities()
 
     # Visualize the episodic utilities of Viterbi-I using the Plotly API
     def evaluate(self):
-        # Data Trace
-        visualization_trace = go.Scatter(x=self.x_axis,
-                                         y=self.y_axis,
-                                         mode=self.PLOTLY_SCATTER_MODE)
-        # Figure Layout
-        visualization_layout = dict(title='Episodic Utilities of the Viterbi Algorithm with Complete Observations',
+        # The data traces
+        visualization_traces = []
+        # The strategic choices (constraints) laid down in the WIKI
+        for strategic_choice in range(1, 5):
+            sensing_strategy = self.observation_heuristics[strategic_choice]
+            # The constrained observations
+            constrained_observations = self.secondary_user.observe_everything_with_spatial_constraints(sensing_strategy)
+            # The constrained non-POMDP agent, i.e. the Viterbi-II algorithm
+            constrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
+                self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
+                self.primary_user.occupancy_behavior_collection, constrained_observations,
+                self.spatial_start_probabilities, self.temporal_start_probabilities,
+                self.spatial_transition_probability_matrix,
+                self.temporal_transition_probability_matrix, self.PENALTY)
+            # The y-axis corresponds to the episodic utilities obtained by this constrained non-POMDP agent
+            episodic_utilities = constrained_non_pomdp_agent.estimate_episodic_utilities()
+            # The data trace
+            visualization_traces.append(go.Scatter(x=self.x_axis,
+                                                   y=episodic_utilities,
+                                                   name='Sensing Strategy: {}'.format(str(sensing_strategy)),
+                                                   mode=self.PLOTLY_SCATTER_MODE))
+        # The figure layout
+        visualization_layout = dict(title='Episodic Utilities of the Viterbi Algorithm with Incomplete Observations',
                                     xaxis=dict(title=r'$Episodes\ n$'),
                                     yaxis=dict(title=r'$Utility\ (1 - P_{FA}) + \mu P_{MD}$'))
-        # Figure
-        visualization_figure = dict(data=[visualization_trace],
+        # The figure
+        visualization_figure = dict(data=visualization_traces,
                                     layout=visualization_layout)
-        # URL
+        # The url
         figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Episodic_Utility_of_Unconstrained_Viterbi_Algorithm')
+                                        filename='Episodic_Utility_of_Constrained_Viterbi_Algorithm')
         # Print the URL in case you're on an environment where a GUI is not available
-        print('[INFO] ViterbiIEvaluation evaluate: Data Visualization Figure is available at {}'.format(figure_url))
+        print('[INFO] ViterbiIIEvaluation evaluate: Data Visualization Figure is available at {}'.format(figure_url))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] ViterbiIEvaluation: Tearing things down...')
+        print('[INFO] ViterbiIIEvaluation: Tearing things down...')
         # Nothing to do...
 
 
 # Run Trigger
 if __name__ == '__main__':
-    print('[INFO] ViterbiIEvaluation main: Triggering the evaluation of the Unconstrained Non-POMDP Agent, i.e. the '
-          'Viterbi Algorithm with Complete Observations!')
-    agent = ViterbiIEvaluation()
+    print('[INFO] ViterbiIIEvaluation main: Triggering the evaluation of the Constrained Non-POMDP Agent, i.e. the '
+          'Viterbi Algorithm with Incomplete Observations!')
+    agent = ViterbiIIEvaluation()
     agent.evaluate()

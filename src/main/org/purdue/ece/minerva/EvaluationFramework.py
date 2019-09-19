@@ -2870,7 +2870,7 @@ class EvaluationFramework(object):
                 self.temporal_transition_probability_matrix, self.PENALTY, job_id)
             return unconstrained_non_pomdp_agent.estimate_pu_occupancy_states()
         elif job_id == 1:
-            print('[INFO] EvaluationFramework worker: Starting job thread for the constrained POMDP agent!')
+            print('[INFO] EvaluationFramework worker: Starting job thread for the constrained non-POMDP agent!')
             # The channel selection heuristic generator
             # Setting the number of iterations for random sensing to 1
             # I don't want to employ random sensing just yet...

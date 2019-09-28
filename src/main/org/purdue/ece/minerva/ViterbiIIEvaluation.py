@@ -541,7 +541,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         utility = 0
         # Let B_k(i) denote the actual true occupancy status of the channel in this 'episode'.
         # Let \hat{B}_k(i) denote the estimated occupancy status of the channel in this 'episode'.
-        # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - \mu B_k(i) (1 - \hat{B}_k(i))
+        # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) + \mu B_k(i) (1 - \hat{B}_k(i))
         for channel in range(0, self.number_of_channels):
             utility += ((1 - self.true_pu_occupancy_states[channel][episode]) * (1 - estimated_state_vector[channel])) \
                       + (self.mu *

@@ -15,6 +15,7 @@
 #   1. Only the even channels are sensed by the SU receiver {0, 2, 4, 6, 8, 10, 12, 14, 16}
 #   2. Only channels whose indices correspond to the multiples of 3 are sensed {0, 3, 6, 9, 12, 15}
 #   3. Only channels whose indices correspond to the multiples of 4 are sensed {0, 4, 8, 12, 16}
+#   4. Only channels whose indices correspond to the multiples of 5 are sensed {0, 5, 10, 15}
 
 # VITERBI ALGORITHM WITH INCOMPLETE OBSERVATIONS
 
@@ -41,12 +42,12 @@ class MarkovianCorrelationClass(Enum):
     INVALID = 2
 
 
-# OccupancyState Enumeration
+# Occupancy State Enumeration
 # Based on Energy Detection, \mathbb{E}[|X_k(i)|^2] = 1, if Occupied ; else, \mathbb{E}[|X_k(i)|^2] = 0
 class OccupancyState(Enum):
     # Occupancy state IDLE
     IDLE = 0
-    # Occupancy state OCCUPIED:
+    # Occupancy state OCCUPIED
     OCCUPIED = 1
 
 
@@ -74,7 +75,7 @@ class MarkovChain(object):
                   'the INVALID Enumeration member...')
             self.markovian_correlation_class = MarkovianCorrelationClass.INVALID
         print('[INFO] MarkovChain set_markovian_correlation_class: Markovian Correlation Class - ',
-              self.markovian_correlation_class)
+              self.markovian_correlation_class.name)
 
     # External exposition to set the start probability parameter 'pi'
     def set_start_probability_parameter(self, pi):
@@ -92,13 +93,13 @@ class MarkovChain(object):
     # External exposition to set the transition probability parameter 'p'
     def set_transition_probability_parameter(self, p):
         if 0 <= p <= 1 and self.start_probabilities[1] is not None:
-            # P(Occupied|Idle) = p
+            # \mathbb{P}(Occupied|Idle) = p
             self.transition_probabilities[0][1] = p
-            # P(Idle|Idle) = 1 - p
+            # \mathbb{P}(Idle|Idle) = 1 - p
             self.transition_probabilities[0][0] = 1 - p
-            # P(Idle|Occupied) = p + (1 - pi)
+            # \mathbb{P}(Idle|Occupied) = p + (1 - pi)
             self.transition_probabilities[1][0] = p + self.start_probabilities[0]
-            # P(Occupied|Occupied) = 1 - P(Idle|Occupied)
+            # \mathbb{P}(Occupied|Occupied) = 1 - q
             self.transition_probabilities[1][1] = 1 - self.transition_probabilities[1][0]
         else:
             print(
@@ -129,6 +130,7 @@ class Util(object):
         return {0: (1 - pi), 1: pi}
 
     # Get the steady state probability for the state passed as the argument
+    # The "state" arg is an instance of the OccupancyState enumeration.
     @staticmethod
     def get_state_probability(state, pi):
         return (lambda: 1 - pi, lambda: pi)[state == OccupancyState.OCCUPIED]()
@@ -181,9 +183,9 @@ class Channel(object):
     # Generate the Channel Impulse Response samples
     def get_impulse_response(self):
         # The metrics to be passed to numpy.random.normal(mu, std, n)
-        n_channel_impulse_response = self.number_of_sampling_rounds
         mu_channel_impulse_response = self.impulse_response_mean
         std_channel_impulse_response = numpy.sqrt(self.impulse_response_variance)
+        n_channel_impulse_response = self.number_of_sampling_rounds
         # The output
         channel_impulse_response_samples = []
         # Logic
@@ -272,25 +274,26 @@ class PrimaryUser(object):
         # Global System Steady-State Analysis - What if it's wrong?
         # Note that both chains are essentially dealing with the same cell (channel and time) and hence, the steady
         #   state probabilities of the cells (over space and time) need to be the same.
-        if spatial_start_probabilities[1] != temporal_start_probabilities[1]:
+        if spatial_start_probabilities != temporal_start_probabilities:
             print(
-                '[ERROR] PrimaryUser get_occupancy_behavior: Looks like the start probabilities are different across...'
-                'the Spatial and the Temporal Markov Chains. This is inaccurate! Proceeding with defaults...')
+                '[ERROR] PrimaryUser simulate_occupancy_behavior: Looks like the start probabilities are different '
+                'across the Spatial and the Temporal Markov Chains. This is inaccurate! Proceeding with defaults...')
             # Default Values
             spatial_start_probabilities = {0: 0.4, 1: 0.6}
             temporal_start_probabilities = {0: 0.4, 1: 0.6}
-            print('[WARN] PrimaryUser get_occupancy_behavior: Modified System Steady State Probabilities - ',
+            print('[WARN] PrimaryUser simulate_occupancy_behavior: Modified System Steady State Probabilities - ',
                   str(temporal_start_probabilities))
         # Everything's alright with the system steady-state statistics - Start simulating the PU Occupancy Behavior
-        # This is global and system-specific. So, it doesn't matter which chain's steady-state probabilities is used...
+        # This is global and system-specific. So, it doesn't matter which chain's steady-state probabilities are used...
         pi_val = spatial_start_probabilities[1]
         # SINGLE CHAIN INFLUENCE along all the columns of the first row
         # Get the initial state vector to get things going - row 0
         self.occupancy_behavior_collection.append(
             self.get_initial_states_temporal_variation(temporal_transition_probabilities_matrix[0][1],
-                                                       temporal_transition_probabilities_matrix[1][0], pi_val))
+                                                       temporal_transition_probabilities_matrix[1][0],
+                                                       pi_val))
         previous_state = self.occupancy_behavior_collection[0][0]
-        # SINGLE CHAIN INFLUENCE along the first columns of all the rows
+        # SINGLE CHAIN INFLUENCE along the first column of all the rows
         # Start filling things based on spatial correlation (i.e. across rows for column-0)
         for channel_index in range(1, self.number_of_channels):
             random_sample = numpy.random.random_sample()
@@ -459,7 +462,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction',
                                             ['current_value', 'previous_temporal_state', 'previous_spatial_state'])
 
-    # The initialization Sequence
+    # The initialization sequence
     def __init__(self, _number_of_channels, _number_of_episodes, _emission_evaluator, _true_pu_occupancy_states,
                  _observation_samples, _spatial_start_probabilities, _temporal_start_probabilities,
                  _spatial_transition_probabilities_matrix, _temporal_transition_probabilities_matrix, _mu):
@@ -474,16 +477,27 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         self.true_pu_occupancy_states = _true_pu_occupancy_states
         # The observed samples at the SU receiver
         self.observation_samples = _observation_samples
-        # The start probabilities
-        self.start_probabilities = self.BAND_START_PROBABILITIES(idle=_spatial_start_probabilities[0],
-                                                                 occupied=_spatial_start_probabilities[1])
+        # The spatial start probabilities dict
+        self.spatial_start_probabilities = _spatial_start_probabilities
+        # The temporal start probabilities dict
+        self.temporal_start_probabilities = _temporal_start_probabilities
+        # The unified start probabilities dict
+        if self.spatial_start_probabilities != self.temporal_start_probabilities:
+            print('[ERROR] DoubleMarkovChainViterbiAlgorithm Initialization: The start probabilities are different '
+                  'across the spatial and temporal chains. This is inaccurate! Proceeding with the defaults...')
+            self.spatial_start_probabilities = {0: 0.4, 1: 0.6}
+            self.temporal_start_probabilities = {0: 0.4, 1: 0.6}
+        self.unified_start_probabilities = self.spatial_start_probabilities
+        self.start_probabilities = self.BAND_START_PROBABILITIES(idle=self.unified_start_probabilities[0],
+                                                                 occupied=self.unified_start_probabilities[1]
+                                                                 )
         # The spatial transition probabilities matrix
         self.spatial_transition_probabilities_matrix = _spatial_transition_probabilities_matrix
         # The temporal transition probabilities matrix
         self.temporal_transition_probabilities_matrix = _temporal_transition_probabilities_matrix
         # The unified transition probabilities matrix
         # FIXME: For now, the same transition model across both chains
-        self.transition_probabilities_matrix = _spatial_transition_probabilities_matrix
+        self.transition_probabilities_matrix = self.spatial_transition_probabilities_matrix
         # The missed detections penalty term
         self.mu = _mu
 
@@ -506,7 +520,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
     #     return self.transition_probabilities_matrix[spatial_prev_state][current_state]
 
     # Interpretation 2
-    # Return the transition probabilities from the transition probabilities matrix - two dimensions
+    # Return the transition probabilities from the transition probabilities matrices - two dimensions
     # The two Markov Chains are independent and hence, we can treat the transitions independently.
     # \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b, X_{k, t-1} = c) = \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b) * \\
     #                                                           \mathbb{P}(X_{k,t} = a | X_{k, t-1} = c)
@@ -514,31 +528,25 @@ class DoubleMarkovChainViterbiAlgorithm(object):
     #   of OccupancyState.
     def get_transition_probabilities(self, temporal_prev_state, spatial_prev_state, current_state):
         return self.spatial_transition_probabilities_matrix[spatial_prev_state.value][current_state.value] * \
-            self.temporal_transition_probabilities_matrix[temporal_prev_state.value][current_state.value]
+               self.temporal_transition_probabilities_matrix[temporal_prev_state.value][current_state.value]
 
     # FIXME: For now, the same transition model across both chains {An exclusive method}
     # Return the transition probabilities from the transition probabilities matrix - single dimension
-    # THe "previous_state" arg and the "current_state" arg are enum instances of "OccupancyState".
+    # The "previous_state" arg and the "current_state" arg are enum instances of "OccupancyState".
     def get_transition_probabilities_single(self, previous_state, current_state):
         return self.transition_probabilities_matrix[previous_state.value][current_state.value]
 
     # Get the utility obtained by this constrained non-POMDP agent
     def get_episodic_utility(self, estimated_state_vector, episode):
-        idle_count = 0
-        occupancies = 0
-        false_alarms = 0
-        missed_detections = 0
+        utility = 0
+        # Let B_k(i) denote the actual true occupancy status of the channel in this 'episode'.
+        # Let \hat{B}_k(i) denote the estimated occupancy status of the channel in this 'episode'.
+        # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - \mu B_k(i) (1 - \hat{B}_k(i))
         for channel in range(0, self.number_of_channels):
-            if self.true_pu_occupancy_states[channel][episode] == 0:
-                idle_count += 1
-                if estimated_state_vector[channel] == 1:
-                    false_alarms += 1
-            if self.true_pu_occupancy_states[channel][episode] == 1:
-                occupancies += 1
-                if estimated_state_vector[channel] == 0:
-                    missed_detections += 1
-        return ((lambda: (1 - (false_alarms / idle_count)), lambda: 1)[idle_count == 0]()) + (self.mu * (
-            (lambda: missed_detections / occupancies, lambda: 0)[occupancies == 0]()))
+            utility += ((1 - self.true_pu_occupancy_states[channel][episode]) * (1 - estimated_state_vector[channel])) \
+                      + (self.mu *
+                         (1 - estimated_state_vector[channel]) * self.true_pu_occupancy_states[channel][episode])
+        return utility
 
     # Output the episodic utilities of this Constrained Double Markov Chain Viterbi Algorithm
     def estimate_episodic_utilities(self):
@@ -547,14 +555,14 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         # Estimated states - kxt matrix
         estimated_states = []
         for x in range(0, self.number_of_channels):
-            estimated_states[x] = []
+            estimated_states.append([])
         value_function_collection = []
-        # A value function collection to store and index the calculated value functions across t and k
+        # A value function collection to store and index the calculated value functions across k and t
         for k in range(0, self.number_of_channels):
             row = []
-            for x in range(0, self.number_of_episodes):
-                row[x] = dict()
-            value_function_collection[k] = row
+            for t in range(0, self.number_of_episodes):
+                row.append(dict())
+            value_function_collection.append(row)
         # t = 0 and k = 0 - No previous state to base the Markovian Correlation on in either dimension
         for state in OccupancyState:
             current_value = self.emission_evaluator.get_emission_probabilities(state,
@@ -575,7 +583,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                 # Using IDLE as the confirmed previous state
                 confirmed_previous_state = OccupancyState.IDLE.name
                 for candidate_previous_state in OccupancyState:
-                    if candidate_previous_state.name == OccupancyState.IDLE.name:
+                    if candidate_previous_state == OccupancyState.IDLE:
                         # Already done
                         continue
                     else:
@@ -586,9 +594,11 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                             max_pointer = pointer
                             confirmed_previous_state = candidate_previous_state.name
                 current_value = max_pointer * self.emission_evaluator.get_emission_probabilities(
-                    state, self.observation_samples[i][j])
+                    state,
+                    self.observation_samples[i][j])
                 value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
-                    current_value=current_value, previous_temporal_state=confirmed_previous_state,
+                    current_value=current_value,
+                    previous_temporal_state=confirmed_previous_state,
                     previous_spatial_state=None)
         # First column - Only spatial correlation
         j = 0
@@ -601,7 +611,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                               value_function_collection[i - 1][j][OccupancyState.IDLE.name].current_value
                 confirmed_previous_state = OccupancyState.IDLE.name
                 for candidate_previous_state in OccupancyState:
-                    if candidate_previous_state.name == OccupancyState.IDLE.name:
+                    if candidate_previous_state == OccupancyState.IDLE:
                         # Already done
                         continue
                     else:
@@ -612,9 +622,11 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                             max_pointer = pointer
                             confirmed_previous_state = candidate_previous_state.name
                 current_value = max_pointer * self.emission_evaluator.get_emission_probabilities(
-                    state, self.observation_samples[i][j])
+                    state,
+                    self.observation_samples[i][j])
                 value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
-                    current_value=current_value, previous_temporal_state=None,
+                    current_value=current_value,
+                    previous_temporal_state=None,
                     previous_spatial_state=confirmed_previous_state)
         # I'm done with the first row and first column
         # Moving on to the other rows and columns
@@ -631,8 +643,8 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                     confirmed_previous_state_spatial = OccupancyState.IDLE.name
                     for candidate_previous_state_temporal in OccupancyState:
                         for candidate_previous_state_spatial in OccupancyState:
-                            if candidate_previous_state_temporal.name == OccupancyState.IDLE.name and \
-                                    candidate_previous_state_spatial.name == OccupancyState.IDLE.name:
+                            if candidate_previous_state_temporal == OccupancyState.IDLE and \
+                                    candidate_previous_state_spatial == OccupancyState.IDLE:
                                 # Already done
                                 continue
                             else:
@@ -649,23 +661,22 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                                     confirmed_previous_state_spatial = candidate_previous_state_spatial.name
                     # Now, I have the value function for this i and this j
                     # Populate the value function collection with this value
-                    # I found maximum of Double Markov Chain value functions from the past and now I'm multiplying it...
-                    # ...with the emission probability of this particular observation
+                    # I found the max of Double Markov Chain value functions from the past and now I'm multiplying it
+                    #   with the emission probability of this particular observation
                     current_value = max_pointer * self.emission_evaluator.get_emission_probabilities(
                         state,
                         self.observation_samples[i][j])
                     value_function_collection[i][j][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
-                        current_value=current_value, previous_temporal_state=confirmed_previous_state_temporal,
+                        current_value=current_value,
+                        previous_temporal_state=confirmed_previous_state_temporal,
                         previous_spatial_state=confirmed_previous_state_spatial)
-        # I think the forward path is perfect
-        # I have doubts in the backtrack path
         max_value = 0
         # Finding the max value among the named tuples
         for _value in value_function_collection[-1][-1].values():
             if _value.current_value > max_value:
                 max_value = _value.current_value
-        # Finding the state corresponding to this max_value and using this as the final confirmed state to ...
-        # ...backtrack and find the previous states
+        # Finding the state corresponding to this max_value and using this as the final confirmed state to
+        #   backtrack and find the previous states
         for k, v in value_function_collection[-1][-1].items():
             if v.current_value == max_value:
                 # FIXME: Using the 'name' member to reference and deference the value function collection is not safe.
@@ -675,19 +686,18 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                 break
         # Backtracking
         for i in range(self.number_of_channels - 1, -1, -1):
-            for j in range(self.number_of_episodes - 1, -1, -1):
+            for j in range(self.number_of_episodes - 1, 0, -1):
                 if len(estimated_states[i]) == 0:
                     estimated_states[i].insert(0, self.value_from_name(
                         value_function_collection[i + 1][j][previous_state_spatial].previous_spatial_state))
-                    previous_state_temporal = value_function_collection[i][j][
-                        previous_state_spatial].previous_temporal_state
+                    previous_state_spatial = value_function_collection[i + 1][j][
+                        previous_state_spatial].previous_spatial_state
+                    previous_state_temporal = previous_state_spatial
                     continue
                 estimated_states[i].insert(0, self.value_from_name(
                     value_function_collection[i][j][previous_state_temporal].previous_temporal_state))
                 previous_state_temporal = value_function_collection[i][j][
                     previous_state_temporal].previous_temporal_state
-            previous_state_spatial = value_function_collection[i][self.number_of_episodes - 1][
-                previous_state_spatial].previous_spatial_state
         utilities = []
         for time_index in range(0, self.number_of_episodes):
             utilities.append(self.get_episodic_utility([estimated_states[k][time_index] for k in range(
@@ -697,14 +707,14 @@ class DoubleMarkovChainViterbiAlgorithm(object):
     # Get enumeration field value from name
     @staticmethod
     def value_from_name(name):
-        if name == 'OCCUPIED':
+        if name == OccupancyState.OCCUPIED.name:
             return OccupancyState.OCCUPIED.value
         else:
             return OccupancyState.IDLE.value
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] DoubleMarkovChainViterbiAlgorithm Clean-up: Cleaning things up ...')
+        print('[INFO] DoubleMarkovChainViterbiAlgorithm Termination: Cleaning things up ...')
         # Nothing to do...
 
 
@@ -715,8 +725,8 @@ class ViterbiIIEvaluation(object):
     NUMBER_OF_CHANNELS = 18
 
     # The number of sampling rounds during the observation phase of the SecondaryUser
-    # FIXME: Right now, I have the PrimaryUser's behavior logged for every sampling round per episode.
-    #   This translates to the SU logging observations for every sampling period per episode.
+    # FIXME: If I want, I could have the PrimaryUser's behavior logged for every sampling round per episode.
+    #   This translates to the SU logging observations for every sampling round per episode.
     #   Although this logic is unused as of today (18-Sept-2019), I'm keeping it in case I want to average out
     #       the inconsistencies I get during the evaluation of this Viterbi-II algorithm.
     NUMBER_OF_SAMPLING_ROUNDS = 1000
@@ -793,7 +803,7 @@ class ViterbiIIEvaluation(object):
         # The x-axis corresponds to the episodes of interaction
         self.x_axis = [k + 1 for k in range(0, self.NUMBER_OF_EPISODES)]
 
-    # Visualize the episodic utilities of Viterbi-I using the Plotly API
+    # Visualize the episodic utilities of Viterbi-II using the Plotly API
     def evaluate(self):
         # The data traces
         visualization_traces = []
@@ -819,13 +829,14 @@ class ViterbiIIEvaluation(object):
         # The figure layout
         visualization_layout = dict(title='Episodic Utilities of the Viterbi Algorithm with Incomplete Observations',
                                     xaxis=dict(title=r'$Episodes\ n$'),
-                                    yaxis=dict(title=r'$Utility\ (1 - P_{FA}) + \mu P_{MD}$'))
+                                    yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
+                                                     r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
         # The figure
         visualization_figure = dict(data=visualization_traces,
                                     layout=visualization_layout)
         # The url
         figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Episodic_Utility_of_Constrained_Viterbi_Algorithm')
+                                        filename='Episodic_Utilities_of_Constrained_Viterbi_Algorithm')
         # Print the URL in case you're on an environment where a GUI is not available
         print('[INFO] ViterbiIIEvaluation evaluate: Data Visualization Figure is available at {}'.format(figure_url))
 

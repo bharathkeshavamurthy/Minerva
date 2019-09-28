@@ -95,7 +95,7 @@ class MarkovChain(object):
             self.transition_probabilities[0][0] = 1 - p
             # \mathbb{P}(Idle|Occupied) = q = p + (1 - pi)
             self.transition_probabilities[1][0] = p + self.start_probabilities[0]
-            # P(Occupied|Occupied) = 1 - q
+            # \mathbb{P}(Occupied|Occupied) = 1 - q
             self.transition_probabilities[1][1] = 1 - self.transition_probabilities[1][0]
         else:
             print(
@@ -484,7 +484,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
     #     return self.transition_probabilities_matrix[spatial_prev_state][current_state]
 
     # Interpretation 2
-    # Return the transition probabilities from the transition probabilities matrix - two dimensions
+    # Return the transition probabilities from the transition probabilities matrices - two dimensions
     # The two Markov Chains are independent and hence, we can treat the transitions independently.
     # \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b, X_{k, t-1} = c) = \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b) * \\
     #                                                           \mathbb{P}(X_{k,t} = a | X_{k, t-1} = c)
@@ -496,27 +496,21 @@ class DoubleMarkovChainViterbiAlgorithm(object):
 
     # FIXME: For now, the same transition model across both chains {An exclusive method}
     # Return the transition probabilities from the transition probabilities matrix - single dimension
-    # THe "previous_state" arg and the "current_state" arg are enum instances of "OccupancyState".
+    # The "previous_state" arg and the "current_state" arg are enum instances of "OccupancyState".
     def get_transition_probabilities_single(self, previous_state, current_state):
         return self.transition_probabilities_matrix[previous_state.value][current_state.value]
 
     # Get the utility obtained by this unconstrained non-POMDP agent
     def get_episodic_utility(self, estimated_state_vector, episode):
-        idle_count = 0
-        occupancies = 0
-        false_alarms = 0
-        missed_detections = 0
+        utility = 0
+        # Let B_k(i) denote the actual true occupancy status of the channel in this 'episode'.
+        # Let \hat{B}_k(i) denote the estimated occupancy status of the channel in this 'episode'.
+        # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - \mu B_k(i) (1 - \hat{B}_k(i))
         for channel in range(0, self.number_of_channels):
-            if self.true_pu_occupancy_states[channel][episode] == 0:
-                idle_count += 1
-                if estimated_state_vector[channel] == 1:
-                    false_alarms += 1
-            if self.true_pu_occupancy_states[channel][episode] == 1:
-                occupancies += 1
-                if estimated_state_vector[channel] == 0:
-                    missed_detections += 1
-        return ((lambda: (1 - (false_alarms / idle_count)), lambda: 1)[idle_count == 0]()) + (self.mu * (
-            (lambda: missed_detections / occupancies, lambda: 0)[occupancies == 0]()))
+            utility += ((1 - self.true_pu_occupancy_states[channel][episode]) * (1 - estimated_state_vector[channel])) \
+                       + (self.mu *
+                          (1 - estimated_state_vector[channel]) * self.true_pu_occupancy_states[channel][episode])
+        return utility
 
     # Output the episodic utilities of this Unconstrained Double Markov Chain Viterbi Algorithm
     def estimate_episodic_utilities(self):
@@ -684,7 +678,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] DoubleMarkovChainViterbiAlgorithm Clean-up: Cleaning things up ...')
+        print('[INFO] DoubleMarkovChainViterbiAlgorithm Termination: Cleaning things up ...')
         # Nothing to do...
 
 
@@ -789,13 +783,14 @@ class ViterbiIEvaluation(object):
         # Figure Layout
         visualization_layout = dict(title='Episodic Utilities of the Viterbi Algorithm with Complete Observations',
                                     xaxis=dict(title=r'$Episodes\ n$'),
-                                    yaxis=dict(title=r'$Utility\ (1 - P_{FA}) + \mu P_{MD}$'))
+                                    yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
+                                                     r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
         # Figure
         visualization_figure = dict(data=[visualization_trace],
                                     layout=visualization_layout)
         # URL
         figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Episodic_Utility_of_Unconstrained_Viterbi_Algorithm')
+                                        filename='Episodic_Utilities_of_Unconstrained_Viterbi_Algorithm')
         # Print the URL in case you're on an environment where a GUI is not available
         print('[INFO] ViterbiIEvaluation evaluate: Data Visualization Figure is available at {}'.format(figure_url))
 

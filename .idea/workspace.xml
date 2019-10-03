@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f958ad54-6282-4908-8193-31cdedd5c478" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,13 +13,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="464">
+              <caret line="354" column="39" selection-start-line="354" selection-start-column="39" selection-end-line="354" selection-end-column="39" />
+              <folding>
+                <element signature="e#553#565#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2472">
-              <caret line="98" column="8" selection-end-line="319" />
+            <state relative-caret-position="1206">
+              <caret line="275" column="13" lean-forward="true" selection-end-line="315" />
               <folding>
-                <element signature="e#521#533#0" expanded="true" />
+                <element signature="e#520#532#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -39,6 +52,7 @@
       <find>occupied</find>
       <find>MarkovianCorrelationClass.invalid</find>
       <find>get_state_probability</find>
+      <find>list()</find>
     </findStrings>
     <replaceStrings>
       <replace>IDLE</replace>
@@ -60,6 +74,7 @@
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" />
       </list>
     </option>
   </component>
@@ -146,7 +161,7 @@
       <window_info anchor="right" id="R Packages" order="4" />
     </layout>
     <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26678878" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26678878" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -159,7 +174,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32959184" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.32959184" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32959184" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -344,48 +359,49 @@
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#623#644#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="27" column="19" lean-forward="true" selection-start-line="15" selection-end-line="27" selection-end-column="19" />
-          <folding>
-            <element signature="e#475#512#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5179">
-          <caret line="829" column="82" selection-start-line="829" selection-start-column="82" selection-end-line="829" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2419">
-          <caret line="794" column="116" lean-forward="true" selection-start-line="794" selection-start-column="51" selection-end-line="794" selection-end-column="116" />
+        <state relative-caret-position="2165">
+          <caret line="652" column="54" selection-start-line="652" selection-start-column="54" selection-end-line="652" selection-end-column="54" />
           <folding>
             <element signature="e#981#993#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2575">
+          <caret line="829" column="82" selection-start-line="829" selection-start-column="82" selection-end-line="829" selection-end-column="82" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ChannelSelectionStrategyGenerator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="346">
+          <caret line="59" column="62" lean-forward="true" selection-start-line="59" selection-start-column="62" selection-end-line="59" selection-end-column="62" />
+          <folding>
+            <element signature="e#475#512#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="464">
+          <caret line="354" column="39" selection-start-line="354" selection-start-column="39" selection-end-line="354" selection-end-column="39" />
+          <folding>
+            <element signature="e#553#565#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2472">
-          <caret line="98" column="8" selection-end-line="319" />
+        <state relative-caret-position="1206">
+          <caret line="275" column="13" lean-forward="true" selection-end-line="315" />
           <folding>
-            <element signature="e#521#533#0" expanded="true" />
+            <element signature="e#520#532#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -46,16 +46,13 @@ class PUOccupancyBehaviorEstimator(object):
     # Start probabilities of PU occupancy per frequency band
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
 
-    # Occupancy States (IDLE, OCCUPIED)
-    OCCUPANCY_STATES = (OccupancyState.IDLE, OccupancyState.OCCUPIED)
-
     # Value function named tuple
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
 
-    # Number of trials to smoothen the ${PARAMETER_OF_INTEREST} v/s p = \mathbb{P}(1|0) curve
+    # Number of trials to smoothen the Estimation Accuracy v/s p = \mathbb{P}(1|0) curve
     NUMBER_OF_CYCLES = 50
 
-    # The initialization Sequence
+    # The initialization sequence
     def __init__(self):
         print('[INFO] PUOccupancyBehaviorEstimator Initialization: Bringing things up ...')
         # AWGN samples
@@ -64,8 +61,6 @@ class PUOccupancyBehaviorEstimator(object):
         self.channel_impulse_response_samples = {}
         # True PU Occupancy states
         self.true_pu_occupancy_states = []
-        # The parameters of observations of all the bands are stored in this dict here
-        self.observations_parameters = {}
         # The observed samples at the SU receiver
         self.observation_samples = []
         # The start probabilities
@@ -112,7 +107,7 @@ class PUOccupancyBehaviorEstimator(object):
                                                                                         self.NUMBER_OF_SAMPLES)
         # Making observations according to the defined Observation Model
         for band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
-            obs_per_band = list()
+            obs_per_band = []
             for count in range(0, self.NUMBER_OF_SAMPLES):
                 obs_per_band.append((self.channel_impulse_response_samples[band][
                                         count] * self.true_pu_occupancy_states[band]) + self.noise_samples[
@@ -143,7 +138,7 @@ class PUOccupancyBehaviorEstimator(object):
                                 ).pdf(observation_sample)
 
     # Evaluate the Estimation Accuracy
-    # \mathbb{P}(\hat{X_k} = x_k | X_k = x_k) \forall k \in \{0, 1, 2, ...., K-1\} and x_k \in \{0, 1\}
+    # \mathbb{P}(\hat{X}_k = x_k | X_k = x_k) \forall k \in \{0, 1, 2, ...., K-1\} and x_k \in \{0, 1\}
     # Relative Frequency approach to estimate this parameter
     def get_estimation_accuracy(self, estimated_states):
         accuracies = 0
@@ -210,10 +205,11 @@ class PUOccupancyBehaviorEstimator(object):
             #   backtrack and find the previous states
             for k, v in value_function_collection[-1].items():
                 if v.current_value == max_value:
+                    # FIXME: Using the 'name' member to reference & deference the value function collection is not safe.
                     estimated_states.append(self.value_from_name(k))
                     previous_state = k
                     break
-            # Backtracking
+            # BACKTRACKING
             for i in range(len(value_function_collection) - 2, -1, -1):
                 estimated_states.insert(0, self.value_from_name(
                     value_function_collection[i + 1][previous_state].previous_state))

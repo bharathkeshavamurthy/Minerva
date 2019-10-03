@@ -6,21 +6,26 @@
 
 # For the math behind this algorithm, refer to:
 # This url may change - Please contact the author at <bkeshava@purdue.edu> for more details.
-# https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
+# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/latex/pdf/PU_Occupancy_Behavior_Estimator_v1_0_0.pdf
 
-from enum import Enum
 import numpy
+import plotly
 import scipy.stats
-from matplotlib import pyplot as plt
+from enum import Enum
+import plotly.graph_objs as go
 from collections import namedtuple
+
+# Plotly user account credentials for visualization
+plotly.tools.set_credentials_file(username='bkeshava',
+                                  api_key='W2WL5OOxLcgCzf8NNlgl')
 
 
 # Occupancy state enumeration
 class OccupancyState(Enum):
     # Channel Idle
-    idle = 0
+    IDLE = 0
     # Channel Occupied
-    occupied = 1
+    OCCUPIED = 1
 
 
 # Main class: PU Occupancy Behavior Estimation
@@ -28,12 +33,10 @@ class PUOccupancyBehaviorEstimator(object):
     # Number of samples for this simulation
     NUMBER_OF_SAMPLES = 1000
 
-    # Variance of the Additive White Gaussian Noise Samples
-    # Noise samples are Additive White realizations of a circular symmetric complex random variable CN(0,\sigma_V^2)
+    # Variance of the Additive White Gaussian Noise Samples (Zero Mean Gaussian)
     VARIANCE_OF_AWGN = 1
 
-    # Variance of the Channel Impulse Response which is a zero mean Gaussian
-    # Channel impulse response samples are realizations of a circular symmetric complex random variable CN(0,\sigma_H^2)
+    # Variance of the Channel Impulse Response Samples (Zero Mean Gaussian)
     # SNR = 10log_10(80/1) = 19.03 dB
     VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE = 80
 
@@ -44,34 +47,34 @@ class PUOccupancyBehaviorEstimator(object):
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
 
     # Occupancy States (IDLE, OCCUPIED)
-    OCCUPANCY_STATES = (OccupancyState.idle, OccupancyState.occupied)
+    OCCUPANCY_STATES = (OccupancyState.IDLE, OccupancyState.OCCUPIED)
 
     # Value function named tuple
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
 
-    # Number of trials to smoothen the ${PARAMETER_OF_INTEREST} v/s P(1|0) curve
+    # Number of trials to smoothen the ${PARAMETER_OF_INTEREST} v/s p = \mathbb{P}(1|0) curve
     NUMBER_OF_CYCLES = 50
 
-    # Initialization Sequence
+    # The initialization Sequence
     def __init__(self):
         print('[INFO] PUOccupancyBehaviorEstimator Initialization: Bringing things up ...')
         # AWGN samples
         self.noise_samples = {}
         # Channel Impulse Response samples
         self.channel_impulse_response_samples = {}
-        # True PU Occupancy state
+        # True PU Occupancy states
         self.true_pu_occupancy_states = []
         # The parameters of observations of all the bands are stored in this dict here
         self.observations_parameters = {}
         # The observed samples at the SU receiver
         self.observation_samples = []
         # The start probabilities
-        self.start_probabilities = self.BAND_START_PROBABILITIES(occupied=0.6, idle=0.4)
-        # The complete state transition matrix is defined as a Python dictionary taking in named-tuples
+        self.start_probabilities = self.BAND_START_PROBABILITIES(idle=0.4, occupied=0.6)
+        # The state transition probabilities
         self.transition_probabilities_matrix = {}
 
     # Generate the true states using the Markovian model
-    # Arguments: p -> P(1|0); q -> P(0|1); and pi -> P(1)
+    # Arguments: p -> \mathbb{P}(1|0); q -> \mathbb{P}(0|1); and pi -> \mathbb{P}(1)
     def allocate_true_pu_occupancy_states(self, p_val, q_val, pi_val):
         previous = 1
         # Initial state generation -> band-0 using pi_val
@@ -80,12 +83,12 @@ class PUOccupancyBehaviorEstimator(object):
         self.true_pu_occupancy_states.append(previous)
         # Based on the state of band-0 and the (p_val,q_val) values, generate the states of the remaining bands
         for loop_counter in range(1, self.NUMBER_OF_FREQUENCY_BANDS):
-            seed = numpy.random.random_sample()
-            if previous == 1 and seed < q_val:
+            sample = numpy.random.random_sample()
+            if previous == 1 and sample < q_val:
                 previous = 0
-            elif previous == 1 and seed > q_val:
+            elif previous == 1 and sample > q_val:
                 previous = 1
-            elif previous == 0 and seed < p_val:
+            elif previous == 0 and sample < p_val:
                 previous = 1
             else:
                 previous = 0
@@ -96,61 +99,51 @@ class PUOccupancyBehaviorEstimator(object):
     def allocate_observations(self):
         # Each frequency band is observed ${NUMBER_OF_SAMPLES} times.
         # The sampling of each frequency band involves a noise sample corresponding to that SU receiver
-        # ... and a channel impulse response sample between that SU receiver and the radio environment
+        #   and an impulse response sample for the channel in between that SU receiver and the radio environment
         for frequency_band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
             mu_noise, std_noise = 0, numpy.sqrt(self.VARIANCE_OF_AWGN)
-            # The Re and Im parts of the noise samples are IID and distributed as N(0,\sigma_V^2/2)
-            real_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)), self.NUMBER_OF_SAMPLES)
-            img_noise_samples = numpy.random.normal(mu_noise, (std_noise / numpy.sqrt(2)), self.NUMBER_OF_SAMPLES)
-            self.noise_samples[frequency_band] = real_noise_samples + (1j * img_noise_samples)
+            self.noise_samples[frequency_band] = numpy.random.normal(mu_noise,
+                                                                     std_noise,
+                                                                     self.NUMBER_OF_SAMPLES)
             mu_channel_impulse_response, std_channel_impulse_response = 0, numpy.sqrt(
                 self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE)
-            # The Re and Im parts of the channel impulse response samples are IID and distributed as N(0,\sigma_H^2/2)
-            real_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
-                                                                        (std_channel_impulse_response / numpy.sqrt(2)),
-                                                                        self.NUMBER_OF_SAMPLES)
-            img_channel_impulse_response_samples = numpy.random.normal(mu_channel_impulse_response,
-                                                                       (std_channel_impulse_response / numpy.sqrt(2)),
-                                                                       self.NUMBER_OF_SAMPLES)
-            self.channel_impulse_response_samples[frequency_band] = real_channel_impulse_response_samples + (
-                    1j * img_channel_impulse_response_samples)
-        # Re-arranging the vectors
+            self.channel_impulse_response_samples[frequency_band] = numpy.random.normal(mu_channel_impulse_response,
+                                                                                        std_channel_impulse_response,
+                                                                                        self.NUMBER_OF_SAMPLES)
+        # Making observations according to the defined Observation Model
         for band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
             obs_per_band = list()
             for count in range(0, self.NUMBER_OF_SAMPLES):
-                obs_per_band.append(self.channel_impulse_response_samples[band][
-                                        count] * self.true_pu_occupancy_states[band] + self.noise_samples[
+                obs_per_band.append((self.channel_impulse_response_samples[band][
+                                        count] * self.true_pu_occupancy_states[band]) + self.noise_samples[
                                         band][count])
             self.observation_samples.append(obs_per_band)
         return self.observation_samples
 
     # Get the start probabilities from the named tuple - a simple getter utility method exclusive to this class
-    def get_start_probabilities(self, state_name):
-        if state_name == 'occupied':
+    # The "state" arg is an instance of the OccupancyState enumeration.
+    def get_start_probabilities(self, state):
+        if state == OccupancyState.OCCUPIED:
             return self.start_probabilities.occupied
         else:
             return self.start_probabilities.idle
 
     # Return the transition probabilities from the transition probabilities matrix
+    # The "row" arg and the "column" arg are instances of the OccupancyState enumeration.
     def get_transition_probabilities(self, row, column):
-        return self.transition_probabilities_matrix[row][column]
+        return self.transition_probabilities_matrix[row.value][column.value]
 
-    # Get the Emission Probabilities -> P(y|x)
+    # Get the Emission Probabilities -> \mathbb{P}(y|x)
+    # The "state" arg is an instance of the OccupancyState enumeration.
     def get_emission_probabilities(self, state, observation_sample):
-        # Idea: P(A, B|C) = P(A|B, C)P(B|C) = P(A|C)P(B|C) because the real and imaginary components are independent
-        # P(\Re(y_k(i)), \Im(y_k(i))|x_k) = P(\Re(y_k(i))|x_k)P(\Im(y_k(i)|x_k)
-        # The emission probability from the real component
-        emission_real_gaussian_component = scipy.stats.norm(0, numpy.sqrt(
-            ((self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE / 2) * state) + (self.VARIANCE_OF_AWGN / 2))).pdf(
-            observation_sample.real)
-        # The emission probability from the imaginary component
-        emission_imaginary_gaussian_component = scipy.stats.norm(0, numpy.sqrt(
-            ((self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE / 2) * state) + (self.VARIANCE_OF_AWGN / 2))).pdf(
-            observation_sample.imag)
-        return emission_real_gaussian_component * emission_imaginary_gaussian_component
+        return scipy.stats.norm(0,
+                                numpy.sqrt(
+                                    (self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE * state.value) +
+                                    self.VARIANCE_OF_AWGN)
+                                ).pdf(observation_sample)
 
     # Evaluate the Estimation Accuracy
-    # P(\hat{X_k} = x_k | X_k = x_k) \forall k \in \{0, 1, 2, ...., K-1\} and x_k \in \{0, 1\}
+    # \mathbb{P}(\hat{X_k} = x_k | X_k = x_k) \forall k \in \{0, 1, 2, ...., K-1\} and x_k \in \{0, 1\}
     # Relative Frequency approach to estimate this parameter
     def get_estimation_accuracy(self, estimated_states):
         accuracies = 0
@@ -159,71 +152,28 @@ class PUOccupancyBehaviorEstimator(object):
                 accuracies += 1
         return accuracies / self.NUMBER_OF_FREQUENCY_BANDS
 
-    # Evaluate the Probability of Detection P_D
-    # P(\hat{X_k} = 1 | X_k = 1) \forall k \in \{0, 1, 2, ...., K-1\}
-    # Relative Frequency approach to estimate this parameter
-    def get_probability_of_detection(self, estimated_states):
-        occupancies = 0
-        number_of_detections = 0
-        for channel_index in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
-            pu_state = self.true_pu_occupancy_states[channel_index]
-            if pu_state == 1:
-                occupancies += 1
-                if estimated_states[channel_index] == pu_state:
-                    number_of_detections += 1
-        if occupancies == 0:
-            return 1
-        return number_of_detections / occupancies
-
-    # Evaluate the Probability of False Alarm P_FA
-    # P(\hat{X_k} = 1 | X_k = 0) \forall k \in \{0, 1, 2, ...., K-1\}
-    # Relative Frequency approach to estimate this parameter
-    def get_probability_of_false_alarm(self, estimated_states):
-        idle_count = 0
-        number_of_false_alarms = 0
-        for channel_index in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
-            pu_state = self.true_pu_occupancy_states[channel_index]
-            if pu_state == 0:
-                idle_count += 1
-                if estimated_states[channel_index] == 1:
-                    number_of_false_alarms += 1
-        if idle_count == 0:
-            return 0
-        return number_of_false_alarms / idle_count
-
-    # Evaluate the Probability of Missed Detection P_MD
-    # P(\hat{X_k} = 0 | X_k = 1) \forall k \in \{0, 1, 2, ...., K-1\}
-    # Relative Frequency approach to estimate this parameter
-    def get_probability_of_missed_detection(self, estimated_states):
-        occupancies = 0
-        number_of_missed_detections = 0
-        for channel_index in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
-            pu_state = self.true_pu_occupancy_states[channel_index]
-            if pu_state == 1:
-                occupancies += 1
-                if estimated_states[channel_index] == 0:
-                    number_of_missed_detections += 1
-        if occupancies == 0:
-            return 0
-        return number_of_missed_detections / occupancies
-
-    # Output the estimated state of the frequency bands in the wideband spectrum of interest
-    # Output a collection consisting of the required parameters of interest
+    # Output the average estimation accuracy of this Viterbi Algorithm with Complete Observations spread over
+    #   thousands of sampling rounds
     def estimate_pu_occupancy_states(self):
+        # A near-output member which is to be analyzed for estimator performance
         estimated_states_array = []
+        # An internal temporary state member
+        previous_state = None
         for sampling_round in range(0, self.NUMBER_OF_SAMPLES):
             estimated_states = []
             reduced_observation_vector = []
             for entry in self.observation_samples:
                 reduced_observation_vector.append(entry[sampling_round])
             # Now, I have to estimate the state of the ${NUMBER_OF_FREQUENCY_BANDS} based on
-            # ...this reduced observation vector
+            #   this reduced observation vector
             # INITIALIZATION : The array of initial probabilities is known
             # FORWARD RECURSION
-            value_function_collection = [dict() for x in range(len(reduced_observation_vector))]
+            value_function_collection = []
+            for x in range(0, len(reduced_observation_vector)):
+                value_function_collection.append(dict())
             for state in OccupancyState:
-                current_value = self.get_emission_probabilities(state.value, reduced_observation_vector[0]) * \
-                                self.get_start_probabilities(state.name)
+                current_value = self.get_emission_probabilities(state, reduced_observation_vector[0]) * \
+                                self.get_start_probabilities(state)
                 value_function_collection[0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(current_value=current_value,
                                                                                            previous_state=None)
             # For each observation after the first one (I can't apply Markovian to [0])
@@ -231,22 +181,22 @@ class PUOccupancyBehaviorEstimator(object):
                 # Trying to find the max pointer here ...
                 for state in OccupancyState:
                     # Again finishing off the [0] index first
-                    max_pointer = self.get_transition_probabilities(OccupancyState.idle.value, state.value) * \
+                    max_pointer = self.get_transition_probabilities(OccupancyState.IDLE, state) * \
                                   value_function_collection[observation_index - 1][
-                                      OccupancyState.idle.name].current_value
-                    confirmed_previous_state = OccupancyState.idle.name
+                                      OccupancyState.IDLE.name].current_value
+                    confirmed_previous_state = OccupancyState.IDLE.name
                     for candidate_previous_state in OccupancyState:
-                        if candidate_previous_state.name == OccupancyState.idle.name:
+                        if candidate_previous_state == OccupancyState.IDLE:
                             # Already done
                             continue
                         else:
-                            pointer = self.get_transition_probabilities(candidate_previous_state.value, state.value) * \
+                            pointer = self.get_transition_probabilities(candidate_previous_state, state) * \
                                       value_function_collection[observation_index - 1][
                                           candidate_previous_state.name].current_value
                             if pointer > max_pointer:
                                 max_pointer = pointer
                                 confirmed_previous_state = candidate_previous_state.name
-                    current_value = max_pointer * self.get_emission_probabilities(state.value,
+                    current_value = max_pointer * self.get_emission_probabilities(state,
                                                                                   reduced_observation_vector[
                                                                                       observation_index])
                     value_function_collection[observation_index][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
@@ -256,8 +206,8 @@ class PUOccupancyBehaviorEstimator(object):
             for value in value_function_collection[-1].values():
                 if value.current_value > max_value:
                     max_value = value.current_value
-            # Finding the state corresponding to this max_value and using this as the final confirmed state to ...
-            # ...backtrack and find the previous states
+            # Finding the state corresponding to this max_value and using this as the final confirmed state to
+            #   backtrack and find the previous states
             for k, v in value_function_collection[-1].items():
                 if v.current_value == max_value:
                     estimated_states.append(self.value_from_name(k))
@@ -269,46 +219,17 @@ class PUOccupancyBehaviorEstimator(object):
                     value_function_collection[i + 1][previous_state].previous_state))
                 previous_state = value_function_collection[i + 1][previous_state].previous_state
             estimated_states_array.append(estimated_states)
-        # Estimation accuracies fill-up
-        estimation_accuracies = [
-            self.get_estimation_accuracy(estimated_states_per_iteration) for
-            estimated_states_per_iteration in estimated_states_array]
-        # Detection accuracies fill-up
-        probabilities_of_detection = [
-            self.get_probability_of_detection(estimated_states_per_iteration) for
-            estimated_states_per_iteration in estimated_states_array]
-        # False Alarm probabilities fill-up
-        probabilities_of_false_alarm = [
-            self.get_probability_of_false_alarm(estimated_states_per_iteration) for
-            estimated_states_per_iteration in estimated_states_array]
-        # Missed Detection probabilities fill-up
-        probabilities_of_missed_detection = [
-            self.get_probability_of_missed_detection(estimated_states_per_iteration) for
-            estimated_states_per_iteration in estimated_states_array]
-        # Output that would be returned by this core method
-        output_dict = dict()
-        output_dict['Estimation_Accuracy'] = self._average(estimation_accuracies, self.NUMBER_OF_SAMPLES)
-        output_dict['Detection_Probability'] = self._average(probabilities_of_detection, self.NUMBER_OF_SAMPLES)
-        output_dict['False_Alarm_Probability'] = self._average(probabilities_of_false_alarm, self.NUMBER_OF_SAMPLES)
-        output_dict['Missed_Detection_Probability'] = self._average(probabilities_of_missed_detection,
-                                                                    self.NUMBER_OF_SAMPLES)
-        return output_dict
-
-    @staticmethod
-    # A static utility method for averaging
-    def _average(collection, number_of_samples):
-        sum_for_average = 0
-        for entry_in_collection in collection:
-            sum_for_average += entry_in_collection
-        return sum_for_average / number_of_samples
+        # Return the average estimation accuracy for this algorithm
+        return sum([self.get_estimation_accuracy(estimated_states_per_iteration)
+                    for estimated_states_per_iteration in estimated_states_array]) / self.NUMBER_OF_SAMPLES
 
     # Get enumeration field value from name
     @staticmethod
     def value_from_name(name):
-        if name == 'occupied':
-            return OccupancyState.occupied.value
+        if name == OccupancyState.OCCUPIED.name:
+            return OccupancyState.OCCUPIED.value
         else:
-            return OccupancyState.idle.value
+            return OccupancyState.IDLE.value
 
     # Reset every collection for the next run
     def reset(self):
@@ -318,9 +239,9 @@ class PUOccupancyBehaviorEstimator(object):
         self.channel_impulse_response_samples.clear()
         self.observation_samples.clear()
 
-    # Exit strategy
+    # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] PUOccupancyBehaviorEstimator Clean-up: Cleaning things up ...')
+        print('[INFO] PUOccupancyBehaviorEstimator Termination: Cleaning things up ...')
 
 
 # Cyclic average evaluation
@@ -334,101 +255,65 @@ def cyclic_average(collection, number_of_internal_collections, number_of_cycles)
     return collection_for_plotting
 
 
-# Visualize a plot of Estimation Accuracies v/s P(Occupied|Idle)
+# Visualize a plot of Estimation Accuracy v/s \mathbb{P}(Occupied|Idle)
 def visualize_estimation_accuracy_plot(x_axis_estimation, y_axis_estimation_accuracies):
-    estimation_fig, estimation_axes = plt.subplots()
-    estimation_axes.plot(x_axis_estimation, y_axis_estimation_accuracies, linestyle='--', linewidth=1.0,
-                         marker='o', color='r')
-    estimation_fig.suptitle(
-        'Estimation Accuracy v P(Occupied|Idle) at P(Occupied)=0.6 with Markovian Correlation across channels',
-        fontsize=8)
-    estimation_axes.set_xlabel('P(Occupied | Idle)', fontsize=10)
-    estimation_axes.set_ylabel('Estimation Accuracy', fontsize=10)
-    plt.show()
+    # The visualization trace
+    data_trace = go.Scatter(x=x_axis_estimation,
+                            y=y_axis_estimation_accuracies,
+                            mode='lines+markers')
+    # The visualization layout
+    figure_layout = dict(title=r'Estimation Accuracies of the Viterbi Algorithm with Complete Observations '
+                               r'for varying values of $\mathbb{P}(1|0)$',
+                         xaxis=dict(title=r'$\mathbb{P}(1|0)$'),
+                         yaxis=dict(title='Estimation Accuracy'))
+    # The visualization figure
+    figure = dict(data=[data_trace],
+                  layout=figure_layout)
+    # The figure URL
+    figure_url = plotly.plotly.plot(figure,
+                                    filename='Estimation_Accuracies_of_Unconstrained_Viterbi_Algorithm')
+    # Print the URL in case you're on an environment where a GUI is not available
+    print('[INFO] PUOccupancyBehaviorEstimator visualize_estimation_accuracy_plot: '
+          'Data Visualization Figure is available at {}'.format(figure_url))
 
 
-# Visualize a plot of False Alarm Probability v/s P(Occupied|Idle)
-def visualize_false_alarm_probability_plot(x_axis_false_alarm, y_axis_false_alarm_probabilities):
-    false_alarm_fig, false_alarm_axes = plt.subplots()
-    false_alarm_axes.plot(x_axis_false_alarm, y_axis_false_alarm_probabilities, linestyle='--', linewidth=1.0,
-                          marker='o', color='b')
-    false_alarm_fig.suptitle(
-        'False Alarm Probability v P(Occupied|Idle) at P(Occupied)=0.6 with Markovian Correlation across channels',
-        fontsize=8)
-    false_alarm_axes.set_xlabel('P(Occupied | Idle)', fontsize=10)
-    false_alarm_axes.set_ylabel('False Alarm Probability', fontsize=10)
-    plt.show()
-
-
-# A Visualization of all the relevant parameters of interest versus P(Occupied|Idle)
-def visualize_missed_detection_probability_plot(x_axis_missed_detection, y_axis_missed_detection_probabilities):
-    missed_detection_fig, missed_detection_axes = plt.subplots()
-    missed_detection_axes.plot(x_axis_missed_detection, y_axis_missed_detection_probabilities, linestyle='--',
-                               linewidth=1.0, marker='o', color='m')
-    missed_detection_fig.suptitle(
-        'Missed Detection Probability v P(Occupied|Idle) at P(Occupied)=0.6 with Markovian Correlation '
-        'across channels', fontsize=8)
-    missed_detection_axes.set_xlabel('P(Occupied | Idle)', fontsize=10)
-    missed_detection_axes.set_ylabel('Missed Detection Probability', fontsize=10)
-    plt.show()
-
-
-# Run Trigger for results (visualization and console logs)
+# Run Trigger
 if __name__ == '__main__':
     # Increment p by this value
     increment_value_for_p = 0.03
-    # X-Axis for the P(1|0) versus Estimation Accuracy plot
+    # X-Axis for the Estimation Accuracy vs \mathbb{P}(1|0) plot
     p_values_overall = []
-    # Y-Axis for the P(1|0) versus Estimation Accuracy plot
+    # Y-Axis for the Estimation Accuracy vs \mathbb{P}(1|0) plot
     estimation_accuracies_across_p_values_overall = []
-    # Axes for the False Alarm Probability and Detection Probability plots
-    detection_probabilities_overall = []
-    false_alarm_probabilities_overall = []
-    # Axes for Missed Detection Probability plot
-    missed_detection_probabilities_overall = []
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimator()
-    # P(1)
+    # \mathbb{P}(1)
     pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
     final_frontier = int(pi / increment_value_for_p)
     for iteration_cycle in range(0, puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES):
-        # P(1|0) - Let's start small and move towards independence
+        # \mathbb{P}(1|0) - Let's start small and move towards Independence
         p = increment_value_for_p
         p_values = []
         estimation_accuracies_across_p_values = []
-        detection_probabilities_internal = []
-        false_alarm_probabilities_internal = []
-        missed_detection_probabilities_internal = []
         for increment_counter in range(0, final_frontier):
             p_values.append(p)
-            # P(0|1)
+            # \mathbb{P}(0|1)
             q = (p * puOccupancyBehaviorEstimator.start_probabilities.idle) \
                 / puOccupancyBehaviorEstimator.start_probabilities.occupied
             puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                1: {1: (1 - q), 0: q},
-                0: {1: p, 0: (1 - p)}
+                0: {0: (1 - p), 1: p},
+                1: {0: q, 1: (1 - q)}
             }
-            # True PU Occupancy State
+            # True PU Occupancy States
             puOccupancyBehaviorEstimator.allocate_true_pu_occupancy_states(p, q, pi)
             puOccupancyBehaviorEstimator.allocate_observations()
-            obtained_collection = puOccupancyBehaviorEstimator.estimate_pu_occupancy_states()
-            estimation_accuracies_across_p_values.append(obtained_collection['Estimation_Accuracy'])
-            detection_probabilities_internal.append(obtained_collection['Detection_Probability'])
-            false_alarm_probabilities_internal.append(obtained_collection['False_Alarm_Probability'])
-            missed_detection_probabilities_internal.append(obtained_collection['Missed_Detection_Probability'])
+            estimation_accuracies_across_p_values.append(puOccupancyBehaviorEstimator.estimate_pu_occupancy_states())
             p += increment_value_for_p
             puOccupancyBehaviorEstimator.reset()
         p_values_overall = p_values
         estimation_accuracies_across_p_values_overall.append(estimation_accuracies_across_p_values)
-        detection_probabilities_overall.append(detection_probabilities_internal)
-        false_alarm_probabilities_overall.append(false_alarm_probabilities_internal)
-        missed_detection_probabilities_overall.append(missed_detection_probabilities_internal)
     # Start Plotting
     visualize_estimation_accuracy_plot(p_values_overall,
-                                       cyclic_average(estimation_accuracies_across_p_values_overall, final_frontier,
-                                                      puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES))
-    visualize_false_alarm_probability_plot(p_values_overall,
-                                           cyclic_average(false_alarm_probabilities_overall, final_frontier,
-                                                          puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES))
-    visualize_missed_detection_probability_plot(p_values_overall,
-                                                cyclic_average(missed_detection_probabilities_overall, final_frontier,
-                                                               puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES))
+                                       cyclic_average(estimation_accuracies_across_p_values_overall,
+                                                      final_frontier,
+                                                      puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+                                       )

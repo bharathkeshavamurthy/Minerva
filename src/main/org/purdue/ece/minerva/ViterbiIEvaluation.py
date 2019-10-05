@@ -93,8 +93,8 @@ class MarkovChain(object):
             self.transition_probabilities[0][1] = p
             # \mathbb{P}(Idle|Idle) = 1 - p
             self.transition_probabilities[0][0] = 1 - p
-            # \mathbb{P}(Idle|Occupied) = q = p + (1 - pi)
-            self.transition_probabilities[1][0] = p + self.start_probabilities[0]
+            # \mathbb{P}(Idle|Occupied) = q = p(1 - pi) / pi
+            self.transition_probabilities[1][0] = (p * self.start_probabilities[0]) / self.start_probabilities[1]
             # \mathbb{P}(Occupied|Occupied) = 1 - q
             self.transition_probabilities[1][1] = 1 - self.transition_probabilities[1][0]
         else:
@@ -102,7 +102,7 @@ class MarkovChain(object):
                 '[ERROR] MarkovChain set_transition_probability_parameter: Error while populating the state transition '
                 'probabilities matrix! Proceeding with default values...')
             # Default Values...
-            self.transition_probabilities = {0: {0: 0.8, 1: 0.2}, 1: {0: 0.6, 1: 0.4}}
+            self.transition_probabilities = {0: {0: 0.7, 1: 0.3}, 1: {0: 0.2, 1: 0.8}}
         print('[INFO] MarkovChain set_transition_probability_parameter: State Transition Probabilities Matrix - ',
               str(self.transition_probabilities))
 
@@ -136,7 +136,7 @@ class Util(object):
     @staticmethod
     def construct_transition_probability_matrix(p, pi):
         # \mathbb{P}(Idle|Occupied)
-        q = p + (1 - pi)
+        q = (p * (1 - pi)) / pi
         return {0: {0: 1 - p, 1: p}, 1: {0: q, 1: 1 - q}}
 
     # The termination sequence
@@ -734,9 +734,9 @@ class ViterbiIEvaluation(object):
         # The start probabilities for the temporal Markov chain
         self.temporal_start_probabilities = {0: 0.4, 1: 0.6}
         # The transition model of the spatial Markov chain
-        self.spatial_transition_probability_matrix = {0: {0: 0.8, 1: 0.2}, 1: {0: 0.6, 1: 0.4}}
+        self.spatial_transition_probability_matrix = {0: {0: 0.7, 1: 0.3}, 1: {0: 0.2, 1: 0.8}}
         # The transition model of the temporal Markov chain
-        self.temporal_transition_probability_matrix = {0: {0: 0.8, 1: 0.2}, 1: {0: 0.6, 1: 0.4}}
+        self.temporal_transition_probability_matrix = {0: {0: 0.7, 1: 0.3}, 1: {0: 0.2, 1: 0.8}}
         # The spatial Markov chain
         self.spatial_markov_chain = self.setup_markov_chain(MarkovianCorrelationClass.SPATIAL,
                                                             self.spatial_start_probabilities[1],

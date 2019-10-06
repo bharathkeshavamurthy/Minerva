@@ -39,7 +39,7 @@ class MarkovianCorrelationClass(Enum):
 
 
 # Occupancy State Enumeration
-# Based on Energy Detection, \mathbb{E}[|X_k(i)|^2] = 1, if Occupied ; else, \mathbb{E}[|X_k(i)|^2] = 0
+# Based on Energy Detection, \mathbb{E}[|X_k(i)|^2] = 1, if Occupied; else, \mathbb{E}[|X_k(i)|^2] = 0
 class OccupancyState(Enum):
     # Occupancy state IDLE
     IDLE = 0

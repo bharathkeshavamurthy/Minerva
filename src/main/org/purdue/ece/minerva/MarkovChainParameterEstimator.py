@@ -1,27 +1,33 @@
-# This Python script encapsulates an algorithm to estimate the parameters of Markov chains used in our research
+# This Python script encapsulates an algorithm to estimate the transition parameters of Markov chains used in our
+#   Cognitive Radio Research.
 # Static PU with Markovian Correlation across the channel indices
 # Author: Bharath Keshavamurthy
 # Organization: School of Electrical and Computer Engineering, Purdue University
 # Copyright (c) 2019. All Rights Reserved
 # For the complete math behind this algorithm, refer to the following link.
-# https://github.rcac.purdue.edu/bkeshava/Minerva/tree/master/latex
+# https://github.rcac.purdue.edu/bkeshava/Minerva/blob/master/latex/pdf/PU_Occupancy_Behavior_Estimator_v1_0_0.pdf
 # This link is subject to change. Please contact the author at bkeshava@purdue.edu for more details.
 
-# Imports - Additional Dependencies needed for this to work
-from enum import Enum
-from collections import namedtuple
+# The imports
 import numpy
+import plotly
 import scipy.stats
-from matplotlib import pyplot as plt
+from enum import Enum
+import plotly.graph_objs as go
+from collections import namedtuple
+
+# Plotly user account credentials for visualization
+plotly.tools.set_credentials_file(username='bkeshava',
+                                  api_key='W2WL5OOxLcgCzf8NNlgl')
 
 
-# OccupancyState Enumeration
-# Based on Energy Detection, E[|X_k(i)|^2] = 1, if Occupied ; else, E[|X_k(i)|^2] = 0
+# Occupancy State Enumeration
+# Based on Energy Detection, E[|X_k(i)|^2] = 1, if Occupied; else, E[|X_k(i)|^2] = 0
 class OccupancyState(Enum):
     # Occupancy state IDLE
-    idle = 0
-    # Occupancy state OCCUPIED:
-    occupied = 1
+    IDLE = 0
+    # Occupancy state OCCUPIED
+    OCCUPIED = 1
 
 
 # Markov Chain Parameter Estimation Algorithm
@@ -48,39 +54,43 @@ class MarkovChainParameterEstimator(object):
     # Confidence bound for termination
     CONFIDENCE_BOUND = 7
 
-    # Initialization sequence
+    # The initialization sequence
     def __init__(self):
         print('[INFO] MarkovChainParameterEstimator Initialization: Bringing things up...')
         # AWGN samples
         self.noise_samples = {}
         # Channel Impulse Response samples
         self.channel_impulse_response_samples = {}
-        # True PU Occupancy state
+        # True PU Occupancy states
         self.true_pu_occupancy_states = []
         # The observed samples at the SU receiver
         self.observation_samples = []
         # The start probabilities
-        self.start_probabilities = self.BAND_START_PROBABILITIES(occupied=0.6, idle=0.4)
+        self.start_probabilities = self.BAND_START_PROBABILITIES(idle=0.4, occupied=0.6)
         # The transition probabilities
         self.transition_probabilities = {0: {0: list(), 1: list()}, 1: {0: list(), 1: list()}}
-        # The forward probabilities collection across simulation time
-        self.forward_probabilities = [dict() for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
-        # The backward probabilities collection across simulation time
-        self.backward_probabilities = [dict() for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
+        # The forward probabilities
+        self.forward_probabilities = []
+        for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            self.forward_probabilities.append(dict())
+        # The backward probabilities
+        self.backward_probabilities = []
+        for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            self.backward_probabilities.append(dict())
         # Convergence check epsilon - a very small value > 0
         # Distance Metric
         self.epsilon = 0.00001
-        # Initial P(Occupied|Idle)
+        # Initial p = \mathbb{P}(Occupied|Idle)
         self.p_initial = 0.0
         # Initial Forward Probabilities dict
         self.initial_forward_probabilities = None
         # Initial Backward Probabilities dict
         self.initial_backward_probabilities = None
-        # True P(Occupied|Idle) value
+        # True \mathbb{P}(Occupied|Idle) value
         self.true_p_value = 0.0
 
     # Generate the true states using the Markovian model
-    # Arguments: p -> P(1|0); q -> P(0|1); and pi -> P(1)
+    # Arguments: p -> \mathbb{P}(1|0); q -> \mathbb{P}(0|1); and pi -> \mathbb{P}(1)
     def allocate_true_pu_occupancy_states(self, p_val, q_val, pi_val):
         previous = 1
         # Initial state generation -> band-0 using pi_val
@@ -89,12 +99,12 @@ class MarkovChainParameterEstimator(object):
         self.true_pu_occupancy_states.append(previous)
         # Based on the state of band-0 and the (p_val,q_val) values, generate the states of the remaining bands
         for loop_counter in range(1, self.NUMBER_OF_FREQUENCY_BANDS):
-            seed = numpy.random.random_sample()
-            if previous == 1 and seed < q_val:
+            sample = numpy.random.random_sample()
+            if previous == 1 and sample < q_val:
                 previous = 0
-            elif previous == 1 and seed > q_val:
+            elif previous == 1 and sample > q_val:
                 previous = 1
-            elif previous == 0 and seed < p_val:
+            elif previous == 0 and sample < p_val:
                 previous = 1
             else:
                 previous = 0
@@ -104,27 +114,37 @@ class MarkovChainParameterEstimator(object):
     # Generate the observations of all the bands for a number of observation rounds or cycles
     def allocate_observations(self):
         for frequency_band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
-            mu_noise, std_noise = 0, numpy.sqrt(self.VARIANCE_OF_AWGN)
-            self.noise_samples[frequency_band] = numpy.random.normal(mu_noise, std_noise, self.NUMBER_OF_SAMPLES)
-            mu_channel_impulse_response, std_channel_impulse_response = 0, numpy.sqrt(
-                self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE)
+            # The noise statistics
+            mu_noise = 0
+            std_noise = numpy.sqrt(self.VARIANCE_OF_AWGN)
+            n_noise = self.NUMBER_OF_SAMPLES
+            # Generation of the AWGN samples
+            self.noise_samples[frequency_band] = numpy.random.normal(mu_noise,
+                                                                     std_noise,
+                                                                     n_noise)
+            # The channel impulse response statistics
+            mu_channel_impulse_response = 0
+            std_channel_impulse_response = numpy.sqrt(self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE)
+            n_channel_impulse_response = self.NUMBER_OF_SAMPLES
+            # Generation of the impulse response samples
             self.channel_impulse_response_samples[frequency_band] = numpy.random.normal(mu_channel_impulse_response,
                                                                                         std_channel_impulse_response,
-                                                                                        self.NUMBER_OF_SAMPLES)
-        # Re-arranging the vectors
+                                                                                        n_channel_impulse_response)
+        # Making the observations using the generated AWGN and Channel Impulse Response samples
         for band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
             obs_per_band = list()
             for count in range(0, self.NUMBER_OF_SAMPLES):
-                obs_per_band.append(self.channel_impulse_response_samples[band][
-                                        count] * self.true_pu_occupancy_states[band] + self.noise_samples[
+                obs_per_band.append((self.channel_impulse_response_samples[band][
+                                        count] * self.true_pu_occupancy_states[band]) + self.noise_samples[
                                         band][count])
             self.observation_samples.append(obs_per_band)
         return self.observation_samples
 
-    # Get the Emission Probabilities -> P(y|x)
+    # Get the Emission Probabilities -> \mathbb{P}(y|x)
+    # The "_state" arg is an instance of the OccupancyState enumeration.
     def get_emission_probabilities(self, _state, observation_sample):
         emission_probability = scipy.stats.norm(0, numpy.sqrt(
-            (self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE * _state) + self.VARIANCE_OF_AWGN)).pdf(
+            (self.VARIANCE_OF_CHANNEL_IMPULSE_RESPONSE * _state.value) + self.VARIANCE_OF_AWGN)).pdf(
             observation_sample)
         return emission_probability
 
@@ -134,9 +154,9 @@ class MarkovChainParameterEstimator(object):
         if iteration == 1:
             return False
         for key, value in self.transition_probabilities.items():
-            # I get 0: dict() and 1:dict()
+            # I get 0: dict() and 1: dict()
             for k, v in value.items():
-                # I get 0:list() and 1:list()
+                # I get 0: list() and 1: list()
                 if abs(v[iteration - 1] - v[iteration - 2]) > self.epsilon:
                     return False
         # All have converged
@@ -158,11 +178,12 @@ class MarkovChainParameterEstimator(object):
         # Setting the Boundary conditions for Forward Probabilities - again for coherence
         # Occupied
         _forward_boundary_condition_occupied = self.get_emission_probabilities(
-            OccupancyState.occupied.value,
+            OccupancyState.OCCUPIED,
             observation_vector[0]) * self.start_probabilities.occupied
         # Idle
         _forward_boundary_condition_idle = self.get_emission_probabilities(
-            OccupancyState.idle.value, observation_vector[0]) * self.start_probabilities.idle
+            OccupancyState.IDLE,
+            observation_vector[0]) * self.start_probabilities.idle
         _temp_forward_probabilities_dict = {0: _forward_boundary_condition_idle,
                                             1: _forward_boundary_condition_occupied}
         self.forward_probabilities[0] = _temp_forward_probabilities_dict
@@ -178,7 +199,7 @@ class MarkovChainParameterEstimator(object):
                                            self.transition_probabilities[previous_occupancy_state.value][
                                                current_occupancy_state.value][
                                                iteration - 1] * self.get_emission_probabilities(
-                        current_occupancy_state.value, observation_vector[channel_index])
+                        current_occupancy_state, observation_vector[channel_index])
                 self.forward_probabilities[channel_index][current_occupancy_state.value] = occupancy_state_sum
 
     # In-situ update of Backward Probabilities
@@ -186,18 +207,18 @@ class MarkovChainParameterEstimator(object):
         # Setting the Boundary conditions for Backward Probabilities - again for coherence
         # Occupied
         _state_sum = 0
-        # outside summation - refer to the definition of backward probability
+        # Outside summation - refer to the definition of backward probability
         for _state in OccupancyState:
             _state_sum += self.transition_probabilities[1][_state.value][iteration - 1] * \
-                          self.get_emission_probabilities(_state.value,
+                          self.get_emission_probabilities(_state,
                                                           observation_vector[self.NUMBER_OF_FREQUENCY_BANDS - 1])
         _backward_boundary_condition_occupied = _state_sum
         # Idle
         _state_sum = 0
-        # outside summation - refer to the definition of backward probability
+        # Outside summation - refer to the definition of backward probability
         for _state in OccupancyState:
             _state_sum += self.transition_probabilities[0][_state.value][iteration - 1] * \
-                          self.get_emission_probabilities(_state.value,
+                          self.get_emission_probabilities(_state,
                                                           observation_vector[self.NUMBER_OF_FREQUENCY_BANDS - 1])
         _backward_boundary_condition_idle = _state_sum
         _temp_backward_probabilities_dict = {0: _backward_boundary_condition_idle,
@@ -214,50 +235,56 @@ class MarkovChainParameterEstimator(object):
                                                next_occupancy_state.value] * self.transition_probabilities[
                                                previous_occupancy_state.value][next_occupancy_state.value][
                                                iteration - 1] * \
-                                           self.get_emission_probabilities(next_occupancy_state.value,
+                                           self.get_emission_probabilities(next_occupancy_state,
                                                                            observation_vector[channel_index])
                 self.backward_probabilities[channel_index][previous_occupancy_state.value] = occupancy_state_sum
 
-    # Get the numerator of the fraction in the Algorithm (refer to the LaTeX document for more information)
+    # Get the numerator of the fraction in the algorithm (refer to the document for more information)
+    # The "previous_state" and "next_state" args are instances of the OccupancyState enumeration.
     def get_numerator(self, previous_state, next_state, iteration, observation_vector):
         numerator_sum = self.get_emission_probabilities(next_state, observation_vector[0]) * \
-            self.transition_probabilities[previous_state][next_state][iteration - 1] * \
-            self.backward_probabilities[1][next_state]
+            self.transition_probabilities[previous_state.value][next_state.value][iteration - 1] * \
+            self.backward_probabilities[1][next_state.value]
         for spatial_index in range(1, self.NUMBER_OF_FREQUENCY_BANDS - 1):
-            numerator_sum += self.forward_probabilities[spatial_index - 1][previous_state] * \
+            numerator_sum += self.forward_probabilities[spatial_index - 1][previous_state.value] * \
                 self.get_emission_probabilities(next_state, observation_vector[spatial_index]) * \
-                self.transition_probabilities[previous_state][next_state][iteration - 1] * \
-                self.backward_probabilities[spatial_index + 1][next_state]
-        numerator_sum += self.forward_probabilities[self.NUMBER_OF_FREQUENCY_BANDS - 2][previous_state] * \
+                self.transition_probabilities[previous_state.value][next_state.value][iteration - 1] * \
+                self.backward_probabilities[spatial_index + 1][next_state.value]
+        numerator_sum += self.forward_probabilities[self.NUMBER_OF_FREQUENCY_BANDS - 2][previous_state.value] * \
             self.get_emission_probabilities(next_state, observation_vector[self.NUMBER_OF_FREQUENCY_BANDS - 1]) * \
-            self.transition_probabilities[previous_state][next_state][iteration - 1]
+            self.transition_probabilities[previous_state.value][next_state.value][iteration - 1]
         return numerator_sum
 
-    # Get the denominator of the fraction in the Algorithm (refer to the LaTeX document for more information)
+    # Get the denominator of the fraction in the algorithm (refer to the document for more information)
+    # The "previous_state" arg is an instance of the OccupancyState enumeration
     def get_denominator(self, previous_state, iteration, observation_vector):
         denominator_sum = 0
         for nxt_state in OccupancyState:
-            denominator_sum_internal = self.get_emission_probabilities(nxt_state.value, observation_vector[0]) * \
-                self.transition_probabilities[previous_state][nxt_state.value][iteration - 1] * \
+            denominator_sum_internal = self.get_emission_probabilities(nxt_state, observation_vector[0]) * \
+                self.transition_probabilities[previous_state.value][nxt_state.value][iteration - 1] * \
                 self.backward_probabilities[1][nxt_state.value]
             for _spatial_index in range(1, self.NUMBER_OF_FREQUENCY_BANDS - 1):
-                denominator_sum_internal += self.forward_probabilities[_spatial_index - 1][previous_state] * \
-                    self.get_emission_probabilities(nxt_state.value, observation_vector[_spatial_index]) * \
-                    self.transition_probabilities[previous_state][nxt_state.value][iteration - 1] * \
+                denominator_sum_internal += self.forward_probabilities[_spatial_index - 1][previous_state.value] * \
+                    self.get_emission_probabilities(nxt_state, observation_vector[_spatial_index]) * \
+                    self.transition_probabilities[previous_state.value][nxt_state.value][iteration - 1] * \
                     self.backward_probabilities[_spatial_index + 1][nxt_state.value]
-            denominator_sum_internal += self.forward_probabilities[self.NUMBER_OF_FREQUENCY_BANDS - 2][previous_state] \
-                * self.get_emission_probabilities(nxt_state.value, observation_vector[
-                                                                              self.NUMBER_OF_FREQUENCY_BANDS - 1]) \
-                * self.transition_probabilities[previous_state][nxt_state.value][iteration - 1]
+            denominator_sum_internal += \
+                self.forward_probabilities[self.NUMBER_OF_FREQUENCY_BANDS - 2][previous_state.value] \
+                * self.get_emission_probabilities(nxt_state, observation_vector[self.NUMBER_OF_FREQUENCY_BANDS - 1]) \
+                * self.transition_probabilities[previous_state.value][nxt_state.value][iteration - 1]
             denominator_sum += denominator_sum_internal
         return denominator_sum
 
     # A controlled reset of all the collections for the next set of observations
     def controlled_reset(self):
         # Controlled reset of forward probabilities
-        self.forward_probabilities = [dict() for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
+        self.forward_probabilities = []
+        for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            self.forward_probabilities.append(dict())
         # Controlled reset of backward probabilities
-        self.backward_probabilities = [dict() for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
+        self.backward_probabilities = []
+        for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            self.backward_probabilities.append(dict())
         # Controlled reset of the transition probabilities matrix
         for key, value in self.transition_probabilities.items():
             for k, v in value.items():
@@ -311,15 +338,15 @@ class MarkovChainParameterEstimator(object):
                     self.fill_up_forward_probabilities(iteration, observation_vector)
                     # Fill up the remaining elements of the backward probabilities array
                     self.fill_up_backward_probabilities(iteration, observation_vector)
-                    # state r in {0, 1}
+                    # State r in {0, 1}
                     # Total 4 combinations arise from this double loop
                     for previous_state in OccupancyState:
-                        # state l in {0, 1}
+                        # State l in {0, 1}
                         for next_state in OccupancyState:
                             numerators_collection[previous_state.value][next_state.value].append(self.get_numerator(
-                                previous_state.value, next_state.value, iteration, observation_vector))
+                                previous_state, next_state, iteration, observation_vector))
                             denominators_collection[previous_state.value][next_state.value].append(self.get_denominator(
-                                previous_state.value, iteration, observation_vector))
+                                previous_state, iteration, observation_vector))
                 for previous_state in OccupancyState:
                     for next_state in OccupancyState:
                         numerator_sum = 0
@@ -331,17 +358,14 @@ class MarkovChainParameterEstimator(object):
                         self.transition_probabilities[previous_state.value][next_state.value].append(
                             numerator_sum/denominator_sum)
                 iteration += 1
-                print('[INFO] MarkovChainParameterEstimator estimate_parameters: Iteration [', iteration-1,
-                      '] - P(Occupied|Idle) Estimate = [', self.transition_probabilities[0][1][iteration-1],
-                      '] and P(Idle|Occupied) Estimate = [', self.transition_probabilities[1][0][iteration-1], ']')
             if iteration > max_number_of_iterations:
                 max_number_of_iterations = iteration
             collection_of_estimates.append(self.get_converged_transition_matrix())
             mean_square_error_across_cycles.append(mean_square_error_across_iterations)
             self.controlled_reset()
-        # Padding
+        # Padding is done here to make sure the output arrays across different cycles are of the same dimension...
         for entry in mean_square_error_across_cycles:
-            converged_value = entry[len(entry)-1]
+            converged_value = entry[len(entry) - 1]
             for pad_index in range(len(entry), max_number_of_iterations):
                 entry.append(converged_value)
         x_axis = [k for k in range(0, max_number_of_iterations)]
@@ -351,15 +375,25 @@ class MarkovChainParameterEstimator(object):
             for entry in mean_square_error_across_cycles:
                 averaging_sum += entry[_index]
             y_axis.append(averaging_sum/self.NUMBER_OF_CYCLES)
-        fig, ax = plt.subplots()
-        ax.plot(x_axis, y_axis, linewidth=1.0, linestyle='--', marker='o', color='b')
-        fig.suptitle(
-            'Mean Square Error Convergence of the Markov Correlated Parameter Estimation Algorithm for a Static PU '
-            'with Complete Information', fontsize=12)
-        ax.set_xlabel('Number of Iterations (x250 observation vectors)', fontsize=14)
-        ax.set_ylabel(r'Mean Square Error - $\mathbb{E}\ [(p\ -\ \hat{p})^2]$', fontsize=14)
-        plt.yscale('log')
-        plt.show()
+        # The data trace
+        visualization_trace = go.Scatter(x=x_axis,
+                                         y=y_axis,
+                                         mode='lines+markers')
+        # The figure layout
+        visualization_layout = dict(title='Mean Square Error Convergence of the Markov Chain Parameter Estimation '
+                                          'Algorithm for a Static PU with Complete Information',
+                                    xaxis=dict(title='Number of Iterations (x300 observation vectors)'),
+                                    yaxis=dict(title=r'Mean Square Error - $\mathbb{E}\ [(p\ -\ \hat{p})^2]$')
+                                    )
+        # The figure
+        visualization_figure = dict(data=[visualization_trace],
+                                    layout=visualization_layout)
+        # The figure URL
+        figure_url = plotly.plotly.plot(visualization_figure,
+                                        filename='Mean_Square_Error_Convergence_Parameter_Estimation_Algorithm')
+        # Print the URL in case you're on an environment where a GUI is not available
+        print('[INFO] MarkovChainParameterEstimator estimate_parameters: The visualization figure is available at: '
+              '{}'.format(figure_url))
         for previous_state in OccupancyState:
             for next_state in OccupancyState:
                 sum_for_averaging = 0
@@ -369,7 +403,7 @@ class MarkovChainParameterEstimator(object):
                     self.NUMBER_OF_CYCLES
         return final_estimated_parameters
 
-    # Termination sequence
+    # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] MarkovChainParameterEstimator Termination: Tearing things down...')
 
@@ -380,27 +414,27 @@ if __name__ == '__main__':
           'estimation')
     # Create the instance
     markovChainParameterEstimator = MarkovChainParameterEstimator()
-    # Steady State Probability P(Occupied) = P(X_i = 1)
+    # Steady State Probability \mathbb{P}(Occupied) = \mathbb{P}(X_k = 1)
     pi = markovChainParameterEstimator.start_probabilities.occupied
-    # P(Occupied | Idle)
+    # \mathbb{P}(Occupied | Idle)
     p = 0.30
     markovChainParameterEstimator.true_p_value = p
-    # P(Idle|Occupied)
+    # \mathbb{P}(Idle|Occupied)
     q = (p * (1 - pi)) / pi
     # Actual State Transition Probabilities Matrix
     actual_transition_probabilities_matrix = {
-        1: {1: (1 - q), 0: q},
-        0: {1: p, 0: (1 - p)}
+        0: {0: (1 - p), 1: p},
+        1: {0: q, 1: (1 - q)}
     }
     # Generate the true PU Occupancy states based on the Markov chain parameters described above
     markovChainParameterEstimator.allocate_true_pu_occupancy_states(p, q, pi)
-    # Allocate observations based on given Markov Model and Channel Model
+    # Allocate observations based on the given System Model and Observation Model
     markovChainParameterEstimator.allocate_observations()
     # Before, we go ahead and estimate the state transition probabilities matrix, let's set them to some initial values
-    # P(Occupied|Idle) initial assumption
+    # \mathbb{P}(Occupied|Idle) initial assumption
     p_initial = 0.00001
     markovChainParameterEstimator.p_initial = p_initial
-    # P(Idle|Occupied) initial assumption
+    # \mathbb{P}(Idle|Occupied) initial assumption
     q_initial = (p_initial * (1 - pi)) / pi
     # Set the initial values to the transition probabilities matrix
     markovChainParameterEstimator.transition_probabilities[0][0].append(1 - p_initial)

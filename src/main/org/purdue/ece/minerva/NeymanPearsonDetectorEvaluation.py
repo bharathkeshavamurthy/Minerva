@@ -415,7 +415,8 @@ class NeymanPearsonDetector(object):
         self.true_pu_occupancy_states = _true_pu_occupancy_states
         # The threshold for the Likelihood Ratio Test (LRT)
         self.threshold = math.sqrt(self.noise_variance / self.number_of_sampling_rounds) * scipy.stats.norm.ppf(
-            1 - self.false_alarm_probability, loc=self.noise_mean, scale=math.sqrt(self.noise_variance))
+            1 - self.false_alarm_probability
+        )
         # The penalty for missed detections
         self.penalty = _penalty
 
@@ -467,7 +468,7 @@ class NeymanPearsonDetectorEvaluation(object):
     PENALTY = -1
 
     # The constraint on false alarm probability for this agent
-    FALSE_ALARM_PROBABILITY_CONSTRAINT = 0.7
+    FALSE_ALARM_PROBABILITY_CONSTRAINT = 0.3
 
     # Plotly Scatter mode
     PLOTLY_SCATTER_MODE = 'lines+markers'

@@ -11,20 +11,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-357">
-              <caret line="484" column="33" lean-forward="true" selection-end-line="564" />
-              <folding>
-                <element signature="e#1343#1354#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -97,7 +84,7 @@
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="settings.editor.selected.configurable" value="Errors" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -126,7 +113,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26678878" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -139,9 +125,9 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32959184" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32959184" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4993895" weight="0.32959184" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50061053" side_tool="true" weight="0.32959184" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4993895" weight="0.32959184" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -149,7 +135,7 @@
       <window_info anchor="right" id="R Packages" order="4" />
     </layout>
     <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26678878" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.26678878" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -160,9 +146,9 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32959184" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32959184" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4993895" weight="0.32959184" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50061053" side_tool="true" weight="0.32959184" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="10" sideWeight="0.4993895" visible="true" weight="0.32959184" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -373,7 +359,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1313">
+        <state relative-caret-position="10377">
           <caret line="776" column="62" selection-start-line="776" selection-start-column="62" selection-end-line="776" selection-end-column="62" />
           <folding>
             <element signature="e#981#993#0" expanded="true" />
@@ -383,15 +369,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
+        <state relative-caret-position="12390">
           <caret line="831" column="73" selection-start-line="831" selection-start-column="73" selection-end-line="831" selection-end-column="73" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-357">
-          <caret line="484" column="33" lean-forward="true" selection-end-line="564" />
+        <state relative-caret-position="5278">
+          <caret line="440" column="24" lean-forward="true" selection-start-line="440" selection-start-column="24" selection-end-line="440" selection-end-column="24" />
           <folding>
             <element signature="e#1343#1354#0" expanded="true" />
           </folding>

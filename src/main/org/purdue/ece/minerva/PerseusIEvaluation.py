@@ -29,7 +29,7 @@ import plotly
 import scipy.stats
 from enum import Enum
 # import plotly.graph_objs as go
-# from collections import namedtuple
+from collections import namedtuple
 
 # Plotly user account credentials for visualization
 plotly.tools.set_credentials_file(username='bkeshava',
@@ -436,3 +436,400 @@ class EmissionEvaluator(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] EmissionEvaluator Termination: Tearing things down...')
         # Nothing to do...
+
+
+# This entity encapsulates the routine which provides rewards based on the state of the system and the action taken by
+#   the PERSEUS-I agent
+class Sweepstakes(object):
+
+    # The initialization sequence
+    def __init__(self, _primary_user, _mu):
+        print('[INFO] Sweepstakes Initialization: Bringing things up...')
+        # The Primary User
+        self.primary_user = _primary_user
+        # The penalty for missed detections
+        self.mu = _mu
+
+    # Get Reward based on the system state and the action taken by the PERSEUS-I agent
+    def roll(self, estimated_state, system_state):
+        if len(estimated_state) != len(system_state):
+            print('[ERROR] Sweepstakes roll: The estimated_state arg and the system_state arg need to be of the same'
+                  'dimension!')
+            return 0
+        # Let B_k(i) denote the actual true occupancy status of the channel in this 'episode'.
+        # Let \hat{B}_k(i) denote the estimated occupancy status of the channel in this 'episode'.
+        # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) + \mu B_k(i) (1 - \hat{B}_k(i))
+        reward = 0
+        for k in range(0, len(system_state)):
+            reward += ((1 - estimated_state[k]) * (1 - system_state[k])) + \
+                      (self.mu * (system_state[k] * (1 - estimated_state[k])))
+        return reward
+
+    # The termination sequence
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('[INFO] Sweepstakes Termination: Tearing things down...')
+        # Nothing to do...
+
+
+# The Markov Chain Parameter Estimator Algorithm (modified EM - Baum-Welch)
+# This entity is employed by the PERSEUS-I agent in order to learn the model concurrently
+class ParameterEstimator(object):
+
+    # The initialization sequence
+    def __init__(self, _number_of_chain_links, _number_of_repetitions, _transition_probabilities, _start_probabilities,
+                 _observation_samples, _emission_evaluator, _epsilon, _confidence_bound, _util):
+        print('[INFO] ParameterEstimator Initialization: Bringing things up...')
+        # Transition Statistics of the Chain under analysis
+        self.transition_probabilities = {0: {0: [_transition_probabilities[0][0]],
+                                             1: [_transition_probabilities[0][1]]},
+                                         1: {0: [_transition_probabilities[1][0]],
+                                             1: [_transition_probabilities[1][1]]}}
+        # Threshold for convergence
+        self.epsilon = _epsilon
+        # Number of links in the Chain under analysis
+        self.number_of_chain_links = _number_of_chain_links
+        # Number of repetitions to fine tune the estimation
+        self.number_of_repetitions = _number_of_repetitions
+        # Start Probabilities - Steady State Statistics of individual cells in the grid
+        self.start_probabilities = _start_probabilities
+        # Observation Samples
+        self.observation_samples = _observation_samples
+        # Emission Evaluator
+        self.emission_evaluator = _emission_evaluator
+        # Confidence Bound
+        self.confidence_bound = _confidence_bound
+        # The forward probabilities collection across simulation time
+        self.forward_probabilities = []
+        for k in range(0, self.number_of_chain_links):
+            self.forward_probabilities.append(dict())
+        # The backward probabilities collection across simulation time
+        self.backward_probabilities = []
+        for k in range(0, self.number_of_chain_links):
+            self.backward_probabilities.append(dict())
+        # The Utility instance for some general tasks
+        self.util = _util
+
+    # Convergence check
+    def has_it_converged(self, iteration):
+        # Obviously, not enough data to check for convergence
+        if iteration == 1:
+            return False
+        else:
+            p_list = self.transition_probabilities[0][1]
+            # No convergence
+            if abs(p_list[iteration - 1] - p_list[iteration - 2]) > self.epsilon:
+                return False
+        # Convergence
+        return True
+
+    # Get the Emission Probabilities -> \mathbb{P}(y|x)
+    # The "state" arg is an instance of the OccupancyState enumeration.
+    def get_emission_probabilities(self, state, observation_sample):
+        return self.emission_evaluator.get_emission_probabilities(state, observation_sample)
+
+    # Construct the transition probabilities matrix in order to pass it to the state estimator
+    def construct_transition_probabilities_matrix(self, iteration):
+        # A constructed transition probabilities matrix
+        interim_transition_probabilities_matrix = {
+            0: {0: self.transition_probabilities[0][0][iteration - 1],
+                1: self.transition_probabilities[0][1][iteration - 1]},
+            1: {0: self.transition_probabilities[1][0][iteration - 1],
+                1: self.transition_probabilities[1][1][iteration - 1]}
+        }
+        return interim_transition_probabilities_matrix
+
+    # In-situ update of Forward Probabilities
+    def fill_up_forward_probabilities(self, iteration, observation_vector):
+        # Setting the Boundary conditions for Forward Probabilities - again for coherence
+        # Occupied
+        _forward_boundary_condition_occupied = self.get_emission_probabilities(
+            OccupancyState.OCCUPIED,
+            observation_vector[0]) * self.start_probabilities[1]
+        # Idle
+        _forward_boundary_condition_idle = self.get_emission_probabilities(
+            OccupancyState.IDLE,
+            observation_vector[0]) * self.start_probabilities[0]
+        _temp_forward_probabilities_dict = {0: _forward_boundary_condition_idle,
+                                            1: _forward_boundary_condition_occupied}
+        self.forward_probabilities[0] = _temp_forward_probabilities_dict
+        # j
+        for channel_index in range(1, self.number_of_chain_links):
+            # state l for channel j
+            for current_occupancy_state in OccupancyState:
+                occupancy_state_sum = 0
+                # for all states r of channel i
+                for previous_occupancy_state in OccupancyState:
+                    occupancy_state_sum += self.forward_probabilities[channel_index - 1][
+                                               previous_occupancy_state.value] * \
+                                           self.transition_probabilities[previous_occupancy_state.value][
+                                               current_occupancy_state.value][
+                                               iteration - 1] * self.get_emission_probabilities(
+                        current_occupancy_state, observation_vector[channel_index])
+                self.forward_probabilities[channel_index][current_occupancy_state.value] = occupancy_state_sum
+
+    # In-situ update of Backward Probabilities
+    def fill_up_backward_probabilities(self, iteration, observation_vector):
+        # Setting the Boundary conditions for Backward Probabilities - again for coherence
+        # Occupied
+        _state_sum = 0
+        # Outside summation - refer to the definition of backward probability
+        for _state in OccupancyState:
+            _state_sum += self.transition_probabilities[1][_state.value][iteration - 1] * \
+                          self.get_emission_probabilities(_state,
+                                                          observation_vector[self.number_of_chain_links - 1])
+        _backward_boundary_condition_occupied = _state_sum
+        # Idle
+        _state_sum = 0
+        # outside summation - refer to the definition of backward probability
+        for _state in OccupancyState:
+            _state_sum += self.transition_probabilities[0][_state.value][iteration - 1] * \
+                          self.get_emission_probabilities(_state,
+                                                          observation_vector[self.number_of_chain_links - 1])
+        _backward_boundary_condition_idle = _state_sum
+        _temp_backward_probabilities_dict = {0: _backward_boundary_condition_idle,
+                                             1: _backward_boundary_condition_occupied}
+        self.backward_probabilities[self.number_of_chain_links - 1] = _temp_backward_probabilities_dict
+        # j
+        for channel_index in range(self.number_of_chain_links - 2, -1, -1):
+            # state r for channel i
+            for previous_occupancy_state in OccupancyState:
+                occupancy_state_sum = 0
+                # state l for channel j+1
+                for next_occupancy_state in OccupancyState:
+                    occupancy_state_sum += self.backward_probabilities[channel_index + 1][
+                                               next_occupancy_state.value] * self.transition_probabilities[
+                                               previous_occupancy_state.value][next_occupancy_state.value][
+                                               iteration - 1] * \
+                                           self.get_emission_probabilities(next_occupancy_state,
+                                                                           observation_vector[channel_index])
+                self.backward_probabilities[channel_index][previous_occupancy_state.value] = occupancy_state_sum
+
+    # Get the numerator of the fraction in the Algorithm (refer to the document for more information)
+    # The "previous_state" and "next_state" args are instances of the OccupancyState enumeration.
+    def get_numerator(self, previous_state, next_state, iteration, observation_vector):
+        numerator_sum = self.get_emission_probabilities(next_state, observation_vector[0]) * \
+                        self.transition_probabilities[previous_state.value][next_state.value][iteration - 1] * \
+                        self.backward_probabilities[1][next_state.value]
+        for spatial_index in range(1, self.number_of_chain_links - 1):
+            numerator_sum += self.forward_probabilities[spatial_index - 1][previous_state.value] * \
+                             self.get_emission_probabilities(next_state, observation_vector[spatial_index]) * \
+                             self.transition_probabilities[previous_state.value][next_state.value][iteration - 1] * \
+                             self.backward_probabilities[spatial_index + 1][next_state.value]
+        numerator_sum += self.forward_probabilities[self.number_of_chain_links - 2][previous_state.value] * \
+            self.get_emission_probabilities(next_state, observation_vector[self.number_of_chain_links - 1]) * \
+            self.transition_probabilities[previous_state.value][next_state.value][iteration - 1]
+        return numerator_sum
+
+    # Get the denominator of the fraction in the Algorithm (refer to the document for more information)
+    # The "previous_state" arg is an instance of the OccupancyState enumeration.
+    def get_denominator(self, previous_state, iteration, observation_vector):
+        denominator_sum = 0
+        for nxt_state in OccupancyState:
+            denominator_sum_internal = self.get_emission_probabilities(nxt_state, observation_vector[0]) * \
+                                       self.transition_probabilities[previous_state.value][nxt_state.value][
+                                           iteration - 1] * \
+                                       self.backward_probabilities[1][nxt_state.value]
+            for _spatial_index in range(1, self.number_of_chain_links - 1):
+                denominator_sum_internal += self.forward_probabilities[_spatial_index - 1][previous_state.value] * \
+                                            self.get_emission_probabilities(nxt_state,
+                                                                            observation_vector[_spatial_index]) * \
+                                            self.transition_probabilities[previous_state.value][nxt_state.value][
+                                                iteration - 1] * \
+                                            self.backward_probabilities[_spatial_index + 1][nxt_state.value]
+            denominator_sum_internal += \
+                self.forward_probabilities[self.number_of_chain_links - 2][previous_state.value] \
+                * self.get_emission_probabilities(nxt_state, observation_vector[self.number_of_chain_links - 1]) \
+                * self.transition_probabilities[previous_state.value][nxt_state.value][iteration - 1]
+            denominator_sum += denominator_sum_internal
+        return denominator_sum
+
+    # Core method
+    # Estimate the Markov Chain State Transition Probabilities Matrix
+    def estimate_parameters(self):
+        # Confidence variable to determine when the algorithm has converged
+        confidence = 0
+        # Iteration counter
+        iteration = 1
+        # Until convergence - I'm only checking for the convergence of 'p' in order to speed up the convergence process
+        while self.has_it_converged(iteration) is False or confidence < self.confidence_bound:
+            # A confidence check
+            convergence = self.has_it_converged(iteration)
+            if convergence is True:
+                # It has converged. Doing this to ensure that the convergence is permanent.
+                confidence += 1
+            else:
+                confidence = 0
+            # Numerators collection
+            numerators_collection = {0: {0: list(), 1: list()}, 1: {0: list(), 1: list()}}
+            # Denominators collection
+            denominators_collection = {0: {0: list(), 1: list()}, 1: {0: list(), 1: list()}}
+            # Let us first construct a reduced observation vector like we did for the Viterbi algorithm
+            for _sampling_round in range(0, self.number_of_repetitions):
+                observation_vector = []
+                for _channel in range(0, self.number_of_chain_links):
+                    observation_vector.append(self.observation_samples[_channel][_sampling_round])
+                # Fill up the remaining elements of the forward probabilities array
+                self.fill_up_forward_probabilities(iteration, observation_vector)
+                # Fill up the remaining elements of the backward probabilities array
+                self.fill_up_backward_probabilities(iteration, observation_vector)
+                # state r in {0, 1}
+                # Total 4 combinations arise from this double loop
+                for previous_state in OccupancyState:
+                    # state l in {0, 1}
+                    for next_state in OccupancyState:
+                        numerators_collection[previous_state.value][next_state.value].append(self.get_numerator(
+                            previous_state, next_state, iteration, observation_vector))
+                        denominators_collection[previous_state.value][next_state.value].append(
+                            self.get_denominator(previous_state, iteration, observation_vector))
+            for previous_state in OccupancyState:
+                for next_state in OccupancyState:
+                    numerator_sum = 0
+                    denominator_sum = 0
+                    for numerator in numerators_collection[previous_state.value][next_state.value]:
+                        numerator_sum += numerator
+                    for denominator in denominators_collection[previous_state.value][next_state.value]:
+                        denominator_sum += denominator
+                    self.transition_probabilities[previous_state.value][next_state.value].append(
+                        numerator_sum / denominator_sum)
+            iteration += 1
+        final_length = len(self.transition_probabilities[0][1])
+        # Return 'p'
+        return self.transition_probabilities[0][1][final_length - 1]
+
+    # The termination sequence
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('[INFO] ParameterEstimator Termination: Tearing things down...')
+        # Nothing to do...
+
+
+# The Markov Chain State Estimator algorithm - Viterbi Algorithm
+# This entity is employed during the operation of the PERSEUS-I agent
+class StateEstimator(object):
+    # Value function named tuple
+    VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
+
+    # The initialization sequence
+    def __init__(self, _number_of_channels, _number_of_sampling_rounds, _observation_samples, _start_probabilities,
+                 _transition_probabilities, _emission_evaluator):
+        print('[INFO] StateEstimator Initialization: Bringing things up...')
+        # Number of channels in the discretized spectrum of interest
+        self.number_of_channels = _number_of_channels
+        # Number of sampling rounds undertaken by the SU per episode
+        self.number_of_sampling_rounds = _number_of_sampling_rounds
+        # The Observation Samples
+        self.observation_samples = _observation_samples
+        # The Steady State Probabilities
+        self.start_probabilities = _start_probabilities
+        # The Transition Statistics
+        self.transition_probabilities = _transition_probabilities
+        # The Emission Evaluator
+        self.emission_evaluator = _emission_evaluator
+
+    # Safe entry access using indices from a collection object
+    @staticmethod
+    def get_entry(collection, index):
+        if collection is not None and len(collection) is not 0 and collection[index] is not None:
+            return collection[index]
+        else:
+            # Empty Place-Holder value is 0
+            return 0
+
+    # Get enumeration field value from name
+    @staticmethod
+    def value_from_name(name):
+        if name == OccupancyState.OCCUPIED.name:
+            return OccupancyState.OCCUPIED.value
+        else:
+            return OccupancyState.IDLE.value
+
+    # Get the start probabilities from the named tuple - a simple getter utility method exclusive to this class
+    # The "state" arg is an instance of the OccupancyState enumeration.
+    def get_start_probabilities(self, state):
+        if state == OccupancyState.OCCUPIED:
+            return self.start_probabilities[1]
+        else:
+            return self.start_probabilities[0]
+
+    # Return the transition probabilities from the transition probabilities matrix
+    # The "row" arg and the "column" arg are instances of the OccupancyState enumeration.
+    def get_transition_probabilities(self, row, column):
+        return self.transition_probabilities[row.value][column.value]
+
+    # Get the Emission Probabilities -> \mathbb{P}(y|x)
+    # The "state" arg is an instance of the OccupancyState enumeration.
+    def get_emission_probabilities(self, state, observation_sample):
+        return self.emission_evaluator.get_emission_probabilities(state, observation_sample)
+
+    # Output the estimated state of the frequency bands in the discretized spectrum of interest
+    def estimate_pu_occupancy_states(self):
+        previous_state = None
+        estimated_states_array = []
+        for sampling_round in range(0, self.number_of_sampling_rounds):
+            estimated_states = []
+            reduced_observation_vector = []
+            for entry in self.observation_samples:
+                reduced_observation_vector.append(self.get_entry(entry, sampling_round))
+            # Now, I have to estimate the state of the ${NUMBER_OF_FREQUENCY_BANDS} based on
+            #   this reduced observation vector
+            # INITIALIZATION : The array of initial probabilities is known
+            # FORWARD RECURSION
+            value_function_collection = []
+            for x in range(0, len(reduced_observation_vector)):
+                value_function_collection.append(dict())
+            for state in OccupancyState:
+                current_value = self.get_emission_probabilities(state, reduced_observation_vector[0]) * \
+                                self.get_start_probabilities(state)
+                value_function_collection[0][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
+                    current_value=current_value,
+                    previous_state=None)
+            # For each observation after the first one (I can't apply Markovian to [0])
+            for observation_index in range(1, len(reduced_observation_vector)):
+                # Trying to find the max pointer here ...
+                for state in OccupancyState:
+                    # Again finishing off the [0] index first
+                    max_pointer = self.get_transition_probabilities(OccupancyState.IDLE, state) * \
+                                  value_function_collection[observation_index - 1][
+                                      OccupancyState.IDLE.name].current_value
+                    confirmed_previous_state = OccupancyState.IDLE.name
+                    for candidate_previous_state in OccupancyState:
+                        if candidate_previous_state == OccupancyState.IDLE:
+                            # Already done
+                            continue
+                        else:
+                            pointer = self.get_transition_probabilities(candidate_previous_state,
+                                                                        state) * \
+                                      value_function_collection[observation_index - 1][
+                                          candidate_previous_state.name].current_value
+                            if pointer > max_pointer:
+                                max_pointer = pointer
+                                confirmed_previous_state = candidate_previous_state.name
+                    current_value = max_pointer * self.get_emission_probabilities(state,
+                                                                                  reduced_observation_vector[
+                                                                                      observation_index])
+                    value_function_collection[observation_index][state.name] = self.VALUE_FUNCTION_NAMED_TUPLE(
+                        current_value=current_value, previous_state=confirmed_previous_state)
+            max_value = 0
+            # Finding the max value among the named tuples
+            for value in value_function_collection[-1].values():
+                if value.current_value > max_value:
+                    max_value = value.current_value
+            # Finding the state corresponding to this max_value and using this as the final confirmed state to
+            #   backtrack and find the previous states
+            for k, v in value_function_collection[-1].items():
+                if v.current_value == max_value:
+                    # FIXME: Using the 'name' member to reference & deference the value function collection is not safe.
+                    estimated_states.append(self.value_from_name(k))
+                    previous_state = k
+                    break
+            # BACKTRACKING
+            for i in range(len(value_function_collection) - 2, -1, -1):
+                estimated_states.insert(0, self.value_from_name(
+                    value_function_collection[i + 1][previous_state].previous_state))
+                previous_state = value_function_collection[i + 1][previous_state].previous_state
+            estimated_states_array.append(estimated_states)
+        # FIXME: Come up with some averaging/thresholding logic here instead of picking the final estimated vector...
+        return estimated_states_array[self.number_of_sampling_rounds - 1]
+
+    # The termination sequence
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('[INFO] StateEstimator Termination: Tearing things down...')

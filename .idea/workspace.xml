@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f958ad54-6282-4908-8193-31cdedd5c478" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/bharathkeshavamurthy.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/bharathkeshavamurthy.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MarkovChainParameterEstimator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MarkovChainParameterEstimator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,10 +17,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="213">
-              <caret line="396" column="82" selection-end-line="438" />
+            <state relative-caret-position="753">
+              <caret line="829" column="97" selection-end-line="835" />
               <folding>
-                <element signature="e#463#475#0" expanded="true" />
+                <element signature="e#1756#1768#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -32,11 +29,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-21298">
-              <caret line="436" column="40" selection-start-line="436" selection-start-column="40" selection-end-line="436" selection-end-column="40" />
-              <folding>
-                <element signature="e#1416#1427#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="405">
+              <caret line="27" column="34" lean-forward="true" selection-start-line="27" selection-end-line="27" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -75,11 +69,11 @@
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorIII.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py" />
-        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MarkovChainParameterEstimator.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MarkovChainParameterEstimator.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py" />
       </list>
     </option>
@@ -285,16 +279,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AdaptiveIntelligenceWithModelForesight.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="31" column="25" selection-start-line="31" selection-start-column="25" selection-end-line="31" selection-end-column="25" />
-          <folding>
-            <element signature="e#555#567#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AdaptiveIntelligenceWithModelForesightSimplified.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="13350">
@@ -339,56 +323,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ModelFreeAdaptiveIntelligence.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="925">
-          <caret line="913" column="49" selection-start-line="913" selection-start-column="49" selection-end-line="913" selection-end-column="49" />
-          <folding>
-            <element signature="e#555#576#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1182">
-          <caret line="430" column="31" lean-forward="true" selection-start-line="430" selection-start-column="31" selection-end-line="430" selection-end-column="31" />
-          <folding>
-            <element signature="e#1343#1354#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MarkovChainParameterEstimator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="397" column="45" lean-forward="true" selection-start-line="397" selection-start-column="45" selection-end-line="397" selection-end-column="45" />
-          <folding>
-            <element signature="e#672#684#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4380">
-          <caret line="292" column="50" lean-forward="true" selection-start-line="292" selection-start-column="50" selection-end-line="292" selection-end-column="50" />
-          <folding>
-            <element signature="e#520#532#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1905">
-          <caret line="355" column="41" lean-forward="true" selection-start-line="355" selection-start-column="41" selection-end-line="355" selection-end-column="41" />
-          <folding>
-            <element signature="e#553#565#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
@@ -398,30 +332,87 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ViterbiIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1172">
-          <caret line="309" column="80" lean-forward="true" selection-start-line="309" selection-start-column="80" selection-end-line="309" selection-end-column="80" />
+        <state relative-caret-position="460">
+          <caret line="507" column="103" lean-forward="true" selection-start-line="505" selection-start-column="8" selection-end-line="507" selection-end-column="103" />
           <folding>
             <element signature="e#981#993#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/AdaptiveIntelligenceWithModelForesight.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-14596">
+          <caret line="31" column="25" selection-start-line="31" selection-start-column="25" selection-end-line="31" selection-end-column="25" />
+          <folding>
+            <element signature="e#555#567#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/ModelFreeAdaptiveIntelligence.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-489">
+          <caret line="1111" column="15" selection-start-line="1111" selection-start-column="15" selection-end-line="1111" selection-end-column="15" />
+          <folding>
+            <element signature="e#555#576#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MarkovChainParameterEstimator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="403" column="41" lean-forward="true" selection-start-line="403" selection-start-column="41" selection-end-line="403" selection-end-column="41" />
+          <folding>
+            <element signature="e#672#684#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-21298">
-          <caret line="436" column="40" selection-start-line="436" selection-start-column="40" selection-end-line="436" selection-end-column="40" />
+        <state relative-caret-position="405">
+          <caret line="27" column="34" lean-forward="true" selection-start-line="27" selection-end-line="27" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="613">
+          <caret line="207" column="120" lean-forward="true" selection-start-line="207" selection-start-column="20" selection-end-line="207" selection-end-column="120" />
           <folding>
-            <element signature="e#1416#1427#0" expanded="true" />
+            <element signature="e#520#532#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PUOccupancyBehaviorEstimatorII.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2407">
+          <caret line="355" column="41" lean-forward="true" selection-start-line="355" selection-start-column="41" selection-end-line="355" selection-end-column="41" />
+          <folding>
+            <element signature="e#553#565#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/NeymanPearsonDetectorEvaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="632">
+          <caret line="430" column="31" lean-forward="true" selection-start-line="430" selection-start-column="31" selection-end-line="430" selection-end-column="31" />
+          <folding>
+            <element signature="e#1343#1354#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="213">
-          <caret line="396" column="82" selection-end-line="438" />
+        <state relative-caret-position="753">
+          <caret line="829" column="97" selection-end-line="835" />
           <folding>
-            <element signature="e#463#475#0" expanded="true" />
+            <element signature="e#1756#1768#0" expanded="true" />
           </folding>
         </state>
       </provider>

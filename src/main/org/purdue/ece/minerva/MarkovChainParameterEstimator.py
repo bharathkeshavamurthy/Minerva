@@ -301,7 +301,7 @@ class MarkovChainParameterEstimator(object):
         return _converged_transition_matrix
 
     # Core method
-    # Estimate the Markov Chain State Transition Probabilities matrix
+    # Estimate the Markov Chain State Transition Probabilities Matrix
     def estimate_parameters(self):
         final_estimated_parameters = {0: dict(), 1: dict()}
         collection_of_estimates = []
@@ -406,6 +406,7 @@ class MarkovChainParameterEstimator(object):
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] MarkovChainParameterEstimator Termination: Tearing things down...')
+        # Nothing to do...
 
 
 # Run Trigger

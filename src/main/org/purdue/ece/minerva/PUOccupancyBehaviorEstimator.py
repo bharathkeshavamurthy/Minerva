@@ -238,6 +238,7 @@ class PUOccupancyBehaviorEstimator(object):
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] PUOccupancyBehaviorEstimator Termination: Cleaning things up ...')
+        # Nothing to do...
 
 
 # Cyclic average evaluation

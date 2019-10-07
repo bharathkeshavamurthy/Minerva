@@ -264,6 +264,7 @@ class PUOccupancyBehaviorEstimatorII(object):
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] PUOccupancyBehaviorEstimatorII Termination: Cleaning things up ...')
+        # Nothing to do...
 
 
 # Emulates a Multi-Armed Bandit or a Reinforcement Learning Agent

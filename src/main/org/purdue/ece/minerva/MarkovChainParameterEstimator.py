@@ -444,7 +444,7 @@ if __name__ == '__main__':
     # Estimate the parameters of the Markov chain
     try:
         estimated_markov_chain_parameters = markovChainParameterEstimator.estimate_parameters()
-        print('[INFO] MarkovChainParameterEstimator main: Estimated Transition Probabilities Matrix is ',
-              estimated_markov_chain_parameters)
+        print('[INFO] MarkovChainParameterEstimator main: Estimated Transition Probabilities Matrix is - ',
+              str(estimated_markov_chain_parameters))
     except Exception as e:
         print('[ERROR] MarkovChainParameterEstimation main: Exception caught in the core method - [', e, ']')

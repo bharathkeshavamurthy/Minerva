@@ -171,7 +171,7 @@ class Channel(object):
         self.number_of_sampling_rounds = _number_of_sampling_rounds
         # Number of episodes in which the Viterbi-I agent interacts with the radio environment
         self.number_of_episodes = _number_of_episodes
-        # Channel Impulse Response used in the Observation Model
+        # The Channel Impulse Response used in the Observation Model
         self.impulse_response = self.get_impulse_response()
         # The AWGN used in the Observation Model
         self.noise = self.get_noise()
@@ -324,8 +324,8 @@ class PrimaryUser(object):
         # Interpretation #2
         # DOUBLE CHAIN INFLUENCE along all the remaining cells
         # The two Markov Chains are independent and hence, we can treat the transitions independently.
-        # \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b, X_{k, t-1} = c) = \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b) * \\
-        #                                                           \mathbb{P}(X_{k,t} = a | X_{k, t-1} = c)
+        # \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b, X_{k,t-1} = c) = \mathbb{P}(X_{k,t} = a | X_{k-1,t} = b) * \\
+        #                                                          \mathbb{P}(X_{k,t} = a | X_{k,t-1} = c)
         for channel_idx in range(1, self.number_of_channels):
             for episode_idx in range(1, self.number_of_episodes):
                 previous_spatial_state = self.occupancy_behavior_collection[channel_idx - 1][episode_idx]

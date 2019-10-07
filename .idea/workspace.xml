@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f958ad54-6282-4908-8193-31cdedd5c478" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIEvaluation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIIEvaluation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIEvaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIEvaluation.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,34 +16,22 @@
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py">
+        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIIEvaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
-              <caret line="1459" column="21" lean-forward="true" selection-end-line="1498" />
+            <state relative-caret-position="615">
+              <caret line="41" column="41" lean-forward="true" selection-start-line="41" selection-start-column="41" selection-end-line="41" selection-end-column="41" />
               <folding>
-                <element signature="e#1756#1768#0" expanded="true" />
+                <element signature="e#1805#1816#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIEvaluation.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="740">
-              <caret line="1082" column="67" lean-forward="true" selection-end-line="1228" />
-              <folding>
-                <element signature="e#1809#1821#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1510">
-              <caret line="1454" column="8" selection-start-line="1454" selection-start-column="8" selection-end-line="1454" selection-end-column="8" />
+            <state relative-caret-position="-35154">
+              <caret line="12" column="60" selection-start-line="12" selection-start-column="53" selection-end-line="12" selection-end-column="60" />
               <folding>
                 <element signature="e#1416#1427#0" expanded="true" />
               </folding>
@@ -66,6 +56,9 @@
       <find>get_state_probability</find>
       <find>list()</find>
       <find>PERSEUS-I</find>
+      <find>PERSEUS-II</find>
+      <find>PERSEUS_II</find>
+      <find>Hamming</find>
     </findStrings>
     <replaceStrings>
       <replace>IDLE</replace>
@@ -73,6 +66,7 @@
       <replace>MarkovianCorrelationClass.SPATIAL</replace>
       <replace>MarkovianCorrelationClass.TEMPORAL</replace>
       <replace>PERSEUS-II</replace>
+      <replace>PERSEUS-III</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -92,6 +86,7 @@
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MarkovChainParameterEstimator.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py" />
         <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIEvaluation.py" />
+        <option value="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIIEvaluation.py" />
       </list>
     </option>
   </component>
@@ -157,7 +152,7 @@
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26678878" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26678878" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -419,30 +414,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="1459" column="21" lean-forward="true" selection-end-line="1498" />
+        <state relative-caret-position="553">
+          <caret line="1398" column="116" selection-start-line="1398" selection-start-column="43" selection-end-line="1398" selection-end-column="116" />
           <folding>
-            <element signature="e#1756#1768#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1510">
-          <caret line="1454" column="8" selection-start-line="1454" selection-start-column="8" selection-end-line="1454" selection-end-column="8" />
-          <folding>
-            <element signature="e#1416#1427#0" expanded="true" />
+            <element signature="e#1808#1819#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIEvaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="1082" column="67" lean-forward="true" selection-end-line="1228" />
+        <state relative-caret-position="308">
+          <caret line="1121" column="35" lean-forward="true" selection-end-line="1231" />
           <folding>
-            <element signature="e#1809#1821#0" expanded="true" />
+            <element signature="e#1805#1811#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/PerseusIIIEvaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="41" column="41" lean-forward="true" selection-start-line="41" selection-start-column="41" selection-end-line="41" selection-end-column="41" />
+          <folding>
+            <element signature="e#1805#1816#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/org/purdue/ece/minerva/EvaluationFramework.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-35154">
+          <caret line="12" column="60" selection-start-line="12" selection-start-column="53" selection-end-line="12" selection-end-column="60" />
+          <folding>
+            <element signature="e#1416#1427#0" expanded="true" />
           </folding>
         </state>
       </provider>

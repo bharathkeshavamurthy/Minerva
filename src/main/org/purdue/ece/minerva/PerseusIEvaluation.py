@@ -10,7 +10,7 @@
 #   environment that it deems to be idle, i.e. un-occupied by the PrimaryUsers (PUs - Incumbents).
 
 # PREMISE OF THE FRAGMENTED PERSEUS ALGORITHM
-#   The entire premise behind the fragmented PERSEUS algorithm in a radio environment where there are more than one PU
+#   The entire premise behind the fragmented PERSEUS algorithm in a radio environment where there is more than one PU
 #   is that the PUs generally are restricted to certain segments of the radio spectrum by design and by bureaucracy.
 #   Therefore, in order to speed up the PERSEUS algorithm over a significantly large number of channels, we set out to
 #   partition the radio spectrum into fragments, each corresponding to the spectral constraints of incumbents, as set
@@ -24,6 +24,7 @@
 # Visualization: Utility v Episodes | Regret v Iterations | #policy_changes v Iterations
 
 # The imports
+import math
 import numpy
 import plotly
 import random
@@ -888,11 +889,11 @@ class PERSEUS(object):
     # The initialization sequence
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
-                 _limitation, _confidence_bound, _gamma, _epsilon):
+                 _limitation, _confidence_bound, _gamma, _epsilon, _utility_multiplication_factor):
         print('[INFO] PERSEUS Initialization: Bringing things up...')
         # The Utility object
         self.util = Util()
-        # The number of channels in the discretized spectrum of interest
+        # The number of channels in the discretized spectrum of interest (fragment size)
         self.number_of_channels = _number_of_channels
         # The number of sampling rounds in each episode
         self.number_of_sampling_rounds = _number_of_sampling_rounds
@@ -982,6 +983,8 @@ class PERSEUS(object):
         for state in self.all_possible_states:
             if sum(state) == self.limitation:
                 self.all_possible_actions.append(state)
+        # The utility multiplication factor
+        self.utility_multiplication_factor = _utility_multiplication_factor
 
     # Get the enumeration instance based on the value passed as an argument in order to ensure compliance with the
     #   'state' communication APIs.
@@ -1390,11 +1393,10 @@ class PERSEUS(object):
 
     # Visualize the episodic utilities of this PERSEUS-I agent over numerous episodes of interaction with the
     #   radio environment
-    @staticmethod
-    def visualize_episodic_utilities(optimal_utilities):
+    def visualize_episodic_utilities(self, optimal_utilities):
         # The visualization data trace
         visualization_trace = go.Scatter(x=[k + 1 for k in range(0, len(optimal_utilities))],
-                                         y=optimal_utilities,
+                                         y=list(numpy.array(optimal_utilities) * self.utility_multiplication_factor),
                                          mode='lines+markers')
         # The visualization layout
         visualization_layout = dict(title='Episodic Utilities of the Model Free PERSEUS Algorithm',
@@ -1475,7 +1477,8 @@ class PerseusIEvaluation(object):
                                           self.IMPULSE_RESPONSE_VARIANCE, self.PENALTY,
                                           self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
                                           self.CONFIDENCE_BOUND, self.DISCOUNT_FACTOR,
-                                          self.CONVERGENCE_THRESHOLD)
+                                          self.CONVERGENCE_THRESHOLD,
+                                          math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE))
 
     # The evaluation routine
     def evaluate(self):

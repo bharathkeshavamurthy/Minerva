@@ -19,7 +19,7 @@
 #   by these individual PERSEUS instances in order to get the overall utility obtained by the SU over numerous
 #   episodes of interaction with the radio environment.
 
-# PERSEUS ALGORITHM WITH MODEL FORESIGHT AND STANDARD BELIEF UPDATE PRACTICES
+# PERSEUS ALGORITHM WITH MODEL FORESIGHT AND SIMPLIFIED BELIEF UPDATE PRACTICES
 
 # Visualization: Utility v Episodes | Regret v Iterations | #policy_changes v Iterations
 
@@ -196,7 +196,7 @@ class Channel(object):
         self.number_of_channels = _number_of_channels
         # Number of sampling rounds undertaken by the SU per episode
         self.number_of_sampling_rounds = _number_of_sampling_rounds
-        # Number of episodes in which the PERSEUS-II agent interacts with the radio environment
+        # Number of episodes in which the PERSEUS-III agent interacts with the radio environment
         self.number_of_episodes = _number_of_episodes
         # The Channel Impulse Response used in the Observation Model
         self.impulse_response = self.get_impulse_response()
@@ -442,7 +442,7 @@ class EmissionEvaluator(object):
 
 
 # This entity encapsulates the routine which provides rewards based on the state of the system and the action taken by
-#   the PERSEUS-II agent
+#   the PERSEUS-III agent
 class Sweepstakes(object):
 
     # The initialization sequence
@@ -453,7 +453,7 @@ class Sweepstakes(object):
         # The penalty for missed detections
         self.mu = _mu
 
-    # Get Reward based on the system state and the action taken by the PERSEUS-II agent
+    # Get Reward based on the system state and the action taken by the PERSEUS-III agent
     def roll(self, estimated_state, system_state):
         if len(estimated_state) != len(system_state):
             print('[ERROR] Sweepstakes roll: The estimated_state arg and the system_state arg need to be of the same'
@@ -475,7 +475,7 @@ class Sweepstakes(object):
 
 
 # The Markov Chain State Estimator algorithm - Viterbi Algorithm
-# This entity is employed during the operation of the PERSEUS-II agent
+# This entity is employed during the operation of the PERSEUS-III agent
 class StateEstimator(object):
     # Value function named tuple
     VALUE_FUNCTION_NAMED_TUPLE = namedtuple('ValueFunction', ['current_value', 'previous_state'])
@@ -610,7 +610,7 @@ class StateEstimator(object):
 
 # This entity encapsulates an Oracle which knows the best possible channels to use in each episode.
 # Hence, the policy followed by this Oracle is the most optimal policy.
-# The action policy achieved by the PERSEUS-II agent will be evaluated/benchmarked against the Oracle's policy thereby
+# The action policy achieved by the PERSEUS-III agent will be evaluated/benchmarked against the Oracle's policy thereby
 #   giving us a regret metric.
 class Oracle(object):
 
@@ -658,7 +658,8 @@ class PERSEUS(object):
     # The initialization sequence
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
-                 _limitation, _confidence_bound, _gamma, _epsilon, _utility_multiplication_factor):
+                 _limitation, _confidence_bound, _gamma, _epsilon, _utility_multiplication_factor,
+                 _transition_threshold):
         print('[INFO] PERSEUS Initialization: Bringing things up...')
         # The Utility object
         self.util = Util()
@@ -666,7 +667,7 @@ class PERSEUS(object):
         self.number_of_channels = _number_of_channels
         # The number of sampling rounds in each episode
         self.number_of_sampling_rounds = _number_of_sampling_rounds
-        # The number of time slots of interaction of the PERSEUS-II agent with the radio environment
+        # The number of time slots of interaction of the PERSEUS-III agent with the radio environment
         self.number_of_episodes = _number_of_episodes
         # The exploration period of the PERSEUS algorithm
         self.exploration_period = _exploration_period
@@ -727,7 +728,7 @@ class PERSEUS(object):
         self.episodes_for_regret_analysis = []
         # The utilities as the algorithm progresses towards optimality
         self.utilities = []
-        # The utilities obtained by the Oracle during the episodes of interaction of this PERSEUS-II agent with the
+        # The utilities obtained by the Oracle during the episodes of interaction of this PERSEUS-III agent with the
         #   radio environment
         self.perfect_utilities = []
         # The number of policy changes as the algorithm progresses towards optimality
@@ -745,6 +746,10 @@ class PERSEUS(object):
                 self.all_possible_actions.append(state)
         # The utility multiplication factor
         self.utility_multiplication_factor = _utility_multiplication_factor
+        # The allowed transition threshold
+        self.transition_threshold = _transition_threshold
+        # Maximum number of channel changes allowed
+        self.max_allowed_transitions = math.ceil(self.transition_threshold * self.number_of_channels)
 
     # Get the enumeration instance based on the value passed as an argument in order to ensure compliance with the
     #   'state' communication APIs.
@@ -775,6 +780,22 @@ class PERSEUS(object):
             transition_probability *= transition_probabilities_matrix[next_state[index - 1]][next_state[index]]
         return transition_probability
 
+    # Get the allowed state transitions previous_states -> next_states
+    def get_allowed_state_transitions(self, state):
+        allowed_state_transitions = list()
+        combinations_array = dict()
+        for transition_allowance in range(1, self.max_allowed_transitions + 1):
+            combinations_array[transition_allowance] = list(
+                itertools.combinations([k for k in range(0, len(state))],
+                                       transition_allowance))
+        for combination in combinations_array.values():
+            for group in combination:
+                new_state = [k for k in state]
+                for entry in group:
+                    new_state[entry] = (lambda: 1, lambda: 0)[new_state[entry] == 1]()
+                allowed_state_transitions.append(new_state)
+        return allowed_state_transitions
+
     # Get the normalization constant
     def get_normalization_constant(self, previous_belief_vector, observations):
         # The normalization constant
@@ -782,7 +803,8 @@ class PERSEUS(object):
         # Calculate the normalization constant in the belief update formula
         for _next_state in self.all_possible_states:
             multiplier = 0
-            for _prev_state in self.all_possible_states:
+            allowed_previous_states = self.get_allowed_state_transitions(_next_state)
+            for _prev_state in allowed_previous_states:
                 multiplier += self.get_transition_probability(_prev_state, _next_state,
                                                               self.transition_probabilities_matrix) * \
                               previous_belief_vector[''.join(str(k) for k in _prev_state)]
@@ -793,9 +815,10 @@ class PERSEUS(object):
     def belief_update(self, observations, previous_belief_vector, new_state,
                       transition_probabilities_matrix, normalization_constant):
         multiplier = 0
+        allowed_previous_states = self.get_allowed_state_transitions(new_state)
         # Calculate the numerator in the belief update formula
         # \vec{x} \in \mathcal{X} in your belief update rule
-        for prev_state in self.all_possible_states:
+        for prev_state in allowed_previous_states:
             multiplier += self.get_transition_probability(prev_state,
                                                           new_state,
                                                           transition_probabilities_matrix) * previous_belief_vector[
@@ -904,9 +927,9 @@ class PERSEUS(object):
                 for state in self.all_possible_states:
                     emission_probability = self.get_emission_probability(observation_samples, state)
                     multiplier = 0
-                    for prev_state in self.all_possible_states:
-                        multiplier += self.get_transition_probability(prev_state,
-                                                                      state,
+                    allowed_previous_states = self.get_allowed_state_transitions(state)
+                    for prev_state in allowed_previous_states:
+                        multiplier += self.get_transition_probability(prev_state, state,
                                                                       self.transition_probabilities_matrix) * \
                                       belief_sample[''.join(str(k) for k in prev_state)]
                     normalization_constant += emission_probability * multiplier
@@ -965,7 +988,8 @@ class PERSEUS(object):
                 for state in self.all_possible_states:
                     emission_probability = self.get_emission_probability(observation_samples, state)
                     multiplier = 0
-                    for prev_state in self.all_possible_states:
+                    allowed_previous_states = self.get_allowed_state_transitions(state)
+                    for prev_state in allowed_previous_states:
                         multiplier += self.get_transition_probability(prev_state, state,
                                                                       self.transition_probabilities_matrix) * \
                                       unimproved_belief_points[belief_point_key][''.join(str(k) for k in prev_state)]
@@ -1074,7 +1098,7 @@ class PERSEUS(object):
             optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
         return optimal_utilities
 
-    # Visualize the progression of regret of this PERSEUS-II agent over numerous backup and wrapper stages
+    # Visualize the progression of regret of this PERSEUS-III agent over numerous backup and wrapper stages
     def visualize_iterative_regret(self):
         self.perfect_utilities = [self.oracle.get_return(i) for i in self.episodes_for_regret_analysis]
         iterative_regret = numpy.array(self.perfect_utilities) - numpy.array(self.utilities)
@@ -1083,20 +1107,20 @@ class PERSEUS(object):
                                          y=iterative_regret,
                                          mode='lines+markers')
         # The visualization layout
-        visualization_layout = dict(title='Iterative Regret of the PERSEUS Algorithm with Model Foresight over numerous'
-                                          ' backup and wrapper stages',
+        visualization_layout = dict(title='Iterative Regret of the PERSEUS Algorithm with Model Foresight '
+                                          'and Simplified Belief Update over numerous backup and wrapper stages',
                                     xaxis=dict(title='Iterations/Stages'),
-                                    yaxis=dict(title='Regret of the PERSEUS-II agent'))
+                                    yaxis=dict(title='Regret of the PERSEUS-III agent'))
         # The visualization figure
         visualization_figure = dict(data=[visualization_trace],
                                     layout=visualization_layout)
         # The figure URL
         figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Iterative_Regret_of_PERSEUS_Model_Foresight_Standard_Belief_Update')
+                                        filename='Iterative_Regret_of_PERSEUS_Model_Foresight_Simplified_Belief_Update')
         # Print the URL in case you're on an environment where a GUI is not available
         print('PERSEUS visualize_iterative_regret: The visualization figure is available at - {}'.format(figure_url))
 
-    # Visualize the progression of #policy_changes of this PERSEUS-II agent over numerous backup and wrapper stages
+    # Visualize the progression of #policy_changes of this PERSEUS-III agent over numerous backup and wrapper stages
     def visualize_iterative_policy_changes_count(self):
         # The visualization data trace
         visualization_trace = go.Scatter(x=[k + 1 for k in range(0, len(self.policy_changes))],
@@ -1104,8 +1128,8 @@ class PERSEUS(object):
                                          mode='lines+markers')
         # The visualization layout
         visualization_layout = dict(
-            title='The number of policy changes of the PERSEUS Algorithm with Model Foresight over numerous '
-                  'backup and wrapper stages',
+            title='The number of policy changes of the PERSEUS Algorithm with Model Foresight and Simplified Belief '
+                  'Update over numerous backup and wrapper stages',
             xaxis=dict(title='Iterations/Stages'),
             yaxis=dict(title='#policy_changes'))
         # The visualization figure
@@ -1115,13 +1139,13 @@ class PERSEUS(object):
         figure_url = \
             plotly.plotly.plot(visualization_figure,
                                filename='Iterative_Policy_Changes_Count_of_PERSEUS_Model_Foresight_'
-                                        'Standard_Belief_Update')
+                                        'Simplified_Belief_Update')
         # Print the URL in case you're on an environment where a GUI is not available
         print(
             'PERSEUS visualize_iterative_policy_changes_count: '
             'The visualization figure is available at - {}'.format(figure_url))
 
-    # Visualize the episodic utilities of this PERSEUS-II agent over numerous episodes of interaction with the
+    # Visualize the episodic utilities of this PERSEUS-III agent over numerous episodes of interaction with the
     #   radio environment
     def visualize_episodic_utilities(self, optimal_utilities):
         # The visualization data trace
@@ -1129,7 +1153,8 @@ class PERSEUS(object):
                                          y=list(numpy.array(optimal_utilities) * self.utility_multiplication_factor),
                                          mode='lines+markers')
         # The visualization layout
-        visualization_layout = dict(title='Episodic Utilities of the PERSEUS Algorithm with Model Foresight',
+        visualization_layout = dict(title='Episodic Utilities of the PERSEUS Algorithm with Model Foresight '
+                                          'and Simplified belief Update',
                                     xaxis=dict(title=r'$Episodes\ n$'),
                                     yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
                                                      r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
@@ -1138,7 +1163,8 @@ class PERSEUS(object):
                                     layout=visualization_layout)
         # The figure URL
         figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Episodic_Utilities_of_PERSEUS_Model_Foresight_Standard_Belief_Update')
+                                        filename='Episodic_Utilities_of_PERSEUS_Model_Foresight_'
+                                                 'Simplified_Belief_Update')
         # Print the URL in case you're on an environment where a GUI is not available
         print(
             'PERSEUS visualize_episodic_utilities: The visualization figure is available at - {}'.format(figure_url))
@@ -1149,8 +1175,8 @@ class PERSEUS(object):
         # Nothing to do...
 
 
-# This class encapsulates the evaluation framework for the PERSEUS-II agent detailed in the rest of this script.
-class PerseusIIEvaluation(object):
+# This class encapsulates the evaluation framework for the PERSEUS-III agent detailed in the rest of this script.
+class PerseusIIIEvaluation(object):
     # The number of channels in the discretized spectrum of interest
     NUMBER_OF_CHANNELS = 18
 
@@ -1197,35 +1223,42 @@ class PerseusIIEvaluation(object):
     # The convergence threshold for the parameter estimation algorithm
     CONVERGENCE_THRESHOLD = 0.00001
 
+    # The transition threshold for the simplified belief update procedure
+    TRANSITION_THRESHOLD = 0.1
+
     # The initialization sequence
     def __init__(self):
-        print('[INFO] PerseusIIEvaluation Initialization: Bringing things up...')
-        self.perseus_with_model_foresight = PERSEUS(self.FRAGMENT_SIZE, self.NUMBER_OF_SAMPLING_ROUNDS,
-                                                    self.NUMBER_OF_EPISODES, self.EXPLORATION_PERIOD,
-                                                    self.NOISE_MEAN, self.NOISE_VARIANCE,
-                                                    self.IMPULSE_RESPONSE_MEAN,
-                                                    self.IMPULSE_RESPONSE_VARIANCE, self.PENALTY,
-                                                    self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
-                                                    self.CONFIDENCE_BOUND, self.DISCOUNT_FACTOR,
-                                                    self.CONVERGENCE_THRESHOLD,
-                                                    math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE))
+        print('[INFO] PerseusIIIEvaluation Initialization: Bringing things up...')
+        self.perseus_with_model_foresight_and_simplified_belief_update = \
+            PERSEUS(self.FRAGMENT_SIZE, self.NUMBER_OF_SAMPLING_ROUNDS,
+                    self.NUMBER_OF_EPISODES, self.EXPLORATION_PERIOD,
+                    self.NOISE_MEAN, self.NOISE_VARIANCE,
+                    self.IMPULSE_RESPONSE_MEAN,
+                    self.IMPULSE_RESPONSE_VARIANCE, self.PENALTY,
+                    self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
+                    self.CONFIDENCE_BOUND, self.DISCOUNT_FACTOR,
+                    self.CONVERGENCE_THRESHOLD,
+                    math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE),
+                    self.TRANSITION_THRESHOLD)
 
     # The evaluation routine
     def evaluate(self):
-        obtained_optimal_utilities = self.perseus_with_model_foresight.run_perseus()
-        self.perseus_with_model_foresight.visualize_iterative_regret()
-        self.perseus_with_model_foresight.visualize_iterative_policy_changes_count()
-        self.perseus_with_model_foresight.visualize_episodic_utilities(obtained_optimal_utilities)
+        obtained_optimal_utilities = self.perseus_with_model_foresight_and_simplified_belief_update.run_perseus()
+        self.perseus_with_model_foresight_and_simplified_belief_update.visualize_iterative_regret()
+        self.perseus_with_model_foresight_and_simplified_belief_update.visualize_iterative_policy_changes_count()
+        self.perseus_with_model_foresight_and_simplified_belief_update.visualize_episodic_utilities(
+            obtained_optimal_utilities
+        )
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] PerseusIIEvaluation Termination: Tearing things down...')
+        print('[INFO] PerseusIIIEvaluation Termination: Tearing things down...')
         # Nothing to do...
 
 
 # Run Trigger
 if __name__ == '__main__':
-    print('[INFO] PerseusIIEvaluation main: Triggering the evaluation of the PERSEUS-II agent, i.e. the '
-          'PERSEUS Algorithm with Model Foresight and with a Standard Belief Update procedure...')
-    perseusII = PerseusIIEvaluation()
+    print('[INFO] PerseusIIIEvaluation main: Triggering the evaluation of the PERSEUS-III agent, i.e. the '
+          'PERSEUS Algorithm with Model Foresight and with a Simplified Belief Update procedure...')
+    perseusII = PerseusIIIEvaluation()
     perseusII.evaluate()

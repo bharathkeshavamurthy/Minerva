@@ -152,7 +152,7 @@ class MinimumEntropyIncrementAlgorithm(object):
 
     # The core algorithm: Minimum Entropy Increment (MEI)
     # We'll follow the same exact MEI algorithm as laid down in the reference work...
-    def minimum_entropy_increment(self):
+    def cluster(self):
         # The internal members are initialized here
         mei = 1e100
         gi_min = None
@@ -206,3 +206,16 @@ class MinimumEntropyIncrementAlgorithm(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] MinimumEntropyIncrementAlgorithm Termination: Tearing things down...')
         # Nothing to do...
+
+
+# Run Trigger
+if __name__ == '__main__':
+    print('[INFO] MinimumEntropyIncrementAlgorithm main: Triggering the Minimum Entropy Increment Algorithm...')
+    agent = MinimumEntropyIncrementAlgorithm()
+    clustered_output = agent.cluster()
+    print('[INFO] MinimumEntropyIncrementAlgorithm main: The set of grouped channels is - {}'.format(
+        str(clustered_output.G))
+    )
+    print('[INFO] MinimumEntropyIncrementAlgorithm main: The set of corresponding DCs is - {}'.format(
+        str(clustered_output.D))
+    )

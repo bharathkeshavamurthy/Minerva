@@ -168,3 +168,13 @@ class GreedyClusteringAlgorithm(object):
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] GreedyClusteringAlgorithm Termination: Tearing things down...')
+        # Nothing to do...
+
+
+# Run Trigger
+if __name__ == '__main__':
+    print('[INFO] GreedyClusteringAlgorithm main: Triggering the Greedy Clustering Algorithm...')
+    agent = GreedyClusteringAlgorithm()
+    clustered_output = agent.cluster()
+    print('[INFO] GreedyClusteringAlgorithm main: The set of grouped channels is - {}'.format(str(clustered_output.G)))
+    print('[INFO] GreedyClusteringAlgorithm main: The set of corresponding DCs is - {}'.format(str(clustered_output.D)))

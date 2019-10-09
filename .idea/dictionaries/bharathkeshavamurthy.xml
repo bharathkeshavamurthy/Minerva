@@ -20,6 +20,7 @@
       <w>iband</w>
       <w>keshavamurthy</w>
       <w>kolmogorov</w>
+      <w>leftarrow</w>
       <w>markovian</w>
       <w>mathbb</w>
       <w>mathcal</w>
@@ -45,6 +46,7 @@
       <w>welch</w>
       <w>wideband</w>
       <w>wlan</w>
+      <w>xnor</w>
     </words>
   </dictionary>
 </component>

@@ -28,8 +28,6 @@ class GreedyClusteringAlgorithm(object):
     # The initialization sequence
     def __init__(self):
         print('[INFO] GreedyClusteringAlgorithm Initialization: Bringing things up...')
-        # The true incumbent(s) occupancy behavior
-        self.true_pu_occupancy_states = self.get_true_pu_occupancy_states()
         # Both the spatial Markov chain and the temporal Markov chain exhibit the same transition model and
         #   steady-state model as shown below.
         # The start probabilities a.k.a the steady-state probabilities
@@ -43,6 +41,8 @@ class GreedyClusteringAlgorithm(object):
                                              0: 0.2,
                                              1: 0.8}
                                          }
+        # The true incumbent(s) occupancy behavior
+        self.true_pu_occupancy_states = self.get_true_pu_occupancy_states()
         # Construct the correlation matrix $A$ from the true PU occupancy states
         self.correlation_matrix = self.construct_correlation_matrix()
         # The output of the Greedy Clustering Algorithm
@@ -85,7 +85,7 @@ class GreedyClusteringAlgorithm(object):
             else:
                 state = 1
             pu_occupancy_states.append([state])
-        # Go through the rest of the k x t matrix: Both temporal correlation and spatial correlation
+        # Go through the rest of the N x M matrix: Both temporal correlation and spatial correlation
         # $X_{n}(m),\ \forall n \in \{1, 2, 3, \dots, N\}\ and\ m \in \{1, 2, 3, \dots, M\}$
         for channel in range(1, self.NUMBER_OF_CHANNELS):
             for episode in range(1, self.NUMBER_OF_EPISODES):
@@ -107,12 +107,12 @@ class GreedyClusteringAlgorithm(object):
         channel_correlation_matrix = []
         for channel in range(self.NUMBER_OF_CHANNELS):
             channel_correlation_matrix.append([])
-        # Channel i
+        # Channel $i$
         for i in range(self.NUMBER_OF_CHANNELS):
-            # Channel j
+            # Channel $j$
             for j in range(self.NUMBER_OF_CHANNELS):
                 correlation_sum = 0
-                # The episode loop iterator m
+                # The episode loop iterator $m$
                 for m in range(self.NUMBER_OF_EPISODES):
                     # The XNOR operation
                     if self.true_pu_occupancy_states[i][m] == self.true_pu_occupancy_states[j][m]:

@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f958ad54-6282-4908-8193-31cdedd5c478" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/GreedyClusteringAlgorithm.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/MinimumEntropyIncrementAlgorithm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dictionaries/bharathkeshavamurthy.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/bharathkeshavamurthy.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/GreedyClusteringAlgorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/org/purdue/ece/minerva/GreedyClusteringAlgorithm.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,27 +19,6 @@
         <option value="Python Script" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>idle</find>
-      <find>occupied</find>
-      <find>MarkovianCorrelationClass.invalid</find>
-      <find>get_state_probability</find>
-      <find>list()</find>
-      <find>PERSEUS-I</find>
-      <find>PERSEUS-II</find>
-      <find>PERSEUS_II</find>
-      <find>Hamming</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>IDLE</replace>
-      <replace>OCCUPIED</replace>
-      <replace>MarkovianCorrelationClass.SPATIAL</replace>
-      <replace>MarkovianCorrelationClass.TEMPORAL</replace>
-      <replace>PERSEUS-II</replace>
-      <replace>PERSEUS-III</replace>
-    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />

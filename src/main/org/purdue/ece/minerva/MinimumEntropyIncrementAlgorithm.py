@@ -30,7 +30,8 @@ class MinimumEntropyIncrementAlgorithm(object):
         print('[INFO] MinimumEntropyIncrementAlgorithm Initialization: Bringing things up...')
         # The start probabilities a.k.a steady-state probabilities of the spatial and temporal Markov chains
         self.start_probabilities = {0: 0.4,
-                                    1: 0.6}
+                                    1: 0.6
+                                    }
         # The transition probabilities of both the spatial and the temporal Markov chains
         self.transition_probabilities = {0: {0: 0.7,
                                              1: 0.3
@@ -92,6 +93,7 @@ class MinimumEntropyIncrementAlgorithm(object):
             pu_occupancy_states.append([state])
         # Go through the rest of the N x M matrix using both the spatial Markov chain statistics and the temporal
         #   Markov chain statistics
+        # $X_{n}(m),\ \forall n \in \{1, 2, 3, \dots, N\}\ and\ m \in \{1, 2, 3, \dots, M\}$
         for channel in range(1, self.NUMBER_OF_CHANNELS):
             for episode in range(1, self.NUMBER_OF_EPISODES):
                 random_sample = numpy.random.random_sample()

@@ -32,7 +32,8 @@ class GreedyClusteringAlgorithm(object):
         #   steady-state model as shown below.
         # The start probabilities a.k.a the steady-state probabilities
         self.start_probabilities = {0: 0.4,
-                                    1: 0.6}
+                                    1: 0.6
+                                    }
         # The transition probabilities
         self.transition_probabilities = {0: {0: 0.7,
                                              1: 0.3

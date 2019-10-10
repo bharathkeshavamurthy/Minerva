@@ -99,7 +99,9 @@ class MinimumEntropyIncrementAlgorithm(object):
                 random_sample = numpy.random.random_sample()
                 previous_spatial_state = pu_occupancy_states[channel - 1][episode]
                 previous_temporal_state = pu_occupancy_states[channel][episode - 1]
-                occupied_probability = previous_spatial_state * previous_temporal_state
+                occupied_probability = \
+                    self.transition_probabilities[previous_spatial_state][1] * \
+                    self.transition_probabilities[previous_temporal_state][1]
                 if random_sample < occupied_probability:
                     state = 1
                 else:

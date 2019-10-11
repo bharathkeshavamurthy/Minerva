@@ -88,6 +88,8 @@ class PUOccupancyBehaviorEstimator(object):
             else:
                 previous = 0
             self.true_pu_occupancy_states.append(previous)
+        # Return the true occupancy states in case an external entity needs it...
+        return self.true_pu_occupancy_states
 
     # Get the observations vector
     # Generate the observations of all the bands for a number of observation rounds or cycles
@@ -113,6 +115,7 @@ class PUOccupancyBehaviorEstimator(object):
                                         count] * self.true_pu_occupancy_states[band]) + self.noise_samples[
                                         band][count])
             self.observation_samples.append(obs_per_band)
+        # Return the observation samples in case an external entity needs it...
         return self.observation_samples
 
     # Get the start probabilities from the named tuple - a simple getter utility method exclusive to this class
@@ -253,25 +256,30 @@ def cyclic_average(collection, number_of_internal_collections, number_of_cycles)
 
 
 # Visualize a plot of Estimation Accuracy v/s \mathbb{P}(Occupied|Idle)
-def visualize_estimation_accuracy_plot(x_axis_estimation, y_axis_estimation_accuracies):
+def visualize_estimation_accuracy_plot(x_axis_estimation_episodes, y_axis_estimation_accuracies):
     # The visualization trace
-    data_trace = go.Scatter(x=x_axis_estimation,
+    data_trace = go.Scatter(x=x_axis_estimation_episodes,
                             y=y_axis_estimation_accuracies,
-                            mode='lines+markers')
+                            mode='lines+markers'
+                            )
     # The visualization layout
     figure_layout = dict(title=r'Estimation Accuracies of the Viterbi Algorithm with Complete Observations '
                                r'for varying values of $\mathbb{P}(1|0)$',
                          xaxis=dict(title=r'$\mathbb{P}(1|0)$'),
-                         yaxis=dict(title='Estimation Accuracy'))
+                         yaxis=dict(title='Estimation Accuracy')
+                         )
     # The visualization figure
     figure = dict(data=[data_trace],
-                  layout=figure_layout)
+                  layout=figure_layout
+                  )
     # The figure URL
     figure_url = plotly.plotly.plot(figure,
-                                    filename='Estimation_Accuracies_of_Unconstrained_Viterbi_Algorithm')
+                                    filename='Estimation_Accuracies_of_Unconstrained_Viterbi_Algorithm'
+                                    )
     # Print the URL in case you're on an environment where a GUI is not available
     print('[INFO] PUOccupancyBehaviorEstimator visualize_estimation_accuracy_plot: '
-          'Data Visualization Figure is available at {}'.format(figure_url))
+          'Data Visualization Figure is available at {}'.format(figure_url)
+          )
 
 
 # Run Trigger
@@ -282,6 +290,7 @@ if __name__ == '__main__':
     p_values_overall = []
     # Y-Axis for the Estimation Accuracy vs \mathbb{P}(1|0) plot
     estimation_accuracies_across_p_values_overall = []
+    # Create the unconstrained Viterbi agent
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimator()
     # \mathbb{P}(1)
     pi = puOccupancyBehaviorEstimator.start_probabilities.occupied
@@ -297,8 +306,12 @@ if __name__ == '__main__':
             q = (p * puOccupancyBehaviorEstimator.start_probabilities.idle) \
                 / puOccupancyBehaviorEstimator.start_probabilities.occupied
             puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                0: {0: (1 - p), 1: p},
-                1: {0: q, 1: (1 - q)}
+                0: {0: (1 - p),
+                    1: p
+                    },
+                1: {0: q,
+                    1: (1 - q)
+                    }
             }
             # True PU Occupancy States
             puOccupancyBehaviorEstimator.allocate_true_pu_occupancy_states(p, q, pi)
@@ -312,5 +325,6 @@ if __name__ == '__main__':
     visualize_estimation_accuracy_plot(p_values_overall,
                                        cyclic_average(estimation_accuracies_across_p_values_overall,
                                                       final_frontier,
-                                                      puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES)
+                                                      puOccupancyBehaviorEstimator.NUMBER_OF_CYCLES
+                                                      )
                                        )

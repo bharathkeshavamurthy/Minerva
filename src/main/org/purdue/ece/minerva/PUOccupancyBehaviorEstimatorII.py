@@ -94,6 +94,8 @@ class PUOccupancyBehaviorEstimatorII(object):
             else:
                 previous = 0
             self.true_pu_occupancy_states.append(previous)
+        # Return the true PU occupancy states in case an external entity needs it...
+        return self.true_pu_occupancy_states
 
     # Get the observations vector
     # Generate the observations of all the bands for a number of observation rounds or cycles
@@ -122,6 +124,7 @@ class PUOccupancyBehaviorEstimatorII(object):
                                             count] * self.true_pu_occupancy_states[band]) + self.noise_samples[
                                             band][count])
             self.observation_samples.append(obs_per_band)
+        # Return the observation samples in case an external entity needs it...
         return self.observation_samples
 
     # Get the start probabilities from the named tuple - a simple getter utility method exclusive to this class
@@ -147,7 +150,7 @@ class PUOccupancyBehaviorEstimatorII(object):
                 lambda: 1)[observation_sample == self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE]()
 
     # Evaluate the Estimation Accuracy
-    # \mathbb{P}(\hat{X}_k = x_k | X_k = x_k) \forall k \in \{0, 1, 2, ...., K\} and x_k \in \{0, 1\}
+    # \mathbb{P}(\hat{X}_k = x_k | X_k = x_k) \forall k \in \{0, 1, 2, ...., K - 1\} and x_k \in \{0, 1\}
     # Relative Frequency approach to estimate this parameter
     def get_estimation_accuracy(self, _input, estimated_states):
         accuracies = 0
@@ -289,8 +292,8 @@ def cyclic_average(collection, number_of_internal_collections, number_of_cycles)
     collection_for_plotting = []
     for _pass_counter in range(0, number_of_internal_collections):
         _average_sum = 0
-        for _collection_in_entry in collection:
-            _average_sum += _collection_in_entry[_pass_counter]
+        for _entry in collection:
+            _average_sum += _entry[_pass_counter]
         collection_for_plotting.append(_average_sum / number_of_cycles)
     return collection_for_plotting
 
@@ -302,13 +305,16 @@ def visualize_estimation_accuracies(data_traces):
     figure_layout = dict(title=r'Estimation Accuracies of the Viterbi Algorithm with Incomplete Observations '
                                r'over varying values of $\mathbb{P}(1|0)$ for different sensing strategies',
                          xaxis=dict(title=r'$\mathbb{P}(1|0)$'),
-                         yaxis=dict(title='Estimation Accuracy'))
+                         yaxis=dict(title='Estimation Accuracy')
+                         )
     # The visualization figure
     figure = dict(data=data_traces,
-                  layout=figure_layout)
+                  layout=figure_layout
+                  )
     # The figure URL
     figure_url = plotly.plotly.plot(figure,
-                                    filename='Estimation_Accuracies_of_Constrained_Viterbi_Algorithm')
+                                    filename='Estimation_Accuracies_of_Constrained_Viterbi_Algorithm'
+                                    )
     # Print the URL in case you're on an environment where a GUI is not available
     print('[INFO] PUOccupancyBehaviorEstimatorII visualize_estimation_accuracies: '
           'Data Visualization Figure is available at {}'.format(figure_url))
@@ -320,6 +326,7 @@ if __name__ == '__main__':
     traces = []
     # The internal legend naming member
     legend_name = None
+    # Create the constrained Viterbi agent
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()
     # Get the channel selection strategies
     # Two strategies (limiting to two for aesthetic purposes)
@@ -362,8 +369,12 @@ if __name__ == '__main__':
                     q = (p * puOccupancyBehaviorEstimator.start_probabilities.idle) \
                         / puOccupancyBehaviorEstimator.start_probabilities.occupied
                     puOccupancyBehaviorEstimator.transition_probabilities_matrix = {
-                        0: {0: (1 - p), 1: p},
-                        1: {0: q, 1: (1 - q)}
+                        0: {0: (1 - p),
+                            1: p
+                            },
+                        1: {0: q,
+                            1: (1 - q)
+                            }
                     }
                     # True PU Occupancy States
                     puOccupancyBehaviorEstimator.allocate_true_pu_occupancy_states(p, q, pi)

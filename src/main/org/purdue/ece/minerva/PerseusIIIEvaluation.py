@@ -1155,7 +1155,7 @@ class PERSEUS(object):
         # The visualization layout
         visualization_layout = dict(title='Episodic Utilities of the PERSEUS Algorithm with Model Foresight '
                                           'and Simplified belief Update',
-                                    xaxis=dict(title=r'$Episodes\ n$'),
+                                    xaxis=dict(title=r'$Episodes\ i$'),
                                     yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
                                                      r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
         # The visualization figure

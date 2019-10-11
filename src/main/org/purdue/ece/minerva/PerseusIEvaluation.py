@@ -1400,7 +1400,7 @@ class PERSEUS(object):
                                          mode='lines+markers')
         # The visualization layout
         visualization_layout = dict(title='Episodic Utilities of the Model Free PERSEUS Algorithm',
-                                    xaxis=dict(title=r'$Episodes\ n$'),
+                                    xaxis=dict(title=r'$Episodes\ i$'),
                                     yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
                                                      r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
         # The visualization figure

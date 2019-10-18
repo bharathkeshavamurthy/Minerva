@@ -397,7 +397,7 @@ class EmissionEvaluator(object):
     # Get the Emission Probabilities -> \mathbb{P}(y|x)
     # THe "state" member is an enum instance of OccupancyState.
     def get_emission_probabilities(self, state, observation_sample):
-        # If the channel is not observed, i.e. if the observation is [phi] or [0], report m_r(y_i) as 1.
+        # If the channel is not observed, i.e. if the observation is [$\phi$] or [$0$], report $m_r(y_i)$ as $1$.
         # The Empty Place-Holder value is 0.
         if observation_sample == 0:
             return 1
@@ -460,14 +460,14 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         # The temporal transition probabilities matrix
         self.temporal_transition_probabilities_matrix = _temporal_transition_probabilities_matrix
         # The unified transition probabilities matrix
-        # FIXME: For now, the same transition model across both chains
+        # FIXME: For now, the same transition model across both chains...
         self.transition_probabilities_matrix = self.spatial_transition_probabilities_matrix
         # The missed detections penalty term
         self.mu = _mu
 
     # Get the start probabilities from the named tuple - a simple getter utility method exclusive to this class
+    # The "state" arg is an enum instance of OccupancyState.
     def get_start_probabilities(self, state):
-        # The "state" arg is an enum instance of OccupancyState.
         if state == OccupancyState.OCCUPIED:
             return self.start_probabilities.occupied
         else:
@@ -649,15 +649,20 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                 previous_state_spatial = k
                 break
         # Backtracking
+        # ${NUMBER_OF_CHANNELS} to 1
         for i in range(self.number_of_channels - 1, -1, -1):
+            if len(estimated_states[i]) == 0:
+                estimated_states[i].append(
+                                           self.value_from_name(value_function_collection[i + 1][
+                                                                    self.number_of_episodes - 1][
+                                                                    previous_state_spatial].previous_spatial_state
+                                                                )
+                                           )
+                previous_state_spatial = value_function_collection[i + 1][self.number_of_episodes - 1][
+                    previous_state_spatial].previous_spatial_state
+                previous_state_temporal = previous_state_spatial
+            # ${NUMBER_OF_EPISODES} to 2
             for j in range(self.number_of_episodes - 1, 0, -1):
-                if len(estimated_states[i]) == 0:
-                    estimated_states[i].insert(0, self.value_from_name(
-                        value_function_collection[i + 1][j][previous_state_spatial].previous_spatial_state))
-                    previous_state_spatial = value_function_collection[i + 1][j][
-                        previous_state_spatial].previous_spatial_state
-                    previous_state_temporal = previous_state_spatial
-                    continue
                 estimated_states[i].insert(0, self.value_from_name(
                     value_function_collection[i][j][previous_state_temporal].previous_temporal_state))
                 previous_state_temporal = value_function_collection[i][j][

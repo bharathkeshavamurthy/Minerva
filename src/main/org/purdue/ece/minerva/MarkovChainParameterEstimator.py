@@ -162,7 +162,7 @@ class MarkovChainParameterEstimator(object):
         # All have converged
         return True
 
-    # Construct the transition probabilities matrix in order to pass it to the state estimator
+    # Construct the transition probabilities matrix
     def construct_transition_probabilities_matrix(self, iteration):
         # A constructed transition probabilities matrix
         interim_transition_probabilities_matrix = {
@@ -321,7 +321,7 @@ class MarkovChainParameterEstimator(object):
                 # A confidence check
                 convergence = self.has_it_converged(iteration)
                 if convergence is True:
-                    # It has converged. Doing this to ensure that the convergence is permanent.
+                    # It has converged. Doing this to ensure that the convergence is permanent...
                     confidence += 1
                 else:
                     confidence = 0

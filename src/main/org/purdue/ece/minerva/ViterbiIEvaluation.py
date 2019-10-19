@@ -244,8 +244,8 @@ class PrimaryUser(object):
         if numpy.random.random_sample() > pi_val:
             previous = 0
         initial_state_vector.append(previous)
-        # Based on the state of band-0 at time-0 and the (p_val, q_val) values, generate the states of the remaining...
-        # ...bands
+        # Based on the state of band-0 at time-0 and the (p_val, q_val) values, generate the states of the remaining
+        #   bands
         for _loop_iterator in range(1, self.number_of_episodes):
             sample_value = numpy.random.random_sample()
             if previous == 1 and sample_value < q_val:
@@ -259,8 +259,8 @@ class PrimaryUser(object):
             initial_state_vector.append(previous)
         return initial_state_vector
 
-    # Get the spatial and temporal occupancy behavior of the Primary User based on the statistics shared during the...
-    # ...creation of the Spatial Markov Chain and the Temporal Markov Chain
+    # Get the spatial and temporal occupancy behavior of the Primary User based on the statistics shared during the
+    #   creation of the Spatial Markov Chain and the Temporal Markov Chain
     def simulate_occupancy_behavior(self):
         # Extracting the statistics from the objects for easy use in this method
         spatial_transition_probabilities_matrix = self.spatial_markov_chain.transition_probabilities
@@ -309,7 +309,7 @@ class PrimaryUser(object):
         # DOUBLE CHAIN INFLUENCE along all the remaining cells
         # Go on and fill in the remaining cells in the Occupancy Behavior Matrix
         # Use the definitions of Conditional Probabilities to realize the math - \mathbb{P}(A|B,C)
-        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)P(C=c)
+        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)\mathbb{P}(C=c)
         # Using the definition of Marginal Probability in discrete distributions
         # for channel_index in range(1, self.number_of_channels):
         #     for episode_index in range(1, self.number_of_episodes):

@@ -263,8 +263,8 @@ class PrimaryUser(object):
             initial_state_vector.append(previous)
         return initial_state_vector
 
-    # Get the spatial and temporal occupancy behavior of the Primary User based on the statistics shared during the...
-    # ...creation of the Spatial Markov Chain and the Temporal Markov Chain
+    # Get the spatial and temporal occupancy behavior of the Primary User based on the statistics shared during the
+    #   creation of the Spatial Markov Chain and the Temporal Markov Chain
     def simulate_occupancy_behavior(self):
         # Extracting the statistics from the objects for easy use in this method
         spatial_transition_probabilities_matrix = self.spatial_markov_chain.transition_probabilities
@@ -311,7 +311,7 @@ class PrimaryUser(object):
         # DOUBLE CHAIN INFLUENCE along all the remaining cells
         # Go on and fill in the remaining cells in the Occupancy Behavior Matrix
         # Use the definitions of Conditional Probabilities to realize the math - \mathbb{P}(A|B,C)
-        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)P(C=c)
+        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)\mathbb{P}(C=c)
         # Using the definition of Marginal Probability in discrete distributions
         # for channel_index in range(1, self.number_of_channels):
         #     for episode_index in range(1, self.number_of_episodes):
@@ -433,7 +433,7 @@ class EmissionEvaluator(object):
     # Get the Emission Probabilities -> \mathbb{P}(y|x)
     # THe "state" member is an enum instance of OccupancyState.
     def get_emission_probabilities(self, state, observation_sample):
-        # If the channel is not observed, i.e. if the observation is [phi] or [0], report m_r(y_i) as 1.
+        # If the channel is not observed, i.e. if the observation is [$\phi$] or [$0$], report $m_r(y_i)$ as $1$.
         # The Empty Place-Holder value is 0.
         if observation_sample == 0:
             return 1
@@ -496,7 +496,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         # The temporal transition probabilities matrix
         self.temporal_transition_probabilities_matrix = _temporal_transition_probabilities_matrix
         # The unified transition probabilities matrix
-        # FIXME: For now, the same transition model across both chains
+        # FIXME: For now, the same transition model across both chains...
         self.transition_probabilities_matrix = self.spatial_transition_probabilities_matrix
         # The missed detections penalty term
         self.mu = _mu
@@ -686,14 +686,17 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                 break
         # Backtracking
         for i in range(self.number_of_channels - 1, -1, -1):
+            if len(estimated_states[i]) == 0:
+                estimated_states[i].append(
+                                           self.value_from_name(value_function_collection[i + 1][
+                                                                    self.number_of_episodes - 1][
+                                                                    previous_state_spatial].previous_spatial_state
+                                                                )
+                                           )
+                previous_state_spatial = value_function_collection[i + 1][self.number_of_episodes - 1][
+                    previous_state_spatial].previous_spatial_state
+                previous_state_temporal = previous_state_spatial
             for j in range(self.number_of_episodes - 1, 0, -1):
-                if len(estimated_states[i]) == 0:
-                    estimated_states[i].insert(0, self.value_from_name(
-                        value_function_collection[i + 1][j][previous_state_spatial].previous_spatial_state))
-                    previous_state_spatial = value_function_collection[i + 1][j][
-                        previous_state_spatial].previous_spatial_state
-                    previous_state_temporal = previous_state_spatial
-                    continue
                 estimated_states[i].insert(0, self.value_from_name(
                     value_function_collection[i][j][previous_state_temporal].previous_temporal_state))
                 previous_state_temporal = value_function_collection[i][j][
@@ -798,7 +801,7 @@ class ViterbiIIEvaluation(object):
         self.emission_evaluator = EmissionEvaluator(self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_VARIANCE)
         # The channel selection strategy generator
         self.channel_selection_heuristic_generator = ChannelSelectionStrategyGenerator(self.NUMBER_OF_CHANNELS)
-        # All possible combinational heuristics of the SU's observations
+        # All possible combinatorial heuristics of the SU's observations
         self.observation_heuristics = self.channel_selection_heuristic_generator.uniform_sensing()
         # The x-axis corresponds to the episodes of interaction
         self.x_axis = [k + 1 for k in range(0, self.NUMBER_OF_EPISODES)]

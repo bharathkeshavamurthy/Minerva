@@ -193,12 +193,13 @@ class MinimumEntropyMerging(object):
             # The group corresponding to the detected channel $g_{k}$
             # $g_{k} \leftarrow U \cap s_{i}$
             g_k = []
-            for j in correlated_channel_sets[d_k]:
-                if j in u:
+            for j in u:
+                if j in correlated_channel_sets[d_k]:
                     g_k.append(j)
             # $U \leftarrow U - s_{i}$
             for j in correlated_channel_sets[d_k]:
-                del u[j]
+                if j in u:
+                    u.remove(j)
             # $G \leftarrow G \cup \{g_{k}\}$
             g.append(g_k)
             # $D \leftarrow D \cup \{d_{k}\}$
@@ -213,7 +214,7 @@ class MinimumEntropyMerging(object):
         mpeg_gk = 1e100
         d_k = None
         for c_i in g_k:
-            for c_j in range(self.NUMBER_OF_CHANNELS):
+            for c_j in g_k:
                 # $j \neq i$ in the summation
                 if c_j == c_i:
                     continue
@@ -255,6 +256,8 @@ class MinimumEntropyMerging(object):
                 mpeg_gi = mpeg_output.mpeg
                 d_i = mpeg_output.d
                 for g_j in g:
+                    if g_i == g_j:
+                        continue
                     # $MPEG(g_{j})$ and $d_{j}$
                     mpeg_output = self.calculate_mpeg(g_j)
                     mpeg_gj = mpeg_output.mpeg
@@ -289,7 +292,8 @@ class MinimumEntropyMerging(object):
                                              D=d)
 
     # Estimate the Occupancy States of the Incumbents using the Markov Process based Estimation Algorithm
-    # \[cs_{n}^{t} = \argmax_{x \in \{0,1\}}\ \{\mathbb{P}(x|\vec{cs}_n^{h} = y) \mathbb{P}(\vec{cs}_{n}^{h} = y)\}
+    # \[cs_{n}^{t} = \argmax_{x \in \{0,1\}}\ \{\mathbb{P}(x|\vec{cs}_n^{h} = \vec{y})
+    #   \mathbb{P}(\vec{cs}_{n}^{h} = \vec{y})\}
     def mpe_estimate_occupancy_states(self):
         # The outputs to be returned
         estimated_occupancy_states = []
@@ -359,7 +363,7 @@ class MinimumEntropyMerging(object):
                                key=lambda idx: posterior_probability_members[idx])
                     estimated_occupancy_states[j].append(cs_j)
                     likelihoods[j].append((lambda: 1 - self.channel_correlation_matrix[d[i]][j],
-                                           lambda: self.channel_correlation_matrix[d[i][j]])[cs_i == cs_j]())
+                                           lambda: self.channel_correlation_matrix[d[i]][j])[cs_i == cs_j]())
         return self.estimation_routine_output(estimated_occupancy_states=estimated_occupancy_states,
                                               likelihoods=likelihoods)
 
@@ -381,7 +385,7 @@ class MinimumEntropyMerging(object):
     # Use the Minimum Entropy Merge (MEM) strategy here to determine the final estimated occupancy states of the
     #   channels across all episodes (2 variants: MEM_with_GC_CCE_and_MPE and MEM_with_MEI_CCE_and_MPE)
     def minimum_entropy_merge(self, clustering_technique):
-        # Setting up he output to be returned
+        # Setting up the output to be returned
         estimated_occupancy_states = []
         for channel in range(self.NUMBER_OF_CHANNELS):
             estimated_occupancy_states.append([])
@@ -397,8 +401,8 @@ class MinimumEntropyMerging(object):
             for episode in range(self.NUMBER_OF_EPISODES):
                 entropies = [((-k * numpy.log(k)) - ((1 - k) * numpy.log(1 - k)))
                              for k in (cce_likelihoods[channel][episode], mpe_likelihoods[channel][episode])]
-                estimated_occupancy_states.append((lambda: mpe_estimated_occupancy_states[channel][episode],
-                                                   lambda: cce_estimated_occupancy_states[channel][episode]
+                estimated_occupancy_states.append((lambda: cce_estimated_occupancy_states[channel][episode],
+                                                   lambda: mpe_estimated_occupancy_states[channel][episode]
                                                    )[min(0, len(entropies),
                                                          key=lambda idx: entropies[idx]
                                                          )])

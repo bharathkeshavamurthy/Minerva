@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/minerva.iml" filepath="$PROJECT_DIR$/.idea/minerva.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Minerva.iml" filepath="$PROJECT_DIR$/.idea/Minerva.iml" />
     </modules>
   </component>
 </project>

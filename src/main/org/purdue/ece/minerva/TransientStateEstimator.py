@@ -62,7 +62,10 @@ class TransientStateEstimator(object):
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     def estimate_pu_occupancy_states(self):
         estimated_states = []
-        value_function_collection = [dict() for x in range(len(self.observation_samples))]
+        previous_state = None
+        value_function_collection = []
+        for x in range(len(self.observation_samples)):
+            value_function_collection.append(dict())
         for state in OccupancyState:
             current_value = self.get_emission_probabilities(state.value, self.observation_samples[0]) * \
                             self.get_start_probabilities(state.name)

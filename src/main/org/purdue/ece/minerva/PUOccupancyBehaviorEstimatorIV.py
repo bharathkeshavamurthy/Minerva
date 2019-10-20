@@ -172,7 +172,9 @@ class PUOccupancyBehaviorEstimatorIV(object):
                     1j * img_channel_impulse_response_samples)
         # Re-arranging the vectors
         for band in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
-            obs_per_band = [self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE for k in range(0, self.NUMBER_OF_SAMPLES)]
+            obs_per_band = []
+            for k in range(0, self.NUMBER_OF_SAMPLES):
+                obs_per_band.append(self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE)
             # I'm sensing a smaller subset of channels
             # However, I'm sensing across all time steps / rounds / time indices for the bands that are being sensed!
             if band in self.BANDS_OBSERVED:
@@ -293,10 +295,18 @@ class PUOccupancyBehaviorEstimatorIV(object):
     # Output the collection consisting of parameters of interest for visualization
     def estimate_pu_occupancy_states(self, spatial_input, temporal_input):
         # Estimated states - kxt matrix
-        estimated_states = [[] for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
+        estimated_states = []
+        previous_state_spatial = None
+        previous_state_temporal = None
+        for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            estimated_states.append([])
         # A value function collection to store and index the calculated value functions across t and k
-        value_function_collection = [[dict() for x in range(self.NUMBER_OF_SAMPLES)] for k in
-                                     range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
+        value_function_collection = []
+        for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            temp_array = []
+            for x in range(self.NUMBER_OF_SAMPLES):
+                temp_array.append(dict())
+            value_function_collection.append(temp_array)
         # t = 0 and k = 0 - No previous state to base the Markovian Correlation on in either dimension
         for state in OccupancyState:
             # Verified - [0][0] is being finished here because there's no Markovian correlation that exists here

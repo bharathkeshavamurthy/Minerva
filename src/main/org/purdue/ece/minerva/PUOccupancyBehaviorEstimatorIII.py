@@ -267,10 +267,18 @@ class PUOccupancyBehaviorEstimatorIII(object):
     # Output the collection consisting of the parameters of interest
     def estimate_pu_occupancy_states(self):
         # Estimated states - kxt matrix
-        estimated_states = [[] for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
+        estimated_states = []
+        previous_state_spatial = None
+        previous_state_temporal = None
+        for x in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            estimated_states.append([])
         # A value function collection to store and index the calculated value functions across t and k
-        value_function_collection = [[dict() for x in range(self.NUMBER_OF_SAMPLES)] for k in
-                                     range(0, self.NUMBER_OF_FREQUENCY_BANDS)]
+        value_function_collection = []
+        for k in range(0, self.NUMBER_OF_FREQUENCY_BANDS):
+            temp_array = []
+            for x in range(self.NUMBER_OF_SAMPLES):
+                temp_array.append(dict())
+            value_function_collection.append(temp_array)
         # t = 0 and k = 0 - No previous state to base the Markovian Correlation on in either dimension
         for state in OccupancyState:
             current_value = self.get_emission_probabilities(state.value, self.observation_samples[0][0]) * \

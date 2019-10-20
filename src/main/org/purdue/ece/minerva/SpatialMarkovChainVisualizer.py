@@ -89,8 +89,10 @@ class SpatialMarkovChainVisualizer(object):
         # Occupancy Metric
         occupancy_metric = []
         for channel in range(0, self.NUMBER_OF_CHANNELS):
-            occupancy_metric.append(
-                [self.true_pu_occupancy_states[channel] for k in range(0, self.NUMBER_OF_SAMPLING_ROUNDS)])
+            temp_array = []
+            for k in range(0, self.NUMBER_OF_SAMPLING_ROUNDS):
+                temp_array.append(self.true_pu_occupancy_states[channel])
+            occupancy_metric.append(temp_array)
         # Data
         # Plotly API's HeatMap
         data = [

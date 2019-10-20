@@ -180,6 +180,7 @@ class PUOccupancyBehaviorEstimatorII(object):
     # Output the estimated state of the frequency bands in the wideband spectrum of interest
     def estimate_pu_occupancy_states(self):
         estimated_states_array = []
+        previous_state = None
         for sampling_round in range(0, self.NUMBER_OF_SAMPLES):
             estimated_states = []
             reduced_observation_vector = []
@@ -189,7 +190,9 @@ class PUOccupancyBehaviorEstimatorII(object):
             # ...this reduced observation vector
             # INITIALIZATION : The array of initial probabilities is known
             # FORWARD RECURSION
-            value_function_collection = [dict() for x in range(len(reduced_observation_vector))]
+            value_function_collection = []
+            for x in range(len(reduced_observation_vector)):
+                value_function_collection.append(dict())
             for state in OccupancyState:
                 current_value = self.get_emission_probabilities(state.value, reduced_observation_vector[0]) * \
                                 self.get_start_probabilities(state.name)

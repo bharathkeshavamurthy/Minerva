@@ -336,7 +336,7 @@ class PrimaryUser(object):
         # DOUBLE CHAIN INFLUENCE along all the remaining cells
         # Go on and fill in the remaining cells in the Occupancy Behavior Matrix
         # Use the definitions of Conditional Probabilities to realize the math - \mathbb{P}(A|B,C)
-        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)P(C=c)
+        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)\mathbb{P}(C=c)
         # Using the definition of Marginal Probability in discrete distributions
         # for channel_index in range(1, self.number_of_channels):
         #     for episode_index in range(1, self.number_of_episodes):
@@ -420,9 +420,9 @@ class EmissionEvaluator(object):
         self.impulse_response_variance = _impulse_response_variance
 
     # Get the Emission Probabilities -> \mathbb{P}(y|x)
-    # THe "state" member is an enum instance of OccupancyState.
+    # The "state" member is an enum instance of OccupancyState.
     def get_emission_probabilities(self, state, observation_sample):
-        # If the channel is not observed, i.e. if the observation is [phi] or [0], report m_r(y_i) as 1.
+        # If the channel is not observed, i.e. if the observation is [$\phi$] or [$0$], report $m_r(y_i)$ as $1$.
         # The Empty Place-Holder value is 0.
         if observation_sample == 0:
             return 1
@@ -621,6 +621,7 @@ class Oracle(object):
         self.true_pu_occupancy_states = _true_pu_occupancy_states
         self.mu = _mu
 
+    # Evaluate the return from the Oracle's omniscient policy
     def get_return(self, episode):
         estimated_state_vector = [self.true_pu_occupancy_states[k][episode] for k in range(0, self.number_of_channels)]
         utility = 0
@@ -642,7 +643,7 @@ class Oracle(object):
 # This entity encapsulates a POMDP Approximate Point-based Value Iteration Algorithm known as the PERSEUS Algorithm.
 # Training to fine-tune the belief space -> Perform backup until convergence -> Re-sample using the most recent policy
 # References to the State Estimation Algorithm in the belief analysis phase
-# Concurrent Model Learning with no simplification whatsoever!
+# Model Foresight with no simplification whatsoever!
 class PERSEUS(object):
 
     # Setup the Markov Chain
@@ -658,7 +659,7 @@ class PERSEUS(object):
     # The initialization sequence
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
-                 _limitation, _confidence_bound, _gamma, _epsilon, _utility_multiplication_factor):
+                 _limitation, _confidence_bound, _gamma, _utility_multiplication_factor):
         print('[INFO] PERSEUS Initialization: Bringing things up...')
         # The Utility object
         self.util = Util()
@@ -692,8 +693,6 @@ class PERSEUS(object):
         self.p = 0.3
         # These have been learnt prior to triggering PERSEUS
         self.transition_probabilities_matrix = {0: {0: 0.7, 1: 0.3}, 1: {0: 0.2, 1: 0.8}}
-        # The convergence threshold for the parameter estimator
-        self.epsilon = _epsilon
         # The start probabilities dict
         self.start_probabilities_dict = self.util.construct_start_probabilities_dict(self.pi)
         # Setup the Spatial Markov Chain
@@ -747,7 +746,7 @@ class PERSEUS(object):
         self.utility_multiplication_factor = _utility_multiplication_factor
 
     # Get the enumeration instance based on the value passed as an argument in order to ensure compliance with the
-    #   'state' communication APIs.
+    #   'state' communication APIs
     @staticmethod
     def get_enum_from_value(state_value):
         if state_value == OccupancyState.OCCUPIED.value:
@@ -772,7 +771,9 @@ class PERSEUS(object):
         # Temporal/Episodic change for the first channel
         transition_probability = transition_probabilities_matrix[prev_state[0]][next_state[0]]
         for index in range(1, self.number_of_channels):
-            transition_probability *= transition_probabilities_matrix[next_state[index - 1]][next_state[index]]
+            # Spatial and Temporal change for the rest of 'em
+            transition_probability *= (transition_probabilities_matrix[next_state[index - 1]][next_state[index]] *
+                                       transition_probabilities_matrix[prev_state[index]][next_state[index]])
         return transition_probability
 
     # Get the normalization constant
@@ -1158,7 +1159,7 @@ class PerseusIIEvaluation(object):
     NUMBER_OF_SAMPLING_ROUNDS = 300
 
     # The number of periods of interaction of the agent with the radio environment
-    NUMBER_OF_EPISODES = 1000
+    NUMBER_OF_EPISODES = 2000
 
     # The mean of the AWGN samples
     NOISE_MEAN = 0
@@ -1179,7 +1180,7 @@ class PerseusIIEvaluation(object):
     FRAGMENTED_SPATIAL_SENSING_LIMITATION = 3
 
     # The exploration period of the PERSEUS algorithm
-    EXPLORATION_PERIOD = 100
+    EXPLORATION_PERIOD = 1000
 
     # The discount factor employed in the Bellman update
     DISCOUNT_FACTOR = 0.9
@@ -1194,9 +1195,6 @@ class PerseusIIEvaluation(object):
     # The penalty for missed detections
     PENALTY = -1
 
-    # The convergence threshold for the parameter estimation algorithm
-    CONVERGENCE_THRESHOLD = 0.00001
-
     # The initialization sequence
     def __init__(self):
         print('[INFO] PerseusIIEvaluation Initialization: Bringing things up...')
@@ -1207,7 +1205,6 @@ class PerseusIIEvaluation(object):
                                                     self.IMPULSE_RESPONSE_VARIANCE, self.PENALTY,
                                                     self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
                                                     self.CONFIDENCE_BOUND, self.DISCOUNT_FACTOR,
-                                                    self.CONVERGENCE_THRESHOLD,
                                                     math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE))
 
     # The evaluation routine

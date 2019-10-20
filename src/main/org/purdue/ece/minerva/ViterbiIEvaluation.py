@@ -395,7 +395,7 @@ class EmissionEvaluator(object):
         self.impulse_response_variance = _impulse_response_variance
 
     # Get the Emission Probabilities -> \mathbb{P}(y|x)
-    # THe "state" member is an enum instance of OccupancyState.
+    # The "state" member is an enum instance of OccupancyState.
     def get_emission_probabilities(self, state, observation_sample):
         # If the channel is not observed, i.e. if the observation is [$\phi$] or [$0$], report $m_r(y_i)$ as $1$.
         # The Empty Place-Holder value is 0.

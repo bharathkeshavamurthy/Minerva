@@ -43,7 +43,7 @@ class MarkovianCorrelationClass(Enum):
 
 
 # Occupancy State Enumeration
-# Based on Energy Detection, \mathbb{E}[|X_k(i)|^2] = 1, if Occupied ; else, \mathbb{E}[|X_k(i)|^2] = 0
+# Based on Energy Detection, \mathbb{E}[|X_k(i)|^2] = 1, if Occupied; else, \mathbb{E}[|X_k(i)|^2] = 0
 class OccupancyState(Enum):
     # Occupancy state IDLE
     IDLE = 0
@@ -310,7 +310,7 @@ class PrimaryUser(object):
         # DOUBLE CHAIN INFLUENCE along all the remaining cells
         # Go on and fill in the remaining cells in the Occupancy Behavior Matrix
         # Use the definitions of Conditional Probabilities to realize the math - \mathbb{P}(A|B,C)
-        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)P(C=c)
+        # \mathbb{P}(A=a|B=b) = \sum_{c\in\{0,1\}}\ \mathbb{P}(A=a|B=b,C=c)\mathbb{P}(C=c)
         # Using the definition of Marginal Probability in discrete distributions
         # for channel_index in range(1, self.number_of_channels):
         #     for episode_index in range(1, self.number_of_episodes):

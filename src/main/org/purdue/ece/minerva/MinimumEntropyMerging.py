@@ -213,8 +213,10 @@ class MinimumEntropyMerging(object):
         peg_gk = 0
         mpeg_gk = 1e100
         d_k = None
-        for c_i in g_k:
-            for c_j in g_k:
+        for _i in range(numpy.array(g_k).size):
+            c_i = (lambda: g_k[_i], lambda: g_k)[isinstance(g_k, int)]()
+            for _j in range(numpy.array(g_k).size):
+                c_j = (lambda: g_k[_j], lambda: g_k)[isinstance(g_k, int)]()
                 # $j \neq i$ in the summation
                 if c_j == c_i:
                     continue
@@ -280,12 +282,16 @@ class MinimumEntropyMerging(object):
                         dj_min = d_j
                         dnew_min = d_new
             # $G \leftarrow G - g_{i} - g_{j} + g_{new}$
-            g.remove(gi_min)
-            g.remove(gj_min)
+            if gi_min in g:
+                g.remove(gi_min)
+            if gj_min in g:
+                g.remove(gj_min)
             g.append(gnew_min)
             # $D \leftarrow D - d_{i} - d_{j} + d_{new}$
-            d.remove(di_min)
-            d.remove(dj_min)
+            if di_min in d:
+                d.remove(di_min)
+            if dj_min in d:
+                d.remove(dj_min)
             d.append(dnew_min)
         # Return the output in the prescribed format in case an external entity needs it...
         return self.clustering_output_format(G=g,
@@ -399,13 +405,20 @@ class MinimumEntropyMerging(object):
         mpe_likelihoods = mpe_estimation_output.likelihoods
         for channel in range(self.NUMBER_OF_CHANNELS):
             for episode in range(self.NUMBER_OF_EPISODES):
-                entropies = [((-k * numpy.log(k)) - ((1 - k) * numpy.log(1 - k)))
-                             for k in (cce_likelihoods[channel][episode], mpe_likelihoods[channel][episode])]
-                estimated_occupancy_states.append((lambda: cce_estimated_occupancy_states[channel][episode],
-                                                   lambda: mpe_estimated_occupancy_states[channel][episode]
-                                                   )[min(0, len(entropies),
-                                                         key=lambda idx: entropies[idx]
-                                                         )])
+                entropies = []
+                for k in (cce_likelihoods[channel][episode], mpe_likelihoods[channel][episode]):
+                    if k == 0:
+                        entropies.append(10e9)
+                    elif k == 1:
+                        entropies.append(0)
+                    else:
+                        entropies.append(((-k * numpy.log(k)) - ((1 - k) * numpy.log(1 - k))))
+                minimum_entropy_index = min(range(0, len(entropies)),
+                                            key=lambda idx: entropies[idx])
+                if minimum_entropy_index == 0:
+                    estimated_occupancy_states[channel].append(cce_estimated_occupancy_states[channel][episode])
+                else:
+                    estimated_occupancy_states[channel].append(mpe_estimated_occupancy_states[channel][episode])
         return estimated_occupancy_states
 
     # Visualize the episodic utilities for the GC-CCE algorithm, MEI-CCE algorithm, and the MPE algorithm

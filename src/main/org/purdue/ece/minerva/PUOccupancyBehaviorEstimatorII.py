@@ -10,10 +10,14 @@
 
 import numpy
 import plotly
+import warnings
 import scipy.stats
 from enum import Enum
 import plotly.graph_objs as go
 from collections import namedtuple
+
+warnings.filterwarnings("ignore",
+                        category=DeprecationWarning)
 
 # Plotly user account credentials for visualization
 plotly.tools.set_credentials_file(username='bkeshava',

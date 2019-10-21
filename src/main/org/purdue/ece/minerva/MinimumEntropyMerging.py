@@ -337,7 +337,7 @@ class MinimumEntropyMerging(object):
             estimated_occupancy_states.append([])
         likelihoods = []
         for channel in range(self.NUMBER_OF_CHANNELS):
-            likelihoods.append({})
+            likelihoods.append([])
         # Perform clustering
         clustered_output = (lambda: self.greedy_cluster(),
                             lambda: self.mei_cluster())[

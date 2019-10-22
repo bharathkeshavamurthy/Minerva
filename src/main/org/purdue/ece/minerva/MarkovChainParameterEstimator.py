@@ -52,7 +52,7 @@ class MarkovChainParameterEstimator(object):
     BAND_START_PROBABILITIES = namedtuple('BandStartProbabilities', ['idle', 'occupied'])
 
     # Confidence bound for termination
-    CONFIDENCE_BOUND = 7
+    CONFIDENCE_BOUND = 5
 
     # The initialization sequence
     def __init__(self):
@@ -79,7 +79,7 @@ class MarkovChainParameterEstimator(object):
             self.backward_probabilities.append(dict())
         # Convergence check epsilon - a very small value > 0
         # Distance Metric
-        self.epsilon = 0.00001
+        self.epsilon = 1e-8
         # Initial p = \mathbb{P}(Occupied|Idle)
         self.p_initial = 0.0
         # Initial Forward Probabilities dict
@@ -383,7 +383,10 @@ class MarkovChainParameterEstimator(object):
         visualization_layout = dict(title='Mean Square Error Convergence of the Markov Chain Parameter Estimation '
                                           'Algorithm for a Static PU with Complete Information',
                                     xaxis=dict(title='Number of Iterations (x300 observation vectors)'),
-                                    yaxis=dict(title=r'Mean Square Error - $\mathbb{E}\ [(p\ -\ \hat{p})^2]$')
+                                    yaxis=dict(
+                                        type='log',
+                                        autorange=True,
+                                        title=r'Mean Square Error - $\mathbb{E}\ [(p\ -\ \hat{p})^2]$')
                                     )
         # The figure
         visualization_figure = dict(data=[visualization_trace],
@@ -433,7 +436,7 @@ if __name__ == '__main__':
     markovChainParameterEstimator.allocate_observations()
     # Before, we go ahead and estimate the state transition probabilities matrix, let's set them to some initial values
     # \mathbb{P}(Occupied|Idle) initial assumption
-    p_initial = 0.00001
+    p_initial = 1e-8
     markovChainParameterEstimator.p_initial = p_initial
     # \mathbb{P}(Idle|Occupied) initial assumption
     q_initial = (p_initial * (1 - pi)) / pi

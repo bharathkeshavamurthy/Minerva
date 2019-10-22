@@ -1,0 +1,6 @@
+(parameter-estimator-playground) root@bkeshava:/opt/Minerva/src/main/org/purdue/ece/minerva# python3.7 MarkovChainParameterEstimator.py
+[INFO] MarkovChainParameterEstimator main: Creating instance and beginning the process of parameter estimation
+[INFO] MarkovChainParameterEstimator Initialization: Bringing things up...
+[INFO] MarkovChainParameterEstimator estimate_parameters: The visualization figure is available at: https://plot.ly/~bkeshava/73
+[INFO] MarkovChainParameterEstimator main: Estimated Transition Probabilities Matrix is -  {0: {0: 0.6549986207691858, 1: 0.3450013792308148}, 1: {0: 0.48429101746630443, 1: 0.5157089825336948}}
+(parameter-estimator-playground) root@bkeshava:/opt/Minerva/src/main/org/purdue/ece/minerva#

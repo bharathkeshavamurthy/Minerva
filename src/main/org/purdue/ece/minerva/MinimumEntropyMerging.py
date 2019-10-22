@@ -52,7 +52,7 @@ class MinimumEntropyMerging(object):
     NUMBER_OF_EPISODES = 1000
 
     # The correlation threshold $\rho_{th}$ for constructing the Channel Correlation Matrix
-    CORRELATION_THRESHOLD = 0.7
+    CORRELATION_THRESHOLD = 0.77
 
     # The number of clusters $T$ mandated by our evaluation framework constraints
     NUMBER_OF_CLUSTERS = 6
@@ -240,18 +240,18 @@ class MinimumEntropyMerging(object):
     # We'll follow the same exact MEI algorithm as laid down in the reference work...
     def mei_cluster(self):
         # The output members are initialized here
-        g = [k for k in range(self.NUMBER_OF_CHANNELS)]
+        g = [[k] for k in range(self.NUMBER_OF_CHANNELS)]
         d = [k for k in range(self.NUMBER_OF_CHANNELS)]
         # The internal members are initialized here
-        mei = 1e100
-        gi_min = None
-        gj_min = None
-        gnew_min = None
-        di_min = None
-        dj_min = None
-        dnew_min = None
         # while $|G| > T$
         while len(g) > self.NUMBER_OF_CLUSTERS:
+            mei = 1e100
+            gi_min = None
+            gj_min = None
+            gnew_min = None
+            di_min = None
+            dj_min = None
+            dnew_min = None
             for g_i in g:
                 # $MPEG(g_{i})$ and $d_{i}$
                 mpeg_output = self.calculate_mpeg(g_i)
@@ -273,7 +273,7 @@ class MinimumEntropyMerging(object):
                     # The entropy increment as a result of the merging
                     ei = mpeg_gnew - mpeg_gi - mpeg_gj
                     # MEI evaluation and subsequent inference of the merged group with the smallest entropy increment
-                    if ei < mei:
+                    if ei <= mei:
                         mei = ei
                         gi_min = g_i
                         gj_min = g_j

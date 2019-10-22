@@ -23,9 +23,13 @@
 import math
 import numpy
 import plotly
+import warnings
 import scipy.stats
 from enum import Enum
 import plotly.graph_objs as go
+
+warnings.filterwarnings("ignore",
+                        category=DeprecationWarning)
 
 # Plotly user account credentials for visualization
 plotly.tools.set_credentials_file(username='bkeshava',
@@ -432,7 +436,7 @@ class NeymanPearsonDetector(object):
             estimated_state = []
             for channel in range(0, self.number_of_channels):
                 test_statistic = sum(self.observations[channel][episode]) / self.number_of_sampling_rounds
-                estimated_state[channel] = (lambda: 0, lambda: 1)[test_statistic >= self.threshold]()
+                estimated_state.append((lambda: 0, lambda: 1)[test_statistic >= self.threshold]())
                 episodic_reward += ((1 - self.true_pu_occupancy_states[channel][episode]) *
                                     (1 - estimated_state[channel])) + \
                                    (self.penalty * (1 - estimated_state[channel]) *

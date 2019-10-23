@@ -49,10 +49,10 @@
 \newcommand{\rom}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
 \usepackage{color}
 \usepackage{soul,xcolor}
-\newcommand{\sst}[1]{\st{#1}}
-%\newcommand{\sst}[1]{}
-\newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
-%\newcommand{\nm}[1]{}
+%\newcommand{\sst}[1]{\st{#1}}
+\newcommand{\sst}[1]{}
+%\newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
+\newcommand{\nm}[1]{}
 \newcommand{\bk}[1]{{\color{magenta}{[BK: #1]}}}
 \newcommand{\nmmath}[1]{{\color{blue}\text{\bf{[NM: #1]}}}}
 \newcommand{\gs}[1]{{\color{orange}\bf{[GS: #1]}}}
@@ -64,7 +64,9 @@
 \newcommand{\add}[1]{{\color{red}{#1}}}
 \newcommand{\ull}[1]{\textbf{\color{red}\ul{#1}}}
 \normalem
-\title{Spectrum Sensing in Cognitive Radio Networks using POMDP Approximate Value Iteration methods}
+\title{Spectrum Sensing in Cognitive Radio Networks
+\\
+via Approximate POMDP methods}
 \author{Bharath Keshavamurthy, Nicol\`{o} Michelusi
 \thanks{This research has been funded in part by NSF under grant CNS-1642982.}
 \thanks{The authors are with the School of Electrical and Computer Engineering, Purdue University. email: \{bkeshava,michelus\}@purdue.edu.}}
@@ -73,8 +75,11 @@
 \setul{red}{2pt}
 \maketitle
 \setstcolor{red}
+\nm{abstract is way too long.. limit to 200 words}
 \begin{abstract}
-Cognitive radio technologies will be critical to the wireless communication infrastructure in the near future due to the increasingly incredible number of applications being added to the computer networking ecosystem, both in the commercial and the military spheres, resulting in increased pressure on the available spectrum, which is a limited physical resource. In this paper, we propose a novel channel access strategy in networks with multiple licensed users wherein a cognitive radio node learns the correlation model defining the occupancy behavior of the incumbents and devises an optimal strategy to perform spectrum sensing and access that exploits the learned correlation model. Since the computational complexity associated with solving for the optimal spectrum sensing and channel access strategy scales exponentially with the number of spectrum bands under consideration, we propose a system employing approximate POMDP value iteration methods, namely, the PERSEUS algorithm. Furthermore, through system simulations, we compare the performance of standard MAP-based state estimators and correlation-coefficient based clustering algorithms in the state-of-the-art against our proposed system employing a customized PERSEUS algorithm, with respect to the secondary network throughput and the number of collisions with the incumbent transmissions. These simulations show that the proposed system, in terms of the episodic utilities, out-performs the existing correlation-coefficient based state-of-the-art by an average of 50\% and a Neyman-Pearson Detector that assumes independence among channels by an average of 33\%. Finally, the proposed system, on average, matches the episodic utilities provided by standard MAP-based state estimators which possess prior knowledge about the transition model of the underlying MDP.
+Cognitive radio technologies will be critical to the wireless communication infrastructure
+\add{due to their potential to alleviate the spectrum crunch,}\sst{ in the near future due to the increasingly incredible number of applications being added to the computer networking ecosystem,} both in the commercial and the military spheres\sst{, resulting in increased pressure on the available spectrum, which is a limited physical resource}. In this paper, we propose a novel channel access strategy in networks with multiple licensed users wherein a cognitive radio node learns the correlation model defining the occupancy behavior of the incumbents and devises an optimal strategy to perform spectrum sensing and access that exploits the learned correlation model.
+\add{To alleviate the complexity of the POMDP optimization,}\sst{ Since the computational complexity associated with solving for the optimal spectrum sensing and channel access strategy scales exponentially}\nm{it is actually doubly-exponential for POMDPs..}\sst{ with the number of spectrum bands under consideration,} we \add{employ}\sst{ propose a system employing approximate POMDP value iteration methods, namely,} the PERSEUS algorithm\add{, an approximate value iteration method}.\sst{ Furthermore, through system simulations,} \add{We compare numerically the performance of the proposed algorithms with state-of-the-art}\sst{we compare the performance of standard} MAP-based state estimators and correlation-coefficient based clustering algorithms\sst{ in the state-of-the-art against our proposed system employing a customized PERSEUS algorithm, with respect to the secondary network throughput and the number of collisions with the incumbent transmissions.} \add{and demonstrate that....}\nm{fix} These simulations show that the proposed system, in terms of the episodic utilities\nm{what do you mean by episodic utility?}, out-performs the existing correlation-coefficient based state-of-the-art by an average of 50\% and a Neyman-Pearson Detector that assumes independence among channels by an average of 33\%. Finally, the proposed system, on average, matches the episodic utilities provided by standard MAP-based state estimators which possess prior knowledge about the transition model of the underlying MDP.
 \end{abstract}
 \begin{IEEEkeywords}
 Hidden Markov Models, POMDP

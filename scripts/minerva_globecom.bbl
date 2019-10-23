@@ -39,17 +39,17 @@ F.~{Xu}, L.~{Zhang}, Z.~{Zhou}, and Y.~{Ye}, ``Architecture for next-generation
   International Conference on Cognitive Radio Oriented Wireless Networks and
   Communications (CrownCom 2008)}, May 2008, pp. 1--5.
 
-\bibitem{5496076}
-J.~{Oksanen}, V.~{Koivunen}, J.~{Lundén}, and A.~{Huttunen}, ``Diversity-based
-  spectrum sensing policy for detecting primary signals over multiple frequency
-  bands,'' in \emph{2010 IEEE International Conference on Acoustics, Speech and
-  Signal Processing}, March 2010, pp. 3130--3133.
+\bibitem{7094730}
+K.~{Cohen}, Q.~{Zhao}, and A.~{Scaglione}, ``Restless multi-armed bandits under
+  time-varying activation constraints for dynamic spectrum access,'' in
+  \emph{2014 48th Asilomar Conference on Signals, Systems and Computers}, Nov
+  2014, pp. 1575--1578.
 
-\bibitem{4804743}
-S.~{Chaudhari}, V.~{Koivunen}, and H.~V. {Poor}, ``Autocorrelation-based
-  decentralized sequential detection of ofdm signals in cognitive radios,''
-  \emph{IEEE Transactions on Signal Processing}, vol.~57, no.~7, pp.
-  2690--2700, July 2009.
+\bibitem{6507570}
+J.~{Lund\'{e}n}, S.~R. {Kulkarni}, V.~{Koivunen}, and H.~V. {Poor},
+  ``Multiagent reinforcement learning based spectrum sensing policies for
+  cognitive radio networks,'' \emph{IEEE Journal of Selected Topics in Signal
+  Processing}, vol.~7, no.~5, pp. 858--868, Oct 2013.
 
 \bibitem{6956794}
 M.~{Gao}, X.~{Yan}, Y.~{Zhang}, C.~{Liu}, Y.~{Zhang}, and Z.~{Feng}, ``Fast
@@ -67,11 +67,43 @@ G.~{Ding}, J.~{Wang}, Q.~{Wu}, L.~{Yu}, Y.~{Jiao}, and X.~{Gao}, ``Joint
   observations,'' in \emph{2014 IEEE Global Conference on Signal and
   Information Processing (GlobalSIP)}, Dec 2014, pp. 1325--1329.
 
-\bibitem{6507570}
-J.~{Lundén}, S.~R. {Kulkarni}, V.~{Koivunen}, and H.~V. {Poor}, ``Multiagent
-  reinforcement learning based spectrum sensing policies for cognitive radio
-  networks,'' \emph{IEEE Journal of Selected Topics in Signal Processing},
-  vol.~7, no.~5, pp. 858--868, Oct 2013.
+\bibitem{5496076}
+J.~{Oksanen}, V.~{Koivunen}, J.~{Lund\'{e}n}, and A.~{Huttunen},
+  ``Diversity-based spectrum sensing policy for detecting primary signals over
+  multiple frequency bands,'' in \emph{2010 IEEE International Conference on
+  Acoustics, Speech and Signal Processing}, March 2010, pp. 3130--3133.
+
+\bibitem{4804743}
+S.~{Chaudhari}, V.~{Koivunen}, and H.~V. {Poor}, ``Autocorrelation-based
+  decentralized sequential detection of ofdm signals in cognitive radios,''
+  \emph{IEEE Transactions on Signal Processing}, vol.~57, no.~7, pp.
+  2690--2700, July 2009.
+
+\bibitem{6188346}
+S.~{Yin}, D.~{Chen}, Q.~{Zhang}, M.~{Liu}, and S.~{Li}, ``Mining spectrum usage
+  data: A large-scale spectrum measurement study,'' \emph{IEEE Transactions on
+  Mobile Computing}, vol.~11, no.~6, pp. 1033--1046, June 2012.
+
+\bibitem{4213046}
+R.~I.~C. {Chiang}, G.~B. {Rowe}, and K.~W. {Sowerby}, ``A quantitative analysis
+  of spectral occupancy measurements for cognitive radio,'' in \emph{2007 IEEE
+  65th Vehicular Technology Conference - VTC2007-Spring}, April 2007, pp.
+  3016--3020.
+
+\bibitem{McHenry:2006:CSO:1234388.1234389}
+\BIBentryALTinterwordspacing
+M.~A. McHenry, P.~A. Tenhula, D.~McCloskey, D.~A. Roberson, and C.~S. Hood,
+  ``Chicago spectrum occupancy measurements \& analysis and a long-term studies
+  proposal,'' in \emph{Proceedings of the First International Workshop on
+  Technology and Policy for Accessing Spectrum}, ser. TAPAS '06.\hskip 1em plus
+  0.5em minus 0.4em\relax New York, NY, USA: ACM, 2006. [Online]. Available:
+  \url{http://doi.acm.org/10.1145/1234388.1234389}
+\BIBentrySTDinterwordspacing
+
+\bibitem{7895211}
+L.~{Ferrari}, Q.~{Zhao}, and A.~{Scaglione}, ``Utility maximizing sequential
+  sensing over a finite horizon,'' \emph{IEEE Transactions on Signal
+  Processing}, vol.~65, no.~13, pp. 3430--3445, July 2017.
 
 \bibitem{7336513}
 N.~{Michelusi} and U.~{Mitra}, ``Cross-layer estimation and control for
@@ -90,6 +122,13 @@ S.~{Maleki}, S.~P. {Chepuri}, and G.~{Leus}, ``Energy and throughput efficient
   \emph{2011 IEEE 12th International Workshop on Signal Processing Advances in
   Wireless Communications}, June 2011, pp. 71--75.
 
+\bibitem{DBLP:journals/corr/abs-1109-2145}
+\BIBentryALTinterwordspacing
+M.~T.~J. Spaan and N.~A. Vlassis, ``Perseus: Randomized point-based value
+  iteration for pomdps,'' \emph{CoRR}, vol. abs/1109.2145, 2011. [Online].
+  Available: \url{http://arxiv.org/abs/1109.2145}
+\BIBentrySTDinterwordspacing
+
 \bibitem{Kaelbling:1998:PAP:1643275.1643301}
 \BIBentryALTinterwordspacing
 L.~P. Kaelbling, M.~L. Littman, and A.~R. Cassandra, ``Planning and acting in
@@ -106,6 +145,14 @@ J.~Pineau, G.~Gordon, and S.~Thrun, ``Point-based value iteration: An anytime
   minus 0.4em\relax San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.,
   2003, pp. 1025--1030. [Online]. Available:
   \url{http://dl.acm.org/citation.cfm?id=1630659.1630806}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Neal1998}
+\BIBentryALTinterwordspacing
+R.~M. Neal and G.~E. Hinton, \emph{A View of the Em Algorithm that Justifies
+  Incremental, Sparse, and other Variants}.\hskip 1em plus 0.5em minus
+  0.4em\relax Dordrecht: Springer Netherlands, 1998, pp. 355--368. [Online].
+  Available: \url{https://doi.org/10.1007/978-94-011-5014-9_12}
 \BIBentrySTDinterwordspacing
 
 \end{thebibliography}

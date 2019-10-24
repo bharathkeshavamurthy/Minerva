@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2017.3.9)  23 OCT 2019 10:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2017.3.9)  24 OCT 2019 12:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -786,62 +786,62 @@ Package: cancel 2013/04/12 v2.2 Cancel math terms
 (./minerva_globecom.aux)
 \openout1 = `minerva_globecom.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for LY/yfrak/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for LYG/ygoth/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for LY/yfrak/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for LYG/ygoth/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <5> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <7> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <8> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <9> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <11> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <11> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <12> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <17> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <17> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <20> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <20> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 73.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
 
 -- Lines per column: 58 (exact).
 (/usr/local/texlive/2015/texmf-dist/tex/context/base/supp-pdf.mkii
@@ -858,114 +858,119 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for U+msa on input line 98.
+LaTeX Font Info:    Try loading font information for U+msa on input line 101.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 98.
+LaTeX Font Info:    Try loading font information for U+msb on input line 101.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+) [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
-<minerva_occupancy_markov_chain.png, id=12, 4006.97pt x 4255.9pt>
+Underfull \hbox (badness 10000) in paragraph at lines 109--111
+\T1/ptm/m/n/10 where $\OML/cmm/m/it/10 i[]\OMS/cmsy/m/n/10 f\OT1/cmr/m/n/10 1\O
+ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3\OML/cmm/
+m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
+;
+ []
+
+
+Underfull \hbox (badness 4254) in paragraph at lines 109--111
+\T1/ptm/m/n/10 in the fre-quency do-main; $\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 
+(\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )[][](0\OML/cmm/m/it/10 ; ^^[[]\OT1/cmr/m/n/
+10 )$ \T1/ptm/m/n/10 rep-re-sents
+ []
+
+
+Underfull \hbox (badness 4967) in paragraph at lines 109--111
+\T1/ptm/m/n/10 cir-cu-larly sym-met-ric ad-di-tive com-plex Gaus-sian noise,
+ []
+
+<minerva_occupancy_markov_chain.png, id=14, 4006.97pt x 4255.9pt>
 File: minerva_occupancy_markov_chain.png Graphic file (type png)
 
 <use minerva_occupancy_markov_chain.png>
 Package pdftex.def Info: minerva_occupancy_markov_chain.png used on input line 
-114.
+117.
 (pdftex.def)             Requested size: 252.45268pt x 268.13611pt.
 
-Overfull \hbox (2.94278pt too wide) in paragraph at lines 139--139
+Overfull \hbox (2.94278pt too wide) in paragraph at lines 144--144
 [] 
  []
 
 [2 <./minerva_occupancy_markov_chain.png>]
-Overfull \hbox (4.86192pt too wide) detected at line 172
-\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 B\OT1/cmr/m/n/10 (\OML/cm
-m/m/it/10 i\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; []\OT1/cmr/m/n/10 ) = [](1 \OMS/
-cmsy/m/n/10 ^^@ []\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1 \OMS/
-cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([])) \OMS/cmsy/m/n/10 ^^
-@ \OML/cmm/m/it/10 ^^U[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )(1 
-\OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([]))\OML/cmm/m/it/1
-0 ;
+Overfull \hbox (4.86192pt too wide) detected at line 181
+\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([][]\OML/cmm/m/it/10 ; []\OT1/cmr/m/n/10 ) =
+ [](1 \OMS/cmsy/m/n/10 ^^@ [][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/
+10 ))(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([])) \OMS/c
+msy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^U[][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/
+cmr/m/n/10 )(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([]))
+\OML/cmm/m/it/10 ;
  []
 
 [3]
-Overfull \hbox (3.08426pt too wide) detected at line 188
-\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^L\OT1/cmr/m/n/10 ) = []
- [] [] \OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10
- K\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ^^L\OT1/cmr/m/n/10 ([]) + \OML/cmm/m/it/10 
-^^M [] \U/msb/m/n/10 P\OT1/cmr/m/n/10 ([]\OMS/cmsy/m/n/10 jK\OML/cmm/m/it/10 ; 
-^^L\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 ([])[]\OML/cmm/m/it/10 
-:
- []
-
-
-Overfull \hbox (7.05214pt too wide) detected at line 213
+Overfull \hbox (7.05214pt too wide) detected at line 240
 [] []
  []
 
-[4] <DetectionAccuracy_v_p_test_3_final.png, id=42, 987.2082pt x 485.6544pt>
+[4] <DetectionAccuracy_v_p_test_3_final.png, id=43, 987.2082pt x 485.6544pt>
 File: DetectionAccuracy_v_p_test_3_final.png Graphic file (type png)
 
 <use DetectionAccuracy_v_p_test_3_final.png>
 Package pdftex.def Info: DetectionAccuracy_v_p_test_3_final.png used on input l
-ine 314.
+ine 346.
 (pdftex.def)             Requested size: 251.7423pt x 123.84393pt.
 
-<Uniform_Channel_Sensing.png, id=43, 462.528pt x 346.896pt>
+<Uniform_Channel_Sensing.png, id=44, 462.528pt x 346.896pt>
 File: Uniform_Channel_Sensing.png Graphic file (type png)
 
 <use Uniform_Channel_Sensing.png>
-Package pdftex.def Info: Uniform_Channel_Sensing.png used on input line 320.
+Package pdftex.def Info: Uniform_Channel_Sensing.png used on input line 352.
 (pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
 
-<Uniform_Channel_Sensing_1.png, id=44, 462.528pt x 346.896pt>
+<Uniform_Channel_Sensing_1.png, id=45, 462.528pt x 346.896pt>
 File: Uniform_Channel_Sensing_1.png Graphic file (type png)
 
 <use Uniform_Channel_Sensing_1.png>
-Package pdftex.def Info: Uniform_Channel_Sensing_1.png used on input line 326.
+Package pdftex.def Info: Uniform_Channel_Sensing_1.png used on input line 358.
 (pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
- [5 <./DetectionAccuracy_v_p_test_3_final.png> <./Uniform_Channel_Sensing.png>]
-
-<Mean_Square_Plot_Log_Scale.png, id=51, 987.2082pt x 485.6544pt>
+ [5 <./DetectionAccuracy_v_p_test_3_final.png> <./Uniform_Channel_Sensing.png> 
+<./Uniform_Channel_Sensing_1.png>]
+<Mean_Square_Plot_Log_Scale.png, id=53, 987.2082pt x 485.6544pt>
 File: Mean_Square_Plot_Log_Scale.png Graphic file (type png)
 
 <use Mean_Square_Plot_Log_Scale.png>
-Package pdftex.def Info: Mean_Square_Plot_Log_Scale.png used on input line 347.
+Package pdftex.def Info: Mean_Square_Plot_Log_Scale.png used on input line 381.
 
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
 
-<Regret_Convergence_Plot_04112019.png, id=52, 987.2082pt x 485.6544pt>
+<Regret_Convergence_Plot_04112019.png, id=54, 987.2082pt x 485.6544pt>
 File: Regret_Convergence_Plot_04112019.png Graphic file (type png)
 
 <use Regret_Convergence_Plot_04112019.png>
 Package pdftex.def Info: Regret_Convergence_Plot_04112019.png used on input lin
-e 353.
+e 387.
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
- [6 <./Uniform_Channel_Sensing_1.png> <./Mean_Square_Plot_Log_Scale.png> <./Reg
-ret_Convergence_Plot_04112019.png>]
-<Policy_Changes_Plot_04112019.png, id=59, 987.2082pt x 485.6544pt>
+
+<Policy_Changes_Plot_04112019.png, id=55, 987.2082pt x 485.6544pt>
 File: Policy_Changes_Plot_04112019.png Graphic file (type png)
 
 <use Policy_Changes_Plot_04112019.png>
-Package pdftex.def Info: Policy_Changes_Plot_04112019.png used on input line 36
-4.
+Package pdftex.def Info: Policy_Changes_Plot_04112019.png used on input line 39
+8.
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
- (./minerva_globecom.bbl [7 <./Policy_Changes_Plot_04112019.png>]) [8
+ [6 <./Mean_Square_Plot_Log_Scale.png> <./Regret_Convergence_Plot_04112019.png>
+] (./minerva_globecom.bbl [7 <./Policy_Changes_Plot_04112019.png>]) [8
 
 ] (./minerva_globecom.aux) ) 
 Here is how much of TeX's memory you used:
  15518 strings out of 493027
  291324 string characters out of 6134070
- 342228 words of memory out of 5000000
+ 342200 words of memory out of 5000000
  18678 multiletter control sequences out of 15000+600000
  119606 words of font info for 144 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -988,15 +993,16 @@ xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
 live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texli
 ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive
 /2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
-015/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/te
-xmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/
-fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type
-1/urw/times/utmri8a.pfb>
-Output written on minerva_globecom.pdf (8 pages, 870330 bytes).
+015/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/t
+exlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/201
+5/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-d
+ist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/
+type1/urw/times/utmri8a.pfb>
+Output written on minerva_globecom.pdf (8 pages, 876413 bytes).
 PDF statistics:
- 138 PDF objects out of 1000 (max. 8388607)
- 91 compressed objects within 1 object stream
+ 142 PDF objects out of 1000 (max. 8388607)
+ 94 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  48 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -49,10 +49,10 @@
 \newcommand{\rom}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
 \usepackage{color}
 \usepackage{soul,xcolor}
-%\newcommand{\sst}[1]{\st{#1}}
-\newcommand{\sst}[1]{}
-%\newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
-\newcommand{\nm}[1]{}
+\newcommand{\sst}[1]{\st{#1}}
+%\newcommand{\sst}[1]{}
+\newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
+%\newcommand{\nm}[1]{}
 \newcommand{\bk}[1]{{\color{magenta}{[BK: #1]}}}
 \newcommand{\nmmath}[1]{{\color{blue}\text{\bf{[NM: #1]}}}}
 \newcommand{\gs}[1]{{\color{orange}\bf{[GS: #1]}}}
@@ -60,8 +60,8 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage{cancel}
-%\newcommand\mst[2][red]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{2pt}}}}#2} 
-\newcommand\mst[2][red]{} 
+\newcommand\mst[2][red]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{2pt}}}}#2} 
+%\newcommand\mst[2][red]{} 
 \newcommand{\add}[1]{{\color{red}{#1}}}
 \newcommand{\ull}[1]{\textbf{\color{red}\ul{#1}}}
 \normalem
@@ -162,7 +162,7 @@ owing to the independence of channels, noise, and transmitted symbols across fre
 \subsection{POMDP Agent Model}
 In this section, we model the spectrum access scheme of the SU as a\sst{ Partially Observable Markov Decision Process} POMDP, \add{whose goal}\sst{ wherein the goal of the POMDP agent} is to devise an optimal sensing and access policy in order to maximize its throughput while maintaining strict non-interference compliance with incumbent transmissions. In fact, the agent's limited sensing capabilities coupled with its noisy observations result in an increased level of uncertainty at the agent's end about the occupancy state of the spectrum under consideration and the exact effect of executing an action on the radio environment. The transition model of the underlying MDP as described by \eqref{7}, is denoted by $\mathbf{A}$ and is learned by the agent by interacting with the radio environment \add{(see Sec. \nm{})}. The emission model is denoted by $\mathbf{M}$ and is given by \eqref{9}, with $f(Y_k(i)|B_k(i))$ given by \eqref{10}. 
 
-We model the POMDP as a tuple $(\mathcal B,\mathcal{A},\mathcal{Y},\mathbf{P},\mathbf{M})$ where $\mathcal{B}\equiv\{0,1\}^K$ represents the state space of the underlying MDP with states $\vec{B}$ given by all possible realizations of the spectrum occupancy vector as described by \eqref{3}, $\mathcal{A}$ represents the action space of the agent, given by all\sst{ $\left(\begin{array}{c}K\\\kappa\end{array}\right)$} possible combinations in which the $\kappa$ spectrum bands are chosen to be sensed out of $K$ at any given time; and $\mathcal{Y}$ represents the observation space of the agent based on the signal model outlined in the previous subsection. 
+We model the POMDP as a tuple $(\mathcal B,\mathcal{A},\mathcal{Y},\mathbf{P},\mathbf{M})$ where $\mathcal{B}\equiv\{0,1\}^K$ represents the state space of the underlying MDP with states $\vec{B}$ given by all possible realizations of the spectrum occupancy vector as described by \eqref{3}, $\mathcal{A}$ represents the action space of the agent, given by all\sst{ $\left(K,\kappa\right)$} possible combinations in which the $\kappa$ spectrum bands are chosen to be sensed out of $K$ at any given time; and $\mathcal{Y}$ represents the observation space of the agent based on the signal model outlined in the previous subsection. 
 The state of the POMDP at time $i$ is given by the \emph{prior belief} $\beta_i$, which represents the probability distribution of the underlying MDP state $\vec{B}(i)$, given the information collected by the agent up to time $i$, but before collecting the new information in slot $i$. At the beginning of each time index $i$, given $\beta_i$, the agent selects $\kappa$ spectrum bands out of $K$ according to a policy $\pi(\beta_i)$, thus defining the sensing set $\mathcal K_i$, performs spectrum sensing  on these spectrum bands, observes $\vec{Y}(i)\in \mathcal{Y}$, and updates its \emph{posterior belief} $\hat{\beta}_i$ of the current spectrum occupancy $\vec{B}(i)$ as 
 \begin{align}\label{11}
 \hat\beta_i\add{(\vec{B}')}&=\mathbb{P}(\vec{B}(i)=\vec{B}'|\vec{Y}(i),\mathcal K_i, \beta_i)\\&=

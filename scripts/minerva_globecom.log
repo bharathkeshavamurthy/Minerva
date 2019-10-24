@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2017.3.9)  24 OCT 2019 12:11
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2017.3.9)  24 OCT 2019 12:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -858,8 +858,96 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for U+msa on input line 101.
 
+LaTeX Warning: Citation `7158089' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `6882406' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `4562537' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `7094730' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `6507570' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `6956794' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `4554696' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `7032338' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `7094730' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `6507570' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `5496076' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `4804743' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `6188346' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `4213046' on page 1 undefined on input line 90.
+
+
+LaTeX Warning: Citation `McHenry:2006:CSO:1234388.1234389' on page 1 undefined 
+on input line 90.
+
+
+LaTeX Warning: Citation `7094730' on page 1 undefined on input line 92.
+
+
+LaTeX Warning: Citation `7895211' on page 1 undefined on input line 92.
+
+
+LaTeX Warning: Citation `7336513' on page 1 undefined on input line 92.
+
+
+LaTeX Warning: Citation `8571293' on page 1 undefined on input line 92.
+
+
+LaTeX Warning: Citation `6507570' on page 1 undefined on input line 92.
+
+
+LaTeX Warning: Citation `6507570' on page 1 undefined on input line 92.
+
+
+LaTeX Warning: Citation `6956794' on page 1 undefined on input line 94.
+
+
+LaTeX Warning: Citation `4554696' on page 1 undefined on input line 94.
+
+
+LaTeX Warning: Citation `7032338' on page 1 undefined on input line 94.
+
+[1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+
+
+]
+
+LaTeX Warning: Reference `II' on page 2 undefined on input line 97.
+
+
+LaTeX Warning: Reference `III' on page 2 undefined on input line 97.
+
+
+LaTeX Warning: Reference `IV' on page 2 undefined on input line 97.
+
+
+LaTeX Warning: Reference `V' on page 2 undefined on input line 98.
+
+LaTeX Font Info:    Try loading font information for U+msa on input line 101.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
@@ -867,10 +955,14 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 101.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+)
+
+LaTeX Warning: Reference `1' on page 2 undefined on input line 106.
 
 
-]
+LaTeX Warning: Reference `2' on page 2 undefined on input line 110.
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 109--111
 \T1/ptm/m/n/10 where $\OML/cmm/m/it/10 i[]\OMS/cmsy/m/n/10 f\OT1/cmr/m/n/10 1\O
 ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3\OML/cmm/
@@ -879,45 +971,134 @@ m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
  []
 
 
-Underfull \hbox (badness 4254) in paragraph at lines 109--111
-\T1/ptm/m/n/10 in the fre-quency do-main; $\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 
-(\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )[][](0\OML/cmm/m/it/10 ; ^^[[]\OT1/cmr/m/n/
-10 )$ \T1/ptm/m/n/10 rep-re-sents
+Underfull \hbox (badness 2343) in paragraph at lines 109--111
+\T1/ptm/m/n/10 do-main, and $\OML/cmm/m/it/10 H[]\OT1/cmr/m/n/10 (\OML/cmm/m/it
+/10 i\OT1/cmr/m/n/10 )$ \T1/ptm/m/n/10 is its fre-quency do-main chan-nel.[]
  []
 
-
-Underfull \hbox (badness 4967) in paragraph at lines 109--111
-\T1/ptm/m/n/10 cir-cu-larly sym-met-ric ad-di-tive com-plex Gaus-sian noise,
- []
-
-<minerva_occupancy_markov_chain.png, id=14, 4006.97pt x 4255.9pt>
+<minerva_occupancy_markov_chain.png, id=12, 4006.97pt x 4255.9pt>
 File: minerva_occupancy_markov_chain.png Graphic file (type png)
 
 <use minerva_occupancy_markov_chain.png>
 Package pdftex.def Info: minerva_occupancy_markov_chain.png used on input line 
 117.
 (pdftex.def)             Requested size: 252.45268pt x 268.13611pt.
-
+ [2 <./minerva_occupancy_markov_chain.png>]
 Overfull \hbox (2.94278pt too wide) in paragraph at lines 144--144
 [] 
  []
 
-[2 <./minerva_occupancy_markov_chain.png>]
-Overfull \hbox (4.86192pt too wide) detected at line 181
-\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([][]\OML/cmm/m/it/10 ; []\OT1/cmr/m/n/10 ) =
- [](1 \OMS/cmsy/m/n/10 ^^@ [][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/
-10 ))(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([])) \OMS/c
-msy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^U[][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/
-cmr/m/n/10 )(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([]))
-\OML/cmm/m/it/10 ;
- []
+
+LaTeX Warning: Reference `fig:1' on page 3 undefined on input line 145.
+
+
+LaTeX Warning: Citation `5990482' on page 3 undefined on input line 147.
+
+
+LaTeX Warning: Reference `3' on page 3 undefined on input line 152.
+
+
+LaTeX Warning: Reference `3' on page 3 undefined on input line 158.
+
+
+LaTeX Warning: Reference `7' on page 3 undefined on input line 163.
+
+
+LaTeX Warning: Reference `9' on page 3 undefined on input line 163.
+
+
+LaTeX Warning: Reference `10' on page 3 undefined on input line 163.
+
+
+LaTeX Warning: Reference `3' on page 3 undefined on input line 165.
 
 [3]
+Overfull \hbox (49.18216pt too wide) detected at line 181
+\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([][]\OML/cmm/m/it/10 B\OT1/cmr/m/n/10 (\OML/
+cmm/m/it/10 i\OT1/cmr/m/n/10 )[][]\OML/cmm/m/it/10 ; []\OT1/cmr/m/n/10 ) = [](1
+ \OMS/cmsy/m/n/10 ^^@ [][][][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/1
+0 ))(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([])) \OMS/cm
+sy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^U[][][][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\O
+T1/cmr/m/n/10 )(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
+]))\OML/cmm/m/it/10 ;
+ []
+
+
+Overfull \hbox (97.68661pt too wide) detected at line 196
+\OML/cmm/m/it/10 ^^Y[] \OT1/cmr/m/n/10 = [] [] [][][] [][]\U/msb/m/n/10 E[][] [
+]  \OML/cmm/m/it/10 ^^M[][]R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/
+10 )\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 K[]\OT1/cmr/m/n/10 )[][] \OMS/cmsy/m/n/
+10 j \OML/cmm/m/it/10 ^^L[] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 ^^L[];
+ []
+
+
+Overfull \hbox (8.88365pt too wide) detected at line 211
+\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^L\OT1/cmr/m/n/10 ) = []
+ [][] [] []\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; \OMS/cmsy/m/
+n/10 K\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ^^L\OT1/cmr/m/n/10 ([])[][]
+ []
+
+
+LaTeX Warning: Reference `16' on page 4 undefined on input line 215.
+
+
+LaTeX Warning: Reference `16' on page 4 undefined on input line 216.
+
+
+LaTeX Warning: Reference `16' on page 4 undefined on input line 216.
+
+
+LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 4 undefined 
+on input line 216.
+
+
+LaTeX Warning: Reference `17' on page 4 undefined on input line 223.
+
+
+LaTeX Warning: Reference `18' on page 4 undefined on input line 227.
+
+
+LaTeX Warning: Reference `18' on page 4 undefined on input line 233.
+
+
+LaTeX Warning: Reference `II' on page 4 undefined on input line 234.
+
+
+LaTeX Warning: Reference `19' on page 4 undefined on input line 234.
+
+
 Overfull \hbox (7.05214pt too wide) detected at line 240
 [] []
  []
 
-[4] <DetectionAccuracy_v_p_test_3_final.png, id=43, 987.2082pt x 485.6544pt>
+[4]
+
+LaTeX Warning: Reference `9' on page 5 undefined on input line 246.
+
+
+Overfull \hbox (69.28508pt too wide) detected at line 257
+\OMS/cmsy/m/n/10 I \OT1/cmr/m/n/10 = []
+ []
+
+
+LaTeX Warning: Reference `22' on page 5 undefined on input line 265.
+
+
+LaTeX Warning: Reference `27' on page 5 undefined on input line 282.
+
+
+LaTeX Warning: Reference `27' on page 5 undefined on input line 297.
+
+
+LaTeX Warning: Reference `7' on page 5 undefined on input line 321.
+
+
+LaTeX Warning: Reference `32' on page 5 undefined on input line 321.
+
+
+LaTeX Warning: Reference `36' on page 5 undefined on input line 338.
+
+[5] <DetectionAccuracy_v_p_test_3_final.png, id=47, 987.2082pt x 485.6544pt>
 File: DetectionAccuracy_v_p_test_3_final.png Graphic file (type png)
 
 <use DetectionAccuracy_v_p_test_3_final.png>
@@ -925,22 +1106,54 @@ Package pdftex.def Info: DetectionAccuracy_v_p_test_3_final.png used on input l
 ine 346.
 (pdftex.def)             Requested size: 251.7423pt x 123.84393pt.
 
-<Uniform_Channel_Sensing.png, id=44, 462.528pt x 346.896pt>
+<Uniform_Channel_Sensing.png, id=48, 462.528pt x 346.896pt>
 File: Uniform_Channel_Sensing.png Graphic file (type png)
 
 <use Uniform_Channel_Sensing.png>
 Package pdftex.def Info: Uniform_Channel_Sensing.png used on input line 352.
 (pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
 
-<Uniform_Channel_Sensing_1.png, id=45, 462.528pt x 346.896pt>
+<Uniform_Channel_Sensing_1.png, id=49, 462.528pt x 346.896pt>
 File: Uniform_Channel_Sensing_1.png Graphic file (type png)
 
 <use Uniform_Channel_Sensing_1.png>
 Package pdftex.def Info: Uniform_Channel_Sensing_1.png used on input line 358.
 (pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
- [5 <./DetectionAccuracy_v_p_test_3_final.png> <./Uniform_Channel_Sensing.png> 
-<./Uniform_Channel_Sensing_1.png>]
-<Mean_Square_Plot_Log_Scale.png, id=53, 987.2082pt x 485.6544pt>
+
+
+LaTeX Warning: Reference `II' on page 6 undefined on input line 362.
+
+
+LaTeX Warning: Reference `16' on page 6 undefined on input line 362.
+
+
+LaTeX Warning: Citation `Kaelbling:1998:PAP:1643275.1643301' on page 6 undefine
+d on input line 362.
+
+
+LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 6 undefined 
+on input line 362.
+
+
+LaTeX Warning: Citation `Pineau:2003:PVI:1630659.1630806' on page 6 undefined o
+n input line 362.
+
+
+LaTeX Warning: Reference `16' on page 6 undefined on input line 362.
+
+
+LaTeX Warning: Citation `Kaelbling:1998:PAP:1643275.1643301' on page 6 undefine
+d on input line 362.
+
+
+LaTeX Warning: Reference `39' on page 6 undefined on input line 375.
+
+
+LaTeX Warning: Reference `11' on page 6 undefined on input line 377.
+
+[6 <./DetectionAccuracy_v_p_test_3_final.png> <./Uniform_Channel_Sensing.png> <
+./Uniform_Channel_Sensing_1.png>]
+<Mean_Square_Plot_Log_Scale.png, id=56, 987.2082pt x 485.6544pt>
 File: Mean_Square_Plot_Log_Scale.png Graphic file (type png)
 
 <use Mean_Square_Plot_Log_Scale.png>
@@ -948,7 +1161,7 @@ Package pdftex.def Info: Mean_Square_Plot_Log_Scale.png used on input line 381.
 
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
 
-<Regret_Convergence_Plot_04112019.png, id=54, 987.2082pt x 485.6544pt>
+<Regret_Convergence_Plot_04112019.png, id=57, 987.2082pt x 485.6544pt>
 File: Regret_Convergence_Plot_04112019.png Graphic file (type png)
 
 <use Regret_Convergence_Plot_04112019.png>
@@ -956,50 +1169,85 @@ Package pdftex.def Info: Regret_Convergence_Plot_04112019.png used on input lin
 e 387.
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
 
-<Policy_Changes_Plot_04112019.png, id=55, 987.2082pt x 485.6544pt>
+
+LaTeX Warning: Reference `fig:2' on page 7 undefined on input line 391.
+
+
+LaTeX Warning: Reference `fig:3' on page 7 undefined on input line 393.
+
+
+LaTeX Warning: Reference `fig:4' on page 7 undefined on input line 393.
+
+
+LaTeX Warning: Reference `fig:5' on page 7 undefined on input line 395.
+
+
+LaTeX Warning: Reference `III' on page 7 undefined on input line 395.
+
+
+LaTeX Warning: Citation `Neal1998' on page 7 undefined on input line 395.
+
+<Policy_Changes_Plot_04112019.png, id=58, 987.2082pt x 485.6544pt>
 File: Policy_Changes_Plot_04112019.png Graphic file (type png)
 
 <use Policy_Changes_Plot_04112019.png>
 Package pdftex.def Info: Policy_Changes_Plot_04112019.png used on input line 39
 8.
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
- [6 <./Mean_Square_Plot_Log_Scale.png> <./Regret_Convergence_Plot_04112019.png>
-] (./minerva_globecom.bbl [7 <./Policy_Changes_Plot_04112019.png>]) [8
 
-] (./minerva_globecom.aux) ) 
+
+LaTeX Warning: Reference `fig:6' on page 7 undefined on input line 403.
+
+
+LaTeX Warning: Reference `fig:7' on page 7 undefined on input line 403.
+
+
+LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 7 undefined 
+on input line 403.
+
+[7 <./Mean_Square_Plot_Log_Scale.png> <./Regret_Convergence_Plot_04112019.png> 
+<./Policy_Changes_Plot_04112019.png>] (./minerva_globecom.bbl) [8]
+(./minerva_globecom.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
 Here is how much of TeX's memory you used:
- 15518 strings out of 493027
- 291324 string characters out of 6134070
- 342200 words of memory out of 5000000
+ 15519 strings out of 493027
+ 291330 string characters out of 6134070
+ 372341 words of memory out of 5000000
  18678 multiletter control sequences out of 15000+600000
- 119606 words of font info for 144 fonts, out of 8000000 for 9000
+ 120713 words of font info for 145 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,17n,54p,2107b,289s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips
-/base/8r.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmbx7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-ex10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
-i10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
-5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.
-pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pf
-b></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb>
-</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
-usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr
-/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/lo
-cal/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local
-/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/te
-xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
-live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive
-/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
-015/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/t
-exlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/201
-5/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-d
-ist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/
-type1/urw/times/utmri8a.pfb>
-Output written on minerva_globecom.pdf (8 pages, 876413 bytes).
+ 55i,17n,54p,2107b,411s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
+xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/local/texl
+ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texliv
+e/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/
+2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/20
+15/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2015
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2015/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2015/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2015/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2015/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2015/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
+/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
+ype1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fon
+ts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/u
+rw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/
+utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pf
+b>
+Output written on minerva_globecom.pdf (8 pages, 906116 bytes).
 PDF statistics:
  142 PDF objects out of 1000 (max. 8388607)
  94 compressed objects within 1 object stream

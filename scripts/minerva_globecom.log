@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2017.3.9)  24 OCT 2019 12:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  27 OCT 2019 11:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
 **minerva_globecom.tex
 (./minerva_globecom.tex
-LaTeX2e <2016/03/31>
-Babel <3.9q> and hyphenation patterns for 81 language(s) loaded.
+LaTeX2e <2015/01/01>
+Babel <3.9l> and hyphenation patterns for 79 languages loaded.
 (./IEEEtran.cls
 Document Class: IEEEtran 2015/08/26 V1.8b by Michael Shell
 -- See the "IEEEtran_HOWTO" manual for usage information.
@@ -159,40 +159,40 @@ Package: ulem 2012/05/18
 \ULdepth=\dimen130
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsmath.sty
-Package: amsmath 2016/03/10 v2.15b AMS math features
+Package: amsmath 2013/01/14 v2.14 AMS math features
 \@mathmargin=\skip51
 
 For additional information on amsmath, use the `?' option.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amstext.sty
-Package: amstext 2000/06/29 v2.01 AMS text
+Package: amstext 2000/06/29 v2.01
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsgen.sty
-File: amsgen.sty 1999/11/30 v2.0 generic functions
+File: amsgen.sty 1999/11/30 v2.0
 \@emptytoks=\toks16
 \ex@=\dimen131
 ))
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsbsy.sty
-Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+Package: amsbsy 1999/11/29 v1.2d
 \pmbraise@=\dimen132
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsmath/amsopn.sty
-Package: amsopn 2016/03/08 v2.02 operator names
+Package: amsopn 1999/12/14 v2.01 operator names
 )
 \inf@bad=\count99
-LaTeX Info: Redefining \frac on input line 199.
+LaTeX Info: Redefining \frac on input line 210.
 \uproot@=\count100
 \leftroot@=\count101
-LaTeX Info: Redefining \overline on input line 297.
+LaTeX Info: Redefining \overline on input line 306.
 \classnum@=\count102
 \DOTSCASE@=\count103
-LaTeX Info: Redefining \ldots on input line 394.
-LaTeX Info: Redefining \dots on input line 397.
-LaTeX Info: Redefining \cdots on input line 518.
+LaTeX Info: Redefining \ldots on input line 378.
+LaTeX Info: Redefining \dots on input line 381.
+LaTeX Info: Redefining \cdots on input line 466.
 \Mathstrutbox@=\box31
 \strutbox@=\box32
 \big@size=\dimen133
-LaTeX Font Info:    Redeclaring font encoding OML on input line 634.
-LaTeX Font Info:    Redeclaring font encoding OMS on input line 635.
+LaTeX Font Info:    Redeclaring font encoding OML on input line 566.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 \macc@depth=\count104
 \c@MaxMatrixCols=\count105
 \dotsspace@=\muskip10
@@ -213,8 +213,8 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 635.
 \multlinegap=\skip52
 \multlinetaggap=\skip53
 \mathdisplay@stack=\toks20
-LaTeX Info: Redefining \[ on input line 2739.
-LaTeX Info: Redefining \] on input line 2740.
+LaTeX Info: Redefining \[ on input line 2665.
+LaTeX Info: Redefining \] on input line 2666.
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tools/hhline.sty
 Package: hhline 2014/10/28 v2.03 Table rule package (DPC)
@@ -223,12 +223,12 @@ Package: hhline 2014/10/28 v2.03 Table rule package (DPC)
 Package: yfonts 2003/01/08 v1.3 (WaS)
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/color.sty
-Package: color 2016/01/03 v1.1b Standard LaTeX Color (DPC)
+Package: color 2014/10/28 v1.1a Standard LaTeX Color (DPC)
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/color.cfg
 File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 )
-Package color Info: Driver file: pdftex.def on input line 143.
+Package color Info: Driver file: pdftex.def on input line 142.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pdftex-def/pdftex.def
 File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
@@ -308,12 +308,12 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@floatcapt=\box34
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tools/bm.sty
-Package: bm 2016/02/27 v1.2a Bold Symbol Support (DPC/FMi)
+Package: bm 2014/10/28 v1.1c Bold Symbol Support (DPC/FMi)
 \symboldoperators=\mathgroup6
 \symboldletters=\mathgroup7
 \symboldsymbols=\mathgroup8
-LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 142.
-LaTeX Info: Redefining \bm on input line 208.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 141.
+LaTeX Info: Redefining \bm on input line 207.
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
@@ -340,15 +340,15 @@ Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks37
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/graphics.sty
-Package: graphics 2016/01/03 v1.0q Standard LaTeX Graphics (DPC,SPQR)
+Package: graphics 2014/10/28 v1.0p Standard LaTeX Graphics (DPC,SPQR)
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/trig.sty
-Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/graphics.cfg
 File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
 )
-Package graphics Info: Driver file: pdftex.def on input line 95.
+Package graphics Info: Driver file: pdftex.def on input line 94.
 )
 \Gin@req@height=\dimen145
 \Gin@req@width=\dimen146
@@ -370,13 +370,13 @@ sts.tex))
 Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
 ))
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
-Package: pgfrcs 2015/08/07 v3.0.1a (rcs-revision 1.31)
+Package: pgfrcs 2013/12/20 v3.0.0 (rcs-revision 1.28)
 ))
-Package: pgf 2015/08/07 v3.0.1a (rcs-revision 1.15)
+Package: pgf 2013/12/18 v3.0.0 (rcs-revision 1.14)
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
-Package: pgfsys 2014/07/09 v3.0.1a (rcs-revision 1.48)
+Package: pgfsys 2013/11/30 v3.0.0 (rcs-revision 1.47)
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
 \pgfkeys@pathtoks=\toks39
 \pgfkeys@temptoks=\toks40
@@ -410,7 +410,7 @@ Driver file for pgf: pgfsys-pdftex.def
 
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
 ef
-File: pgfsys-pdftex.def 2014/10/11  (rcs-revision 1.35)
+File: pgfsys-pdftex.def 2013/07/18  (rcs-revision 1.33)
 
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
 df.def
@@ -427,7 +427,7 @@ code.tex
 File: pgfsysprotocol.code.tex 2006/10/16  (rcs-revision 1.4)
 ))
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
-Package: pgfcore 2010/04/11 v3.0.1a (rcs-revision 1.7)
+Package: pgfcore 2010/04/11 v3.0.0 (rcs-revision 1.7)
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
@@ -486,13 +486,13 @@ File: pgfcorepathconstruct.code.tex 2013/10/07  (rcs-revision 1.29)
 )
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
 .code.tex
-File: pgfcorepathusage.code.tex 2014/11/02  (rcs-revision 1.24)
+File: pgfcorepathusage.code.tex 2013/12/13  (rcs-revision 1.23)
 \pgf@shorten@end@additional=\dimen174
 \pgf@shorten@start@additional=\dimen175
 )
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
 de.tex
-File: pgfcorescopes.code.tex 2015/05/08  (rcs-revision 1.46)
+File: pgfcorescopes.code.tex 2013/10/09  (rcs-revision 1.44)
 \pgfpic=\box37
 \pgf@hbox=\box38
 \pgf@layerbox@main=\box39
@@ -500,12 +500,12 @@ File: pgfcorescopes.code.tex 2015/05/08  (rcs-revision 1.46)
 )
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
 ate.code.tex
-File: pgfcoregraphicstate.code.tex 2014/11/02  (rcs-revision 1.12)
+File: pgfcoregraphicstate.code.tex 2013/09/19  (rcs-revision 1.11)
 \pgflinewidth=\dimen176
 )
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
 ations.code.tex
-File: pgfcoretransformations.code.tex 2015/08/07  (rcs-revision 1.20)
+File: pgfcoretransformations.code.tex 2013/10/10  (rcs-revision 1.17)
 \pgf@pt@x=\dimen177
 \pgf@pt@y=\dimen178
 \pgf@pt@temp=\dimen179
@@ -524,7 +524,7 @@ File: pgfcorepathprocessing.code.tex 2013/09/09  (rcs-revision 1.9)
 )
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
 de.tex
-File: pgfcorearrows.code.tex 2015/05/14  (rcs-revision 1.43)
+File: pgfcorearrows.code.tex 2013/11/07  (rcs-revision 1.40)
 \pgfarrowsep=\dimen180
 )
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
@@ -539,7 +539,7 @@ File: pgfcoreimage.code.tex 2013/07/15  (rcs-revision 1.18)
 
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
 code.tex
-File: pgfcoreexternal.code.tex 2014/07/09  (rcs-revision 1.21)
+File: pgfcoreexternal.code.tex 2013/07/15  (rcs-revision 1.20)
 \pgfexternal@startupbox=\box40
 ))
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
@@ -556,22 +556,22 @@ File: pgfcorepatterns.code.tex 2013/11/07  (rcs-revision 1.5)
 )))
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
 e.tex
-File: pgfmoduleshapes.code.tex 2014/03/21  (rcs-revision 1.35)
+File: pgfmoduleshapes.code.tex 2013/10/31  (rcs-revision 1.34)
 \pgfnodeparttextbox=\box41
 )
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
 tex
-File: pgfmoduleplot.code.tex 2015/08/03  (rcs-revision 1.13)
+File: pgfmoduleplot.code.tex 2013/07/31  (rcs-revision 1.12)
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
 -0-65.sty
-Package: pgfcomp-version-0-65 2007/07/03 v3.0.1a (rcs-revision 1.7)
+Package: pgfcomp-version-0-65 2007/07/03 v3.0.0 (rcs-revision 1.7)
 \pgf@nodesepstart=\dimen182
 \pgf@nodesepend=\dimen183
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
 -1-18.sty
-Package: pgfcomp-version-1-18 2007/07/23 v3.0.1a (rcs-revision 1.1)
+Package: pgfcomp-version-1-18 2007/07/23 v3.0.0 (rcs-revision 1.1)
 ))
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
@@ -579,7 +579,7 @@ Package: pgfcomp-version-1-18 2007/07/23 v3.0.1a (rcs-revision 1.1)
 ) (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/math/pgfmath.sty
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
-Package: pgffor 2013/12/13 v3.0.1a (rcs-revision 1.25)
+Package: pgffor 2013/12/13 v3.0.0 (rcs-revision 1.25)
 
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)
 \pgffor@iter=\dimen184
@@ -589,11 +589,11 @@ Package: pgffor 2013/12/13 v3.0.1a (rcs-revision 1.25)
 ))
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
 e.tex
-Package: tikz 2015/08/07 v3.0.1a (rcs-revision 1.151)
+Package: tikz 2013/12/13 v3.0.0 (rcs-revision 1.142)
 
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
 dlers.code.tex
-File: pgflibraryplothandlers.code.tex 2013/08/31 v3.0.1a (rcs-revision 1.20)
+File: pgflibraryplothandlers.code.tex 2013/08/31 v3.0.0 (rcs-revision 1.20)
 \pgf@plot@mark@count=\count123
 \pgfplotmarksize=\dimen186
 )
@@ -623,7 +623,7 @@ File: pgfmodulematrix.code.tex 2013/09/17  (rcs-revision 1.8)
 
 (/usr/local/texlive/2015/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
 s/tikzlibrarytopaths.code.tex
-File: tikzlibrarytopaths.code.tex 2008/06/17 v3.0.1a (rcs-revision 1.2)
+File: tikzlibrarytopaths.code.tex 2008/06/17 v3.0.0 (rcs-revision 1.2)
 )))
 (/usr/local/texlive/2015/texmf-dist/tex/latex/framed/framed.sty
 Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
@@ -696,23 +696,23 @@ e
 )))
 (/usr/local/texlive/2015/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2005/04/14 v1.61803 publication quality tables
-\heavyrulewidth=\dimen256
-\lightrulewidth=\dimen257
-\cmidrulewidth=\dimen258
-\belowrulesep=\dimen259
-\belowbottomsep=\dimen260
-\aboverulesep=\dimen261
-\abovetopsep=\dimen262
-\cmidrulesep=\dimen263
-\cmidrulekern=\dimen264
-\defaultaddspace=\dimen265
+\heavyrulewidth=\dimen200
+\lightrulewidth=\dimen201
+\cmidrulewidth=\dimen202
+\belowrulesep=\dimen203
+\belowbottomsep=\dimen204
+\aboverulesep=\dimen205
+\abovetopsep=\dimen206
+\cmidrulesep=\dimen207
+\cmidrulekern=\dimen208
+\defaultaddspace=\dimen209
 \@cmidla=\count132
 \@cmidlb=\count133
-\@aboverulesep=\dimen266
-\@belowrulesep=\dimen267
+\@aboverulesep=\dimen210
+\@belowrulesep=\dimen211
 \@thisruleclass=\count134
 \@lastruleclass=\count135
-\@thisrulewidth=\dimen268
+\@thisrulewidth=\dimen212
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/courier.sty
 Package: courier 2005/04/12 PSNFSS-v9.2a (WaS) 
@@ -732,7 +732,7 @@ Package: fancybox 2010/05/15 1.4
 
 Style option: `fancybox' v1.4 <2010/05/15> (tvz)
 \@fancybox=\box46
-\shadowsize=\dimen269
+\shadowsize=\dimen213
 \@Sbox=\box47
 \do@VerbBox=\toks50
 \the@fancyput=\toks51
@@ -747,7 +747,7 @@ Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
 \c@pseudonum=\count137
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tools/enumerate.sty
-Package: enumerate 2015/07/23 v3.00 enumerate extensions (DPC)
+Package: enumerate 2014/10/28 v3.00 enumerate extensions (DPC)
 \@enLab=\toks54
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/algorithms/algorithm.sty
@@ -847,123 +847,31 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 (/usr/local/texlive/2015/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count150
-\scratchdimen=\dimen270
+\scratchdimen=\dimen214
 \scratchbox=\box48
 \nofMPsegments=\count151
 \nofMParguments=\count152
 \everyMPshowfont=\toks56
 \MPscratchCnt=\count153
-\MPscratchDim=\dimen271
+\MPscratchDim=\dimen215
 \MPnumerator=\count154
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
+LaTeX Font Info:    Try loading font information for U+msa on input line 95.
 
-LaTeX Warning: Citation `7158089' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `6882406' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `4562537' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `7094730' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `6956794' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `4554696' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `7032338' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `7094730' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `5496076' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `4804743' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `6188346' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `4213046' on page 1 undefined on input line 90.
-
-
-LaTeX Warning: Citation `McHenry:2006:CSO:1234388.1234389' on page 1 undefined 
-on input line 90.
-
-
-LaTeX Warning: Citation `7094730' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `7895211' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `7336513' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `8571293' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `6956794' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `4554696' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `7032338' on page 1 undefined on input line 94.
-
-[1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
-
-
-]
-
-LaTeX Warning: Reference `II' on page 2 undefined on input line 97.
-
-
-LaTeX Warning: Reference `III' on page 2 undefined on input line 97.
-
-
-LaTeX Warning: Reference `IV' on page 2 undefined on input line 97.
-
-
-LaTeX Warning: Reference `V' on page 2 undefined on input line 98.
-
-LaTeX Font Info:    Try loading font information for U+msa on input line 101.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 101.
+LaTeX Font Info:    Try loading font information for U+msb on input line 95.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-
-LaTeX Warning: Reference `1' on page 2 undefined on input line 106.
+) [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
-LaTeX Warning: Reference `2' on page 2 undefined on input line 110.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 109--111
+]
+Underfull \hbox (badness 10000) in paragraph at lines 103--105
 \T1/ptm/m/n/10 where $\OML/cmm/m/it/10 i[]\OMS/cmsy/m/n/10 f\OT1/cmr/m/n/10 1\O
 ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3\OML/cmm/
 m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
@@ -971,286 +879,121 @@ m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
  []
 
 
-Underfull \hbox (badness 2343) in paragraph at lines 109--111
-\T1/ptm/m/n/10 do-main, and $\OML/cmm/m/it/10 H[]\OT1/cmr/m/n/10 (\OML/cmm/m/it
-/10 i\OT1/cmr/m/n/10 )$ \T1/ptm/m/n/10 is its fre-quency do-main chan-nel.[]
+Underfull \hbox (badness 4254) in paragraph at lines 103--105
+\T1/ptm/m/n/10 in the fre-quency do-main; $\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 
+(\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )[][](0\OML/cmm/m/it/10 ; ^^[[]\OT1/cmr/m/n/
+10 )$ \T1/ptm/m/n/10 rep-re-sents
  []
 
-<minerva_occupancy_markov_chain.png, id=12, 4006.97pt x 4255.9pt>
+<minerva_occupancy_markov_chain.png, id=14, 3525.17pt x 2597.705pt>
 File: minerva_occupancy_markov_chain.png Graphic file (type png)
 
 <use minerva_occupancy_markov_chain.png>
 Package pdftex.def Info: minerva_occupancy_markov_chain.png used on input line 
-117.
-(pdftex.def)             Requested size: 252.45268pt x 268.13611pt.
- [2 <./minerva_occupancy_markov_chain.png>]
-Overfull \hbox (2.94278pt too wide) in paragraph at lines 144--144
-[] 
+111.
+(pdftex.def)             Requested size: 292.56215pt x 215.58965pt.
+
+Overfull \hbox (40.56215pt too wide) in paragraph at lines 111--112
+ [][] 
  []
 
-
-LaTeX Warning: Reference `fig:1' on page 3 undefined on input line 145.
-
-
-LaTeX Warning: Citation `5990482' on page 3 undefined on input line 147.
-
-
-LaTeX Warning: Reference `3' on page 3 undefined on input line 152.
-
-
-LaTeX Warning: Reference `3' on page 3 undefined on input line 158.
-
-
-LaTeX Warning: Reference `7' on page 3 undefined on input line 163.
-
-
-LaTeX Warning: Reference `9' on page 3 undefined on input line 163.
-
-
-LaTeX Warning: Reference `10' on page 3 undefined on input line 163.
-
-
-LaTeX Warning: Reference `3' on page 3 undefined on input line 165.
+[2 <./minerva_occupancy_markov_chain.png>]
+Overfull \hbox (4.86192pt too wide) detected at line 174
+\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )\OML/c
+mm/m/it/10 ; []\OT1/cmr/m/n/10 ) = [](1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 B
+[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1 \OMS/cmsy/m/n/10 ^^@ 
+\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([])) \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/
+10 ^^UB[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )(1 \OMS/cmsy/m/n/1
+0 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([]))\OML/cmm/m/it/10 ;
+ []
 
 [3]
-Overfull \hbox (49.18216pt too wide) detected at line 181
-\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([][]\OML/cmm/m/it/10 B\OT1/cmr/m/n/10 (\OML/
-cmm/m/it/10 i\OT1/cmr/m/n/10 )[][]\OML/cmm/m/it/10 ; []\OT1/cmr/m/n/10 ) = [](1
- \OMS/cmsy/m/n/10 ^^@ [][][][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/1
-0 ))(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([])) \OMS/cm
-sy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^U[][][][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i\O
-T1/cmr/m/n/10 )(1 \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
-]))\OML/cmm/m/it/10 ;
+Underfull \hbox (badness 6445) in paragraph at lines 202--204
+\T1/ptm/m/n/10 This prob-lem can be solved us-ing the Expectation-
  []
 
-
-Overfull \hbox (97.68661pt too wide) detected at line 196
-\OML/cmm/m/it/10 ^^Y[] \OT1/cmr/m/n/10 = [] [] [][][] [][]\U/msb/m/n/10 E[][] [
-]  \OML/cmm/m/it/10 ^^M[][]R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/
-10 )\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 K[]\OT1/cmr/m/n/10 )[][] \OMS/cmsy/m/n/
-10 j \OML/cmm/m/it/10 ^^L[] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 ^^L[];
- []
-
-
-Overfull \hbox (8.88365pt too wide) detected at line 211
-\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^L\OT1/cmr/m/n/10 ) = []
- [][] [] []\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; \OMS/cmsy/m/
-n/10 K\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ^^L\OT1/cmr/m/n/10 ([])[][]
- []
-
-
-LaTeX Warning: Reference `16' on page 4 undefined on input line 215.
-
-
-LaTeX Warning: Reference `16' on page 4 undefined on input line 216.
-
-
-LaTeX Warning: Reference `16' on page 4 undefined on input line 216.
-
-
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 4 undefined 
-on input line 216.
-
-
-LaTeX Warning: Reference `17' on page 4 undefined on input line 223.
-
-
-LaTeX Warning: Reference `18' on page 4 undefined on input line 227.
-
-
-LaTeX Warning: Reference `18' on page 4 undefined on input line 233.
-
-
-LaTeX Warning: Reference `II' on page 4 undefined on input line 234.
-
-
-LaTeX Warning: Reference `19' on page 4 undefined on input line 234.
-
-
-Overfull \hbox (7.05214pt too wide) detected at line 240
-[] []
- []
-
-[4]
-
-LaTeX Warning: Reference `9' on page 5 undefined on input line 246.
-
-
-Overfull \hbox (69.28508pt too wide) detected at line 257
-\OMS/cmsy/m/n/10 I \OT1/cmr/m/n/10 = []
- []
-
-
-LaTeX Warning: Reference `22' on page 5 undefined on input line 265.
-
-
-LaTeX Warning: Reference `27' on page 5 undefined on input line 282.
-
-
-LaTeX Warning: Reference `27' on page 5 undefined on input line 297.
-
-
-LaTeX Warning: Reference `7' on page 5 undefined on input line 321.
-
-
-LaTeX Warning: Reference `32' on page 5 undefined on input line 321.
-
-
-LaTeX Warning: Reference `36' on page 5 undefined on input line 338.
-
-[5] <DetectionAccuracy_v_p_test_3_final.png, id=47, 987.2082pt x 485.6544pt>
-File: DetectionAccuracy_v_p_test_3_final.png Graphic file (type png)
-
-<use DetectionAccuracy_v_p_test_3_final.png>
-Package pdftex.def Info: DetectionAccuracy_v_p_test_3_final.png used on input l
-ine 346.
-(pdftex.def)             Requested size: 251.7423pt x 123.84393pt.
-
-<Uniform_Channel_Sensing.png, id=48, 462.528pt x 346.896pt>
+[4] <Uniform_Channel_Sensing.png, id=44, 462.528pt x 346.896pt>
 File: Uniform_Channel_Sensing.png Graphic file (type png)
 
 <use Uniform_Channel_Sensing.png>
-Package pdftex.def Info: Uniform_Channel_Sensing.png used on input line 352.
+Package pdftex.def Info: Uniform_Channel_Sensing.png used on input line 252.
 (pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
 
-<Uniform_Channel_Sensing_1.png, id=49, 462.528pt x 346.896pt>
+<Uniform_Channel_Sensing_1.png, id=45, 462.528pt x 346.896pt>
 File: Uniform_Channel_Sensing_1.png Graphic file (type png)
 
 <use Uniform_Channel_Sensing_1.png>
-Package pdftex.def Info: Uniform_Channel_Sensing_1.png used on input line 358.
+Package pdftex.def Info: Uniform_Channel_Sensing_1.png used on input line 259.
 (pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
 
-
-LaTeX Warning: Reference `II' on page 6 undefined on input line 362.
-
-
-LaTeX Warning: Reference `16' on page 6 undefined on input line 362.
-
-
-LaTeX Warning: Citation `Kaelbling:1998:PAP:1643275.1643301' on page 6 undefine
-d on input line 362.
-
-
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 6 undefined 
-on input line 362.
-
-
-LaTeX Warning: Citation `Pineau:2003:PVI:1630659.1630806' on page 6 undefined o
-n input line 362.
-
-
-LaTeX Warning: Reference `16' on page 6 undefined on input line 362.
-
-
-LaTeX Warning: Citation `Kaelbling:1998:PAP:1643275.1643301' on page 6 undefine
-d on input line 362.
-
-
-LaTeX Warning: Reference `39' on page 6 undefined on input line 375.
-
-
-LaTeX Warning: Reference `11' on page 6 undefined on input line 377.
-
-[6 <./DetectionAccuracy_v_p_test_3_final.png> <./Uniform_Channel_Sensing.png> <
-./Uniform_Channel_Sensing_1.png>]
-<Mean_Square_Plot_Log_Scale.png, id=56, 987.2082pt x 485.6544pt>
+<Mean_Square_Plot_Log_Scale.png, id=46, 987.2082pt x 485.6544pt>
 File: Mean_Square_Plot_Log_Scale.png Graphic file (type png)
 
 <use Mean_Square_Plot_Log_Scale.png>
-Package pdftex.def Info: Mean_Square_Plot_Log_Scale.png used on input line 381.
+Package pdftex.def Info: Mean_Square_Plot_Log_Scale.png used on input line 266.
 
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
 
-<Regret_Convergence_Plot_04112019.png, id=57, 987.2082pt x 485.6544pt>
+<Regret_Convergence_Plot_04112019.png, id=47, 987.2082pt x 485.6544pt>
 File: Regret_Convergence_Plot_04112019.png Graphic file (type png)
 
 <use Regret_Convergence_Plot_04112019.png>
 Package pdftex.def Info: Regret_Convergence_Plot_04112019.png used on input lin
-e 387.
+e 273.
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
 
-
-LaTeX Warning: Reference `fig:2' on page 7 undefined on input line 391.
-
-
-LaTeX Warning: Reference `fig:3' on page 7 undefined on input line 393.
-
-
-LaTeX Warning: Reference `fig:4' on page 7 undefined on input line 393.
-
-
-LaTeX Warning: Reference `fig:5' on page 7 undefined on input line 395.
-
-
-LaTeX Warning: Reference `III' on page 7 undefined on input line 395.
-
-
-LaTeX Warning: Citation `Neal1998' on page 7 undefined on input line 395.
-
-<Policy_Changes_Plot_04112019.png, id=58, 987.2082pt x 485.6544pt>
+<Policy_Changes_Plot_04112019.png, id=48, 987.2082pt x 485.6544pt>
 File: Policy_Changes_Plot_04112019.png Graphic file (type png)
 
 <use Policy_Changes_Plot_04112019.png>
-Package pdftex.def Info: Policy_Changes_Plot_04112019.png used on input line 39
-8.
+Package pdftex.def Info: Policy_Changes_Plot_04112019.png used on input line 27
+9.
 (pdftex.def)             Requested size: 246.80144pt x 121.4133pt.
+ [5 <./Uniform_Channel_Sensing.png> <./Uniform_Channel_Sensing_1.png> <./Mean_S
+quare_Plot_Log_Scale.png>]
+Underfull \vbox (badness 1448) has occurred while \output is active []
 
 
-LaTeX Warning: Reference `fig:6' on page 7 undefined on input line 403.
+(./minerva_globecom.bbl [6 <./Regret_Convergence_Plot_04112019.png> <./Policy_C
+hanges_Plot_04112019.png>]) [7
 
-
-LaTeX Warning: Reference `fig:7' on page 7 undefined on input line 403.
-
-
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 7 undefined 
-on input line 403.
-
-[7 <./Mean_Square_Plot_Log_Scale.png> <./Regret_Convergence_Plot_04112019.png> 
-<./Policy_Changes_Plot_04112019.png>] (./minerva_globecom.bbl) [8]
-(./minerva_globecom.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+] (./minerva_globecom.aux) ) 
 Here is how much of TeX's memory you used:
- 15519 strings out of 493027
- 291330 string characters out of 6134070
- 372341 words of memory out of 5000000
- 18678 multiletter control sequences out of 15000+600000
+ 15400 strings out of 493089
+ 288758 string characters out of 6134842
+ 340415 words of memory out of 5000000
+ 18503 multiletter control sequences out of 15000+600000
  120713 words of font info for 145 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,17n,54p,2107b,411s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
-xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/local/texl
-ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texliv
-e/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/
-2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/20
-15/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2015
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2015/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2015/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2015/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2015/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2015/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015/texmf-dist/font
-s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
-/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
-ype1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fon
-ts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/u
-rw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/
-utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pf
-b>
-Output written on minerva_globecom.pdf (8 pages, 906116 bytes).
+ 55i,17n,54p,1928b,290s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips
+/base/8r.enc}</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmbx7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+ex10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
+i10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
+5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.
+pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pf
+b></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb>
+</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
+usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr
+/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/lo
+cal/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local
+/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/te
+xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
+live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive
+/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
+015/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/t
+exlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/201
+5/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-d
+ist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/
+type1/urw/times/utmri8a.pfb>
+Output written on minerva_globecom.pdf (7 pages, 707302 bytes).
 PDF statistics:
- 142 PDF objects out of 1000 (max. 8388607)
- 94 compressed objects within 1 object stream
+ 137 PDF objects out of 1000 (max. 8388607)
+ 92 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 48 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 43 words of extra memory for PDF output out of 10000 (max. 10000000)
 

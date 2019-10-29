@@ -207,7 +207,7 @@ This problem can be solved using the Expectation-Maximization (EM) algorithm \ci
 \begin{equation}
     Q(\vec{\theta}|\hat{\vec{\theta}}^{(t)}) = \mathbb{E}_{\mathbf{B}|\mathbf{Y}, \hat{\vec{\theta}}^{(t)}} \Big[ \log \Big(\sum_{\mathbf{B}} \mathbb{P}(\mathbf{B}, \mathbf{Y}|\hat{\vec{\theta}}^{(t)}) \Big) \Big],
 \end{equation}
-and the M-step constitutes
+which can be obtained by employing the Forward-Backward algorithm, and the M-step constitutes
 \begin{equation}
     \hat{\vec{\theta}}^{(t+1)} = \argmax_{\vec{\theta}} Q(\vec{\theta}|\hat{\vec{\theta}}^{(t)}).
 \end{equation}

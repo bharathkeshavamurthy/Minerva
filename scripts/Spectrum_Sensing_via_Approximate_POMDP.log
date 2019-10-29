@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  29 OCT 2019 12:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  29 OCT 2019 19:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -858,20 +858,23 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for U+msa on input line 96.
+LaTeX Font Info:    Try loading font information for U+msa on input line 99.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 96.
+LaTeX Font Info:    Try loading font information for U+msb on input line 99.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 105--107
+Underfull \hbox (badness 10000) in paragraph at lines 107--109
 \T1/ptm/m/n/10 where $\OML/cmm/m/it/10 i[]\OMS/cmsy/m/n/10 f\OT1/cmr/m/n/10 1\O
 ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3\OML/cmm/
 m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
@@ -879,14 +882,14 @@ m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
  []
 
 
-Underfull \hbox (badness 4254) in paragraph at lines 105--107
+Underfull \hbox (badness 4254) in paragraph at lines 107--109
 \T1/ptm/m/n/10 in the fre-quency do-main; $\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 
 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )[][](0\OML/cmm/m/it/10 ; ^^[[]\OT1/cmr/m/n/
 10 )$ \T1/ptm/m/n/10 rep-re-sents
  []
 
 
-Underfull \hbox (badness 4967) in paragraph at lines 105--107
+Underfull \hbox (badness 4967) in paragraph at lines 107--109
 \T1/ptm/m/n/10 cir-cu-larly sym-met-ric ad-di-tive com-plex Gaus-sian noise,
  []
 
@@ -894,10 +897,10 @@ Underfull \hbox (badness 4967) in paragraph at lines 105--107
 File: MarkovChainsVisualization.png Graphic file (type png)
 
 <use MarkovChainsVisualization.png>
-Package pdftex.def Info: MarkovChainsVisualization.png used on input line 113.
+Package pdftex.def Info: MarkovChainsVisualization.png used on input line 115.
 (pdftex.def)             Requested size: 239.39923pt x 176.38792pt.
  [2 <./MarkovChainsVisualization.png>]
-Overfull \hbox (0.97313pt too wide) detected at line 180
+Overfull \hbox (0.97313pt too wide) detected at line 181
 \OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )\OML/c
 mm/m/it/10 ; []\OT1/cmr/m/n/10 )[] [](1[]\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\
 OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1[]\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
@@ -907,93 +910,68 @@ it/10 ;
  []
 
 [3]
+
+LaTeX Warning: Citation `778361' on page 4 undefined on input line 210.
+
+
 Underfull \hbox (badness 6445) in paragraph at lines 209--211
 \T1/ptm/m/n/10 This prob-lem can be solved us-ing the Expectation-
  []
 
 
-Overfull \hbox (39.14845pt too wide) detected at line 228
-[][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^L\OT1/cmr/m/n/10 ) = [](\OML/cmm/m/it/1
-0 ^^L[]\OT1/cmr/m/n/10 ) = [] [] \OML/cmm/m/it/10 ^^L \OMS/cmsy/m/n/10 ^^A []\O
-ML/cmm/m/it/10 ; [][]
- []
+LaTeX Warning: Citation `778361' on page 4 undefined on input line 214.
 
-
-Overfull \hbox (141.32782pt too wide) detected at line 237
-\OT1/cmr/m/n/10 ^^D[] = [] \OML/cmm/m/it/10 ^^L[]\OT1/cmr/m/n/10 ([])\U/msb/m/n
-/10 E[][]\OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; []\OT1/cmr/m/n
-/10 (\OML/cmm/m/it/10 ^^L[]; \OMS/cmsy/m/n/10 K\OML/cmm/m/it/10 ; []\OT1/cmr/m/
-n/10 )) + \OML/cmm/m/it/10 ^^M[][][] [] ^^L \OMS/cmsy/m/n/10 ^^A \OT1/cmr/m/n/1
-0 ^^D[][]\OML/cmm/m/it/10 ;  []
- []
-
-
-Overfull \hbox (108.24219pt too wide) detected at line 260
-[] []
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 260--262
-[]\T1/ptm/b/n/10 [NM: this is not cor-rect! The sec-ond term
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 260--262
-[][] \OML/cmm/m/it/10 ^^L \OMS/cmsy/m/n/10 ^^A \OT1/cmr/m/n/10 ^^D[]$ \T1/ptm/b
-/n/10 should have a
- []
-
-[4] <ViterbiDetectionAccuracies.png, id=44, 462.528pt x 346.896pt>
+[4] <ViterbiDetectionAccuracies.png, id=44, 1238.6275pt x 925.4575pt>
 File: ViterbiDetectionAccuracies.png Graphic file (type png)
 
 <use ViterbiDetectionAccuracies.png>
-Package pdftex.def Info: ViterbiDetectionAccuracies.png used on input line 271.
+Package pdftex.def Info: ViterbiDetectionAccuracies.png used on input line 246.
 
-(pdftex.def)             Requested size: 239.39923pt x 179.55063pt.
+(pdftex.def)             Requested size: 189.0pt x 141.21326pt.
 
-<ParameterEstimatorConvergence.png, id=45, 1159.33125pt x 815.045pt>
+<ParameterEstimatorConvergence.png, id=45, 1187.43625pt x 687.56876pt>
 File: ParameterEstimatorConvergence.png Graphic file (type png)
 
 <use ParameterEstimatorConvergence.png>
 Package pdftex.def Info: ParameterEstimatorConvergence.png used on input line 2
-84.
-(pdftex.def)             Requested size: 239.39923pt x 168.30408pt.
+59.
+(pdftex.def)             Requested size: 239.39923pt x 138.61292pt.
 
-<PerseusRegretConvergence.png, id=46, 1390.19376pt x 794.97pt>
+<PerseusRegretConvergence.png, id=46, 1678.27pt x 851.18pt>
 File: PerseusRegretConvergence.png Graphic file (type png)
 
 <use PerseusRegretConvergence.png>
-Package pdftex.def Info: PerseusRegretConvergence.png used on input line 292.
-(pdftex.def)             Requested size: 239.39923pt x 136.88986pt.
- [5 <./ViterbiDetectionAccuracies.png> <./ParameterEstimatorConvergence.png>]
-Underfull \hbox (badness 1571) in paragraph at lines 297--298
+Package pdftex.def Info: PerseusRegretConvergence.png used on input line 265.
+(pdftex.def)             Requested size: 239.39923pt x 121.4113pt.
+
+Underfull \hbox (badness 1571) in paragraph at lines 271--272
 []\T1/ptm/m/n/10 Fig. 4[] il-lus-trates the \T1/ptm/m/it/10 Re-gret \T1/ptm/m/n
 /10 con-ver-gence plot of the
  []
 
-<PerformanceEvaluation.png, id=53, 1204.5pt x 809.0225pt>
+[5 <./ViterbiDetectionAccuracies.png> <./ParameterEstimatorConvergence.png> <./
+PerseusRegretConvergence.png>]
+<PerformanceEvaluation.png, id=53, 1222.5675pt x 675.52374pt>
 File: PerformanceEvaluation.png Graphic file (type png)
 
 <use PerformanceEvaluation.png>
-Package pdftex.def Info: PerformanceEvaluation.png used on input line 303.
-(pdftex.def)             Requested size: 239.39923pt x 160.78937pt.
- (./Spectrum_Sensing_via_Approximate_POMDP.bbl
-[6 <./PerseusRegretConvergence.png> <./PerformanceEvaluation.png>]) [7
+Package pdftex.def Info: PerformanceEvaluation.png used on input line 278.
+(pdftex.def)             Requested size: 239.39923pt x 132.27806pt.
+ (./Spectrum_Sensing_via_Approximate_POMDP.bbl)
+[6 <./PerformanceEvaluation.png>] (./Spectrum_Sensing_via_Approximate_POMDP.aux
+)
 
-]
-(./Spectrum_Sensing_via_Approximate_POMDP.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 15385 strings out of 493089
- 288640 string characters out of 6134842
- 341365 words of memory out of 5000000
- 18490 multiletter control sequences out of 15000+600000
+ 15386 strings out of 493089
+ 288648 string characters out of 6134842
+ 339365 words of memory out of 5000000
+ 18491 multiletter control sequences out of 15000+600000
  119606 words of font info for 144 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,13n,54p,2226b,290s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,12n,54p,2226b,290s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/local/texl
@@ -1010,20 +988,19 @@ t/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2015/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015/texmf-dist/font
 s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf-dist/fonts
 /type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/p
-ublic/amsfonts/symbols/msam10.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
-e1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fonts
-/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw
-/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/ut
-mr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-
-Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (7 pages, 1360534 
+ype1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
+/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
+ype1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fon
+ts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/u
+rw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/
+utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pf
+b>
+Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 1403437 
 bytes).
 PDF statistics:
- 139 PDF objects out of 1000 (max. 8388607)
- 95 compressed objects within 1 object stream
+ 130 PDF objects out of 1000 (max. 8388607)
+ 88 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  38 words of extra memory for PDF output out of 10000 (max. 10000000)
 

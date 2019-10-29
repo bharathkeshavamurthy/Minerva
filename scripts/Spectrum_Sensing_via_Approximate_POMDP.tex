@@ -72,10 +72,12 @@ via Approximate POMDP}
 \thanks{This research has been funded in part by NSF under grant CNS-1642982.}
 \thanks{The authors are with the School of Electrical and Computer Engineering, Purdue University. email: \{bkeshava,michelus\}@purdue.edu.}
 \vspace{-5mm}}
-\begin{document} 
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty} 
 \setulcolor{red}
 \setul{red}{2pt}
-\maketitle
 \setstcolor{red}
 \begin{abstract}
 Cognitive radio technologies will be critical to the wireless communication infrastructure due to their potential to alleviate the spectrum crunch, both in the commercial and the military spheres. In this paper, a novel spectrum sensing and access strategy based on Partially Observable Markov Decision Processes (POMDPs) is proposed, wherein a cognitive radio node learns the correlation model defining the occupancy behavior of the incumbents and devises an optimal strategy to perform spectrum sensing and access that exploits the learned correlation model. To ameliorate the complexity of the POMDP optimization, the PERSEUS algorithm, an approximate value iteration method, is employed. Numerical evaluations demonstrate that the proposed framework achieves the performance attained by a MAP-based state estimator with prior knowledge of the correlation model, and outperforms a state-of-the art correlation-coefficient based clustering algorithm by an average of 80\%; additionally, it surpasses a Neyman-Pearson Detector that assumes independence among channels, by an average of 25\%, thus revealing the importance of leveraging the correlation structure underlying the occupancy behavior of incumbents.

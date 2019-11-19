@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  29 OCT 2019 19:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  19 NOV 2019 15:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -219,16 +219,23 @@ LaTeX Info: Redefining \] on input line 2666.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tools/hhline.sty
 Package: hhline 2014/10/28 v2.03 Table rule package (DPC)
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/yfonts/yfonts.sty
-Package: yfonts 2003/01/08 v1.3 (WaS)
-)
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/color.sty
-Package: color 2014/10/28 v1.1a Standard LaTeX Color (DPC)
+(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/color.cfg
-File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks21
 )
-Package color Info: Driver file: pdftex.def on input line 142.
+(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2014/10/28 v1.0p Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 94.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pdftex-def/pdftex.def
 File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
@@ -241,17 +248,31 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 )
 \Gread@gobject=\count111
 ))
+\Gin@req@height=\dimen140
+\Gin@req@width=\dimen141
+)
+(/usr/local/texlive/2015/texmf-dist/tex/latex/yfonts/yfonts.sty
+Package: yfonts 2003/01/08 v1.3 (WaS)
+)
+(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2014/10/28 v1.1a Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 142.
+)
 (/usr/local/texlive/2015/texmf-dist/tex/latex/soul/soul.sty
 Package: soul 2003/11/17 v2.4 letterspacing/underlining (mf)
-\SOUL@word=\toks21
-\SOUL@lasttoken=\toks22
-\SOUL@cmds=\toks23
-\SOUL@buffer=\toks24
-\SOUL@token=\toks25
+\SOUL@word=\toks22
+\SOUL@lasttoken=\toks23
+\SOUL@cmds=\toks24
+\SOUL@buffer=\toks25
+\SOUL@token=\toks26
 \SOUL@spaceskip=\skip54
-\SOUL@ttwidth=\dimen140
-\SOUL@uldp=\dimen141
-\SOUL@ulht=\dimen142
+\SOUL@ttwidth=\dimen142
+\SOUL@uldp=\dimen143
+\SOUL@ulht=\dimen144
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/xcolor/xcolor.sty
 Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
@@ -273,8 +294,8 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1360.
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tools/verbatim.sty
 Package: verbatim 2014/10/28 v1.5q LaTeX2e package for verbatim enhancements
-\every@verbatim=\toks26
-\verbatim@line=\toks27
+\every@verbatim=\toks27
+\verbatim@line=\toks28
 \verbatim@in@stream=\read1
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/amssymb.sty
@@ -289,22 +310,22 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 ))
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amscls/amsthm.sty
 Package: amsthm 2015/03/04 v2.20.2
-\thm@style=\toks28
-\thm@bodyfont=\toks29
-\thm@headfont=\toks30
-\thm@notefont=\toks31
-\thm@headpunct=\toks32
+\thm@style=\toks29
+\thm@bodyfont=\toks30
+\thm@headfont=\toks31
+\thm@notefont=\toks32
+\thm@headpunct=\toks33
 \thm@preskip=\skip55
 \thm@postskip=\skip56
 \thm@headsep=\skip57
-\dth@everypar=\toks33
+\dth@everypar=\toks34
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count112
-\float@exts=\toks34
+\float@exts=\toks35
 \float@box=\box33
-\@float@everytoks=\toks35
+\@float@everytoks=\toks36
 \@floatcapt=\box34
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tools/bm.sty
@@ -321,9 +342,9 @@ Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/tools/array.sty
 Package: array 2014/10/28 v2.4c Tabular extension package (FMi)
-\col@sep=\dimen143
-\extrarowheight=\dimen144
-\NC@list=\toks36
+\col@sep=\dimen145
+\extrarowheight=\dimen146
+\NC@list=\toks37
 \extratabsurround=\skip58
 \backup@length=\skip59
 )
@@ -331,27 +352,6 @@ Package: array 2014/10/28 v2.4c Tabular extension package (FMi)
 LaTeX Info: Redefining \cite on input line 302.
 LaTeX Info: Redefining \nocite on input line 332.
 Package: cite 2015/02/27  v 5.5
-)
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/graphicx.sty
-Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
-
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/keyval.sty
-Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
-\KV@toks@=\toks37
-)
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/graphics.sty
-Package: graphics 2014/10/28 v1.0p Standard LaTeX Graphics (DPC,SPQR)
-
-(/usr/local/texlive/2015/texmf-dist/tex/latex/graphics/trig.sty
-Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
-)
-(/usr/local/texlive/2015/texmf-dist/tex/latex/latexconfig/graphics.cfg
-File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
-)
-Package graphics Info: Driver file: pdftex.def on input line 94.
-)
-\Gin@req@height=\dimen145
-\Gin@req@width=\dimen146
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
 (/usr/local/texlive/2015/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
@@ -786,64 +786,64 @@ Package: cancel 2013/04/12 v2.2 Cancel math terms
 (./Spectrum_Sensing_via_Approximate_POMDP.aux)
 \openout1 = `Spectrum_Sensing_via_Approximate_POMDP.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for LY/yfrak/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for LYG/ygoth/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for LY/yfrak/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for LYG/ygoth/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <5> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <7> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <8> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <9> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <11> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <11> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <12> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <17> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <17> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <20> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <20> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 75.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 77.
 
--- Lines per column: 58 (exact).
+-- Lines per column: 60 (approximate, difference = 4.31525pt).
 (/usr/local/texlive/2015/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count150
@@ -858,23 +858,20 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for U+msa on input line 99.
+LaTeX Font Info:    Try loading font information for U+msa on input line 119.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 99.
+LaTeX Font Info:    Try loading font information for U+msb on input line 119.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+) [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 107--109
+Underfull \hbox (badness 10000) in paragraph at lines 128--130
 \T1/ptm/m/n/10 where $\OML/cmm/m/it/10 i[]\OMS/cmsy/m/n/10 f\OT1/cmr/m/n/10 1\O
 ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3\OML/cmm/
 m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
@@ -882,25 +879,25 @@ m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
  []
 
 
-Underfull \hbox (badness 4254) in paragraph at lines 107--109
+Underfull \hbox (badness 4254) in paragraph at lines 128--130
 \T1/ptm/m/n/10 in the fre-quency do-main; $\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 
 (\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )[][](0\OML/cmm/m/it/10 ; ^^[[]\OT1/cmr/m/n/
 10 )$ \T1/ptm/m/n/10 rep-re-sents
  []
 
 
-Underfull \hbox (badness 4967) in paragraph at lines 107--109
+Underfull \hbox (badness 4967) in paragraph at lines 128--130
 \T1/ptm/m/n/10 cir-cu-larly sym-met-ric ad-di-tive com-plex Gaus-sian noise,
  []
 
-<MarkovChainsVisualization.png, id=13, 3525.17pt x 2597.705pt>
+<MarkovChainsVisualization.png, id=21, 3525.17pt x 2597.705pt>
 File: MarkovChainsVisualization.png Graphic file (type png)
 
 <use MarkovChainsVisualization.png>
-Package pdftex.def Info: MarkovChainsVisualization.png used on input line 115.
-(pdftex.def)             Requested size: 239.39923pt x 176.38792pt.
+Package pdftex.def Info: MarkovChainsVisualization.png used on input line 136.
+(pdftex.def)             Requested size: 151.20154pt x 111.38203pt.
  [2 <./MarkovChainsVisualization.png>]
-Overfull \hbox (0.97313pt too wide) detected at line 181
+Overfull \hbox (0.97313pt too wide) detected at line 205
 \OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )\OML/c
 mm/m/it/10 ; []\OT1/cmr/m/n/10 )[] [](1[]\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\
 OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1[]\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
@@ -909,98 +906,98 @@ OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1[]\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
 it/10 ;
  []
 
-[3]
 
-LaTeX Warning: Citation `778361' on page 4 undefined on input line 210.
-
-
-Underfull \hbox (badness 6445) in paragraph at lines 209--211
+Underfull \hbox (badness 6445) in paragraph at lines 233--235
 \T1/ptm/m/n/10 This prob-lem can be solved us-ing the Expectation-
  []
 
-
-LaTeX Warning: Citation `778361' on page 4 undefined on input line 214.
-
-[4] <ViterbiDetectionAccuracies.png, id=44, 1238.6275pt x 925.4575pt>
+[3] <ViterbiDetectionAccuracies.png, id=41, 1238.6275pt x 925.4575pt>
 File: ViterbiDetectionAccuracies.png Graphic file (type png)
 
 <use ViterbiDetectionAccuracies.png>
-Package pdftex.def Info: ViterbiDetectionAccuracies.png used on input line 246.
+Package pdftex.def Info: ViterbiDetectionAccuracies.png used on input line 271.
 
-(pdftex.def)             Requested size: 189.0pt x 141.21326pt.
-
-<ParameterEstimatorConvergence.png, id=45, 1187.43625pt x 687.56876pt>
+(pdftex.def)             Requested size: 252.0pt x 188.27963pt.
+ [4 <./ViterbiDetectionAccuracies.png>]
+<ParameterEstimatorConvergence.png, id=46, 1187.43625pt x 687.56876pt>
 File: ParameterEstimatorConvergence.png Graphic file (type png)
 
 <use ParameterEstimatorConvergence.png>
 Package pdftex.def Info: ParameterEstimatorConvergence.png used on input line 2
-59.
-(pdftex.def)             Requested size: 239.39923pt x 138.61292pt.
+84.
+(pdftex.def)             Requested size: 252.0pt x 145.91495pt.
 
-<PerseusRegretConvergence.png, id=46, 1678.27pt x 851.18pt>
+<PerseusRegretConvergence.png, id=47, 1678.27pt x 851.18pt>
 File: PerseusRegretConvergence.png Graphic file (type png)
 
 <use PerseusRegretConvergence.png>
-Package pdftex.def Info: PerseusRegretConvergence.png used on input line 265.
-(pdftex.def)             Requested size: 239.39923pt x 121.4113pt.
+Package pdftex.def Info: PerseusRegretConvergence.png used on input line 291.
+(pdftex.def)             Requested size: 252.0pt x 127.80136pt.
 
-Underfull \hbox (badness 1571) in paragraph at lines 271--272
+<PerformanceEvaluation.png, id=48, 1222.5675pt x 675.52374pt>
+File: PerformanceEvaluation.png Graphic file (type png)
+
+<use PerformanceEvaluation.png>
+Package pdftex.def Info: PerformanceEvaluation.png used on input line 298.
+(pdftex.def)             Requested size: 252.0pt x 139.23572pt.
+
+Underfull \hbox (badness 1571) in paragraph at lines 305--306
 []\T1/ptm/m/n/10 Fig. 4[] il-lus-trates the \T1/ptm/m/it/10 Re-gret \T1/ptm/m/n
 /10 con-ver-gence plot of the
  []
 
-[5 <./ViterbiDetectionAccuracies.png> <./ParameterEstimatorConvergence.png> <./
-PerseusRegretConvergence.png>]
-<PerformanceEvaluation.png, id=53, 1222.5675pt x 675.52374pt>
-File: PerformanceEvaluation.png Graphic file (type png)
+[5 <./ParameterEstimatorConvergence.png> <./PerseusRegretConvergence.png> <./Pe
+rformanceEvaluation.png>]
+<SU_Throughput_PU_Interference_Varying_Penalty.png, id=55, 1152.305pt x 778.91p
+t>
+File: SU_Throughput_PU_Interference_Varying_Penalty.png Graphic file (type png)
 
-<use PerformanceEvaluation.png>
-Package pdftex.def Info: PerformanceEvaluation.png used on input line 278.
-(pdftex.def)             Requested size: 239.39923pt x 132.27806pt.
- (./Spectrum_Sensing_via_Approximate_POMDP.bbl)
-[6 <./PerformanceEvaluation.png>] (./Spectrum_Sensing_via_Approximate_POMDP.aux
-)
+ <use SU_Throughput_PU_Interference_Varying_Penalty.png>
+Package pdftex.def Info: SU_Throughput_PU_Interference_Varying_Penalty.png used
+ on input line 315.
+(pdftex.def)             Requested size: 252.0pt x 170.33861pt.
 
-LaTeX Warning: There were undefined references.
+(./Spectrum_Sensing_via_Approximate_POMDP.bbl [6 <./SU_Throughput_PU_Interferen
+ce_Varying_Penalty.png>]) [7
 
- ) 
+] (./Spectrum_Sensing_via_Approximate_POMDP.aux) ) 
 Here is how much of TeX's memory you used:
- 15386 strings out of 493089
- 288648 string characters out of 6134842
- 339365 words of memory out of 5000000
- 18491 multiletter control sequences out of 15000+600000
- 119606 words of font info for 144 fonts, out of 8000000 for 9000
+ 15392 strings out of 493089
+ 288922 string characters out of 6134842
+ 351871 words of memory out of 5000000
+ 18495 multiletter control sequences out of 15000+600000
+ 120713 words of font info for 145 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,12n,54p,2226b,290s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
-xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/local/texl
-ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texliv
-e/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/
-2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/20
-15/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2015
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2015/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2015/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2015/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2015/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2015/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015/texmf-dist/font
-s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
-/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
-ype1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fon
-ts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/u
-rw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/
-utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pf
-b>
-Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 1403437 
+ 55i,12n,54p,2142b,290s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2015/texm
+f-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2015/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmbx7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmr5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr6.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmr7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5
+.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.p
+fb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
+></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10
+.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/ms
+bm10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><
+/usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/loca
+l/texlive/2015/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/
+2015/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (7 pages, 1572211 
 bytes).
 PDF statistics:
- 130 PDF objects out of 1000 (max. 8388607)
- 88 compressed objects within 1 object stream
+ 137 PDF objects out of 1000 (max. 8388607)
+ 92 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 38 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 43 words of extra memory for PDF output out of 10000 (max. 10000000)
 

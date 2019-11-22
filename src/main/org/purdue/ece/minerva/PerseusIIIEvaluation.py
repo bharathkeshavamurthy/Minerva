@@ -1257,5 +1257,5 @@ class PerseusIIIEvaluation(object):
 if __name__ == '__main__':
     print('[INFO] PerseusIIIEvaluation main: Triggering the evaluation of the PERSEUS-III agent, i.e. the '
           'PERSEUS Algorithm with Model Foresight and with a Simplified Belief Update procedure...')
-    perseusII = PerseusIIIEvaluation()
-    perseusII.evaluate()
+    perseusIII = PerseusIIIEvaluation()
+    perseusIII.evaluate()

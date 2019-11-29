@@ -463,10 +463,14 @@ class Sweepstakes(object):
         # Let \hat{B}_k(i) denote the estimated occupancy status of the channel in this 'episode'.
         # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) + \mu B_k(i) (1 - \hat{B}_k(i))
         reward = 0
+        throughput = 0
+        interference = 0
         for k in range(0, len(system_state)):
+            throughput += (1 - estimated_state[k]) * (1 - system_state[k])
+            interference += system_state[k] * (1 - estimated_state[k])
             reward += ((1 - estimated_state[k]) * (1 - system_state[k])) + \
                       (self.mu * (system_state[k] * (1 - estimated_state[k])))
-        return reward
+        return reward, throughput, interference
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -883,6 +887,8 @@ class PERSEUS(object):
     # Calculate Utility
     def calculate_utility(self, policy_collection):
         utility = 0
+        throughput = 0
+        interference = 0
         for key, value in policy_collection.items():
             system_state = []
             for channel in range(0, self.number_of_channels):
@@ -892,7 +898,17 @@ class PERSEUS(object):
             self.state_estimator.observation_samples = observation_samples
             estimated_state = self.state_estimator.estimate_pu_occupancy_states()
             print('[DEBUG] PERSEUS calculate_utility: Estimated PU Occupancy states - {}'.format(str(estimated_state)))
-            utility += self.sweepstakes.roll(estimated_state, system_state)
+            sweepstakes = self.sweepstakes.roll(estimated_state, system_state)
+            utility += sweepstakes[0]
+            throughput += sweepstakes[1]
+            interference += sweepstakes[2]
+        throughput /= len(policy_collection.keys())
+        interference /= len(policy_collection.keys())
+        throughput *= self.utility_multiplication_factor
+        interference *= self.utility_multiplication_factor
+        print('[INFO] PERSEUS calculate_utility: SU Network Throughput = {} | PU Interference = {}'.format(throughput,
+                                                                                                           interference
+                                                                                                           ))
         return utility
 
     # The Backup stage
@@ -934,7 +950,7 @@ class PERSEUS(object):
                                                                       self.transition_probabilities_matrix) * \
                                       belief_sample[''.join(str(k) for k in prev_state)]
                     normalization_constant += emission_probability * multiplier
-                    reward_sum += self.sweepstakes.roll(estimated_system_state, state) * belief_sample[
+                    reward_sum += self.sweepstakes.roll(estimated_system_state, state)[0] * belief_sample[
                         ''.join(str(k) for k in state)]
                 # Belief Update
                 for state in self.all_possible_states:
@@ -995,7 +1011,7 @@ class PERSEUS(object):
                                                                       self.transition_probabilities_matrix) * \
                                       unimproved_belief_points[belief_point_key][''.join(str(k) for k in prev_state)]
                     normalization_constant += emission_probability * multiplier
-                    reward_sum += self.sweepstakes.roll(estimated_system_state, state) * unimproved_belief_points[
+                    reward_sum += self.sweepstakes.roll(estimated_system_state, state)[0] * unimproved_belief_points[
                         belief_point_key][''.join(str(k) for k in state)]
                 new_aux_belief_vector = {}
                 new_aux_belief_sum = 0
@@ -1096,7 +1112,7 @@ class PERSEUS(object):
             observation_samples = self.secondary_user.make_observations(int(episode_number), optimal_action)
             self.state_estimator.observation_samples = observation_samples
             estimated_states = self.state_estimator.estimate_pu_occupancy_states()
-            optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state))
+            optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state)[0])
         return optimal_utilities
 
     # Visualize the progression of regret of this PERSEUS-III agent over numerous backup and wrapper stages
@@ -1185,7 +1201,7 @@ class PerseusIIIEvaluation(object):
     NUMBER_OF_SAMPLING_ROUNDS = 300
 
     # The number of periods of interaction of the agent with the radio environment
-    NUMBER_OF_EPISODES = 2000
+    NUMBER_OF_EPISODES = 1000
 
     # The mean of the AWGN samples
     NOISE_MEAN = 0
@@ -1200,13 +1216,13 @@ class PerseusIIIEvaluation(object):
     IMPULSE_RESPONSE_VARIANCE = 80
 
     # The Secondary User's sensing limitation w.r.t the number of channels it can sense simultaneously in an episode
-    SPATIAL_SENSING_LIMITATION = 9
+    SPATIAL_SENSING_LIMITATION = 12
 
     # Limitation per fragment
-    FRAGMENTED_SPATIAL_SENSING_LIMITATION = 3
+    FRAGMENTED_SPATIAL_SENSING_LIMITATION = 4
 
     # The exploration period of the PERSEUS algorithm
-    EXPLORATION_PERIOD = 1000
+    EXPLORATION_PERIOD = 100
 
     # The discount factor employed in the Bellman update
     DISCOUNT_FACTOR = 0.9

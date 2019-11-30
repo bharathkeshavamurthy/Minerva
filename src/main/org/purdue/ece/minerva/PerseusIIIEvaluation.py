@@ -1201,7 +1201,7 @@ class PerseusIIIEvaluation(object):
     NUMBER_OF_SAMPLING_ROUNDS = 300
 
     # The number of periods of interaction of the agent with the radio environment
-    NUMBER_OF_EPISODES = 1000
+    NUMBER_OF_EPISODES = 2000
 
     # The mean of the AWGN samples
     NOISE_MEAN = 0
@@ -1216,13 +1216,13 @@ class PerseusIIIEvaluation(object):
     IMPULSE_RESPONSE_VARIANCE = 80
 
     # The Secondary User's sensing limitation w.r.t the number of channels it can sense simultaneously in an episode
-    SPATIAL_SENSING_LIMITATION = 12
+    SPATIAL_SENSING_LIMITATION = 9
 
     # Limitation per fragment
-    FRAGMENTED_SPATIAL_SENSING_LIMITATION = 4
+    FRAGMENTED_SPATIAL_SENSING_LIMITATION = 3
 
     # The exploration period of the PERSEUS algorithm
-    EXPLORATION_PERIOD = 100
+    EXPLORATION_PERIOD = 1000
 
     # The discount factor employed in the Bellman update
     DISCOUNT_FACTOR = 0.9

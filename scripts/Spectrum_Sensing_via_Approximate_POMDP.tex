@@ -50,10 +50,10 @@
 \newcommand{\rom}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
 \usepackage{color}
 \usepackage{soul,xcolor}
-%\newcommand{\sst}[1]{\st{#1}}
-\newcommand{\sst}[1]{}
-%\newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
-\newcommand{\nm}[1]{}
+\newcommand{\sst}[1]{\st{#1}}
+%\newcommand{\sst}[1]{}
+\newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
+%\newcommand{\nm}[1]{}
 \newcommand{\bk}[1]{{\color{magenta}{[BK: #1]}}}
 \newcommand{\nmmath}[1]{{\color{blue}\text{\bf{[NM: #1]}}}}
 \newcommand{\gs}[1]{{\color{orange}\bf{[GS: #1]}}}
@@ -61,8 +61,8 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage{cancel}
-%\newcommand\mst[2][red]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{2pt}}}}#2} 
-\newcommand{\mst}[1]{} 
+\newcommand\mst[2][red]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{2pt}}}}#2} 
+%\newcommand{\mst}[1]{} 
 \newcommand{\add}[1]{{\color{red}{#1}}}
 \newcommand{\ull}[1]{\textbf{\color{red}\ul{#1}}}
 \renewcommand{\baselinestretch}{0.96}
@@ -251,8 +251,8 @@ where $\Xi_{\mathcal{K}}^{u}$ is the hyperplane corresponding to a one-step look
 the value iteration updates} under action $\mathcal K$ and belief $\beta_u$, given by
 \nm{The next equation appears to be wrong! Please check, along with your numerical simulations}
 \begin{align*}
-\mst{&        \Xi_{\mathcal{K}}^{u}(\vec{B}) = \mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))+\gamma 
-        \Xi_{\mathcal{K}, \vec{Y}}^{u}(\vec{B})\mid\vec{B}\Big],        \\}
+&\mst{        \Xi_{\mathcal{K}}^{u}(\vec{B}) = \mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))+\gamma 
+        \Xi_{\mathcal{K}, \vec{Y}}^{u}(\vec{B})\mid\vec{B}\Big],       }\\
         &\add{        \Xi_{\mathcal{K}}^{u}(\vec{B}) = \mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))}\\
 &\add{        +\gamma 
         \sum_{\vec{B}'}\mathbb{P}(\vec{B}(i+1) = \vec{B}'|\vec{B}(i)=\vec{B})

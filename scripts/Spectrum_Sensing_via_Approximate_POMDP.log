@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  6 DEC 2019 16:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  18 DEC 2019 14:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -858,82 +858,8 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
-
-LaTeX Warning: Citation `7158089' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `4562537' on page 1 undefined on input line 92.
-
-
-LaTeX Warning: Citation `5990482' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `7094730' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `4554696' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `6956794' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `7094730' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `7895211' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `7336513' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `8571293' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `6188346' on page 1 undefined on input line 94.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Citation `6956794' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Citation `6507570' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Citation `6956794' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Citation `4554696' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Citation `6956794' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Citation `4554696' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Citation `4554696' on page 1 undefined on input line 97.
-
-
-LaTeX Warning: Reference `II' on page 1 undefined on input line 101.
-
-
-LaTeX Warning: Reference `III' on page 1 undefined on input line 101.
-
-
-LaTeX Warning: Reference `IV' on page 1 undefined on input line 101.
-
-
-LaTeX Warning: Reference `V' on page 1 undefined on input line 101.
-
 LaTeX Font Info:    Try loading font information for U+msa on input line 105.
+
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
@@ -942,15 +868,20 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 105.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-
-LaTeX Warning: Reference `2' on page 1 undefined on input line 114.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 111--115
+Underfull \hbox (badness 10000) in paragraph at lines 109--112
 \T1/ptm/m/n/10 where $\OML/cmm/m/it/10 i[]\OMS/cmsy/m/n/10 f\OT1/cmr/m/n/10 1\O
-ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3\OML/cmm/
-m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
-;
+ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ 
+\T1/ptm/m/n/10 rep-re-sents the time in-dex;
+ []
+
+
+Underfull \hbox (badness 1430) in paragraph at lines 109--112
+\T1/ptm/m/n/10 sym-met-ric ad-di-tive com-plex Gaus-sian noise, i.i.d across
+ []
+
+
+Underfull \hbox (badness 1383) in paragraph at lines 109--112
+\T1/ptm/m/n/10 fre-quency and across time, and in-de-pen-dent of chan-nel
  []
 
 [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
@@ -961,60 +892,28 @@ m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-dex
 File: MarkovChainsVisualization.png Graphic file (type png)
 
 <use MarkovChainsVisualization.png>
-Package pdftex.def Info: MarkovChainsVisualization.png used on input line 121.
-(pdftex.def)             Requested size: 201.60077pt x 148.5226pt.
+Package pdftex.def Info: MarkovChainsVisualization.png used on input line 118.
+(pdftex.def)             Requested size: 189.0pt x 139.24736pt.
 
-
-LaTeX Warning: Reference `fig:1' on page 2 undefined on input line 143.
-
-
-LaTeX Warning: Reference `III' on page 2 undefined on input line 150.
-
-
-LaTeX Warning: Reference `7' on page 2 undefined on input line 150.
-
-
-Underfull \hbox (badness 7722) in paragraph at lines 149--151
+Underfull \hbox (badness 7722) in paragraph at lines 146--148
 \T1/ptm/m/n/10 Overall, we struc-ture the cor-re-la-tion model as two
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 149--151
+Underfull \hbox (badness 10000) in paragraph at lines 146--148
 \T1/ptm/m/n/10 Markov chains: one across time, pa-ram-e-ter-ized by
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 149--151
+Underfull \hbox (badness 10000) in paragraph at lines 146--148
 \T1/ptm/m/n/10 pa-ram-e-ter-ized by $\OML/cmm/m/it/10 p[]\U/msb/m/n/10 P\OT1/cm
 r/m/n/10 (\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i[]\OT1/cmr/m/n
 /10 1)[]1\OMS/cmsy/m/n/10 j\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/1
 0 i[]\OT1/cmr/m/n/10 1)[]0)$\T1/ptm/m/n/10 . We
  []
 
-
-LaTeX Warning: Reference `3' on page 2 undefined on input line 158.
-
-
-LaTeX Warning: Reference `3' on page 2 undefined on input line 163.
-
-
-LaTeX Warning: Reference `7' on page 2 undefined on input line 170.
-
-
-LaTeX Warning: Reference `III' on page 2 undefined on input line 170.
-
-
-LaTeX Warning: Reference `9' on page 2 undefined on input line 170.
-
-
-LaTeX Warning: Reference `10' on page 2 undefined on input line 170.
-
 [2 <./MarkovChainsVisualization.png>]
-
-LaTeX Warning: Reference `5' on page 3 undefined on input line 172.
-
-
-Overfull \hbox (0.97313pt too wide) detected at line 185
+Overfull \hbox (0.97313pt too wide) detected at line 181
 \OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )\OML/c
 mm/m/it/10 ; []\OT1/cmr/m/n/10 )[] [](1[]\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\
 OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1[]\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
@@ -1024,160 +923,110 @@ it/10 ;
  []
 
 
-Overfull \hbox (104.30852pt too wide) detected at line 190
-[]\OML/cmm/m/it/10 ^^L[]\OT1/cmr/m/n/10 ([]) = \U/msb/m/n/10 P\OT1/cmr/m/n/10 (
-[](\OML/cmm/m/it/10 i \OT1/cmr/m/n/10 + 1) = []\OMS/cmsy/m/n/10 j[]\OT1/cmr/m/n
-/10 )[][]\OML/cmm/m/it/10 :
- []
-
-
-LaTeX Warning: Reference `16' on page 3 undefined on input line 202.
-
-
-LaTeX Warning: Reference `16' on page 3 undefined on input line 206.
-
-
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 3 undefined 
-on input line 208.
-
-
-LaTeX Warning: Reference `17' on page 3 undefined on input line 216.
-
-
-LaTeX Warning: Citation `778361' on page 3 undefined on input line 220.
-
-
-Underfull \hbox (badness 6445) in paragraph at lines 219--221
+Underfull \hbox (badness 6445) in paragraph at lines 214--216
 \T1/ptm/m/n/10 This prob-lem can be solved us-ing the Expectation-
  []
 
-
-LaTeX Warning: Citation `778361' on page 3 undefined on input line 224.
-
 [3]
-
-LaTeX Warning: Reference `II' on page 4 undefined on input line 233.
-
-
-LaTeX Warning: Reference `16' on page 4 undefined on input line 233.
-
-
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 4 undefined 
-on input line 233.
+Underfull \hbox (badness 1389) in paragraph at lines 264--265
+\OML/cmm/m/it/10 p[]q[]\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 3$\T1
+/ptm/m/n/10 , and an SU in-tel-li-gently try-ing to ac-cess the
+ []
 
 
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 4 undefined 
-on input line 233.
+Underfull \hbox (badness 2173) in paragraph at lines 264--265
+\T1/ptm/m/n/10 ing vari-ance, $\OML/cmm/m/it/10 P[][]\OT1/cmr/m/n/10 64\OML/cmm
+/m/it/10 :\OT1/cmr/m/n/10 771[]$ \T1/ptm/m/n/10 for the trans-mit power
+ []
 
 
-LaTeX Warning: Reference `16' on page 4 undefined on input line 233.
+Underfull \hbox (badness 1622) in paragraph at lines 264--265
+\T1/ptm/m/n/10 of PU $\OML/cmm/m/it/10 j$\T1/ptm/m/n/10 , and $[][]\OT1/cmr/m/n
+/10 54\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 771[]$ \T1/ptm/m/n/10 for the trans-mit
+ power
+ []
 
 
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 4 undefined 
-on input line 233.
+Underfull \hbox (badness 1558) in paragraph at lines 264--265
+\T1/ptm/m/n/10 of the SU. Sim-u-lat-ing a typ-i-cal power-law prop-a-ga-tion
+ []
 
 
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 4 undefined 
-on input line 245.
+Underfull \hbox (badness 1924) in paragraph at lines 264--265
+\T1/ptm/m/n/10 model with a path-loss ex-po-nent of $\OML/cmm/m/it/10 ^^W[]\OT1
+/cmr/m/n/10 1\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 5$\T1/ptm/m/n/10 , the SINR
+ []
 
 
-LaTeX Warning: Reference `11' on page 4 undefined on input line 272.
+Underfull \hbox (badness 4341) in paragraph at lines 264--265
+\T1/ptm/m/n/10 the SU, when the chan-nel is truly idle at time $\OML/cmm/m/it/1
+0 i$\T1/ptm/m/n/10 ;
+ []
+
+
+Underfull \hbox (badness 6608) in paragraph at lines 264--265
+\T1/ptm/m/n/10 and PU $\OML/cmm/m/it/10 j$ \T1/ptm/m/n/10 achieves a max-i-mum 
+AWGN through-put
+ []
 
 [4]
-
-LaTeX Warning: Reference `fig:4' on page 5 undefined on input line 283.
-
-
-LaTeX Warning: Reference `III' on page 5 undefined on input line 283.
-
-
-LaTeX Warning: Citation `Neal1998' on page 5 undefined on input line 283.
-
-
-<PerseusRegretConvergence_MeanSquareErrorConvergence.png, id=44, 1225.57875pt x
- 801.99625pt>
+<PerseusRegretConvergence_MeanSquareErrorConvergence.png, id=44, 1227.58624pt x
+ 898.35625pt>
 File: PerseusRegretConvergence_MeanSquareErrorConvergence.png Graphic file (typ
 e png)
  <use PerseusRegretConvergence_MeanSquareErrorConvergence.png>
 Package pdftex.def Info: PerseusRegretConvergence_MeanSquareErrorConvergence.pn
-g used on input line 286.
-(pdftex.def)             Requested size: 201.60077pt x 131.91983pt.
+g used on input line 272.
+(pdftex.def)             Requested size: 189.0pt x 138.31165pt.
 
-
-LaTeX Warning: Reference `fig:4' on page 5 undefined on input line 291.
-
-
-LaTeX Warning: Reference `fig:4' on page 5 undefined on input line 291.
-
-
-LaTeX Warning: Citation `DBLP:journals/corr/abs-1109-2145' on page 5 undefined 
-on input line 291.
-
-
-LaTeX Warning: Reference `fig:8' on page 5 undefined on input line 293.
-
-
-LaTeX Warning: Citation `6956794' on page 5 undefined on input line 293.
-
-
-LaTeX Warning: Citation `4554696' on page 5 undefined on input line 293.
-
-
-<SU_Throughput_PU_Interference_Varying_Penalty.png, id=45, 1172.38pt x 812.0337
-5pt>
+<SU_Throughput_PU_Interference_Varying_Penalty.png, id=45, 1159.33125pt x 803.0
+pt>
 File: SU_Throughput_PU_Interference_Varying_Penalty.png Graphic file (type png)
 
  <use SU_Throughput_PU_Interference_Varying_Penalty.png>
 Package pdftex.def Info: SU_Throughput_PU_Interference_Varying_Penalty.png used
- on input line 298.
-(pdftex.def)             Requested size: 201.60077pt x 139.62991pt.
+ on input line 284.
+(pdftex.def)             Requested size: 189.0pt x 130.90868pt.
 
 (./Spectrum_Sensing_via_Approximate_POMDP.bbl [5 <./PerseusRegretConvergence_Me
-anSquareErrorConvergence.png>]) [6
+anSquareErrorConvergence.png> <./SU_Throughput_PU_Interference_Varying_Penalty.
+png>]) [6
 
- <./SU_Throughput_PU_Interference_Varying_Penalty.png>] (./Spectrum_Sensing_via
-_Approximate_POMDP.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+] (./Spectrum_Sensing_via_Approximate_POMDP.aux) ) 
 Here is how much of TeX's memory you used:
- 15370 strings out of 493089
- 288487 string characters out of 6134842
- 348571 words of memory out of 5000000
- 18477 multiletter control sequences out of 15000+600000
+ 15369 strings out of 493089
+ 288483 string characters out of 6134842
+ 340755 words of memory out of 5000000
+ 18476 multiletter control sequences out of 15000+600000
  119606 words of font info for 144 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,14n,54p,2273b,285s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
-xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/local/texl
-ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texliv
-e/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/
-2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/20
-15/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2015
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2015/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2015/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2015/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2015/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2015/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2015/texmf-dist/font
-s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
-/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
-ype1/public/amsfonts/symbols/msam7.pfb></usr/local/texlive/2015/texmf-dist/font
-s/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2015/texmf-dist/
-fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type
-1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/tim
-es/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a
-.pfb>
-Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 972427 b
+ 55i,12n,54p,3303b,285s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2015/texm
+f-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2015/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2015/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmbx7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmr5.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr6.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmr7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr8.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5
+.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.p
+fb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
+></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10
+.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/symbols/ms
+am7.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/symbols
+/msbm10.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pf
+b></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/l
+ocal/texlive/2015/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 962159 b
 ytes).
 PDF statistics:
  130 PDF objects out of 1000 (max. 8388607)

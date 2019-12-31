@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  18 DEC 2019 16:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  31 DEC 2019 10:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -866,26 +866,30 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
 \makeMPintoPDFobject=\count157
 \everyMPtoPDFconversion=\toks57
 ) ABD: EveryShipout initializing macros
-LaTeX Font Info:    Try loading font information for U+msa on input line 105.
+LaTeX Font Info:    Try loading font information for U+msa on input line 107.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 105.
+LaTeX Font Info:    Try loading font information for U+msb on input line 107.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 109--112
+Underfull \hbox (badness 10000) in paragraph at lines 111--114
 \T1/ptm/m/n/10 where $\OML/cmm/m/it/10 i[]\OMS/cmsy/m/n/10 f\OT1/cmr/m/n/10 1\O
-ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2[]\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3\OML/cm
-m/m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ \T1/ptm/m/n/10 rep-re-sents the time in-d
-ex;
+ML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2\OML/cmm/m/it/10 ; [] ; T\OMS/cmsy/m/n/10 g$ 
+\T1/ptm/m/n/10 rep-re-sents the time in-dex;
  []
 
 
-Underfull \hbox (badness 1430) in paragraph at lines 109--112
+Underfull \hbox (badness 1430) in paragraph at lines 111--114
 \T1/ptm/m/n/10 sym-met-ric ad-di-tive com-plex Gaus-sian noise, i.i.d across
+ []
+
+
+Underfull \hbox (badness 1383) in paragraph at lines 111--114
+\T1/ptm/m/n/10 fre-quency and across time, and in-de-pen-dent of chan-nel
  []
 
 [1{/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
@@ -895,29 +899,18 @@ Underfull \hbox (badness 1430) in paragraph at lines 109--112
 <MarkovChainsVisualization.png, id=19, 3525.17pt x 2597.705pt>
 File: MarkovChainsVisualization.png Graphic file (type png)
 <use MarkovChainsVisualization.png>
-Package pdftex.def Info: MarkovChainsVisualization.png  used on input line 118.
+Package pdftex.def Info: MarkovChainsVisualization.png  used on input line 120.
 
-(pdftex.def)             Requested size: 189.0pt x 139.24736pt.
+(pdftex.def)             Requested size: 248.22015pt x 182.8885pt.
 
-Underfull \hbox (badness 7722) in paragraph at lines 146--148
-\T1/ptm/m/n/10 Overall, we struc-ture the cor-re-la-tion model as two
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 146--148
-\T1/ptm/m/n/10 Markov chains: one across time, pa-ram-e-ter-ized by
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 146--148
-\T1/ptm/m/n/10 pa-ram-e-ter-ized by $\OML/cmm/m/it/10 p[]\U/msb/m/n/10 P\OT1/cm
-r/m/n/10 (\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 i[]\OT1/cmr/m/n
-/10 1)[]1\OMS/cmsy/m/n/10 j\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/1
-0 i[]\OT1/cmr/m/n/10 1)[]0)$\T1/ptm/m/n/10 . We
+Underfull \hbox (badness 5119) in paragraph at lines 132--132
+[][][]\T1/ptm/m/n/8 If $\OML/cmm/m/it/8 S[]\OT1/cmr/m/n/8 (\OML/cmm/m/it/8 i\OT
+1/cmr/m/n/8 )$ \T1/ptm/m/n/8 does not have con-stant am-pli-tude, we may ap-pro
+x-i-
  []
 
 [2 <./MarkovChainsVisualization.png>]
-Overfull \hbox (0.97313pt too wide) detected at line 181
+Overfull \hbox (0.97313pt too wide) detected at line 192
 \OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )\OML/c
 mm/m/it/10 ; []\OT1/cmr/m/n/10 )[] [](1[]\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\
 OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1[]\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
@@ -927,79 +920,75 @@ it/10 ;
  []
 
 
-Underfull \hbox (badness 6445) in paragraph at lines 216--218
-\T1/ptm/m/n/10 This prob-lem can be solved us-ing the Expectation-
+Overfull \hbox (20.47835pt too wide) detected at line 222
+[][] \OT1/cmr/m/n/10 = [] \U/msb/m/n/10 P\OT1/cmr/m/n/10 ([[](\OML/cmm/m/it/10 
+i\OT1/cmr/m/n/10 )][]\OMS/cmsy/m/n/10 j[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; []
+[]
+ []
+
+
+Underfull \hbox (badness 1917) in paragraph at lines 222--227
+\OML/cmm/m/it/10 ^^\$ \T1/ptm/m/n/10 refers to the learn-ing pe-riod of the pa-
+ram-e-ter es-ti-
  []
 
 [3]
-Underfull \hbox (badness 3128) in paragraph at lines 267--269
-\T1/ptm/m/n/10 for the SU, when the chan-nel is truly idle at time
- []
-
-
-Underfull \hbox (badness 2027) in paragraph at lines 267--269
-\OML/cmm/m/it/10 i$\T1/ptm/m/n/10 ; and PU $\OML/cmm/m/it/10 j$ \T1/ptm/m/n/10 
-achieves a max-i-mum AWGN through-put
- []
-
-[4]
-<PerseusRegretConvergence_MeanSquareErrorConvergence.png, id=44, 1227.58624pt x
+<PerseusRegretConvergence_MeanSquareErrorConvergence.png, id=41, 1227.58624pt x
  898.35625pt>
 File: PerseusRegretConvergence_MeanSquareErrorConvergence.png Graphic file (typ
 e png)
 <use PerseusRegretConvergence_MeanSquareErrorConvergence.png>
 Package pdftex.def Info: PerseusRegretConvergence_MeanSquareErrorConvergence.pn
-g  used on input line 289.
-(pdftex.def)             Requested size: 189.0pt x 138.31165pt.
-<SU_Throughput_PU_Interference_Varying_Penalty.png, id=45, 1159.33125pt x 803.0
-pt>
+g  used on input line 282.
+(pdftex.def)             Requested size: 248.22015pt x 181.64198pt.
+ [4]
+<SU_Throughput_PU_Interference_Varying_Penalty.png, id=45, 1224.575pt x 915.42p
+t>
 File: SU_Throughput_PU_Interference_Varying_Penalty.png Graphic file (type png)
 
 <use SU_Throughput_PU_Interference_Varying_Penalty.png>
 Package pdftex.def Info: SU_Throughput_PU_Interference_Varying_Penalty.png  use
-d on input line 301.
-(pdftex.def)             Requested size: 189.0pt x 130.90868pt.
+d on input line 294.
+(pdftex.def)             Requested size: 248.22015pt x 185.55312pt.
  (./Spectrum_Sensing_via_Approximate_POMDP.bbl [5 <./PerseusRegretConvergence_M
-eanSquareErrorConvergence.png>]) [6 <./SU_Throughput_PU_Interference_Varying_Pe
-nalty.png>] (./Spectrum_Sensing_via_Approximate_POMDP.aux)
+eanSquareErrorConvergence.png> <./SU_Throughput_PU_Interference_Varying_Penalty
+.png>]) [6
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+] (./Spectrum_Sensing_via_Approximate_POMDP.aux) ) 
 Here is how much of TeX's memory you used:
- 15692 strings out of 492616
- 296029 string characters out of 6129482
- 359273 words of memory out of 5000000
- 19223 multiletter control sequences out of 15000+600000
- 120713 words of font info for 145 fonts, out of 8000000 for 9000
+ 15690 strings out of 492616
+ 296019 string characters out of 6129482
+ 359264 words of memory out of 5000000
+ 19222 multiletter control sequences out of 15000+600000
+ 119606 words of font info for 144 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,12n,48p,3111b,291s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
-xlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/local/texl
-ive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texli
-ve/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texliv
-e/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/
-2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/20
-19/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2019
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2019/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2019/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2019/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2019/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2019/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2019/texmf-dist/font
-s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2019/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2019/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2019/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1
-/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2019/texmf-dist/fonts/t
-ype1/public/amsfonts/symbols/msam7.pfb></usr/local/texlive/2019/texmf-dist/font
-s/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2019/texmf-dist/
-fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/type
-1/urw/times/utmbi8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/tim
-es/utmr8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/times/utmri8a
-.pfb>
-Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 956010 b
+ 55i,12n,48p,1904b,291s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2019/texm
+f-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2019/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2019/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmbx7.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmr5.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr6.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmr7.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5
+.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.p
+fb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
+></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10
+.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/symbols/ms
+am7.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/symbols
+/msbm10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/times/utmb8a.pf
+b></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/l
+ocal/texlive/2019/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texli
+ve/2019/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 982735 b
 ytes).
 PDF statistics:
  130 PDF objects out of 1000 (max. 8388607)

@@ -65,6 +65,8 @@ class MarkovCorrelationModelEstimator(object):
             '10': 0.3,   # p10
             '11': 0.7    # p11
         }
+        # The estimates member declaration
+        self.estimates = None
 
     # Rendered delegate behavior
     # Simulate the incumbent occupancy behavior in the spectrum of interest according to the true correlation model
@@ -177,8 +179,51 @@ class MarkovCorrelationModelEstimator(object):
                     denominator = 0
                     observations = {k: [self.simulate_observations(k, i) for i in range(self.NUMBER_OF_EPISODES)]
                                     for k in range(self.NUMBER_OF_CHANNELS)}
-                    # M-step: Temporal correlation only
+                    temporal_transition_matrix = {
+                        0: {0: 1 - prev_estimates['0'], 1: prev_estimates['0']},
+                        1: {0: 1 - prev_estimates['1'], 1: prev_estimates['1']}
+                    }
+                    transition_matrix = {
+                        '00': {0: 1 - prev_estimates['00'], 1: prev_estimates['00']},
+                        '01': {0: 1 - prev_estimates['01'], 1: prev_estimates['01']},
+                        '10': {0: 1 - prev_estimates['10'], 1: prev_estimates['10']},
+                        '11': {0: 1 - prev_estimates['11'], 1: prev_estimates['11']}
+                    }
                     if j == '0' or j == '1':
+                        # E-step: Temporal correlation only
+                        # The Forward step
+                        for i in range(self.NUMBER_OF_EPISODES):
+                            add = (lambda: False, lambda: True)[i == 0]()
+                            for current_state in OccupancyState:
+                                for prev_state in OccupancyState:
+                                    temporal_forward_probabilities[i][current_state.value] += (
+                                        lambda: ((lambda: 0, lambda: 1)[add]()) *
+                                                self.get_emission_probability(current_state, observations[0][i]) * (
+                                                    (lambda: prev_estimates['0'] /
+                                                             (1 + prev_estimates['0'] - prev_estimates['1']),
+                                                     lambda: (1 - prev_estimates['1']) /
+                                                             (1 + prev_estimates['0'] - prev_estimates['1'])
+                                                     )[current_state]()),
+                                        lambda: self.get_emission_probability(current_state, observations[0][i]) *
+                                                temporal_transition_matrix[prev_state.value][current_state.value] *
+                                                temporal_forward_probabilities[i-1][prev_state.value]
+                                    )[i > 0]()
+                                    if add:
+                                        add = False
+                        # The Backward step
+                        for i in range(self.NUMBER_OF_EPISODES - 1, -1, -1):
+                            add = (lambda: False, lambda: True)[i == (self.NUMBER_OF_EPISODES - 1)]
+                            for current_state in OccupancyState:
+                                for next_state in OccupancyState:
+                                    temporal_backward_probabilities[i][current_state.value] += (
+                                        lambda: ((lambda: 0, lambda: 1)[add]()) * 1,
+                                        lambda: self.get_emission_probability(next_state, observations[i+1]) *
+                                                temporal_transition_matrix[current_state.value][next_state.value] *
+                                                temporal_backward_probabilities[i+1][next_state.value]
+                                    )[i < (self.NUMBER_OF_EPISODES - 1)]()
+                                    if add:
+                                        add = False
+                        # M-step: Temporal correlation only
                         for state in OccupancyState:
                             for i in range(self.NUMBER_OF_EPISODES):
                                 numerator += (lambda: 0,
@@ -194,10 +239,36 @@ class MarkovCorrelationModelEstimator(object):
                                                 lambda: 1 - prev_estimates[j])[state == OccupancyState.IDLE]() * \
                                                temporal_backward_probabilities[i + 1][state.value]
                             exclusive = True
-                    # M-step: Spatio-Temporal correlation
                     else:
                         spatial_state = int(list(j)[0])
                         temporal_state = int(list(j)[1])
+                        # E-step: Spatio-Temporal correlation
+                        # The Forward step
+                        forward_probabilities[0] = temporal_forward_probabilities
+                        for k in range(1, self.NUMBER_OF_CHANNELS):
+                            for i in range(self.NUMBER_OF_EPISODES):
+                                add = (lambda: False, lambda: True)[i == 0]()
+                                for current_state in OccupancyState:
+                                    for prev_spatial_state in OccupancyState:
+                                        for prev_temporal_state in OccupancyState:
+                                            forward_probabilities[k][i][current_state.value] += (
+                                                lambda: (lambda: 0, lambda: 1)[add]() *
+                                                        self.get_emission_probability(current_state,
+                                                                                      observations[k][i]) *
+                                                        temporal_transition_matrix[prev_spatial_state.value][
+                                                            current_state.value] *
+                                                        forward_probabilities[k][i][prev_spatial_state],
+                                                lambda: self.get_emission_probability(current_state,
+                                                                                      observations[k][i]) *
+                                                        transition_matrix[''.join([str(prev_spatial_state.value),
+                                                                                   str(prev_temporal_state.value)])][
+                                                            current_state.value] *
+                                                        forward_probabilities[k-1][i][prev_spatial_state.value] *
+                                                        forward_probabilities[k][i-1][prev_temporal_state.value]
+                                            )[i > 0]()
+                                            if add:
+                                                add = False
+                        # M-step: Spatio-Temporal correlation
                         for state in OccupancyState:
                             for k in range(self.NUMBER_OF_CHANNELS):
                                 for i in range(self.NUMBER_OF_EPISODES):
@@ -227,10 +298,10 @@ class MarkovCorrelationModelEstimator(object):
             if key != slowest_parameter:
                 for diff in range(slowest_time - len(value)):
                     value.append(value[len(value)-1])
-        # \mathbb{E}_{t,j}[(\theta_{j}(t) - \hat{\theta}_{j}(t))^{2}]
+        # \mathbb{E}_{t}[\sum_{j=1}^{6}\ (\theta_{j}(t) - \hat{\theta}_{j}(t))^{2}]
         for index in range(slowest_time):
             mean_squared_errors.append(
-                sum([squared_errors[j][index] for j in self.true_parameters.keys()]) / len(self.true_parameters.keys())
+                sum([squared_errors[j][index] for j in self.true_parameters.keys()])
             )
         # Visualization
         data_trace = go.Scatter(x=[t for t in range(slowest_time)], y=mean_squared_errors, mode='lines+markers')
@@ -239,7 +310,7 @@ class MarkovCorrelationModelEstimator(object):
                            xaxis=dict(title='Number of iterations (x300 observations)'),
                            yaxis=dict(type='log', autorange=True,
                                       title=r'Mean Square Error - '
-                                            r'$\mathbb{E}_{t,j}[(\theta_{j}(t) - \hat{\theta}_{j}(t))^{2}]$'
+                                            r'$\mathbb{E}_{t}[\sum_{j=1}^{6}(\theta_{j}(t) - \hat{\theta}_{j}(t))^{2}]$'
                                       )
                            )
         figure = dict(data=[data_trace],
@@ -270,4 +341,3 @@ if __name__ == '__main__':
     print('p10 = {}\n'.format(estimator.estimates['10']))
     print('p11 = {}.'.format(estimator.estimates['11']))
     # Fin
-

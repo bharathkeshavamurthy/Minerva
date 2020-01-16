@@ -268,6 +268,32 @@ class MarkovCorrelationModelEstimator(object):
                                             )[i > 0]()
                                             if add:
                                                 add = False
+                        # The Backward step
+                        backward_probabilities[self.NUMBER_OF_CHANNELS-1] = temporal_backward_probabilities
+                        for k in range(self.NUMBER_OF_CHANNELS - 2, -1, -1):
+                            for i in range(self.NUMBER_OF_EPISODES - 1, -1, -1):
+                                add = (lambda: False, lambda: True)[i == (self.NUMBER_OF_EPISODES - 1)]()
+                                for current_state in OccupancyState:
+                                    for next_spatial_state in OccupancyState:
+                                        for next_temporal_state in OccupancyState:
+                                            backward_probabilities[k][i][current_state.value] += (
+                                                lambda: (lambda: 0, lambda: 1)[add]() *
+                                                        self.get_emission_probability(next_spatial_state,
+                                                                                      observations[k+1][i]) *
+                                                        backward_probabilities[k+1][i][next_spatial_state.value] *
+                                                        temporal_transition_matrix[current_state.value][
+                                                            next_spatial_state.value],
+                                                lambda: self.get_emission_probability(next_spatial_state,
+                                                                                      observations[k+1][i]) *
+                                                        self.get_emission_probability(next_temporal_state,
+                                                                                      observations[k][i+1]) *
+                                                        temporal_transition_matrix[current_state.value][
+                                                            next_spatial_state.value] *
+                                                        temporal_transition_matrix[current_state.value][
+                                                            next_temporal_state.value] *
+                                                        backward_probabilities[k+1][i][next_spatial_state] *
+                                                        backward_probabilities[k][i+1][next_temporal_state]
+                                            )[i < (self.NUMBER_OF_EPISODES - 1)]()
                         # M-step: Spatio-Temporal correlation
                         for state in OccupancyState:
                             for k in range(self.NUMBER_OF_CHANNELS):

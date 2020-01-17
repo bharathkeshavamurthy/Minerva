@@ -375,7 +375,7 @@ class ClusteringAndMarkovianModeling(object):
             su_throughputs.append(su_throughput)
             pu_interferences.append(pu_interference)
         return self.analytics(su_throughput=sum(su_throughputs) / self.NUMBER_OF_EPISODES,
-                              pu_interference=sum(pu_interferences / self.NUMBER_OF_EPISODES))
+                              pu_interference=sum(pu_interferences) / self.NUMBER_OF_EPISODES)
 
     # Use the Minimum Entropy Merge (MEM) strategy here to determine the final estimated occupancy states of the
     #   channels across all episodes (2 variants: MEM_with_GC_CCE_and_MPE and MEM_with_MEI_CCE_and_MPE)
@@ -414,26 +414,21 @@ class ClusteringAndMarkovianModeling(object):
     # Using the same notation as in the reference work...
     def evaluate(self):
         # Minimum Entropy Merging with Greedy Clustering Channel Correlation Estimation and Markov Process Estimation
-        mem_gc_cce_mpe_estimated_occupancy_states = self.minimum_entropy_merge(
-            ClusteringTechnique.GREEDY
-        )
+        mem_gc_cce_mpe_estimated_occupancy_states = self.minimum_entropy_merge(ClusteringTechnique.GREEDY)
         mem_gc_cce_mpe_analytics = self.get_analytics(mem_gc_cce_mpe_estimated_occupancy_states)
         print('[INFO] ClusteringAndMarkovianModeling evaluate: MEM with GC-CCE and MPE Analytics - '
               'Average Episodic SU Throughput = {} | '
               'Average Episodic PU Interference = {}'.format(mem_gc_cce_mpe_analytics.su_throughput,
-                                                             mem_gc_cce_mpe_analytics.pu_interference)
-              )
+                                                             mem_gc_cce_mpe_analytics.pu_interference))
         # Minimum Entropy Merging with Minimum Entropy Increment Clustering Channel Correlation Estimation and
         #   Markov Process Estimation
         mem_mei_cce_mpe_estimated_occupancy_states = self.minimum_entropy_merge(
-            ClusteringTechnique.MINIMUM_ENTROPY_INCREMENT
-        )
+            ClusteringTechnique.MINIMUM_ENTROPY_INCREMENT)
         mem_mei_cce_mpe_analytics = self.get_analytics(mem_mei_cce_mpe_estimated_occupancy_states)
         print('[INFO] ClusteringAndMarkovianModeling evaluate: MEM with MEI-CCE and MPE Analytics - '
               'Average Episodic SU Throughput = {} | '
               'Average Episodic PU Interference = {}'.format(mem_mei_cce_mpe_analytics.su_throughput,
-                                                             mem_mei_cce_mpe_analytics.pu_interference)
-              )
+                                                             mem_mei_cce_mpe_analytics.pu_interference))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):

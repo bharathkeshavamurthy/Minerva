@@ -317,8 +317,7 @@ class NeymanPearsonModeling(object):
                                self.IMPULSE_RESPONSE_VARIANCE)
         # The Secondary User
         self.secondary_user = SecondaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
-                                            self.NUMBER_OF_EPISODES, self.channel,
-                                            self.true_occupancy_states)
+                                            self.NUMBER_OF_EPISODES, self.channel, self.true_occupancy_states)
         # Make sampled observations across all episodes
         self.sampled_observations_across_all_episodes = \
             self.secondary_user.make_sampled_observations_across_all_episodes()
@@ -326,8 +325,7 @@ class NeymanPearsonModeling(object):
         self.neyman_pearson_detection_based_non_pomdp_agent = NeymanPearsonDetector(
             self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.NUMBER_OF_EPISODES,
             self.FALSE_ALARM_PROBABILITY_CONSTRAINT, self.NOISE_MEAN, self.NOISE_VARIANCE,
-            self.sampled_observations_across_all_episodes, self.true_occupancy_states,
-            self.PENALTY)
+            self.sampled_observations_across_all_episodes, self.true_occupancy_states, self.PENALTY)
 
     # Core behavior
     # The evaluation routine that outputs the SU throughput and PU interference analytics for this non-POMDP agent
@@ -336,8 +334,7 @@ class NeymanPearsonModeling(object):
         print('[INFO] NeymanPearsonModeling evaluate: Neyman-Pearson Detection - '
               'Average Episodic SU Throughput = {} | '
               'Average Episodic PU Interference = {}'.format(analytics.su_throughput,
-                                                             analytics.pu_interference)
-              )
+                                                             analytics.pu_interference))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):

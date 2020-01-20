@@ -116,7 +116,7 @@ is the frequency domain channel index; $X_{j,k}(i)$ is the signal of the $j$th P
 We model the channel as Rayleigh fading, so that $H_{k}(i)$ is a zero-mean circularly symmetric complex Gaussian random variable with variance $\sigma_H^2$, $H_k {\sim} \mathcal{CN}(0,\sigma_H^2)$, i.i.d. across frequency bands and time.
 \begin{figure}
     \centering
-    \includegraphics[width=0.80\linewidth]{MarkovChainsVisualization}
+    \includegraphics[width=0.95\linewidth]{MarkovChainsVisualization}
     \vspace{-5mm}
     \caption{The correlation model across time and frequencies underlying the occupancy behavior of incumbents in the network}
     \vspace{-5mm}
@@ -145,9 +145,7 @@ Additionally, when joining the spectrum pool, the PUs occupy a number of adjacen
          \mathbb{P}(B_{1}(i+1)|B_{1}(i))
          \prod_{k=2}^{K} \mathbb{P}(B_{k}(i+1)|B_{k}(i), B_{k-1}(i+1)).
 \end{align}
-Overall, the correlation model is expressed by two Markov chains: one across time, parameterized by $q{=}\mathbb{P}(B_{k}(i{+}1){=}1|B_{k}(i){=}0)$, and the other across frequencies, parameterized by $p{=}\mathbb{P}(B_{k}(i{+}1){=}1|B_{k{-}1}(i{+}1){=}0)$. We estimate these parameters $p$ and $q$, using the parameter estimation algorithm described in Sec. \ref{III} in order to obtain the transition model underlying the MDP, given by \eqref{7}.
-
-\noindent \bk{Address the dual chain structure here: Spatial matrix using $p$ and $\Pi$, and temporal matrix using $q$ and $\Pi$.}
+Overall, the correlation model is expressed by two Markov chains: one across time and the other across frequencies. We parameterize this double Markov chain structure by the vector $\vec{\theta}{=}[\vec{p}\ \vec{q}]^\intercal$, where $\vec{p}{=}[p_{uv}{=}\mathbb{P}(B_{k}(i{+}1){=}1|B_{k{-}1}(i{+}1){=}u,B_{k}(i){=}v){:} u,v{\in}\{0,1\}]^{\intercal}$ and $\vec{q}{=}[q_{w}{=}\mathbb{P}(B_{k}(i{+}1){=}1|B_{k}(i){=}w){:}w{\in}\{0,1\}]^\intercal$, with $k$ characterizing the channel index and $i$ characterizing the time index. We estimate this parameter vector $\vec{\theta}$, using the parameter estimation algorithm described in Sec. \ref{III} in order to obtain the transition model underlying the MDP, given by \eqref{7}.
 
 \noindent{\bf Spectrum Sensing Model:}
 In order to detect the available spectrum holes, the SU performs spectrum sensing. However, owing to physical design limitations of its spectrum sensor \cite{5990482}, it can sense at most $\kappa$ out of $K$ spectrum bands at any given time, with $1{\leq}\kappa{\leq}K$. Let $\mathcal K_{i}{\subseteq}\{1,2,\dots,K\}$ with $|\mathcal K_i|{\leq}\kappa$ be the set of indices of spectrum bands sensed by the SU at time $i$, part of our design.
@@ -215,11 +213,11 @@ In real-world implementations of cognitive radios, the correlation model definin
 \begin{equation}\label{17}
 \vec{\theta}^{*} = \argmax_{\vec{\theta}} \log\Big(\sum_{\mathbf{B}} \mathbb{P}(\mathbf{B}, \mathbf{Y}| \vec{\theta})\Big),
 \end{equation}
-where $\vec{\theta}{=}[p\ q]^{T}$, $\mathbf{Y}=[\vec{Y}(i)]_{i{=}1}^{\tau}$, $\mathbf{B}=[\vec{B}(i)]_{i{=}1}^{\tau}$,
+where $\vec{\theta}{=}[\vec{p}\ \vec{q}]^{T}$, $\mathbf{Y}=[\vec{Y}(i)]_{i{=}1}^{\tau}$, $\mathbf{B}=[\vec{B}(i)]_{i{=}1}^{\tau}$,
 and $\tau$ refers to the learning period of the parameter estimator: this can be equal to the entire duration of the POMDP agent's interaction with the radio environment implying simultaneous model learning or can be a predefined parameter learning period before triggering the POMDP agent.
 This problem can be solved using the Expectation-Maximization (EM) algorithm \cite{778361}, with the E-step given by
 \begin{equation}
-    Q(\vec{\theta}|\vec{\theta}^{(t)}) = \mathbb{E}_{\mathbf{B}|\mathbf{Y}, \vec{\theta}^{(t)}} \Big[ \log \Big(\sum_{\mathbf{B}} \mathbb{P}(\mathbf{B}, \mathbf{Y}|\vec{\theta}^{(t)})\Big)\Big].
+    Q(\vec{\theta}|\vec{\theta}^{(t)}) = \mathbb{E}_{\mathbf{B}|\mathbf{Y}, \vec{\theta}^{(t)}} \Big[ \log \Big(\mathbb{P}(\mathbf{B}, \mathbf{Y}|\vec{\theta}^{(t)})\Big)\Big].
 \end{equation}
 The term $Q(\vec{\theta}|\vec{\theta}^{(t)})$ can be computed by employing the Forward-Backward algorithm \cite{778361} using the current estimate $\vec{\theta}^{(t)}$. The M-step constitutes
 \begin{equation}
@@ -265,14 +263,14 @@ This operation continues until the set $\tilde{\mathcal{U}}$ is empty. The PERSE
 \vspace{-4mm}
 \section{Numerical Evaluations}\label{IV}
 \noindent{\bf Simulation Setup:}
-We simulate a radio environment with $J{=}3$ PUs occupying a set of $K{=}18$ channels, each of bandwidth $\text{BW}_{k}{=}160 \text{kHz}$, according to a Markovian time-frequency correlation structure defined by the parameters $p{=}q{=}0.3$, and a SU intelligently trying to access the available white spaces. We model the expected SINRs with respect to channel $k$ at time-step $i$, subject to fading, at the SU and the incumbents as: $\text{SINR}_{\text{PU}_{j},k}(i){=}17\text{dB}$ at PU $j$ when there is no interference from the SU, and $\text{SINR}_{\text{PU}_{j},k}(i){=}6\text{dB}$ with SU interference; and $\text{SINR}_{\text{SU},k}(i){=}11\text{dB}$ at the SU when the channel is not occupied by an incumbent, and $\text{SINR}_{\text{SU},k}(i){=}{-}6\text{dB}$ with PU interference. We assume that the SU is always backlogged and that it accesses all the channels deemed idle by the optimal POMDP policy. The SU throughput in a given time-step $i$ is described as $$C^{\text{SU}}(i) = \sum_{k=1}^{K} \tilde{R} \cdot \mathbb{P}\left(\text{SINR}_{\text{SU},k}(i) \geq 2^{\tilde{R}/\text{BW}_{k}} - 1\right),$$ where $\tilde{R}{=}0.6$Mbps is the transmission rate of the SU. Similarly, we evaluate the normalized throughput attained by the PUs in a given time-step $i$ as $$C^{\text{PUs}}(i) = \frac{\sum_{j}\sum_{k}R \cdot \mathbb{P}\left(\text{SINR}_{\text{PU}_{j},k}(i) \geq 2^{R/\text{BW}_{k}} - 1\right)}{\sum_{k}B_{k}(i)},$$ where $R{=}0.9$Mbps is the transmission rate of the PUs. \bk{I don't understand the comment on the probability being conditional on something.} Additionally, we impose a sensing restriction on the SU: at most $\kappa{=}6$ out of $K{=}18$ channels can be sensed by the SU in any given time-step $i$. Finally, while solving for the optimal policy in the PERSEUS algorithm, we employ a discount factor of $\gamma{=}0.9$ and a termination threshold of $\eta{=}10^{-5}$.
+We simulate a radio environment with $J{=}3$ PUs occupying a set of $K{=}18$ channels, each of bandwidth $\text{BW}_{k}{=}160 \text{kHz}$, according to a Markovian time-frequency correlation structure defined by the parameters $p{=}q{=}0.3$, and a SU intelligently trying to access the available white spaces. We model the expected SINRs with respect to channel $k$ at time-step $i$, subject to fading, at the SU and the incumbents as: $\text{SINR}_{\text{PU}_{j},k}(i){=}17\text{dB}$ at PU $j$ when there is no interference from the SU, and $\text{SINR}_{\text{PU}_{j},k}(i){=}6\text{dB}$ with SU interference; and $\text{SINR}_{\text{SU},k}(i){=}11\text{dB}$ at the SU when the channel is not occupied by an incumbent, and $\text{SINR}_{\text{SU},k}(i){=}{-}6\text{dB}$ with PU interference. We assume that the SU is always backlogged and that it accesses all the channels deemed idle by the optimal POMDP policy. The SU throughput in a given time-step $i$ is described as $$C^{\text{SU}}(i) = \sum_{k=1}^{K} \tilde{R} \cdot \mathcal{I}\left(\text{SINR}_{\text{SU},k}(i) \geq 2^{\tilde{R}/\text{BW}_{k}} - 1\right),$$ where $\tilde{R}{=}0.6$Mbps is the transmission rate of the SU. Similarly, we evaluate the normalized throughput attained by the PUs as $$C^{\text{PUs}} = \frac{\sum_{i}\sum_{j}\sum_{k}R \cdot \mathcal{I}\left(\text{SINR}_{\text{PU}_{j},k}(i) \geq 2^{R/\text{BW}_{k}} - 1\right)}{\sum_{i}\sum_{k}B_{k}(i)},$$ where $R{=}0.9$Mbps is the transmission rate of the PUs. Additionally, we impose a sensing restriction on the SU: at most $\kappa{=}6$ out of $K{=}18$ channels can be sensed by the SU in any given time-step $i$. Finally, while solving for the optimal policy in the PERSEUS algorithm, we employ a discount factor of $\gamma{=}0.9$ and a termination threshold of $\eta{=}10^{-5}$.
 
 \noindent{\bf Evaluations:}
-The plot depicted in Fig. \ref{fig:4} shows the mean square error (MSE) convergence of the parameter estimation algorithm to determine the parametric time-frequency correlation structure, i.e., $p$ and $q$. Starting with an initial estimate of $10^{-8}$, the EM algorithm iteratively reduces the MSE given by $\mathbb{E}[(\theta_{i}{-}\hat{\theta}_{i}^{(t)})^{2}],\ \theta_{i}{\in}[p,q]^{\intercal}$, as it goes through the E and M steps, and converges to the true transition model with an error of $\epsilon{\leq}10^{-8}$ over approximately $24000$ iterations. \bk{Talking about the run-time here means that we should talk about the platform, threading, software architecture, etc. Wouldn't a better metric be the Big-O notation?} Since the EM algorithm is susceptible to premature convergence to local optima and saddle points, we mitigate this by averaging the procedure over several cycles.
+The plot depicted in Fig. \ref{fig:4} shows the norm square error convergence of the parameter estimation algorithm to determine the parametric time-frequency correlation structure, i.e., $\vec{\theta}$. Starting with initial estimates of $10^{-8}$ for all the components of $\vec{\theta}$, the EM algorithm iteratively reduces the norm square error given by $\mathbb{E}[\sum_{\theta{\in}\vec{\theta}}(\theta{-}\hat{\theta}^{(t)})^{2}]$, as it goes through the E and M steps, and converges to the true transition model with an error of $\epsilon{\leq}10^{-8}$ for all components over approximately $60,000$ iterations, which translates to an estimation period of 180s, assuming each complete observation sampling period is $3$ms. Since the EM algorithm is susceptible to premature convergence to local optima and saddle points, we mitigate this by averaging the procedure over several cycles.
 \begin{figure}
     \centering
-    \includegraphics[width=0.95\linewidth]{PerseusRegretConvergence_MeanSquareErrorConvergence.png}
-    \caption{MSE convergence of the parameter estimation algorithm while determining the correlation models $p$ and $q$, and the Regret convergence of the fragmented PERSEUS algorithm with belief simplification}
+    \includegraphics[width=1.0\linewidth]{PerseusRegretConvergence_NormSquareErrorConvergence.png}
+    \caption{The norm square error convergence of the parameter estimation algorithm while determining the correlation model $\vec{\theta}$, and the Regret convergence of the fragmented PERSEUS algorithm with belief simplification}
     \vspace{-4mm}
     \label{fig:4}
 \end{figure}
@@ -283,7 +281,7 @@ We evaluate the performance of the proposed framework in terms of SU and PU netw
 \section{Conclusion}\label{V}
 \begin{figure}
     \centering
-    \includegraphics[width=0.95\linewidth]{SU_Throughput_PU_Interference_Varying_Penalty.png}
+    \includegraphics[width=1.0\linewidth]{SU_Throughput_PU_Interference_Varying_Penalty.png}
     \caption{SU Network Throughput versus PU Interference evaluation of the proposed framework over varying values of the penalty $\lambda$}
     \vspace{-5mm}
     \label{fig:8}

@@ -21,15 +21,9 @@
 
 # The imports
 import numpy
-import plotly
 import scipy.stats
 from enum import Enum
-import plotly.graph_objs as go
 from collections import namedtuple
-
-# Plotly user account credentials for visualization
-plotly.tools.set_credentials_file(username='bkeshava',
-                                  api_key='W2WL5OOxLcgCzf8NNlgl')
 
 
 # Markovian Correlation Class Enumeration
@@ -548,6 +542,20 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                          (1 - estimated_state_vector[channel]) * self.true_pu_occupancy_states[channel][episode])
         return utility
 
+    # Get SU throughput and PU interference analytics
+    def get_analytics(self, estimated_states):
+        su_throughputs = []
+        pu_interferences = []
+        for i in range(self.number_of_episodes):
+            su_throughput = 0
+            pu_interference = 0
+            for k in range(self.number_of_channels):
+                su_throughput += (1 - self.true_pu_occupancy_states[k][i]) * (1 - estimated_states[k][i])
+                pu_interference += (1 - estimated_states[k][i]) * self.true_pu_occupancy_states[k][i]
+            su_throughputs.append(su_throughput)
+            pu_interferences.append(pu_interference)
+        return sum(su_throughputs)/self.number_of_episodes, sum(pu_interferences)/self.number_of_episodes
+
     # Output the episodic utilities of this Constrained Double Markov Chain Viterbi Algorithm
     def estimate_episodic_utilities(self):
         previous_state_spatial = None
@@ -701,11 +709,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                     value_function_collection[i][j][previous_state_temporal].previous_temporal_state))
                 previous_state_temporal = value_function_collection[i][j][
                     previous_state_temporal].previous_temporal_state
-        utilities = []
-        for time_index in range(0, self.number_of_episodes):
-            utilities.append(self.get_episodic_utility([estimated_states[k][time_index] for k in range(
-                0, self.number_of_channels)], time_index))
-        return utilities
+        return self.get_analytics(estimated_states)
 
     # Get enumeration field value from name
     @staticmethod
@@ -808,40 +812,23 @@ class ViterbiIIEvaluation(object):
 
     # Visualize the episodic utilities of Viterbi-II using the Plotly API
     def evaluate(self):
-        # The data traces
-        visualization_traces = []
         # The strategic choices (constraints) laid down in the WIKI
-        for strategic_choice in range(1, 5):
-            sensing_strategy = self.observation_heuristics[strategic_choice]
-            # The constrained observations
-            constrained_observations = self.secondary_user.observe_everything_with_spatial_constraints(sensing_strategy)
-            # The constrained non-POMDP agent, i.e. the Viterbi-II algorithm
-            constrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
-                self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
-                self.primary_user.occupancy_behavior_collection, constrained_observations,
-                self.spatial_start_probabilities, self.temporal_start_probabilities,
-                self.spatial_transition_probability_matrix,
-                self.temporal_transition_probability_matrix, self.PENALTY)
-            # The y-axis corresponds to the episodic utilities obtained by this constrained non-POMDP agent
-            episodic_utilities = constrained_non_pomdp_agent.estimate_episodic_utilities()
-            # The data trace
-            visualization_traces.append(go.Scatter(x=self.x_axis,
-                                                   y=episodic_utilities,
-                                                   name='Sensing Strategy: {}'.format(str(sensing_strategy)),
-                                                   mode=self.PLOTLY_SCATTER_MODE))
-        # The figure layout
-        visualization_layout = dict(title='Episodic Utilities of the Viterbi Algorithm with Incomplete Observations',
-                                    xaxis=dict(title=r'$Episodes\ n$'),
-                                    yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
-                                                     r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
-        # The figure
-        visualization_figure = dict(data=visualization_traces,
-                                    layout=visualization_layout)
-        # The url
-        figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Episodic_Utilities_of_Constrained_Viterbi_Algorithm')
-        # Print the URL in case you're on an environment where a GUI is not available
-        print('[INFO] ViterbiIIEvaluation evaluate: Data Visualization Figure is available at {}'.format(figure_url))
+        sensing_strategy = self.observation_heuristics[2]
+        # The constrained observations
+        constrained_observations = self.secondary_user.observe_everything_with_spatial_constraints(sensing_strategy)
+        # The constrained non-POMDP agent, i.e. the Viterbi-II algorithm
+        constrained_non_pomdp_agent = DoubleMarkovChainViterbiAlgorithm(
+            self.NUMBER_OF_CHANNELS, self.NUMBER_OF_EPISODES, self.emission_evaluator,
+            self.primary_user.occupancy_behavior_collection, constrained_observations,
+            self.spatial_start_probabilities, self.temporal_start_probabilities,
+            self.spatial_transition_probability_matrix,
+            self.temporal_transition_probability_matrix, self.PENALTY)
+        # The y-axis corresponds to the episodic utilities obtained by this constrained non-POMDP agent
+        su_throughput, pu_interference = constrained_non_pomdp_agent.estimate_episodic_utilities()
+        print('ViterbiIIEvaluation evaluate: SU Throughput = {} | PU Interference = {}'.format(su_throughput,
+                                                                                               pu_interference
+                                                                                               )
+              )
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):

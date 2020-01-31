@@ -181,14 +181,14 @@ class Channel(object):
         print('[INFO] Channel Initialization: Bringing things up...')
         # Noise Statistics
         self.noise_mean = _noise_mean
-        if self.noise_mean is not 0:
+        if self.noise_mean != 0:
             print('[WARN] Channel Initialization: The system assumes Zero-Mean, Additive, White, Gaussian '
                   'Noise...')
             self.noise_mean = 0
         self.noise_variance = _noise_variance
         # Channel Impulse Response Statistics
         self.impulse_response_mean = _impulse_response_mean
-        if self.impulse_response_mean is not 0:
+        if self.impulse_response_mean != 0:
             print('[WARN] Channel Initialization: The system assumes Zero-Mean, Gaussian Impulse Response...')
             self.impulse_response_mean = 0
         self.impulse_response_variance = _impulse_response_variance
@@ -504,7 +504,7 @@ class StateEstimator(object):
     # Safe entry access using indices from a collection object
     @staticmethod
     def get_entry(collection, index):
-        if collection is not None and len(collection) is not 0 and collection[index] is not None:
+        if collection is not None and len(collection) != 0 and collection[index] is not None:
             return collection[index]
         else:
             # Empty Place-Holder value is 0
@@ -911,6 +911,20 @@ class PERSEUS(object):
                                                                                                            ))
         return utility
 
+    # Get SU Throughput Analytics
+    def get_su_throughput_analytics(self, estimated_state_vector, true_state_vector):
+        su_throughput = 0
+        for k in range(self.number_of_channels):
+            su_throughput += (1 - estimated_state_vector[k]) * (1 - true_state_vector[k])
+        return su_throughput
+
+    # Get PU Interference Analytics
+    def get_pu_interference_analytics(self, estimated_state_vector, true_state_vector):
+        pu_interference = 0
+        for k in range(self.number_of_channels):
+            pu_interference += (1 - estimated_state_vector[k]) * true_state_vector[k]
+        return pu_interference
+
     # The Backup stage
     def backup(self, stage_number, reachable_beliefs, previous_stage_value_function_collection):
         # Just a re-assignment because the reachable_beliefs turns out to be a mutable collection
@@ -924,7 +938,7 @@ class PERSEUS(object):
             next_stage_value_function_collection[k] = v
         number_of_belief_changes = 0
         # While there are still some un-improved belief points...
-        while len(unimproved_belief_points) is not 0:
+        while len(unimproved_belief_points) != 0:
             print('[INFO] PERSEUS backup: Size of unimproved belief set = {}'.format(len(unimproved_belief_points)))
             # Sample a belief point uniformly at random from \tilde{B}
             belief_sample_key = random.choice(list(unimproved_belief_points.keys()))
@@ -1095,15 +1109,17 @@ class PERSEUS(object):
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
             self.policy_changes.append(belief_changes)
-            if len(next_value_function_collection) is not 0:
+            if len(next_value_function_collection) != 0:
                 previous_value_function_collection = next_value_function_collection
-            if belief_changes is 0:
+            if belief_changes == 0:
                 print('[DEBUG] PERSEUS run_perseus: Confidence Update - {}'.format(confidence))
                 confidence += 1
             else:
                 confidence = 0
                 print('[DEBUG] PERSEUS run_perseus: Confidence Stagnation/Fallback - {}'.format(confidence))
         optimal_utilities = []
+        su_throughputs = []
+        pu_interferences = []
         for episode_number, results_tuple in previous_value_function_collection.items():
             system_state = []
             for channel in range(0, self.number_of_channels):
@@ -1113,6 +1129,15 @@ class PERSEUS(object):
             self.state_estimator.observation_samples = observation_samples
             estimated_states = self.state_estimator.estimate_pu_occupancy_states()
             optimal_utilities.append(self.sweepstakes.roll(estimated_states, system_state)[0])
+            su_throughputs.append(self.get_su_throughput_analytics(estimated_states, system_state))
+            pu_interferences.append(self.get_pu_interference_analytics(estimated_states, system_state))
+        print('[INFO] PerseusIIIEvaluation evaluate: Fragmented PERSEUS with Belief Simplification and Penalty {} - '
+              'Average SU Throughput = {} | '
+              'Average PU Interference = {}'.format(self.penalty,
+                                                    sum(su_throughputs) / self.number_of_episodes,
+                                                    sum(pu_interferences) / self.number_of_episodes
+                                                    )
+              )
         return optimal_utilities
 
     # Visualize the progression of regret of this PERSEUS-III agent over numerous backup and wrapper stages
@@ -1136,31 +1161,6 @@ class PERSEUS(object):
                                         filename='Iterative_Regret_of_PERSEUS_Model_Foresight_Simplified_Belief_Update')
         # Print the URL in case you're on an environment where a GUI is not available
         print('PERSEUS visualize_iterative_regret: The visualization figure is available at - {}'.format(figure_url))
-
-    # Visualize the progression of #policy_changes of this PERSEUS-III agent over numerous backup and wrapper stages
-    def visualize_iterative_policy_changes_count(self):
-        # The visualization data trace
-        visualization_trace = go.Scatter(x=[k + 1 for k in range(0, len(self.policy_changes))],
-                                         y=self.policy_changes,
-                                         mode='lines+markers')
-        # The visualization layout
-        visualization_layout = dict(
-            title='The number of policy changes of the PERSEUS Algorithm with Model Foresight and Simplified Belief '
-                  'Update over numerous backup and wrapper stages',
-            xaxis=dict(title='Iterations/Stages'),
-            yaxis=dict(title='#policy_changes'))
-        # The visualization figure
-        visualization_figure = dict(data=[visualization_trace],
-                                    layout=visualization_layout)
-        # The figure URL
-        figure_url = \
-            plotly.plotly.plot(visualization_figure,
-                               filename='Iterative_Policy_Changes_Count_of_PERSEUS_Model_Foresight_'
-                                        'Simplified_Belief_Update')
-        # Print the URL in case you're on an environment where a GUI is not available
-        print(
-            'PERSEUS visualize_iterative_policy_changes_count: '
-            'The visualization figure is available at - {}'.format(figure_url))
 
     # Visualize the episodic utilities of this PERSEUS-III agent over numerous episodes of interaction with the
     #   radio environment
@@ -1201,7 +1201,7 @@ class PerseusIIIEvaluation(object):
     NUMBER_OF_SAMPLING_ROUNDS = 300
 
     # The number of periods of interaction of the agent with the radio environment
-    NUMBER_OF_EPISODES = 2000
+    NUMBER_OF_EPISODES = 1000
 
     # The mean of the AWGN samples
     NOISE_MEAN = 0
@@ -1222,13 +1222,13 @@ class PerseusIIIEvaluation(object):
     FRAGMENTED_SPATIAL_SENSING_LIMITATION = 3
 
     # The exploration period of the PERSEUS algorithm
-    EXPLORATION_PERIOD = 1000
+    EXPLORATION_PERIOD = 100
 
     # The discount factor employed in the Bellman update
     DISCOUNT_FACTOR = 0.9
 
     # The confidence bound for convergence analysis
-    CONFIDENCE_BOUND = 10
+    CONFIDENCE_BOUND = 5
 
     # The size of each agent-assigned individual fragment of the spectrum which is independent from the other fragments
     # I assume the same Markovian correlation within each fragment
@@ -1258,7 +1258,6 @@ class PerseusIIIEvaluation(object):
     def evaluate(self):
         obtained_optimal_utilities = self.perseus_with_model_foresight_and_simplified_belief_update.run_perseus()
         self.perseus_with_model_foresight_and_simplified_belief_update.visualize_iterative_regret()
-        self.perseus_with_model_foresight_and_simplified_belief_update.visualize_iterative_policy_changes_count()
         self.perseus_with_model_foresight_and_simplified_belief_update.visualize_episodic_utilities(
             obtained_optimal_utilities
         )

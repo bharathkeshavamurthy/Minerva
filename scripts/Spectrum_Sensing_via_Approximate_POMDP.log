@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  24 JAN 2020 08:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  1 FEB 2020 10:17
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -884,7 +884,7 @@ File: MarkovChainsVisualization.png Graphic file (type png)
 <use MarkovChainsVisualization.png>
 Package pdftex.def Info: MarkovChainsVisualization.png  used on input line 120.
 
-(pdftex.def)             Requested size: 151.20154pt x 111.38203pt.
+(pdftex.def)             Requested size: 176.39923pt x 129.97214pt.
 
 Underfull \hbox (badness 5119) in paragraph at lines 132--132
 [][][]\T1/ptm/m/n/8 If $\OML/cmm/m/it/8 S[]\OT1/cmr/m/n/8 (\OML/cmm/m/it/8 i\OT
@@ -903,14 +903,9 @@ Underfull \hbox (badness 2443) in paragraph at lines 148--150
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 148--150
-\T1/ptm/m/n/10 fre-quen-cies. We pa-ram-e-ter-ize this dou-ble Markov
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 148--150
-\T1/ptm/m/n/10 chain struc-ture by the vec-tor $[][]\OT1/cmr/m/n/10 [[] []][]$\
-T1/ptm/m/n/10 , where
+Underfull \hbox (badness 1371) in paragraph at lines 148--150
+\T1/ptm/m/n/10 Markov chain struc-ture by the vec-tor $[][]\OT1/cmr/m/n/10 [[] 
+[]][]$\T1/ptm/m/n/10 , where
  []
 
 
@@ -941,7 +936,7 @@ er
  []
 
 [2 <./MarkovChainsVisualization.png>]
-Overfull \hbox (0.97313pt too wide) detected at line 187
+Overfull \hbox (0.97313pt too wide) detected at line 189
 \OML/cmm/m/it/10 R\OT1/cmr/m/n/10 ([](\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )\OML/c
 mm/m/it/10 ; []\OT1/cmr/m/n/10 )[] [](1[]\OML/cmm/m/it/10 B[]\OT1/cmr/m/n/10 (\
 OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ))(1[]\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ([
@@ -951,67 +946,67 @@ it/10 ;
  []
 
 [3]
-Underfull \hbox (badness 5036) in paragraph at lines 266--279
+Underfull \hbox (badness 5036) in paragraph at lines 271--284
 \T1/ptm/b/n/10 Simulation Setup: \T1/ptm/m/n/10 We sim-u-late a ra-dio en-vi-ro
 n-ment
  []
 
 
-Underfull \hbox (badness 3792) in paragraph at lines 266--279
+Underfull \hbox (badness 3792) in paragraph at lines 271--284
 \T1/ptm/m/n/10 with $\OML/cmm/m/it/10 J[]\OT1/cmr/m/n/10 3$ \T1/ptm/m/n/10 PUs 
 oc-cu-py-ing a set of $\OML/cmm/m/it/10 K[]\OT1/cmr/m/n/10 18$ \T1/ptm/m/n/10 c
 han-nels,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 266--279
+Underfull \hbox (badness 10000) in paragraph at lines 271--284
 \T1/ptm/m/n/10 each of band-width $[][]\OT1/cmr/m/n/10 160[]$\T1/ptm/m/n/10 , a
 c-cord-ing to a
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 266--279
+Underfull \hbox (badness 10000) in paragraph at lines 271--284
 \T1/ptm/m/n/10 Marko-vian time-frequency cor-re-la-tion struc-ture with
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 266--279
+Underfull \hbox (badness 10000) in paragraph at lines 271--284
 \T1/ptm/m/n/10 pa-ram-e-ters $[][]\OT1/cmr/m/n/10 [\OML/cmm/m/it/10 p[][]\OT1/c
 mr/m/n/10 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 1\OML/cmm/m/it/10 ; p[][]p[][]\OT1
 /cmr/m/n/10 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 3\OML/cmm/m/it/10 ; p[][]\OT1/cm
 r/m/n/10 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 7][]$ \T1/ptm/m/n/10 and
  []
 
-<PerseusRegretConvergence_NormSquareErrorConvergence.png, id=42, 1230.5975pt x 
-900.36375pt>
-File: PerseusRegretConvergence_NormSquareErrorConvergence.png Graphic file (typ
+<PerseusRegretConvergence_MeanSquareErrorConvergence.png, id=42, 1228.59pt x 83
+5.12pt>
+File: PerseusRegretConvergence_MeanSquareErrorConvergence.png Graphic file (typ
 e png)
-<use PerseusRegretConvergence_NormSquareErrorConvergence.png>
-Package pdftex.def Info: PerseusRegretConvergence_NormSquareErrorConvergence.pn
-g  used on input line 292.
-(pdftex.def)             Requested size: 201.60077pt x 147.49574pt.
+<use PerseusRegretConvergence_MeanSquareErrorConvergence.png>
+Package pdftex.def Info: PerseusRegretConvergence_MeanSquareErrorConvergence.pn
+g  used on input line 295.
+(pdftex.def)             Requested size: 196.5597pt x 133.60918pt.
 [4]
-<SU_Throughput_PU_Interference_Varying_Penalty.png, id=46, 1160.335pt x 882.296
-25pt>
+<SU_Throughput_PU_Interference_Varying_Penalty.png, id=46, 1164.35pt x 875.27pt
+>
 File: SU_Throughput_PU_Interference_Varying_Penalty.png Graphic file (type png)
 
 <use SU_Throughput_PU_Interference_Varying_Penalty.png>
 Package pdftex.def Info: SU_Throughput_PU_Interference_Varying_Penalty.png  use
-d on input line 312.
-(pdftex.def)             Requested size: 201.60077pt x 153.28674pt.
- (./Spectrum_Sensing_via_Approximate_POMDP.bbl [5 <./PerseusRegretConvergence_N
-ormSquareErrorConvergence.png> <./SU_Throughput_PU_Interference_Varying_Penalty
+d on input line 318.
+(pdftex.def)             Requested size: 176.39923pt x 132.59367pt.
+ (./Spectrum_Sensing_via_Approximate_POMDP.bbl [5 <./PerseusRegretConvergence_M
+eanSquareErrorConvergence.png> <./SU_Throughput_PU_Interference_Varying_Penalty
 .png>]) [6
 
 ] (./Spectrum_Sensing_via_Approximate_POMDP.aux) ) 
 Here is how much of TeX's memory you used:
- 15691 strings out of 492616
- 296024 string characters out of 6129482
- 356263 words of memory out of 5000000
+ 15692 strings out of 492616
+ 296030 string characters out of 6129482
+ 362272 words of memory out of 5000000
  19222 multiletter control sequences out of 15000+600000
- 120684 words of font info for 145 fonts, out of 8000000 for 9000
+ 121791 words of font info for 146 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,12n,48p,1824b,288s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,12n,48p,1824b,394s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2019/texm
 f-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2019/texmf-dist/fonts/ty
 pe1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2019/texmf-dist/fonts/typ
@@ -1037,7 +1032,7 @@ am7.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/symbols
 b></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/l
 ocal/texlive/2019/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texli
 ve/2019/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 937370 b
+Output written on Spectrum_Sensing_via_Approximate_POMDP.pdf (6 pages, 929613 b
 ytes).
 PDF statistics:
  130 PDF objects out of 1000 (max. 8388607)

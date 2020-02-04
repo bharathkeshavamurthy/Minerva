@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2019)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: Spectrum_Sensing_via_Approximate_POMDP_SC.aux
+The style file: IEEEtran.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: ref.bib
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+
+Done.
+You've used 14 entries,
+            4087 wiz_defined-function locations,
+            916 strings with 10223 characters,
+and the built_in function-call counts, 12792 in all, are:
+= -- 991
+> -- 304
+< -- 124
++ -- 177
+- -- 48
+* -- 640
+:= -- 1792
+add.period$ -- 28
+call.type$ -- 14
+change.case$ -- 14
+chr.to.int$ -- 297
+cite$ -- 14
+duplicate$ -- 889
+empty$ -- 1039
+format.name$ -- 61
+if$ -- 3037
+int.to.chr$ -- 0
+int.to.str$ -- 14
+missing$ -- 153
+newline$ -- 67
+num.names$ -- 14
+pop$ -- 354
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 968
+stack$ -- 0
+substring$ -- 701
+swap$ -- 774
+text.length$ -- 25
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 14
+warning$ -- 0
+while$ -- 53
+width$ -- 16
+write$ -- 162

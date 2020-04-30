@@ -24,10 +24,10 @@ plotly.tools.set_credentials_file(username='bkeshava',
 #   allocation--for a system without apriori model knowledge.
 class DistributedCollaborativeSARSA(object):
     # The number of time-steps of framework evaluation
-    NUMBER_OF_TIME_STEPS = 1000
+    NUMBER_OF_TIME_STEPS = 3000
 
     # The number of sensing sampling rounds to account for the AWGN observation model
-    NUMBER_OF_SAMPLING_ROUNDS = 300
+    NUMBER_OF_SAMPLING_ROUNDS = 3000
 
     # The number of channels in the discretized spectrum of interest $K$
     NUMBER_OF_CHANNELS = 18
@@ -56,7 +56,7 @@ class DistributedCollaborativeSARSA(object):
     DISCOUNT_FACTOR = 0.9
 
     # The number of members needed for a quorum
-    QUORUM_REQUIREMENT = 10
+    QUORUM_REQUIREMENT = 12
 
     # The transmission power of all cognitive radio nodes for RSSI analysis (dB)
     TRANSMISSION_POWER = 20
@@ -71,10 +71,10 @@ class DistributedCollaborativeSARSA(object):
     RSSI_THRESHOLD = 10
 
     # The acceptable level of false alarm probability per channel given that only one cognitive radio node is sensing it
-    RAW_FALSE_ALARM_PROBABILITY = 0.5
+    RAW_FALSE_ALARM_PROBABILITY = 0.05
 
     # The fixed $\epsilon$ value for the $\epsilon$-greedy policy in the TD-SARSA with LFA algorithm
-    EPSILON = 0.1
+    EPSILON = 0.01
 
     # The constant employed in the belief update heuristic $\lambda$
     LAMBDA = 0.9
@@ -90,7 +90,7 @@ class DistributedCollaborativeSARSA(object):
         print('DistributedCollaborativeSARA Initialization: Bringing things up...')
         self.temporal_action_pair = namedtuple('ActionPair', ['past', 'present'])
         self.test_statistics_counter = namedtuple('TestStatisticsCounter', ['sum', 'count'])
-        self.incumbent_occupancy_states = self.simulate_incumbent_occupancy_behavior()
+        self.incumbent_occupancy_states, self.average_occupancies = self.simulate_incumbent_occupancy_behavior()
         self.global_rssi_lists = {n: {m: 0.0 for m in range(self.NUMBER_OF_COGNITIVE_RADIOS)}
                                   for n in range(self.NUMBER_OF_COGNITIVE_RADIOS)}
         self.cognitive_radio_ensemble = {n: 0 for n in self.simulate_neighbor_discovery()}
@@ -100,8 +100,9 @@ class DistributedCollaborativeSARSA(object):
     # Simulate the occupancy behavior of the incumbents according to the double Markov chain time-frequency correlation
     #   structure described by $\vec{p} and \vec{q}$
     def simulate_incumbent_occupancy_behavior(self):
-        # Output initialization
+        # Initialization of the outputs to be returned
         _incumbent_occupancy_states = []
+        _average_occupancies = 0.0
         for k in range(self.NUMBER_OF_CHANNELS):
             _incumbent_occupancy_states.append([])
         # Time-0 Frequency-0
@@ -150,8 +151,10 @@ class DistributedCollaborativeSARSA(object):
                         (lambda: 0,
                          lambda: 1)[numpy.random.random() < self.CORRELATION_MODEL['p00']]()
                     )
+        _average_occupancies = sum([sum([_incumbent_occupancy_states[k][i] for k in range(self.NUMBER_OF_CHANNELS)])
+                                    for i in range(self.NUMBER_OF_TIME_STEPS)]) / self.NUMBER_OF_TIME_STEPS
         # Return the output
-        return _incumbent_occupancy_states
+        return _incumbent_occupancy_states, _average_occupancies
 
     # Simulate the quorum-based RSSI-based neighbor discovery algorithm
     def simulate_neighbor_discovery(self):
@@ -234,9 +237,11 @@ class DistributedCollaborativeSARSA(object):
 
     # The distributed collaborative SARSA with Linear Function Approximation algorithm
     def collaborative_sarsa(self):
-        # Initialize the output to be returned
+        # Initialize the outputs to be returned
         time_slots = []
         utilities = []
+        su_throughputs = []
+        pu_interferences = []
         # Initialize the temporary variables--collaboration through global view (system-wide dicts and lists)
         thetas = {n: [(0.0 * ((k+1)/(k+1))) for k in range(self.NUMBER_OF_CHANNELS)]
                   for n in self.cognitive_radio_ensemble.keys()}
@@ -295,6 +300,12 @@ class DistributedCollaborativeSARSA(object):
                                          (lambda: 0, lambda: 1)[self.incumbent_occupancy_states[k][i] == 1 and
                                                                 estimated_state[k] == 0]())
                                         for k in range(self.NUMBER_OF_CHANNELS)]))
+            su_throughputs.append(numpy.sum([((lambda: 0, lambda: 1)[self.incumbent_occupancy_states[k][i] == 0 and
+                                                                     estimated_state[k] == 0]())
+                                             for k in range(self.NUMBER_OF_CHANNELS)]))
+            pu_interferences.append(numpy.sum([((lambda: 0, lambda: 1)[self.incumbent_occupancy_states[k][i] == 1 and
+                                                                       estimated_state[k] == 0]())
+                                               for k in range(self.NUMBER_OF_CHANNELS)]))
             # Belief update and TD-SARSA $\vec{\theta}$ update
             for n in self.cognitive_radio_ensemble.keys():
                 past_feature_vector = [beliefs.get(n)[k] * (1 - self.get_pfa2(actions, k))
@@ -320,11 +331,16 @@ class DistributedCollaborativeSARSA(object):
                                                                (self.DISCOUNT_FACTOR * present_q_value) -
                                                                past_q_value)])
                 thetas[n] = (numpy.array(thetas.get(n)) + additive_factor).tolist()
-        print('DistributedCollaborativeSARSA collaborative_sarsa: The system-wide average utility per time-step'
+        print('DistributedCollaborativeSARSA collaborative_sarsa: The system-wide average performance per time-step'
               'in an 18-channel 18-SU 3-PU radio environment with RSSI-based neighbor discovery and '
               'preferential-ballot based channel access rank pre-allocation--in a double Markov chain time-frequency'
-              'correlation structure occupancy model--with a sensing/access restriction of 1 is: {}'.format(
-                numpy.sum(utilities) / self.NUMBER_OF_TIME_STEPS))
+              'correlation structure occupancy model--with a sensing/access restriction of 1 is: '
+              'SU Throughput = {} | PU Interference = {}'.format(numpy.sum(su_throughputs) / self.NUMBER_OF_TIME_STEPS,
+                                                                 numpy.sum(pu_interferences) / (
+                                                                                   self.NUMBER_OF_TIME_STEPS *
+                                                                                   self.average_occupancies)
+                                                                 )
+              )
         # Return the output for visualization
         return time_slots, utilities
 

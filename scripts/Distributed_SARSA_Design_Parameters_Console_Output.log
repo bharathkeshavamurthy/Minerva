@@ -1,0 +1,27 @@
+Design Parameters:
+1. A robust FSK common control channel (short control frames)
+2. RSSI-based Neighbor discovery
+3. Preferential-ballot based channel access rank/order allocation
+4. Random shuffling of local decision making prior to sending the actions and test statistics out to its neighbors over the common control channel
+5. AWGN observation model with Rayleigh channel fading model
+6. $\epsilon$-greedy policy dictating TD-SARSA with Linear Function Approximation (from the paper) with $\epsilon{=}0.01$, 
+7. Same double Markov chain time-frequency correlation structure
+8. Simplified belief update heuristics with $\lambda{=}0.9$ (from the paper)
+9. SU Throughput and PU Interference analysis
+10. $18$ radios in total distilled down to an ensemble of $12$ radios using the RSSI-based neighbor discovery scheme, $18$ channels, $3$ incumbents, $3000$ time-steps, $3000$ samplings per time-step for channel-specific threshold based occupancy detection at each local node based on the test-statistics for this channel received from its neighbors
+11. This channel-specific threshold also depends on the channel-specific false alarm probability--that's dictated by number of nodes sensing this particular channel in this time-step
+12. Additionally, the feature vector update in TD-SARSA incorporates this channel-specific false alarm probability--that's again dictated by the number of nodes sensing this particular channel in this time-step
+13. Raw false alarm probability of $5$\%
+14. Discount factor of $\gamma{=}0.9$ in the SARSA parameter update (from the paper)
+15. CORRELATION_MODEL = {'p00': 0.1, 'p01': 0.3, 'p10': 0.3, 'p11': 0.7, 'q0': 0.3, 'q1': 0.8}
+16. Steady-state occupancy probability = 0.6
+
+Console Output:
+C:\Users\kesha\Workspaces\venv\Scripts\python.exe C:/Users/kesha/Workspaces/Evocati/src/main/org/purdue/ece/evocati/DistributedCollaborativeSARSA.py
+DistributedCollaborativeSARSA main: Starting the distributed multi-agent multi-band collaborative SARSA framework
+DistributedCollaborativeSARA Initialization: Bringing things up...
+DistributedCollaborativeSARSA collaborative_sarsa: The system-wide average performance per time-stepin an 18-channel 18-SU 3-PU radio environment with RSSI-based neighbor discovery and preferential-ballot based channel access rank pre-allocation--in a double Markov chain time-frequencycorrelation structure occupancy model--with a sensing/access restriction of 1 is: SU Throughput = 7.801333333333333 | PU Interference (normalized) = 0.27038551910190584
+DistributedCollaborativeSARSA evaluate: Data Visualization Figure is available at https://plot.ly/~bkeshava/157
+DistributedCollaborativeSARSA main: Distributed multi-agent multi-band collaborative SARSA framework evaluation completed
+
+Process finished with exit code 0

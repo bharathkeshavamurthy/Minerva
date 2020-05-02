@@ -1,0 +1,24 @@
+Design Parameters:
+1. A robust FSK common control channel (short control frames)
+2. RSSI-based Neighbor discovery
+3. Preferential-ballot based channel access rank/order allocation
+4. AWGN observation model with Rayleigh channel fading model
+5. Greedy Distributed Learning under Pre-allocation (channel access ranks assigned via collaboration; remaining operations opportunistic): $\epsilon$-greedy policy with channel choice dictated by the allocated access rank--choose from ranked list of channels, ranked in the decreasing order of their availabilities
+6. Distributed Learning under allocation(completely opportunistic behavior): Channel choice dictated by randomness and ACKs--choose from ranked list of channels, ranked in the decreasing order of their g-statistics
+7. Same double Markov chain time-frequency correlation structure
+8. SU Throughput and PU Interference analysis
+9. $18$ radios in total distilled down to an ensemble of $12$ radios using the RSSI-based neighbor discovery scheme, $18$ channels, $3$ incumbents, $3000$ time-steps, $3000$ samplings per time-step for channel-specific threshold based occupancy detection at each local node (no information exchange among nodes)
+10. False alarm probability of $30$\% for threshold-based occupancy detection (in line with my other Neyman-Pearson analysis)
+11. CORRELATION_MODEL = {'p00': 0.1, 'p01': 0.3, 'p10': 0.3, 'p11': 0.7, 'q0': 0.3, 'q1': 0.8}
+12. Steady-state occupancy probability = 0.6
+
+Console Output:
+C:\Users\kesha\Workspaces\venv\Scripts\python.exe C:/Users/kesha/Workspaces/Evocati/src/main/org/purdue/ece/evocati/DistributedOpportunisticAccess.py
+DistributedOpportunisticAccess main: Starting the evaluation of the two variants of the distributed opportunistic spectrum sensing and access policy...
+DistributedOpportunisticAccess Initialization: Bringing things up...
+DistributedOpportunisticAccess greedy_distributed_learning_under_pre_allocation: Performance Analysis of "the greedy distributed learning under pre-allocation" variant of the distributed opportunistic spectrum sensing and access policy: SU Throughput = 6.684 | PU Interference = 0.32987100016753224
+DistributedOpportunisticAccess distributed_learning_and_allocation: Performance Analysis of "the distributed learning and allocation" variant of the distributed opportunistic spectrum sensing and access policy: SU Throughput = 6.5985328442814275 | PU Interference = 0.3436924107890769
+DistributedOpportunisticAccess evaluate: Data Visualization Figure is available at https://plot.ly/~bkeshava/159
+DistributedOpportunisticAccess main: Completed the evaluation of both variants of the distributed opportunistic spectrum sensing and access policy...
+
+Process finished with exit code 0

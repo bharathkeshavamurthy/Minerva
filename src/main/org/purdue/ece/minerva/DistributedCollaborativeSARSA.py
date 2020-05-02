@@ -26,7 +26,7 @@ class DistributedCollaborativeSARSA(object):
     # The number of time-steps of framework evaluation
     NUMBER_OF_TIME_STEPS = 3000
 
-    # The number of sensing sampling rounds to account for the AWGN observation model
+    # The number of sensing sampling rounds per time-step to account for the AWGN observation model
     NUMBER_OF_SAMPLING_ROUNDS = 3000
 
     # The number of channels in the discretized spectrum of interest $K$
@@ -156,7 +156,7 @@ class DistributedCollaborativeSARSA(object):
         # Return the output
         return _incumbent_occupancy_states, _average_occupancies
 
-    # Simulate the quorum-based RSSI-based neighbor discovery algorithm
+    # Simulate the quorum-controlled RSSI-based neighbor discovery algorithm
     def simulate_neighbor_discovery(self):
         # Neighbor initialization--node discovery over the control channel
         node_specific_neighbors = {}

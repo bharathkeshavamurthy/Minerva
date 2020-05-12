@@ -1,0 +1,36 @@
+%
+%  demo-multicols.tex  2007-03-19  Mark Senn  http://www.ecn.purdue.edu/~mark
+%
+%  Demonstrate multicols.
+%
+%  The multicols package must be loaded for this to work.
+%  To load the multicols package put
+%      \usepackage{multicols}
+%  between the "\documentclass" and "\begin{document}" commands.
+%
+
+\chapter{Demonstrate Multicols}
+
+% Put this amount of space between the columns.
+\setlength{\columnsep}{0.5truein}
+
+% Separate the columns with a vertical rule this wide.
+\setlength{\columnseprule}{0.4pt}
+
+\Repeat{This is one column.}{25}
+
+\begin{multicols}{2}
+\Repeat{This is two columns.}{25}
+\end{multicols}
+
+\begin{multicols}{3}
+\Repeat{This is three columns.}{25}
+\end{multicols}
+
+\begin{multicols}{4}
+\Repeat{This is four columns.}{25}
+\end{multicols}
+
+\begin{multicols}{5}
+\Repeat{This is five columns.}{25}
+\end{multicols}

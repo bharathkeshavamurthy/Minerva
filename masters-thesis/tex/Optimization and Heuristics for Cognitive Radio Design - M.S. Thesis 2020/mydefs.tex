@@ -1,0 +1,43 @@
+%
+%  mydefs.tex  2007-03-19  Mark Senn  http://www.ecn.purdue.edu/~mark
+%
+%  Command definitions that can be used in all documents that have
+%      \input{mydefs}
+%
+
+% CHANGE NEXT 3 LINES?
+% Define \be and \ee to start and end the equation environment.
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+
+% CHANGE NEXT 12 LINES?
+% Define \Repeat so, for example,
+%     \Repeat{whatever}{10}
+% is the same as typing whatever 10 times.
+\newcount{\myi}
+\newcommand{\Repeat}[2]{%
+    \myi=0
+    \loop
+        \ifnum\myi<#2
+        #1
+        \advance\myi by 1
+    \repeat
+}
+
+% CHANGE NEXT 3 LINES?
+% Make "\Sum ab" or "\Sum{a}{b}" do "\sum_{a}^{b}".
+% This can only be used when in math mode.
+\newcommand\Sum[2]{\sum_{#1}^{#2}}
+
+% CHANGE NEXT 4 LINES?
+% Make "\xn" do "$x_n$".
+% Because this definition contains the "$" to go into math mode
+% this definition must be used when not in math mode.
+\newcommand{\xn}{$x_n$}
+
+% CHANGE NEXT 5 LINES?
+% Since \xn is already defined we must use \renewcommand to redefine it.
+% Normally you would not have the above definition for \xn in this file
+% if you were just going to override it later.
+% The \ensuremath goes into math mode if not already in math mode.
+\renewcommand{\xn}{\ensuremath{x_n}}

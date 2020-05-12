@@ -1,0 +1,394 @@
+%
+%  demo-tables.tex  2013-03-29  Mark Senn  http://engineering.purdue.edu/~mark
+%
+%  Demonstrate how to do tables.
+%
+
+\chapter{Demonstrate Tables}
+
+% \newlength{\ta}
+% \newlength{\tb}
+% \newlength{\tc}
+% 
+% \settowidth{\ta}{\vbox{\hbox{Money}\hbox{Market}}}
+% \settowidth{\tb}{\vbox{\hbox{Stocks}\hbox{and}\hbox{Bonds}}}
+% \settowidth{\tc}{\vbox{\hbox{Money}\hbox{Market}\hbox{and}\hbox{Stocks}}}
+% 
+% {
+%     \renewcommand{\baselinestretch}{1}
+%     \begin{table}
+%       \caption{%
+%         \hfil Allocation of the IRA and Keogh Wealth\hfil\break
+%         \mbox{}\hfil for Investors With or Without Brokerage Accounts\hfil
+%       }
+%       \label{tab:ira}
+%       \begin{center}
+%         \begin{tabular}%
+%           {%
+%             |%
+%             c%
+%             |%
+%             >{\centering\hspace{0pt}}m{\the\ta}%  Money Market
+%             |%
+%             c%                                    Stocks 
+%             |%
+%             c%                                    Bonds
+%             |%
+%             c%                                    Diversified
+%             |%
+%             >{\centering\hspace{0pt}}m{\the\tb}%  Stocks and Bonds
+%             |%
+%             >{\centering\hspace{0pt}}m{\the\tc}%  Money Market and Stocks
+%             |%
+%             c%                                    Others
+%             |%
+%           }
+%           \hline
+%           IMP&
+%             Money Market&
+%             Stocks&
+%             Bonds&
+%             Diversified&
+%             Stocks and Bonds&
+%             Money Market and Stocks&
+%             Others\tabularnewline
+%           \hline
+%           1& 14.19\%& 57.71\%& 12.21\%& 4.50\%& 7.36\%& 3.04\%& 0.99\%\tabularnewline \hline
+%           2& 14.08\%& 58.18\%& 12.32\%& 4.44\%& 7.30\%& 2.80\%& 0.88\%\tabularnewline \hline
+%           3 &14.26\%& 58.09\%& 12.27\%& 4.50\%& 7.19\%& 2.75\%& 0.94\%\tabularnewline \hline
+%           4 &13.94\%& 58.11\%& 12.14\%& 4.78\%& 7.35\%& 2.68\%& 0.99\%\tabularnewline \hline
+%           5 &13.92\%& 58.13\%& 11.93\%& 4.56\%& 7.60\%& 2.98\%& 0.88\%\tabularnewline \hline
+%         \end{tabular}
+%       \end{center}
+%       This table presents the allocations of the wealth in the IRA
+%       and Keogh accounts in various asset classes.
+%       Results from each set of imputed data are presented here.
+%       The first column lists the number of the imputations,
+%       and rest of the columns lists various allocations.
+%       Entrees under each asset class show the percentage of investors
+%       who have most of their IRA
+%       and Keogh wealth invested in that particular asset class.
+%       The asset class Diversified
+%       includes stocks,
+%       bonds,
+%       and money market investments.
+%       The asset class Others
+%       include investments in various life insurance products,
+%       annuities,
+%       real estate, etc.
+%       \medskip
+%     \footnotesize SOURCE: Survey of Consumer Finances,
+%     2001,
+%     Federal Reserve Board,
+%     USA.\par
+%   \end{table}
+% }
+
+Here is a really simple table.
+
+% "h" means put table here---don't let it float to top or bottom of page
+% "ht" means put table here if possible, but if there are problems put it at the top
+\begin{table}[ht]
+  \caption{American Presidents}
+  \begin{center}
+    \begin{tabular}{rl}
+      \bf Number& \bf Name\\
+      1& George Washington\\
+      2& John Adams\\
+      3& Thomas Jefferson\\
+    \end{tabular}
+  \end{center}
+  \label{ta:American-Presidents}
+\end{table}
+
+There are 72.27 points per inch.
+I like to put 2 points of vertical space between the heading
+(Number Name)
+and the first line
+(1 George Washington)
+of the table.
+
+\begin{table}[ht]
+  \caption{American Presidents with 2pt vertical space after heading}
+  \begin{center}
+    \begin{tabular}{rl}
+      \bf Number& \bf Name\\[2pt]  % put 2pt vertical space after this line
+      1& George Washington\\
+      2& John Adams\\
+      3& Thomas Jefferson\\
+    \end{tabular}
+  \end{center}
+  \label{ta:American-Presidents-with}
+\end{table}
+
+\LaTeX\ can print horizontal and vertical rules in tables.
+I don't like the way this looks.
+
+\begin{table}[ht]
+  \caption{American Presidents with horizontal and vertical lines}
+  \begin{center}
+    % "|" prints a vertical rule, "c" means center
+    \begin{tabular}{|c|l|}
+      % "\hline" prints a horizontal rule
+      \hline
+      \bf\#& \bf Name\\
+      \hline
+      1& George Washington\\
+      \hline
+      2& John Adams\\
+      \hline
+      3& Thomas Jefferson\\
+      \hline
+    \end{tabular}
+  \end{center}
+  \label{ta:American-Presidents-with-lines}
+\end{table}
+
+\newpage
+
+Here is a more complicated table.
+
+\begin{table}[ht]
+  \caption{C Bitwise Operators}
+  \begin{center}
+    % "|" prints a vertical rule, "c" means center
+    \begin{tabular}{cccc}
+      \bf A& \bf B& \bf A$|$B& \bf A\&B\\[2pt]
+      0& 0& 0& 0\\
+      0& 1& 1& 0\\
+      1& 0& 1& 0\\
+      1& 1& 1& 1\\
+    \end{tabular}
+  \end{center}
+  \label{ta:C-Bitwise}
+\end{table}
+
+You can use Plain \TeX's \verb+\halign+ command to make tables also.
+If you can't do a complicated table using \LaTeX\ commands
+you may want to try using Plain \TeX\ commands.
+\LaTeX's table making commands use Plain \TeX\ commands.
+
+\begin{table}[h]
+  \caption{American Presidents using {\tt\char'134 halign}}
+  \hbox to \textwidth{\hss\vbox{\halign{%
+    \strut #&      % 0. \strut
+    \hfil#\qquad&  % 1. Number
+    #\hfil\cr      % 2. Name
+    %
+    & \bf Number& \bf Name\cr
+    \noalign{\vskip 2pt}
+    & 1& George Washington\cr
+    & 2& John Adams\cr
+    & 3& Thomas Jefferson\cr
+  }}\hss}
+  \label{ta:American-Presidents-using}
+\end{table}
+
+The next page shows how to do a table that is too long to fit on one page.
+
+\newpage
+
+% This is loosely based on page 106 of _A Guide to LaTeX_, third edition,
+% by Helmut Kopka and Patrick W. Daly.
+\begin{longtable}{|l|l|}
+    \caption{State Abbreviations}\\
+    \hline
+    State& Abbreviation\\
+    \hline
+  \endfirsthead
+    \caption[]{\emph{continued}}\\
+    \hline
+    State& Abbreviation\\
+    \hline
+  \endhead
+    \hline
+    \multicolumn{2}{r}{\emph{continued on next page}}
+  \endfoot
+    \hline
+  \endlastfoot
+  Alabama& AL\\
+  Alaska& AK\\
+% American Samoa& AS\\
+  Arizona& AZ\\
+  Arkansas& AR\\
+% Armed Forces Europe& AE\\
+% Armed Forces Pacific& AP\\
+% Armed Forces the Americas& AA\\
+  California& CA\\
+  Colorado& CO\\
+  Connecticut& CT\\
+  Delaware& DE\\
+% District of Columbia& DC\\
+% Federated States of Micronesia& FM\\
+  Florida& FL\\
+  Georgia& GA\\
+% Guam& GU\\
+  Hawaii& HI\\
+  Idaho& ID\\
+  Illinois& IL\\
+  Indiana& IN\\
+  Iowa& IA\\
+  Kansas& KS\\
+  Kentucky& KY\\
+  Louisiana& LA\\
+  Maine& ME\\
+% Marshall Islands& MH\\
+  Maryland& MD\\
+  Massachusetts& MA\\
+  Michigan& MI\\
+  Minnesota& MN\\
+  Mississippi& MS\\
+  Missouri& MO\\
+  Montana& MT\\
+  Nebraska& NE\\
+  Nevada& NV\\
+  New Hampshire& NH\\
+  New Jersey& NJ\\
+  New Mexico& NM\\
+  New York& NY\\
+  North Carolina& NC\\
+  North Dakota& ND\\
+% Northern Mariana Islands& MP\\
+  Ohio& OH\\
+  Oklahoma& OK\\
+  Oregon& OR\\
+  Pennsylvania& PA\\
+% Puerto Rico& PR\\
+  Rhode Island& RI\\
+  South Carolina& SC\\
+  South Dakota& SD\\
+  Tennessee& TN\\
+  Texas& TX\\
+  Utah& UT\\
+  Vermont& VT\\
+% Virgin Islands& VI\\
+  Virginia& VA\\
+  Washington& WA\\
+  West Virginia& WV\\
+  Wisconsin& WI\\
+  Wyoming& WY\\
+\end{longtable}
+
+\newcommand{\cbackslash}{\char'134}
+\newcommand{\copencurly}{\char'173}
+\newcommand{\cclosecurly}{\char'175}
+
+\newlength{\twidth}
+\newlength{\theight}
+
+\setlength{\twidth}{\textwidth}
+\setlength{\theight}{\textheight}
+
+\begin{sidewaystable}
+  % The following two lines compensate for what I think is a bug.
+  \setlength{\textwidth}{\theight}
+  \setlength{\textheight}{\twidth}
+  \caption{%
+    sidewaystable
+    {\tt\cbackslash begin\copencurly tabular\cclosecurly\/}%
+    \ldots
+    {\tt\cbackslash end\copencurly tabular\cclosecurly\/}%
+  }
+  \begin{center}
+    \begin{tabular}{rl}
+      \bf Number& \bf Name\\[2pt]  % put 2pt vertical space after this line
+      1& George Washington\\
+      2& John Adams\\
+      3& Thomas Jefferson\\
+    \end{tabular}
+  \end{center}
+\end{sidewaystable}
+
+\begin{sidewaystable}
+  % The following two lines compensate for what I think is a bug.
+  \setlength{\textwidth}{\theight}
+  \setlength{\textheight}{\twidth}
+  \caption{%
+    sidewaystable
+    {\tt\cbackslash halign\copencurly}\ldots{\tt\cclosecurly\/} table%
+  }
+  \hbox to \textwidth{\hss\vbox{\halign{%
+    \strut #&      % 0. \strut
+    \hfil#\qquad&  % 1. Number
+    #\hfil\cr      % 2. Name
+    %
+    & \bf Number& \bf Name\cr
+    \noalign{\vskip 2pt}
+    & 1& George Washington\cr
+    & 2& John Adams\cr
+    & 3& Thomas Jefferson\cr
+  }}\hss}
+\end{sidewaystable}
+
+%\newlength{\ta}
+%\settowidth{\ta}{\vbox{\hbox{Money}\hbox{Market}}}
+%\newlength{\tb}
+%\settowidth{\tb}{\vbox{\hbox{Stocks}\hbox{and}\hbox{Bonds}}}
+%\newlength{\tc}
+%\settowidth{\tc}{\vbox{\hbox{Money}\hbox{Market}\hbox{and}\hbox{Stocks}}}
+%
+%  {\renewcommand{\baselinestretch}{1}
+%\begin{table}
+%  \caption{\hfil Allocation of the IRA and Keogh Wealth\hfil\break\mbox{}\hfil for Investors With or Without Brokerage Accounts\hfil}
+%  \label{tab:ira}
+%  \begin{center}
+%    \begin{tabular}%
+%      {%
+%        |%
+%        c%
+%        |%
+%        >{\centering\hspace{0pt}}m{\the\ta}%  Money Market
+%        |%
+%        c%                                    Stocks 
+%        |%
+%        c%                                    Bonds
+%        |%
+%        c%                                    Diversified
+%        |%
+%        >{\centering\hspace{0pt}}m{\the\tb}%  Stocks and Bonds
+%        |%
+%        >{\centering\hspace{0pt}}m{\the\tc}%  Money Market and Stocks
+%        |%
+%        c%                                    Others
+%        |%
+%      }
+%      \hline
+%      IMP&
+%        Money Market&
+%        Stocks&
+%        Bonds&
+%        Diversified&
+%        Stocks and Bonds&
+%        Money Market and Stocks&
+%        Others\tabularnewline
+%      \hline
+%      1& 14.19\%& 57.71\%& 12.21\%& 4.50\%& 7.36\%& 3.04\%& 0.99\%\tabularnewline \hline
+%      2& 14.08\%& 58.18\%& 12.32\%& 4.44\%& 7.30\%& 2.80\%& 0.88\%\tabularnewline \hline
+%      3 &14.26\%& 58.09\%& 12.27\%& 4.50\%& 7.19\%& 2.75\%& 0.94\%\tabularnewline \hline
+%      4 &13.94\%& 58.11\%& 12.14\%& 4.78\%& 7.35\%& 2.68\%& 0.99\%\tabularnewline \hline
+%      5 &13.92\%& 58.13\%& 11.93\%& 4.56\%& 7.60\%& 2.98\%& 0.88\%\tabularnewline \hline
+%    \end{tabular}
+%  \end{center}
+%  This table presents the allocations of the wealth in the IRA
+%  and Keogh accounts in various asset classes.
+%  Results from each set of imputed data are presented here.
+%  The first column lists the number of the imputations,
+%  and rest of the columns lists various allocations.
+%  Entrees under each asset class show the percentage of investors
+%  who have most of their IRA
+%  and Keogh wealth invested in that particular asset class.
+%  The asset class Diversified
+%  includes stocks,
+%  bonds,
+%  and money market investments.
+%  The asset class Others
+%  include investments in various life insurance products,
+%  annuities,
+%  real estate, etc.
+%  \medskip
+%  \footnotesize SOURCE: Survey of Consumer Finances,
+%  2001,
+%  Federal Reserve Board,
+%  USA.\par
+%\end{table}
+%  }

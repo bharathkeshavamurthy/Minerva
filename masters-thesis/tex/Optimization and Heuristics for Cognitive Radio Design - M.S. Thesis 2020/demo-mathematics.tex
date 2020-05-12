@@ -1,0 +1,165 @@
+%
+%  THIS FILE DOES SOME UNUSUAL THINGS TO MAKE
+%  IT EASIER TO DO DEMONSTRATIONS.  IT SHOULD
+%  NOT BE USED AS AN EXAMPLE OF HOW TO PREPARE
+%  A FILE.  SEE THE OUTPUT OF THIS FOR LATEX
+%  INPUT AND OUTPUT EXAMPLES.
+%
+
+
+
+
+%
+%  demo-mathematics.tex  2008-12-09  Mark Senn  http://engineering.purdue.edu/~mark
+%
+
+\chapter{Demonstrate Mathematics}
+
+    % Use single spacing.
+    \Baselinestretch{1}
+
+    % You don't normally need this.
+    \mbox{}
+
+    \begin{verbatim}
+% From _More Math Into LaTeX_, 4th Edition, page 152:
+%     TeX uses $$ to open and close a displayed math environment.
+%     In LaTeX, this may occassionally cause problems.  Don't do it.
+\[
+    E = mc^2
+\]
+    \end{verbatim}
+% From _More Math Into LaTeX_, 4th Edition, page 152:
+%     TeX uses $$ to open and close a displayed math environment.
+%     In LaTeX, this may occassionally cause problems.  Don't do it.
+\[
+    E = mc^2
+\]
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+\begin{equation}
+    E = mc^2
+\end{equation}
+    \end{verbatim}
+\begin{equation}
+    E = mc^2
+\end{equation}
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+% Mydefs.tex defines \be to be \begin{equation} and
+% \ee to be \end{equation}.
+\be
+    E = mc^2
+\ee
+    \end{verbatim}
+% Mydefs.tex defines \be to be \begin{equation} and
+% \ee to be \end{equation}.
+\be
+    E = mc^2
+\ee
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+\be
+    x = -\frac{b}{2a} \pm \frac{\sqrt{b^2 - 4ac}}{2a}
+\ee
+    \end{verbatim}
+\be
+    x = -\frac{b}{2a} \pm \frac{\sqrt{b^2 - 4ac}}{2a}
+\ee
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+% requires \usepackage{amsmath}; use align* for no equation number
+\begin{align}
+    a = {}& b + c\\
+    x = {}& y + z
+\end{align}
+    \end{verbatim}
+% requires \usepackage{amsmath}; use align* for no equation number
+\begin{align}
+    a = {}& b + c\\
+    x = {}& y + z
+\end{align}
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+\[
+    Z = \left(
+        \begin{array}{cc}
+            a& b\\
+            c& d
+        \end{array}
+    \right)
+\]
+    \end{verbatim}
+\[
+    Z = \left(
+        \begin{array}{cc}
+            a& b\\
+            c& d
+        \end{array}
+    \right)
+\]
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+\begin{equation}
+    \begin{split}
+        a = {}& b + c\\
+            {}& + d + e
+    \end{split}      
+\end{equation}
+    \end{verbatim}
+\begin{equation}
+    \begin{split}
+        a = {}& b + c\\
+            {}& + d + e
+    \end{split}      
+\end{equation}
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+\be
+    (\cos x)^2 + (\sin x)^2 = 1
+\ee
+    \end{verbatim}
+\be
+    (\cos x)^2 + (\sin x)^2 = 1
+\ee
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak
+
+    \begin{verbatim}
+If $X = \cos x$ and $Y = \sin x$ then $X^2 + Y^2 = 1$.
+    \end{verbatim}
+If $X = \cos x$ and $Y = \sin x$ then $X^2 + Y^2 = 1$.
+    \vskip\baselineskip
+    \hrule
+    \vskip0.5\baselineskip
+    \filbreak

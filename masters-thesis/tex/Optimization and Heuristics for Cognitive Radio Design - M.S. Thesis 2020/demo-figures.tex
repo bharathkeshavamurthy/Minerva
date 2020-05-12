@@ -1,0 +1,91 @@
+%
+%  demo-figures.tex  2009-10-30  Mark Senn  http://engineering.purdue.edu/~mark
+%
+%  Demonstrate how to do figures.
+%
+
+\chapter{Demonstrate Figures}
+
+The
+\verb+h+
+specifier used in all the examples below
+tells \LaTeX\ to put the figure
+``here''
+instead of trying
+to find a good spot
+at the top or bottom of a page.
+Specifiers can be combined, for example,
+``\verb+\begin{figure}[htbp!]+''.
+
+The complete list of specifiers:
+
+\begin{center}
+    \renewcommand{\baselinestretch}{1}\normalsize
+    \begin{tabular}{ll}
+        \bf Specifier& \bf Description\cr
+        \tt b& bottom of page\cr
+        \tt h& here on page\cr
+        \tt p& on separate page of figures\cr
+        \tt t& top of page\cr
+        \tt !& try hard to put figure as early as possible\cr
+    \end{tabular}
+\end{center}
+
+Label ``fi:not-centered'' is ``\ref{fi:not-centered}''.
+Label ``sf:four-parts-c'' is ``\ref{sf:four-parts-c}''.
+
+\Repeat{This is the first paragraph.}{5}
+
+\begin{figure}[ht]
+  \includegraphics{plot.pdf}
+  \caption{%
+    By default figures are not centered.
+    This is a long caption to demonstrate that captions are single spaced.
+  }
+  \label{fi:not-centered}
+\end{figure}
+
+\Repeat{This is the second paragraph.}{10}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics{plot.pdf}
+  \caption{Use {\tt \char'134centering\/} to center figures.}
+  \label{fi:centered}
+\end{figure}
+
+\Repeat{This is the third paragraph.}{15}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics{plot.pdf}
+  \caption{This is another figuure.}
+  \label{fi:another}
+\end{figure}
+
+\Repeat{This is the fourth paragraph.}{10}
+
+\begin{figure}[ht]
+  \centering 
+  \subfigure[First subcaption.]{\label{sf:two-parts-a}  \includegraphics[width=0.3\textwidth]{plot.pdf}}%
+  \hskip 0.5truein
+  \subfigure[Second subcaption.]{\label{sf:two-parts-b}\includegraphics[width=0.3\textwidth]{plot.pdf}}
+  \caption{This figure has two parts.}
+  \label{fi:two-parts}
+\end{figure}
+
+\Repeat{This is the fifth paragraph.}{10}
+
+\begin{figure}[ht]
+  \centering
+  \subfigure[First subcaption.]{\label{sf:four-parts-a}  \includegraphics[width=0.3\textwidth]{plot.pdf}}%
+  \hskip 0.5truein
+  \subfigure[Second subcaption.]{\label{sf:four-parts-b}\includegraphics[width=0.3\textwidth]{plot.pdf}}
+  \subfigure[Third subcaption.]{\label{sf:four-parts-c}\includegraphics[width=0.3\textwidth]{plot.pdf}}%
+  \hskip 0.5truein
+  \subfigure[Fourth subcaption.]{\label{sf:four-parts-d}\includegraphics[width=0.3\textwidth]{plot.pdf}}
+  \caption{This figure has four parts.}
+  \label{fi:four-parts}
+\end{figure}
+
+\Repeat{This is the sixth paragraph.}{10}

@@ -19,6 +19,13 @@ from collections import OrderedDict
 #   occupancy behavior--and if yes, use this occupancy information in the evaluation of our PERSEUS-III framework.
 class DARPASC2ActiveIncumbentAnalysis(object):
 
+    # PSD Occupancy Threshold (in dB)
+    PSD_OCCUPANCY_THRESHOLD = -25
+
+    # The number of channels in a group--extracted from the 1024 database discretization
+    # 10 MHz scenario--20 channels of 500kHz BW each
+    GROUP_COUNT = 51
+
     # Start time data acquisition query
     START_TIME_ACQUISITION_QUERY = "SELECT MIN(time) from C2APIEvent where txt='START'"
 
@@ -79,15 +86,32 @@ class DARPASC2ActiveIncumbentAnalysis(object):
     #   network--during the emulation of the DARPA SC2 Active Incumbent scenario
     def get_occupancy_behavior(self):
         # The output to be returned
-        occupancy_behavior_collection = OrderedDict()
+        condensed_occupancy_behavior = OrderedDict()
+        # Transient variables
         psds = self.get_psd_data()
+        grouping_counter = 0
+        occupancy_behavior_collection = OrderedDict()
+        # Extraction
         for timestamp, avg_psd_values in psds.items():
             # The discretization remains constant throughout (1024)
             for channel in range(len(avg_psd_values)):
                 occupancy_behavior_collection.setdefault(channel, []).append(
-                    (lambda: 0, lambda: 1)[int(avg_psd_values[channel]) >= -20]())
-        # Return the extracted occupancy behavior collection
-        return occupancy_behavior_collection
+                    (lambda: 0, lambda: 1)[int(avg_psd_values[channel]) >= self.PSD_OCCUPANCY_THRESHOLD]())
+        # Condensation
+        for channel, occupancies in occupancy_behavior_collection.items():
+            condensed_channel_index = int(grouping_counter / self.GROUP_COUNT)
+            if condensed_channel_index not in condensed_occupancy_behavior.keys():
+                condensed_occupancy_behavior[condensed_channel_index] = numpy.array(occupancies)
+            else:
+                condensed_occupancy_behavior[condensed_channel_index] += numpy.array(occupancies)
+            grouping_counter += 1
+        # Re-negotiation
+        for channel, occupancies in condensed_occupancy_behavior.items():
+            for x in range(len(occupancies)):
+                condensed_occupancy_behavior[channel][x] = (lambda: 0, lambda: 1)[
+                    condensed_occupancy_behavior[channel][x] >= int(self.GROUP_COUNT / 2)]()
+        # Return the re-negotiated, condensed, extracted occupancy behavior collection
+        return condensed_occupancy_behavior
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):

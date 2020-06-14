@@ -19,11 +19,14 @@ from collections import OrderedDict
 #   occupancy behavior--and if yes, use this occupancy information in the evaluation of our PERSEUS-III framework.
 class DARPASC2ActiveIncumbentAnalysis(object):
 
+    # The discretization length of the data accumulation in the SQLite3 database
+    DISCRETIZATION_LENGTH = 1024
+
     # PSD Occupancy Threshold (in dB)
     PSD_OCCUPANCY_THRESHOLD = -25
 
     # The number of channels in a group--extracted from the 1024 database discretization
-    # 10 MHz scenario--20 channels of 500kHz BW each
+    # 10 MHz scenario: 20 channels of 500kHz BW each
     GROUP_COUNT = 51
 
     # Start time data acquisition query
@@ -104,12 +107,13 @@ class DARPASC2ActiveIncumbentAnalysis(object):
                 condensed_occupancy_behavior[condensed_channel_index] = numpy.array(occupancies)
             else:
                 condensed_occupancy_behavior[condensed_channel_index] += numpy.array(occupancies)
-            grouping_counter += 1
+            grouping_counter = (lambda: grouping_counter, lambda: grouping_counter + 1)[
+                grouping_counter < self.GROUP_COUNT * (int(self.DISCRETIZATION_LENGTH / self.GROUP_COUNT) - 1)]()
         # Re-negotiation
         for channel, occupancies in condensed_occupancy_behavior.items():
             for x in range(len(occupancies)):
                 condensed_occupancy_behavior[channel][x] = (lambda: 0, lambda: 1)[
-                    condensed_occupancy_behavior[channel][x] >= int(self.GROUP_COUNT / 2)]()
+                    condensed_occupancy_behavior[channel][x].item() >= int(self.GROUP_COUNT / 2)]()
         # Return the re-negotiated, condensed, extracted occupancy behavior collection
         return condensed_occupancy_behavior
 
@@ -122,10 +126,21 @@ class DARPASC2ActiveIncumbentAnalysis(object):
 # Run Trigger
 if __name__ == '__main__':
     # The default DB file (Active Incumbent Scenario-8342)
-    db = 'data/active_incumbent_scenario8342.db'
+    _db = 'data/active_incumbent_scenario8342.db'
     print('[INFO] DARPASC2ActiveIncumbentAnalysis main: Starting the analysis of the occupancy behavior of the Active '
           'Incumbent and our competitors in a DARPA SC2 Active Incumbent scenario...')
-    analyser = DARPASC2ActiveIncumbentAnalysis(db)
-    _occupancy_behavior_collection = analyser.get_occupancy_behavior()
+    # Instance creation for the analyser
+    _analyser = DARPASC2ActiveIncumbentAnalysis(_db)
+    # Get the re-negotiated, condensed, extracted occupancy behavior collection--and, determine the steady state
+    #   occupancy probability (using the relative frequency approach)
+    _occupancy_behavior_collection = _analyser.get_occupancy_behavior()
+    _total_entries = 0
+    _total_occupied_entries = 0
+    for _channel, _occupancies in _occupancy_behavior_collection.items():
+        for _entry in _occupancies:
+            _total_entries += 1
+            if _entry.item() == 1:
+                _total_occupied_entries += 1
+    _steady_state_occupied_probability = _total_occupied_entries / _total_entries
     print('[INFO] DARPASC2ActiveIncumbentAnalysis main: Completed the analysis of the occupancy behavior of the Active '
           'Incumbent and our competitors in a DARPA SC2 Active Incumbent scenario!')

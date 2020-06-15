@@ -7,14 +7,9 @@
 
 # The imports
 import numpy
-import plotly
 import scipy.stats
 from enum import Enum
 import DARPASC2ActiveIncumbentAnalysis as Analyser
-
-# Plotly user account credentials for visualization
-plotly.tools.set_credentials_file(username='bkeshava',
-                                  api_key='W2WL5OOxLcgCzf8NNlgl')
 
 
 # The OccupancyState enumeration
@@ -26,7 +21,7 @@ class OccupancyState(Enum):
 
 
 # The main parameter estimator class that encapsulates the EM algorithm to estimate $\vec{\theta}$ offline.
-# A convergence analysis of this parameter estimator is done for all 6 parameters in $\vec{\theta}$ in plotly.
+# A convergence analysis of this parameter estimator is done for all 6 parameters in $\vec{\theta}$.
 class SC2ActiveIncumbentCorrelationModelEstimator(object):
 
     # The number of sampling rounds corresponding to a complete kxt matrix observation
@@ -42,7 +37,7 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
     EPSILON = 1e-8
 
     # The confidence bound for confident convergence analysis
-    CONFIDENCE_BOUND = 10
+    CONFIDENCE_BOUND = 20
 
     # The initialization sequence
     def __init__(self, db):
@@ -97,23 +92,24 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
 
     # Relevant core behavior
     # The core method: estimate the parameters defining the correlation model underlying incumbent occupancy behavior
+    # An initialization of 0.5 for every probabilistic value makes more sense heuristically
     def estimate(self):
         confidence = 0
-        prev_estimates = {j: 0.0 for j in self.estimates.keys()}
-        current_estimates = {j: 1e-8 for j in self.estimates.keys()}
-        # The temporal forward probabilities definition for the E-step (The Forward-Backward Algorithm)
-        temporal_forward_probabilities = [{i-i: 0.0,
-                                           i-i+1: 0.0} for i in range(self.number_of_episodes)]
-        # The temporal backward probabilities definition for the E-step (The Forward-Backward Algorithm)
-        temporal_backward_probabilities = [{i-i: 0.0,
-                                            i-i+1: 0.0} for i in range(self.number_of_episodes)]
+        prev_estimates = {j: 0.5 for j in self.estimates.keys()}
+        current_estimates = {j: 0.5 for j in self.estimates.keys()}
+        # The temporal forward probabilities definition for the E-step (The Forward-Backward Algorithm) [channel-0]
+        temporal_forward_probabilities = [{i-i: 0.5,
+                                           i-i+1: 0.5} for i in range(self.number_of_episodes)]
+        # The temporal backward probabilities definition for the E-step (The Forward-Backward Algorithm) [channel-0]
+        temporal_backward_probabilities = [{i-i: 0.5,
+                                            i-i+1: 0.5} for i in range(self.number_of_episodes)]
         # The spatio-temporal forward probabilities definition for the E-step (The Forward-Backward Algorithm)
         forward_probabilities = {k: [{i-i: 0.0,
                                       i-i+1: 0.0} for i in range(self.number_of_episodes)
                                      ] for k in range(self.number_of_channels)}
         # The spatio-temporal backward probabilities for the E-step (The Forward-Backward Algorithm)
-        backward_probabilities = {k: [{i - i: 0.0,
-                                       i - i + 1: 0.0} for i in range(self.number_of_episodes)
+        backward_probabilities = {k: [{i-i: 0.0,
+                                       i-i+1: 0.0} for i in range(self.number_of_episodes)
                                       ] for k in range(self.number_of_channels)}
         for j in self.estimates.keys():
             while self.convergence_check(prev_estimates, current_estimates) is False or \
@@ -126,7 +122,7 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                     exclusive = False
                     numerator = 0
                     denominator = 0
-                    observations = {k: [self.simulate_observations(k, i) for i in range(self.number_of_episodes)]
+                    observations = {k: [self.simulate_observations(k, i)[0] for i in range(self.number_of_episodes)]
                                     for k in range(self.number_of_channels)}
                     temporal_transition_matrix = {
                         0: {0: 1 - prev_estimates['0'], 1: prev_estimates['0']},
@@ -152,7 +148,7 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                                                              (1 + prev_estimates['0'] - prev_estimates['1']),
                                                      lambda: (1 - prev_estimates['1']) /
                                                              (1 + prev_estimates['0'] - prev_estimates['1'])
-                                                     )[current_state]()),
+                                                     )[current_state.value == 1]()),
                                         lambda: self.get_emission_probability(current_state, observations[0][i]) *
                                                 temporal_transition_matrix[prev_state.value][current_state.value] *
                                                 temporal_forward_probabilities[i-1][prev_state.value]
@@ -161,12 +157,12 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                                         add = False
                         # The Backward step
                         for i in range(self.number_of_episodes - 1, -1, -1):
-                            add = (lambda: False, lambda: True)[i == (self.number_of_episodes - 1)]
+                            add = (lambda: False, lambda: True)[i == (self.number_of_episodes - 1)]()
                             for current_state in OccupancyState:
                                 for next_state in OccupancyState:
                                     temporal_backward_probabilities[i][current_state.value] += (
                                         lambda: ((lambda: 0, lambda: 1)[add]()) * 1,
-                                        lambda: self.get_emission_probability(next_state, observations[i+1]) *
+                                        lambda: self.get_emission_probability(next_state, observations[0][i+1]) *
                                                 temporal_transition_matrix[current_state.value][next_state.value] *
                                                 temporal_backward_probabilities[i+1][next_state.value]
                                     )[i < (self.number_of_episodes - 1)]()
@@ -176,17 +172,17 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                         for state in OccupancyState:
                             for i in range(self.number_of_episodes):
                                 numerator += (lambda: 0,
-                                              lambda: temporal_forward_probabilities[i - 1][int(j)] *
+                                              lambda: temporal_forward_probabilities[i-1][int(j)] *
                                                       self.get_emission_probability(OccupancyState(1),
                                                                                     observations[0][i]) *
                                                       prev_estimates[j] *
-                                                      temporal_backward_probabilities[i + 1][1]
+                                                      temporal_backward_probabilities[i+1][1]
                                               )[exclusive is False]()
-                                denominator += temporal_forward_probabilities[i - 1][int(j)] * \
+                                denominator += temporal_forward_probabilities[i-1][int(j)] * \
                                                self.get_emission_probability(state, observations[0][i]) * \
                                                (lambda: prev_estimates[j],
                                                 lambda: 1 - prev_estimates[j])[state == OccupancyState.IDLE]() * \
-                                               temporal_backward_probabilities[i + 1][state.value]
+                                               temporal_backward_probabilities[i+1][state.value]
                             exclusive = True
                     else:
                         spatial_state = int(list(j)[0])

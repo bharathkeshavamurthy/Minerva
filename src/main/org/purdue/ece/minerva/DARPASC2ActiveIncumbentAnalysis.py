@@ -117,6 +117,19 @@ class DARPASC2ActiveIncumbentAnalysis(object):
         # Return the re-negotiated, condensed, extracted occupancy behavior collection
         return condensed_occupancy_behavior
 
+    # A utility method
+    # Evaluate the steady state occupancy probability of the time-frequency cells in the re-negotiated, condensed,
+    #   extracted occupancy behavior collection
+    @staticmethod
+    def get_steady_state_occupancy_probability(occupancy_behavior_collection):
+        total_entries, total_occupied_entries = 0, 0
+        for channel, occupancies in occupancy_behavior_collection.items():
+            for entry in occupancies:
+                total_entries += 1
+                if entry.item() == 1:
+                    total_occupied_entries += 1
+        return total_occupied_entries / total_entries
+
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('[INFO] DARPASC2ActiveIncumbentAnalysis Termination: Tearing things down...')
@@ -134,13 +147,14 @@ if __name__ == '__main__':
     # Get the re-negotiated, condensed, extracted occupancy behavior collection--and, determine the steady state
     #   occupancy probability (using the relative frequency approach)
     _occupancy_behavior_collection = _analyser.get_occupancy_behavior()
-    _total_entries = 0
-    _total_occupied_entries = 0
-    for _channel, _occupancies in _occupancy_behavior_collection.items():
-        for _entry in _occupancies:
-            _total_entries += 1
-            if _entry.item() == 1:
-                _total_occupied_entries += 1
-    _steady_state_occupied_probability = _total_occupied_entries / _total_entries
+    # _total_entries = 0
+    # _total_occupied_entries = 0
+    # for _channel, _occupancies in _occupancy_behavior_collection.items():
+    #     for _entry in _occupancies:
+    #         _total_entries += 1
+    #         if _entry.item() == 1:
+    #             _total_occupied_entries += 1
+    # _steady_state_occupied_probability = _total_occupied_entries / _total_entries
     print('[INFO] DARPASC2ActiveIncumbentAnalysis main: Completed the analysis of the occupancy behavior of the Active '
           'Incumbent and our competitors in a DARPA SC2 Active Incumbent scenario!')
+    # Fin

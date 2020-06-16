@@ -138,8 +138,8 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                         # E-step: Temporal correlation only
                         # The Forward step
                         for i in range(self.number_of_episodes):
-                            add = (lambda: False, lambda: True)[i == 0]()
                             for current_state in OccupancyState:
+                                add = (lambda: False, lambda: True)[i == 0]()
                                 for prev_state in OccupancyState:
                                     temporal_forward_probabilities[i][current_state.value] += (
                                         lambda: ((lambda: 0, lambda: 1)[add]()) *
@@ -148,7 +148,7 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                                                              (1 + prev_estimates['0'] - prev_estimates['1']),
                                                      lambda: (1 - prev_estimates['1']) /
                                                              (1 + prev_estimates['0'] - prev_estimates['1'])
-                                                     )[current_state.value == 1]()),
+                                                     )[current_state.value == 0]()),
                                         lambda: self.get_emission_probability(current_state, observations[0][i]) *
                                                 temporal_transition_matrix[prev_state.value][current_state.value] *
                                                 temporal_forward_probabilities[i-1][prev_state.value]
@@ -157,17 +157,15 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                                         add = False
                         # The Backward step
                         for i in range(self.number_of_episodes - 1, -1, -1):
-                            add = (lambda: False, lambda: True)[i == (self.number_of_episodes - 1)]()
-                            for current_state in OccupancyState:
-                                for next_state in OccupancyState:
-                                    temporal_backward_probabilities[i][current_state.value] += (
-                                        lambda: ((lambda: 0, lambda: 1)[add]()) * 1,
-                                        lambda: self.get_emission_probability(next_state, observations[0][i+1]) *
-                                                temporal_transition_matrix[current_state.value][next_state.value] *
-                                                temporal_backward_probabilities[i+1][next_state.value]
+                            for prev_state in OccupancyState:
+                                for current_state in OccupancyState:
+                                    temporal_backward_probabilities[i][prev_state.value] += (
+                                        lambda: self.get_emission_probability(current_state, observations[0][i]) *
+                                                temporal_transition_matrix[prev_state.value][current_state.value],
+                                        lambda: self.get_emission_probability(current_state, observations[0][i]) *
+                                                temporal_transition_matrix[prev_state.value][current_state.value] *
+                                                temporal_backward_probabilities[i+1][current_state.value]
                                     )[i < (self.number_of_episodes - 1)]()
-                                    if add:
-                                        add = False
                         # M-step: Temporal correlation only
                         for state in OccupancyState:
                             for i in range(self.number_of_episodes):

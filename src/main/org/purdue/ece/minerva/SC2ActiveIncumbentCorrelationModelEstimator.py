@@ -95,14 +95,24 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
     # An initialization of 0.5 for every probabilistic value makes more sense heuristically
     def estimate(self):
         confidence = 0
+        # The actual parameter vector for both the temporal chain AND the spatio-temporal chain
         prev_estimates = {j: 0.5 for j in self.estimates.keys()}
         current_estimates = {j: 0.5 for j in self.estimates.keys()}
+        # The transient parameter vector exclusively for the spatial chain
+        transient_prev_estimates = {'0': 0.5, '1': 0.5}
+        transient_current_estimates = {'0': 0.5, '1': 0.5}
         # The temporal forward probabilities definition for the E-step (The Forward-Backward Algorithm) [channel-0]
         temporal_forward_probabilities = [{i-i: 0.5,
                                            i-i+1: 0.5} for i in range(self.number_of_episodes)]
         # The temporal backward probabilities definition for the E-step (The Forward-Backward Algorithm) [channel-0]
         temporal_backward_probabilities = [{i-i: 0.5,
                                             i-i+1: 0.5} for i in range(self.number_of_episodes)]
+        # The spatial forward probabilities definition for the E-step (The Forward-Backward Algorithm) [time-slot: 0]
+        spatial_forward_probabilities = [{i - i: 0.5,
+                                          i - i + 1: 0.5} for i in range(self.number_of_channels)]
+        # The spatial backward probabilities definition for the E-step (The Forward-Backward Algorithm) [time-slot: 0]
+        spatial_backward_probabilities = [{i - i: 0.5,
+                                           i - i + 1: 0.5} for i in range(self.number_of_channels)]
         # The spatio-temporal forward probabilities definition for the E-step (The Forward-Backward Algorithm)
         forward_probabilities = {k: [{i-i: 0.0,
                                       i-i+1: 0.0} for i in range(self.number_of_episodes)
@@ -112,28 +122,35 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                                        i-i+1: 0.0} for i in range(self.number_of_episodes)
                                       ] for k in range(self.number_of_channels)}
         for j in self.estimates.keys():
-            while self.convergence_check(prev_estimates, current_estimates) is False or \
+            while self.convergence_check(transient_prev_estimates, transient_current_estimates) is False or \
+                    self.convergence_check(prev_estimates, current_estimates) is False or \
                     confidence < self.CONFIDENCE_BOUND:
                 sampling_round = 0
                 confidence = (lambda: confidence,
                               lambda: confidence + 1)[self.convergence_check(prev_estimates, current_estimates)]()
                 prev_estimates = {j: current_estimates[j] for j in self.estimates.keys()}
+                transient_prev_estimates = {'0': transient_current_estimates['0'],
+                                            '1': transient_current_estimates['1']}
+                temporal_transition_matrix = {
+                    0: {0: 1 - prev_estimates['0'], 1: prev_estimates['0']},
+                    1: {0: 1 - prev_estimates['1'], 1: prev_estimates['1']}
+                }
+                spatial_transition_matrix = {
+                    0: {0: 1 - transient_prev_estimates['0'], 1: transient_prev_estimates['0']},
+                    1: {0: 1 - transient_prev_estimates['1'], 1: transient_prev_estimates['1']}
+                }
+                transition_matrix = {
+                    '00': {0: 1 - prev_estimates['00'], 1: prev_estimates['00']},
+                    '01': {0: 1 - prev_estimates['01'], 1: prev_estimates['01']},
+                    '10': {0: 1 - prev_estimates['10'], 1: prev_estimates['10']},
+                    '11': {0: 1 - prev_estimates['11'], 1: prev_estimates['11']}
+                }
                 while sampling_round < self.NUMBER_OF_SAMPLING_ROUNDS:
                     exclusive = False
                     numerator = 0
                     denominator = 0
                     observations = {k: [self.simulate_observations(k, i)[0] for i in range(self.number_of_episodes)]
                                     for k in range(self.number_of_channels)}
-                    temporal_transition_matrix = {
-                        0: {0: 1 - prev_estimates['0'], 1: prev_estimates['0']},
-                        1: {0: 1 - prev_estimates['1'], 1: prev_estimates['1']}
-                    }
-                    transition_matrix = {
-                        '00': {0: 1 - prev_estimates['00'], 1: prev_estimates['00']},
-                        '01': {0: 1 - prev_estimates['01'], 1: prev_estimates['01']},
-                        '10': {0: 1 - prev_estimates['10'], 1: prev_estimates['10']},
-                        '11': {0: 1 - prev_estimates['11'], 1: prev_estimates['11']}
-                    }
                     if j == '0' or j == '1':
                         # E-step: Temporal correlation only
                         # The Forward step
@@ -167,21 +184,116 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                                                 temporal_backward_probabilities[i+1][current_state.value]
                                     )[i < (self.number_of_episodes - 1)]()
                         # M-step: Temporal correlation only
+                        # The first and last summation inputs to the numerator
+                        numerator += self.get_emission_probability(OccupancyState.OCCUPIED,
+                                                                   observations[0][0]) * prev_estimates[j] * \
+                                     temporal_backward_probabilities[1][OccupancyState.OCCUPIED.value]
+                        numerator += temporal_forward_probabilities[self.number_of_episodes-2][int(j)] * \
+                                     self.get_emission_probability(OccupancyState.OCCUPIED,
+                                                                   observations[0][
+                                                                       self.number_of_episodes-1]) * \
+                                     prev_estimates[j]
                         for state in OccupancyState:
-                            for i in range(self.number_of_episodes):
+                            for i in range(1, self.number_of_episodes - 1):
                                 numerator += (lambda: 0,
                                               lambda: temporal_forward_probabilities[i-1][int(j)] *
-                                                      self.get_emission_probability(OccupancyState(1),
+                                                      self.get_emission_probability(OccupancyState.OCCUPIED,
                                                                                     observations[0][i]) *
                                                       prev_estimates[j] *
-                                                      temporal_backward_probabilities[i+1][1]
+                                                      temporal_backward_probabilities[i+1][
+                                                          OccupancyState.OCCUPIED.value]
                                               )[exclusive is False]()
+                                if i == 0 or i == self.number_of_episodes:
+                                    continue
                                 denominator += temporal_forward_probabilities[i-1][int(j)] * \
                                                self.get_emission_probability(state, observations[0][i]) * \
                                                (lambda: prev_estimates[j],
                                                 lambda: 1 - prev_estimates[j])[state == OccupancyState.IDLE]() * \
                                                temporal_backward_probabilities[i+1][state.value]
                             exclusive = True
+                            # The first and last summation inputs to the denominator
+                            denominator += self.get_emission_probability(state,
+                                                                         observations[0][0]) * \
+                                           (lambda: prev_estimates[j],
+                                            lambda: 1 - prev_estimates[j])[state == OccupancyState.IDLE]() * \
+                                           temporal_backward_probabilities[1][state.value]
+                            denominator += temporal_forward_probabilities[self.number_of_episodes-2][int(j)] * \
+                                           self.get_emission_probability(state,
+                                                                         observations[0][self.number_of_episodes-1]) * \
+                                           (lambda: prev_estimates[j],
+                                            lambda: 1 - prev_estimates[j])[state == OccupancyState.IDLE]()
+                        # E-step: Spatial correlation only
+                        # The Forward step
+                        for k in range(self.number_of_channels):
+                            for current_state in OccupancyState:
+                                add = (lambda: False, lambda: True)[k == 0]()
+                                for prev_state in OccupancyState:
+                                    spatial_forward_probabilities[k][current_state.value] += (
+                                        lambda: ((lambda: 0, lambda: 1)[add]()) *
+                                                self.get_emission_probability(current_state, observations[k][0]) * (
+                                                    (lambda: prev_estimates['0'] /
+                                                             (1 + prev_estimates['0'] - prev_estimates['1']),
+                                                     lambda: (1 - prev_estimates['1']) /
+                                                             (1 + prev_estimates['0'] - prev_estimates['1'])
+                                                     )[current_state.value == 0]()),
+                                        lambda: self.get_emission_probability(current_state, observations[k][0]) *
+                                                spatial_transition_matrix[prev_state.value][current_state.value] *
+                                                spatial_forward_probabilities[k-1][prev_state.value]
+                                    )[k > 0]()
+                                    if add:
+                                        add = False
+                        # The Backward step
+                        for k in range(self.number_of_channels - 1, -1, -1):
+                            for prev_state in OccupancyState:
+                                for current_state in OccupancyState:
+                                    spatial_backward_probabilities[k][prev_state.value] += (
+                                        lambda: self.get_emission_probability(current_state, observations[k][0]) *
+                                                spatial_transition_matrix[prev_state.value][current_state.value],
+                                        lambda: self.get_emission_probability(current_state, observations[k][0]) *
+                                                spatial_transition_matrix[prev_state.value][current_state.value] *
+                                                spatial_backward_probabilities[k+1][current_state.value]
+                                    )[k < (self.number_of_channels - 1)]()
+                        # M-step: Spatial correlation only
+                        # The first and last summation inputs to the numerator
+                        numerator += self.get_emission_probability(OccupancyState.OCCUPIED,
+                                                                   observations[0][0]) * \
+                                     transient_prev_estimates[j] * \
+                                     spatial_backward_probabilities[1][OccupancyState.OCCUPIED.value]
+                        numerator += spatial_forward_probabilities[self.number_of_channels - 2][int(j)] * \
+                                     self.get_emission_probability(OccupancyState.OCCUPIED,
+                                                                   observations[
+                                                                       self.number_of_channels - 1][0]) * \
+                                     transient_prev_estimates[j]
+                        for state in OccupancyState:
+                            for k in range(1, self.number_of_channels - 1):
+                                numerator += (lambda: 0,
+                                              lambda: spatial_forward_probabilities[k-1][int(j)] *
+                                                      self.get_emission_probability(OccupancyState.OCCUPIED,
+                                                                                    observations[k][0]) *
+                                                      transient_prev_estimates[j] *
+                                                      spatial_backward_probabilities[k+1][
+                                                          OccupancyState.OCCUPIED.value]
+                                              )[exclusive is False]()
+                                if k == 0 or k == self.number_of_episodes:
+                                    continue
+                                denominator += spatial_forward_probabilities[k-1][int(j)] * \
+                                               self.get_emission_probability(state, observations[k][0]) * \
+                                               (lambda: transient_prev_estimates[j],
+                                                lambda: 1 - transient_prev_estimates[j])[
+                                                   state == OccupancyState.IDLE]() * \
+                                               spatial_backward_probabilities[k+1][state.value]
+                            exclusive = True
+                            # The first and last summation inputs to the denominator
+                            denominator += self.get_emission_probability(state,
+                                                                         observations[0][0]) * \
+                                           (lambda: transient_prev_estimates[j],
+                                            lambda: 1 - transient_prev_estimates[j])[state == OccupancyState.IDLE]() * \
+                                           spatial_backward_probabilities[1][state.value]
+                            denominator += spatial_forward_probabilities[self.number_of_channels-2][int(j)] * \
+                                           self.get_emission_probability(state,
+                                                                         observations[self.number_of_channels-1][0]) * \
+                                           (lambda: transient_prev_estimates[j],
+                                            lambda: 1 - transient_prev_estimates[j])[state == OccupancyState.IDLE]()
                     else:
                         spatial_state = int(list(j)[0])
                         temporal_state = int(list(j)[1])
@@ -190,8 +302,8 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                         forward_probabilities[0] = temporal_forward_probabilities
                         for k in range(1, self.number_of_channels):
                             for i in range(self.number_of_episodes):
-                                add = (lambda: False, lambda: True)[i == 0]()
                                 for current_state in OccupancyState:
+                                    add = (lambda: False, lambda: True)[i == 0]()
                                     for prev_spatial_state in OccupancyState:
                                         for prev_temporal_state in OccupancyState:
                                             forward_probabilities[k][i][current_state.value] += (

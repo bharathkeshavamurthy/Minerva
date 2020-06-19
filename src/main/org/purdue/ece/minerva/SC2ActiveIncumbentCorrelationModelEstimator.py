@@ -63,6 +63,9 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
             '10': 0.5,   # p10
             '11': 0.5    # p11
         }
+        # The transient spatial Markov chain transition estimates are logged here because they're needed in the
+        #   Viterbi algorithm based state estimation in the PERSEUS-III agent
+        self.transient_spatial_estimates = {'0': 0.5, '1': 0.5}
 
     # Rendered delegate behavior
     # Simulate an observation given the channel and the episode
@@ -382,6 +385,8 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                     transient_current_estimates[j] /= self.NUMBER_OF_SAMPLING_ROUNDS
         # Post-convergence analysis
         self.estimates = {j: current_estimates[j] for j in self.estimates.keys()}
+        self.transient_spatial_estimates = {'0': transient_current_estimates['0'],
+                                            '1': transient_current_estimates['1']}
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -405,4 +410,8 @@ if __name__ == '__main__':
     print('p01 = {}\n'.format(_estimator.estimates['01']))
     print('p10 = {}\n'.format(_estimator.estimates['10']))
     print('p11 = {}.'.format(_estimator.estimates['11']))
+    print('[INFO] SC2ActiveIncumbentCorrelationModelEstimator main: The transient spatial Markov chain transition'
+          'estimates are: \n')
+    print('P(1|0) = {}\n'.format(_estimator.transient_spatial_estimates['0']))
+    print('P(1|1) = {}\n'.format(_estimator.transient_spatial_estimates['1']))
     # Fin

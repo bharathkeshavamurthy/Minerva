@@ -264,13 +264,11 @@ class Sweepstakes(object):
         # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) + \mu B_k(i) (1 - \hat{B}_k(i))
         reward = 0
         throughput = 0
-        interference = 0
         for k in range(0, len(system_state)):
             throughput += (1 - estimated_state[k]) * (1 - system_state[k])
-            interference += system_state[k] * (1 - estimated_state[k])
             reward += ((1 - estimated_state[k]) * (1 - system_state[k])) + \
                       (self.mu * (system_state[k] * (1 - estimated_state[k])))
-        return reward, throughput, interference
+        return reward, throughput
 
     @staticmethod
     # Get the SU throughput and the PU interference metrics for this episode
@@ -280,11 +278,9 @@ class Sweepstakes(object):
                   'be of the same dimension!')
             return 0
         su_throughput = 0
-        pu_interference = 0
         for k in range(len(true_occupancy_state)):
             su_throughput += (1 - estimated_state[k]) * (1 - true_occupancy_state[k])
-            pu_interference += (1 - estimated_state[k]) * true_occupancy_state[k]
-        return su_throughput, pu_interference
+        return su_throughput
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -551,9 +547,6 @@ class PERSEUS(object):
         self.transition_threshold = _transition_threshold
         # Maximum number of channel changes allowed
         self.max_allowed_transitions = math.ceil(self.transition_threshold * self.number_of_channels)
-        # The analytics returned by this agent
-        self.analytics = namedtuple('ANALYTICS',
-                                    ['su_throughput', 'pu_interference'])
 
     # Get the enumeration instance based on the value passed as an argument in order to ensure compliance with the
     #   'state' communication APIs
@@ -621,14 +614,14 @@ class PERSEUS(object):
         multiplier = 0
         allowed_previous_states = self.get_allowed_state_transitions(new_state)
         # Calculate the numerator in the belief update formula
-        # \vec{x} \in \mathcal{X} in your belief update rule
+        # \vec{B} \in \mathcal{B} in your belief update rule
         for prev_state in allowed_previous_states:
             multiplier += self.get_transition_probability(prev_state, new_state) * previous_belief_vector[
                               ''.join(str(k) for k in prev_state)]
         numerator = self.get_emission_probability(observations, new_state) * multiplier
         return numerator / normalization_constant
 
-    # Randomly explore the environment and collect a set of beliefs 'B' of reachable belief points
+    # Randomly explore the environment and collect a set of beliefs '\mathcal{U}' of reachable belief points
     def random_exploration(self):
         reachable_beliefs = dict()
         state_space_size = 2 ** self.number_of_channels
@@ -638,9 +631,9 @@ class PERSEUS(object):
             state_key = ''.join(str(k) for k in state)
             initial_belief_vector[state_key] = 1 / state_space_size
         previous_belief_vector = initial_belief_vector
-        reachable_beliefs['0'] = initial_belief_vector
         # Start exploring
-        for episode in range(1, self.exploration_period):
+        for episode in range(0, (self.exploration_period * self.exploration_period_divisor) + 1,
+                             self.exploration_period_divisor):
             # Making observations by choosing a random sensing action
             observations = self.secondary_user.make_observations(episode, random.choice(self.all_possible_actions))
             # Perform the Belief Update
@@ -650,7 +643,7 @@ class PERSEUS(object):
             # Calculate the denominator which is nothing but the normalization constant
             denominator = self.get_normalization_constant(previous_belief_vector,
                                                           observations)
-            # Possible next states to update the belief, i.e. b(\vec{x}')
+            # Possible next states to update the belief, i.e. \beta(\vec{B}')
             for state in self.all_possible_states:
                 state_key = ''.join(str(k) for k in state)
                 belief_val = self.belief_update(observations, previous_belief_vector, state, denominator)
@@ -660,8 +653,8 @@ class PERSEUS(object):
             # Normalization to get valid belief vectors (satisfying axioms of probability measures)
             updated_belief_information = self.util.normalize(updated_belief_vector, belief_sum)
             if updated_belief_information[1] is False:
-                raise ArithmeticError('The belief is a probability distribution over the state space. It should sum '
-                                      'to one!')
+                raise ArithmeticError('The belief is a probability distribution over the state space. '
+                                      'It should sum to one!')
             # Add the new belief vector to the reachable beliefs set
             reachable_beliefs[str(episode)] = updated_belief_information[0]
             print('[INFO] PERSEUS random_exploration: {}% Exploration completed'.format(
@@ -674,7 +667,7 @@ class PERSEUS(object):
         # V_0 for the reachable beliefs
         value_function_collection = dict()
         # Default action is not sensing anything - a blind guess from just the noise
-        default_action = [k - k for k in range(0, self.number_of_channels)]
+        default_action = [k-k for k in range(0, self.number_of_channels)]
         for belief_key in reachable_beliefs.keys():
             # FIXME: Is -10 the right initial value for the beliefs in the reachable beliefs set
             value_function_collection[belief_key] = (-10, default_action)
@@ -684,7 +677,6 @@ class PERSEUS(object):
     def calculate_utility(self, policy_collection):
         utility = 0
         throughput = 0
-        interference = 0
         for key, value in policy_collection.items():
             system_state = []
             for channel in range(0, self.number_of_channels):
@@ -697,14 +689,9 @@ class PERSEUS(object):
             sweepstakes = self.sweepstakes.roll(estimated_state, system_state)
             utility += sweepstakes[0]
             throughput += sweepstakes[1]
-            interference += sweepstakes[2]
         throughput /= len(policy_collection.keys())
-        interference /= len(policy_collection.keys())
         throughput *= self.utility_multiplication_factor
-        interference *= self.utility_multiplication_factor
-        print('[INFO] PERSEUS calculate_utility: SU Network Throughput = {} | PU Interference = {}'.format(throughput,
-                                                                                                           interference
-                                                                                                           ))
+        print('[INFO] PERSEUS calculate_utility: SU Network Throughput = {}'.format(throughput))
         return utility
 
     # The Backup stage
@@ -879,7 +866,6 @@ class PERSEUS(object):
                 confidence = 0
                 print('[DEBUG] PERSEUS run_perseus: Confidence Stagnation/Fallback - {}'.format(confidence))
         su_throughputs = []
-        pu_interferences = []
         for episode_number, results_tuple in previous_value_function_collection.items():
             system_state = []
             for channel in range(0, self.number_of_channels):
@@ -889,11 +875,8 @@ class PERSEUS(object):
             self.state_estimator.observation_samples = observation_samples
             estimated_states = self.state_estimator.estimate_pu_occupancy_states()
             analytics = self.sweepstakes.get_analytics(estimated_states, system_state)
-            su_throughputs.append(analytics[0])
-            pu_interferences.append(analytics[1])
-        return self.analytics(su_throughput=sum(su_throughputs) / self.number_of_episodes,
-                              pu_interference=sum(pu_interferences) / self.number_of_episodes
-                              )
+            su_throughputs.append(analytics)
+        return su_throughputs
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -905,7 +888,8 @@ class PERSEUS(object):
 # This is the improved version modified to handle changes to the transition model underlying the occupancy behavior of
 #   incumbents in the network along with some changes to the analytics engine.
 # This class encapsulates the evaluation framework for the PERSEUS-III agent detailed in the rest of this script.
-class FragmentedSimplifiedPERSEUSModeling(object):
+# Evaluation of agent performance in a DARPA SC2 Active Incumbent scenario
+class SC2ActiveIncumbentPERSEUSModeling(object):
     # The number of channels in the discretized spectrum of interest
     NUMBER_OF_CHANNELS = 20
 
@@ -935,7 +919,8 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     FRAGMENTED_SPATIAL_SENSING_LIMITATION = 2
 
     # The exploration period of the PERSEUS algorithm
-    EXPLORATION_PERIOD = 100
+    # 330 measurement periods--which will be a part of the exploration period that's analysed in the end
+    EXPLORATION_PERIOD = 330
 
     # The discount factor employed in the Bellman update
     DISCOUNT_FACTOR = 0.9
@@ -958,11 +943,27 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     TRANSITION_THRESHOLD = 0.5
 
     # The divisor for the exploration index determination
-    EXPLORATION_INDEX_DIVISOR = 33
+    # 3300 episodes for exploration filtering: 3300/10 = 330 (increment by 10 per iteration)
+    EXPLORATION_INDEX_DIVISOR = 10
+
+    # The average SNR across multiple links in the DARPA SC2 Active Incumbent scenario (not in dB--true ratio $S/N$)
+    AVERAGE_SNR = 15848.93
+
+    # The bandwidth provided by a truly idle channel (in MHz)
+    CHANNEL_BANDWIDTH = 0.5
+
+    # The maximum number of Individual Mandates (IMs) in this DARPA SC2 Active Incumbent scenario
+    MAXIMUM_NUMBER_OF_IMS = 16
+
+    # The maximum data rate to be achieved to account for all Individual Mandates (IMs) being satisfied (in Mbps)
+    MAXIMUM_DATA_RATE_FOR_IM_ACHIEVEMENT = 30
+
+    # IM condensation group counter
+    IM_CONDENSATION_GROUPING_FACTOR = 6
 
     # The initialization sequence
     def __init__(self, db):
-        print('[INFO] FragmentedSimplifiedPERSEUSModeling Initialization: Bringing things up...')
+        print('[INFO] SC2ActiveIncumbentPERSEUSModeling Initialization: Bringing things up...')
         self.perseus_with_model_foresight_and_simplified_belief_update = \
             PERSEUS(self.FRAGMENT_SIZE, self.NUMBER_OF_SAMPLING_ROUNDS,
                     self.NUMBER_OF_EPISODES, self.EXPLORATION_PERIOD,
@@ -977,14 +978,34 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     # The evaluation routine
     def evaluate(self):
         agent_analytics = self.perseus_with_model_foresight_and_simplified_belief_update.run_perseus()
-        print('[INFO] FragmentedSimplifiedPERSEUSModeling evaluate: Fragmented PERSEUS with belief simplification - '
-              'Average Episodic SU Throughput = {} | '
-              'Average Episodic PU Interference = {}\n'.format(agent_analytics.su_throughput,
-                                                               agent_analytics.pu_interference))
+        print('[INFO] SC2ActiveIncumbentPERSEUSModeling evaluate: '
+              'SU Throughputs across 330 episodes [0, 3300] = {}'.format(agent_analytics))
+        achieved_mandates = []
+        # IM plot for performance visualization against DARPA SC2 peers (analyzer_gui @Tomo @Dennis @Mai @Bharath)
+        for episodic_su_throughput in agent_analytics:
+            # Shannon-Hartley Theorem
+            delivered_rate = (episodic_su_throughput * self.CHANNEL_BANDWIDTH) * numpy.log2(1 + self.AVERAGE_SNR)
+            achieved_mandates.append((self.MAXIMUM_NUMBER_OF_IMS * delivered_rate) /
+                                     self.MAXIMUM_DATA_RATE_FOR_IM_ACHIEVEMENT)
+        print('[INFO] SC2ActiveIncumbentPERSEUSModeling evaluate: '
+              'IMs achieved across 330 episodes [0, 3300] = {}'.format(achieved_mandates))
+        # IM condensation for plotting
+        condensed_mandates = []
+        final_length = self.IM_CONDENSATION_GROUPING_FACTOR
+        for i in range(0, len(achieved_mandates), self.IM_CONDENSATION_GROUPING_FACTOR):
+            if len(achieved_mandates[i:]) < self.IM_CONDENSATION_GROUPING_FACTOR:
+                final_length += len(achieved_mandates[i:])
+                condensed_mandates[-1] *= self.IM_CONDENSATION_GROUPING_FACTOR
+                condensed_mandates[-1] += sum(achieved_mandates[i:])
+                condensed_mandates[-1] /= final_length
+            condensed_mandates.append((sum(achieved_mandates[i:i+self.IM_CONDENSATION_GROUPING_FACTOR])) /
+                                      self.IM_CONDENSATION_GROUPING_FACTOR)
+        print('[INFO] SC2ActiveIncumbentPERSEUSModeling evaluate: '
+              'IMs achieved across 330 episodes [0, 3300] condensed into 52 scores= {}'.format(condensed_mandates))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] FragmentedSimplifiedPERSEUSModeling Termination: Tearing things down...')
+        print('[INFO] SC2ActiveIncumbentPERSEUSModeling Termination: Tearing things down...')
         # Nothing to do...
 
 
@@ -992,7 +1013,8 @@ class FragmentedSimplifiedPERSEUSModeling(object):
 if __name__ == '__main__':
     # The default DB file (Active Incumbent Scenario-8342)
     _db = 'data/active_incumbent_scenario8342.db'
-    print('[INFO] FragmentedSimplifiedPERSEUSModeling main: Triggering the evaluation of the PERSEUS-III agent, '
+    print('[INFO] SC2ActiveIncumbentPERSEUSModeling main: Triggering the evaluation of the PERSEUS-III agent, '
           'i.e., the PERSEUS Algorithm with Model Foresight and with a Simplified Belief Update procedure...')
-    _agent = FragmentedSimplifiedPERSEUSModeling(_db)
+    _agent = SC2ActiveIncumbentPERSEUSModeling(_db)
     _agent.evaluate()
+    # Fin

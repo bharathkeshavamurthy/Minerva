@@ -426,39 +426,6 @@ class StateEstimator(object):
         # Nothing to do...
 
 
-# Delegate
-# This entity encapsulates an Oracle which knows the best possible channels to use in each episode.
-# Hence, the policy followed by this Oracle is the most optimal policy.
-# The action policy achieved by the PERSEUS-III agent will be evaluated/benchmarked against the Oracle's policy thereby
-#   giving us a regret metric.
-class Oracle(object):
-
-    # The initialization sequence
-    def __init__(self, _number_of_channels, _true_pu_occupancy_states, _mu):
-        print('[INFO] Oracle Initialization: Bringing things up...')
-        self.number_of_channels = _number_of_channels
-        self.true_pu_occupancy_states = _true_pu_occupancy_states
-        self.mu = _mu
-
-    # Evaluate the return from the Oracle's omniscient policy
-    def get_return(self, episode):
-        estimated_state_vector = [self.true_pu_occupancy_states[k][episode] for k in range(0, self.number_of_channels)]
-        utility = 0
-        # Let B_k(i) denote the actual true occupancy status of the channel in this 'episode.'
-        # Let \hat{B}_k(i) denote the estimated occupancy status of the channel in this 'episode.'
-        # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) + \mu B_k(i) (1 - \hat{B}_k(i))
-        for channel in range(0, self.number_of_channels):
-            utility += ((1 - self.true_pu_occupancy_states[channel][episode]) * (1 - estimated_state_vector[channel])) \
-                       + (self.mu *
-                          (1 - estimated_state_vector[channel]) * self.true_pu_occupancy_states[channel][episode])
-        return utility
-
-    # The termination sequence
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        print('[INFO] Oracle Termination: Tearing things down...')
-        # Nothing to do...
-
-
 # POMDP agent under analysis (PERSEUS-III)
 # This entity encapsulates a POMDP Approximate Point-based Value Iteration Algorithm known as the PERSEUS Algorithm.
 # Training to fine-tune the belief space -> Perform backup until convergence -> Re-sample using the most recent policy
@@ -476,13 +443,15 @@ class PERSEUS(object):
     def __init__(self, _number_of_channels, _number_of_sampling_rounds, _number_of_episodes, _exploration_period,
                  _noise_mean, _noise_variance, _impulse_response_mean, _impulse_response_variance, _penalty,
                  _limitation, _confidence_bound, _gamma, _utility_multiplication_factor,
-                 _transition_threshold, _db):
+                 _transition_threshold, _exploration_period_divisor, _db):
         print('[INFO] PERSEUS Initialization: Bringing things up...')
         # The Utility object
         self.util = Util()
         # The database file containing the SC2 run information
         self.db = _db
-        # The DARPA SC2 Active Incumbent emulation analyser
+        # The divisor for exploration period determination
+        self.exploration_period_divisor = _exploration_period_divisor
+        # The DARPA SC2 Active Incumbent scenario emulation analyser
         self.analyser = Analyser.DARPASC2ActiveIncumbentAnalysis(self.db)
         # The number of channels in the discretized spectrum of interest (fragment size)
         self.number_of_channels = _number_of_channels
@@ -496,9 +465,9 @@ class PERSEUS(object):
         self.noise_mean = _noise_mean
         # The variance of the AWGN samples
         self.noise_variance = _noise_variance
-        # The mean of the impulse response samples
+        # The mean of the channel impulse response samples
         self.impulse_response_mean = _impulse_response_mean
-        # The variance of the impulse response samples
+        # The variance of the channel impulse response samples
         self.impulse_response_variance = _impulse_response_variance
         # The penalty for missed detections, i.e. PU interference
         self.penalty = _penalty
@@ -514,21 +483,32 @@ class PERSEUS(object):
         # \mathbb{P}(Occupied) - The steady state probability of being occupied
         self.pi = self.analyser.get_steady_state_occupancy_probability(self.true_occupancy_states)
         # The correlation model parameters, i.e., $\vec{\theta}$ which have been learnt prior to triggering PERSEUS...
-        # Obtain this by running SC2ActiveIncumbentCorrelationModelEstimator.py
+        # Obtain this by running SC2ActiveIncumbentCorrelationModelEstimator.py -- time-frequency correlation structure
+        # Off-script
         self.correlation_model = {
-            '0': 0.3,   # q0
-            '1': 0.8,   # q1
-            '00': 0.1,  # p00
-            '01': 0.3,  # p01
-            '10': 0.3,  # p10
-            '11': 0.7   # p11
+            '0': 0.5,   # q0
+            '1': 0.5,   # q1
+            '00': 0.5,  # p00
+            '01': 0.5,  # p01
+            '10': 0.5,  # p10
+            '11': 0.5   # p11
         }
-        # The single chain correlation model
-        self.single_chain_transition_model = {0: {0: 1 - self.correlation_model['0'],
-                                                  1: self.correlation_model['0']},
-                                              1: {0: 1 - self.correlation_model['1'],
-                                                  1: self.correlation_model['1']}
-                                              }
+        # The spatial chain parameters
+        # Obtain this by running SC2ActiveIncumbentCorrelationModelEstimator.py -- frequency correlation only
+        # Off-script
+        self.spatial_correlation_model = {'0': 0.5, '1': 0.5}
+        # The single chain correlation model - temporal
+        self.single_chain_transition_model_temporal = {0: {0: 1 - self.correlation_model['0'],
+                                                           1: self.correlation_model['0']},
+                                                       1: {0: 1 - self.correlation_model['1'],
+                                                           1: self.correlation_model['1']}
+                                                       }
+        # The single chain correlation model - spatial
+        self.single_chain_transition_model_spatial = {0: {0: 1 - self.spatial_correlation_model['0'],
+                                                          1: self.spatial_correlation_model['0']},
+                                                      1: {0: 1 - self.spatial_correlation_model['1'],
+                                                          1: self.spatial_correlation_model['1']}
+                                                      }
         # The double chain correlation model
         self.double_chain_transition_model = {'00': {0: 1 - self.correlation_model['00'],
                                                      1: self.correlation_model['00']},
@@ -556,23 +536,8 @@ class PERSEUS(object):
         # The State Estimator - Single Markov Chain Viterbi Algorithm
         self.state_estimator = StateEstimator(self.number_of_channels, self.number_of_sampling_rounds, None,
                                               self.start_probabilities_dict,
-                                              self.single_chain_transition_model,
+                                              self.single_chain_transition_model_spatial,
                                               self.emission_evaluator)
-        # The Oracle
-        self.oracle = Oracle(self.number_of_channels, self.true_occupancy_states, self.penalty)
-        # The episodes log collection for regret analysis using an Oracle
-        self.episodes_for_regret_analysis = []
-        # The utilities as the algorithm progresses towards optimality
-        self.utilities = []
-        # The utilities obtained by the Oracle during the episodes of interaction of this PERSEUS-III agent with the
-        #   radio environment
-        self.perfect_utilities = []
-        # The number of policy changes as the algorithm progresses towards optimality
-        self.policy_changes = []
-        # The belief choice for value function tracking
-        self.belief_choice = None
-        # The progression of the value function as the algorithm progresses towards optimality
-        self.value_function_changes_array = []
         # All possible states
         self.all_possible_states = list(map(list, itertools.product([0, 1], repeat=self.number_of_channels)))
         # All possible actions based on the given SU sensing limitation
@@ -614,7 +579,7 @@ class PERSEUS(object):
     # Get State Transition Probabilities for the Belief Update sequence
     def get_transition_probability(self, prev_state, next_state):
         # Temporal/Episodic change for the first channel
-        transition_probability = self.single_chain_transition_model[prev_state[0]][next_state[0]]
+        transition_probability = self.single_chain_transition_model_temporal[prev_state[0]][next_state[0]]
         for index in range(1, self.number_of_channels):
             # Spatial and Temporal change for the rest of 'em
             transition_probability *= self.double_chain_transition_model[''.join(
@@ -875,13 +840,6 @@ class PERSEUS(object):
                     del unimproved_belief_points[belief_point_key]
                     next_stage_value_function_collection[belief_point_key] = (internal_term, max_action)
                     number_of_belief_changes += 1
-            utility = self.calculate_utility(next_stage_value_function_collection)
-            print('[INFO] PERSEUS backup: '
-                  'Logging all the relevant metrics within this Backup stage - [Utility: {}, #policy_changes: {}, '
-                  'sampled_value_function: {}]'.format(utility, number_of_belief_changes,
-                                                       next_stage_value_function_collection[self.belief_choice][0]))
-            self.episodes_for_regret_analysis.append(stage_number)
-            self.utilities.append(utility)
         return [next_stage_value_function_collection, number_of_belief_changes]
 
     # The PERSEUS algorithm
@@ -889,25 +847,16 @@ class PERSEUS(object):
     def run_perseus(self):
         # Random Exploration - Get the set of reachable beliefs by randomly interacting with the radio environment
         reachable_beliefs = self.random_exploration()
-        # Belief choice for value function tracking (visualization component)
-        self.belief_choice = (lambda: self.belief_choice,
-                              lambda: random.choice([
-                                  k for k in reachable_beliefs.keys()]))[self.belief_choice is None]()
         # Initialization - Initializing to -10 for all beliefs in the reachable beliefs set
         # FIXME: Is -10 the right initial value for the beliefs in the reachable beliefs set
         initial_value_function_collection = self.initialize(reachable_beliefs)
         # Relevant collections
         previous_value_function_collection = initial_value_function_collection
         stage_number = self.exploration_period - 1
-        # Utility addition for the initial value function
-        utility = self.calculate_utility(previous_value_function_collection)
-        self.episodes_for_regret_analysis.append(stage_number)
-        self.utilities.append(utility)
         # Local confidence check for modeling policy convergence
         confidence = 0
         # Check for termination condition here...
         while confidence < self.confidence_bound:
-            self.value_function_changes_array.append(previous_value_function_collection[self.belief_choice][0])
             stage_number += 1
             # We've reached the end of our allowed interaction time with the radio environment
             if stage_number == self.number_of_episodes:
@@ -921,7 +870,6 @@ class PERSEUS(object):
                 'Backup for stage {} completed...'.format(stage_number - self.exploration_period + 1))
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
-            self.policy_changes.append(belief_changes)
             if len(next_value_function_collection) is not 0:
                 previous_value_function_collection = next_value_function_collection
             if belief_changes is 0:
@@ -983,26 +931,34 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     SPATIAL_SENSING_LIMITATION = 10
 
     # Limitation per fragment
+    # DARPA SC2 Active Incumbent: I have 10 nodes in the network--I can sense 1 channel per node in a given episode
     FRAGMENTED_SPATIAL_SENSING_LIMITATION = 2
 
     # The exploration period of the PERSEUS algorithm
-    EXPLORATION_PERIOD = 1000
+    EXPLORATION_PERIOD = 100
 
     # The discount factor employed in the Bellman update
     DISCOUNT_FACTOR = 0.9
 
     # The confidence bound for convergence analysis
-    CONFIDENCE_BOUND = 8
+    CONFIDENCE_BOUND = 10
 
     # The size of each agent-assigned individual fragment of the spectrum which is independent from the other fragments
     # I assume the same Markovian correlation within each fragment
+    # There are 5 PUs (4 competitors + 1 active incumbent)--fragmented into 5 fragments (Markovian within each fragment,
+    #   but independent across fragments)--4 channels in each fragment, for a total of 20 channels in the spectrum
     FRAGMENT_SIZE = 4
 
     # The penalty for missed detections
     PENALTY = -1
 
     # The transition threshold for the simplified belief update procedure
-    TRANSITION_THRESHOLD = 0.1
+    # Within each 4-channel fragment, I allow candidate states with a Hamming distance of (0.5 * 4 = 2) to be
+    #   considered to be viable next states
+    TRANSITION_THRESHOLD = 0.5
+
+    # The divisor for the exploration index determination
+    EXPLORATION_INDEX_DIVISOR = 33
 
     # The initialization sequence
     def __init__(self, db):
@@ -1016,7 +972,7 @@ class FragmentedSimplifiedPERSEUSModeling(object):
                     self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
                     self.CONFIDENCE_BOUND, self.DISCOUNT_FACTOR,
                     math.ceil(self.NUMBER_OF_CHANNELS / self.FRAGMENT_SIZE),
-                    self.TRANSITION_THRESHOLD, db)
+                    self.TRANSITION_THRESHOLD, self.EXPLORATION_INDEX_DIVISOR, db)
 
     # The evaluation routine
     def evaluate(self):

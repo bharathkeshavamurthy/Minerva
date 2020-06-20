@@ -709,7 +709,7 @@ class PERSEUS(object):
         # While there are still some un-improved belief points...
         while len(unimproved_belief_points) is not 0:
             print('[INFO] PERSEUS backup: Size of unimproved belief set = {}'.format(len(unimproved_belief_points)))
-            # Sample a belief point uniformly at random from \tilde{B}
+            # Sample a belief point uniformly at random from \tilde{U}
             belief_sample_key = random.choice(list(unimproved_belief_points.keys()))
             belief_sample = unimproved_belief_points[belief_sample_key]
             max_value_function = -10 ** 9
@@ -749,7 +749,6 @@ class PERSEUS(object):
                 # Updated re-assignment
                 new_belief_vector = new_normalized_belief_information[0]
                 highest_belief_key = max(new_belief_vector, key=new_belief_vector.get)
-                # FIXME: You could've used an OrderedDict here to simplify operations
                 # Find the closest pilot belief and its associated value function
                 relevant_data = {episode_key: belief[highest_belief_key] for episode_key, belief in
                                  reachable_beliefs.items()}
@@ -811,7 +810,6 @@ class PERSEUS(object):
                 # Updated re-assignment
                 new_aux_belief_vector = new_aux_normalized_belief_information[0]
                 highest_belief_key = max(new_aux_belief_vector, key=new_aux_belief_vector.get)
-                # FIXME: You could've used an OrderedDict here to simplify operations
                 # Find the closest pilot belief and its associated value function
                 relevant_data = {episode_key: belief[highest_belief_key] for episode_key, belief in
                                  reachable_beliefs.items()}
@@ -835,11 +833,11 @@ class PERSEUS(object):
         # Random Exploration - Get the set of reachable beliefs by randomly interacting with the radio environment
         reachable_beliefs = self.random_exploration()
         # Initialization - Initializing to -10 for all beliefs in the reachable beliefs set
-        # FIXME: Is -10 the right initial value for the beliefs in the reachable beliefs set
+        # FIXME: Is -10 the right initial value for the beliefs in the reachable beliefs set?
         initial_value_function_collection = self.initialize(reachable_beliefs)
         # Relevant collections
         previous_value_function_collection = initial_value_function_collection
-        stage_number = self.exploration_period - 1
+        stage_number = -1
         # Local confidence check for modeling policy convergence
         confidence = 0
         # Check for termination condition here...
@@ -854,7 +852,7 @@ class PERSEUS(object):
             backup_results = self.backup(stage_number, reachable_beliefs, previous_value_function_collection)
             print(
                 '[DEBUG] PERSEUS run_perseus: '
-                'Backup for stage {} completed...'.format(stage_number - self.exploration_period + 1))
+                'Backup for stage {} completed...'.format(stage_number + 1))
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
             if len(next_value_function_collection) is not 0:
@@ -961,6 +959,9 @@ class SC2ActiveIncumbentPERSEUSModeling(object):
     # IM condensation group counter
     IM_CONDENSATION_GROUPING_FACTOR = 6
 
+    # The offset factor considering 330 episodes of actual analysis--to get 52 episodic scores
+    OFFSET_FACTOR = 4
+
     # The initialization sequence
     def __init__(self, db):
         print('[INFO] SC2ActiveIncumbentPERSEUSModeling Initialization: Bringing things up...')
@@ -993,15 +994,16 @@ class SC2ActiveIncumbentPERSEUSModeling(object):
         condensed_mandates = []
         final_length = self.IM_CONDENSATION_GROUPING_FACTOR
         for i in range(0, len(achieved_mandates), self.IM_CONDENSATION_GROUPING_FACTOR):
-            if len(achieved_mandates[i:]) < self.IM_CONDENSATION_GROUPING_FACTOR:
+            if len(achieved_mandates[i:]) < self.OFFSET_FACTOR * self.IM_CONDENSATION_GROUPING_FACTOR:
                 final_length += len(achieved_mandates[i:])
                 condensed_mandates[-1] *= self.IM_CONDENSATION_GROUPING_FACTOR
                 condensed_mandates[-1] += sum(achieved_mandates[i:])
                 condensed_mandates[-1] /= final_length
-            condensed_mandates.append((sum(achieved_mandates[i:i+self.IM_CONDENSATION_GROUPING_FACTOR])) /
-                                      self.IM_CONDENSATION_GROUPING_FACTOR)
+            else:
+                condensed_mandates.append((sum(achieved_mandates[i:i+self.IM_CONDENSATION_GROUPING_FACTOR])) /
+                                          self.IM_CONDENSATION_GROUPING_FACTOR)
         print('[INFO] SC2ActiveIncumbentPERSEUSModeling evaluate: '
-              'IMs achieved across 330 episodes [0, 3300] condensed into 52 scores= {}'.format(condensed_mandates))
+              'IMs achieved across 330 episodes [0, 3300] condensed into 52 scores = {}'.format(condensed_mandates))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):

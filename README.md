@@ -1,2 +1,2 @@
 # Minerva
-An Adaptive, Intelligent, Hierarchical Cognitive Radio Framework
+An Adaptive, Intelligent, and Hierarchical Cognitive Radio Framework

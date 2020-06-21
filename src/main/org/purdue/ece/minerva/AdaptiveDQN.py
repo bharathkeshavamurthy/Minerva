@@ -127,7 +127,7 @@ class AdaptiveDQN(object):
                                     lambda: 1)[numpy.random.random() <= self.STEADY_STATE_OCCUPANCY_PROBABILITY]()]
         # Frequency-0 Time-[1,T-1] PU occupancy determination
         for i in range(1, self.NUMBER_OF_TIME_SLOTS):
-            if _incumbent_occupancy[0][i - 1]:
+            if _incumbent_occupancy[0][i-1]:
                 _incumbent_occupancy[0].append((lambda: 0,
                                                 lambda: 1)[numpy.random.random() <= self.TRANSITION_MODEL['q1']]())
             else:
@@ -135,7 +135,7 @@ class AdaptiveDQN(object):
                                                 lambda: 1)[numpy.random.random() <= self.TRANSITION_MODEL['q0']]())
         # Frequency-[1,K-1] Time-0 PU occupancy determination
         for k in range(1, self.NUMBER_OF_CHANNELS):
-            if _incumbent_occupancy[k - 1][0]:
+            if _incumbent_occupancy[k-1][0]:
                 _incumbent_occupancy[k] = [(lambda: 0,
                                             lambda: 1)[numpy.random.random() <= self.TRANSITION_MODEL['q1']]()]
             else:
@@ -144,15 +144,15 @@ class AdaptiveDQN(object):
         # Frequency-[1,K-1] Time-[1,T-1] PU occupancy determination
         for k in range(1, self.NUMBER_OF_CHANNELS):
             for i in range(1, self.NUMBER_OF_TIME_SLOTS):
-                if _incumbent_occupancy[k - 1][i] and _incumbent_occupancy[k][i - 1]:
+                if _incumbent_occupancy[k-1][i] and _incumbent_occupancy[k][i-1]:
                     _incumbent_occupancy[k].append((lambda: 0,
                                                     lambda: 1)[
                                                        numpy.random.random() <= self.TRANSITION_MODEL['p11']]())
-                elif _incumbent_occupancy[k - 1][i] and not _incumbent_occupancy[k][i - 1]:
+                elif _incumbent_occupancy[k-1][i] and not _incumbent_occupancy[k][i-1]:
                     _incumbent_occupancy[k].append((lambda: 0,
                                                     lambda: 1)[
                                                        numpy.random.random() <= self.TRANSITION_MODEL['p10']]())
-                elif not _incumbent_occupancy[k - 1][i] and _incumbent_occupancy[k][i - 1]:
+                elif not _incumbent_occupancy[k-1][i] and _incumbent_occupancy[k][i-1]:
                     _incumbent_occupancy[k].append((lambda: 0,
                                                     lambda: 1)[
                                                        numpy.random.random() <= self.TRANSITION_MODEL['p01']]())

@@ -1,0 +1,314 @@
+\documentclass[10pt,twocolumn]{IEEEtran}
+% \documentclass[12pt, draftcls, onecolumn]{IEEEtran}
+\makeatletter
+\def\subsubsection{\@startsection{subsubsection}
+                                 {3}
+                                 {\z@}
+                                 {0ex plus 0.1ex minus 0.1ex}
+                                 {0ex}
+                             {\normalfont\normalsize\bfseries}}
+\makeatother
+\usepackage[T1]{fontenc}
+\usepackage{subfigure}
+\usepackage{ulem}
+\usepackage{amsmath}
+\allowdisplaybreaks
+\usepackage{hhline}
+\usepackage{graphicx}
+\usepackage{yfonts,color}
+\usepackage{soul,xcolor}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\allowdisplaybreaks
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{tikz}
+\usepackage{framed}
+\usepackage{balance}
+\usepackage{epsfig,epstopdf}
+\usepackage{booktabs}
+\usepackage{courier}
+\usepackage{subfigure}
+\usepackage{pseudocode}
+\usepackage{enumerate}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+\renewcommand{\algorithmicrequire}{\textbf{Initialization:}}  
+\renewcommand{\algorithmicensure}{\textbf{Output:}}  
+\newcommand{\rom}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
+\usepackage{color}
+\usepackage{soul,xcolor}
+\newcommand{\sst}[1]{\st{#1}}
+%\newcommand{\sst}[1]{}
+\newcommand{\nm}[1]{{\color{blue}\bf{[NM: #1]}}}
+%\newcommand{\nm}[1]{}
+\newcommand{\bk}[1]{{\color{magenta}{[BK: #1]}}}
+\newcommand{\nmmath}[1]{{\color{blue}\text{\bf{[NM: #1]}}}}
+\newcommand{\gs}[1]{{\color{orange}\bf{[GS: #1]}}}
+\newcommand{\remove}[1]{{\color{magenta}{\bf REMOVE: [#1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\usepackage{cancel}
+\newcommand\mst[2][red]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{2pt}}}}#2} 
+%\newcommand{\mst}[1]{} 
+\newcommand{\add}[1]{{\color{red}{#1}}}
+\newcommand{\ull}[1]{\textbf{\color{red}\ul{#1}}}
+\renewcommand{\baselinestretch}{0.964}
+\normalem
+\title{Spectrum Sensing in Cognitive Radio Networks
+\\
+via Approximate POMDP}
+\author{Bharath Keshavamurthy, Nicol\`{o} Michelusi
+\thanks{Part of this research has been funded in part by NSF under grant CNS-1642982.}
+\thanks{The authors are with the School of Electrical and Computer Engineering, Purdue University. email: \{bkeshava,michelus\}@purdue.edu.}
+\vspace{-12mm}}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty} 
+\setulcolor{red}
+\setul{red}{2pt}
+\setstcolor{red}
+\begin{abstract}
+In this letter, a novel spectrum sensing and access strategy based on POMDPs is proposed. A cognitive radio learns the correlation model defining the occupancy behavior of incumbents, based on which it devises an optimal sensing and access policy. The optimization complexity is ameliorated via point-based value iteration methods. Numerical evaluations demonstrate that the proposed framework achieves higher throughput for cognitive radios, with lower interference to incumbents, compared to state-of-the-art clustering algorithms and a Neyman-Pearson detector that does not exploit correlation among channels. Furthermore, it achieves performance comparable to HMM MAP estimators with a priori knowledge of the correlation model.
+\end{abstract}
+\vspace{-4mm}
+\begin{IEEEkeywords}
+Hidden Markov Model, Cognitive Radio, Spectrum Sensing, POMDP
+\end{IEEEkeywords}
+\vspace{-4mm}
+\section{Introduction}\label{I}
+The advent of fifth-generation wireless communication networks has exacerbated the problem of spectrum scarcity \cite{7158089}. Cognitive radio networks facilitate efficient spectrum utilization by intelligently accessing \emph{white spaces} left unused by the sparse and infrequent transmissions of licensed users, while ensuring incumbent non-interference compliance \cite{4562537}. 
+
+A crucial aspect underlying the design of cognitive radio networks is the ability to perform spectrum sensing. However, physical design limitations are imposed on the cognitive radio's spectrum sensor in view of quick turnaround times and energy efficiency \cite{5990482}, which restrict the number of channels that can be sensed at any given time. This has led to research in algorithms to determine the best channels to sense before making channel access decisions. The state-of-the-art are based on multi-armed bandits \cite{7094730}, reinforcement learning \cite{6507570}, and custom heuristics \cite{4554696, 6956794}. However, most of these works, such as \cite{7094730, 6507570, 7895211, 7336513, 8571293, 5167826}, assume independence across frequency bands, which is imprudent because licensed users may exhibit correlations across both frequency and time in their channel occupancy behavior: they may occupy a set of adjacent frequency bands, and for an extended period of time \cite{6188346}. This correlation structure may be leveraged for more accurate predictions of spectrum holes. In this letter, we propose a parameter estimation algorithm to learn the time-frequency correlation structure, based on which we solve for the optimal sensing and access policy via partially observable Markov decision processes (POMDPs).
+
+\noindent {\bf Related Work:}
+Distributed spectrum sensing has been considered in \cite{6507570} and solved using SARSA with linear value function approximation. However, frequency correlation is precluded, and errors in state estimation are neglected in the decision process. In \cite{6956794}, the frequency correlation is exploited, but the observation model is noise-free. Compared to \cite{6507570, 6956794}, we account for the uncertainty in the occupancy state and for noisy observations via a POMDP formulation. Standard MAP-based state estimators for Hidden Markov Models (HMMs) such as the Viterbi algorithm can be employed to estimate spectrum occupancy \cite{4554696}; however, these estimators rely on knowledge of the transition model, which may be unknown in practice. To this end, in \cite{6956794, 4554696}, the time-frequency correlation structure is estimated offline based on pre-loaded databases. However, this solution may be impractical in non-stationary settings. To fill this gap, in this letter, we develop a fully online framework  to learn the parametric time-frequency correlation model, and embed it directly into the sensing and access optimization of the decision engine. It is also worth noting that \cite{4554696} does not impose sensing restrictions on the cognitive radio, as we do. Finally, unlike \cite{7094730, 6507570, 4554696, 6956794}, our POMDP framework allows to regulate the trade-off between the throughput achieved by the cognitive radio and the interference to the incumbents.
+
+In a nutshell, the contributions of this paper are as follows:
+we develop a POMDP framework for spectrum sensing and access in a radio environment with multiple licensed users exhibiting correlations in their occupancy behavior across both time and frequency, assuming a linear, Gaussian observation model with sensing limitations; we develop an online parameter estimation algorithm to learn the incumbents' occupancy correlation model; 
+concurrently, we propose a randomized point-based value iteration algorithm to find the optimal spectrum sensing and access policy; finally, we compare numerically, the proposed framework with state-of-the-art algorithms, and demonstrate superior performance. The rest of the paper is organized as follows: in Sec. \ref{II}, we define the system model, followed by the formulations, approaches, and algorithms in Sec. \ref{III}; in Sec. \ref{IV}, we present numerical evaluations, followed by concluding remarks in Sec. \ref{V}.
+\vspace{-4mm}
+\section{System Model}\label{II}
+\noindent {\bf Signal Model:}
+We consider a network of $J$ incumbents (Primary Users, PUs) and one cognitive radio (Secondary User, SU) equipped with a spectrum sensor. The goal of the SU is to maximize its own throughput by opportunistically accessing portions of the spectrum left unused by the PUs. To this end, the SU should learn how to intelligently access spectrum holes, while ensuring nominal interference with incumbent transmissions.
+We express the discretized wideband frequency domain signal received at the SU
+at time index $i$ as
+\begin{equation}\label{2}
+    Y_k(i) = \sum_{j=1}^{J} H_{j,k}(i)X_{j,k}(i) + V_k(i),
+\end{equation}
+where  $k {\in} \{1,2,\dots,K\}$
+is the frequency domain channel index; $X_{j,k}(i)$ is the signal of the $j$th PU in the frequency domain, and $H_{j,k}(i)$ is the frequency domain channel between the $j$th PU and the SU; $V_k(i) {\sim} \mathcal{CN}(0,\sigma_V^2)$ represents circularly symmetric additive complex Gaussian noise, i.i.d across frequency and time, and independent of channel $H$ and PU signal $X$. We further assume that the $J$ PUs employ an orthogonal spectrum access (e.g., OFDMA) so that $X_{j,k}(i)X_{g,k}(i){=}0, \forall j{\neq}g$. Thus, letting $j_{k,i}$ be the index of the PU that occupies the $k$th spectrum band at time $i$, $H_{k}(i){\triangleq}H_{j_{k,i},k}(i)$ and $X_{k}(i){\triangleq}X_{j_{k,i},k}(i)$ (with $X_{k}(i){=}0$, if no PU is transmitting in the $k$th spectrum band at time $i$), we can rewrite \eqref{2} as 
+\begin{equation}\label{3}
+    Y_k(i) = H_{k}(i)X_{k}(i) + V_k(i).
+\end{equation}
+We model the channel as Rayleigh fading, so that $H_{k}(i)$ is a zero-mean circularly symmetric complex Gaussian random variable with variance $\sigma_H^2$, $H_k {\sim} \mathcal{CN}(0,\sigma_H^2)$, i.i.d. across frequency bands and time.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{MarkovChainsVisualization}
+    \vspace{-5mm}
+    \caption{The correlation model across time and frequencies underlying the occupancy behavior of incumbents in the network}
+    \vspace{-5mm}
+    \label{fig:1}
+\end{figure}
+
+\noindent {\bf PU Spectrum Occupancy Model:}
+We model $X_k(i)$ as
+\begin{equation}\label{4}
+    X_k(i) = \sqrt{P_{tx}}B_k(i)S_k(i),
+\end{equation}
+where $P_{tx}$ is the transmission power of the PUs, $S_k(i)$ is the transmitted symbol modeled as a constant amplitude signal, $|S_k(i)|{=}1$, i.i.d. over time and across frequency bands;\footnote{If $S_k(i)$ does not have constant amplitude, we may approximate $H_{k}(i)S_{k}(i)$ as complex Gaussian with zero mean and variance $\sigma_H^2\mathbb E[|S_{k}(i)|^2]$, without any modifications to the subsequent analysis.} $B_k(i){\in}\{0,1\}$ is the binary spectrum occupancy variable, with $B_k(i){=}1$, if the $k$th spectrum band is occupied by a PU at time $i$, and $B_k(i){=}0$, otherwise. Therefore, the PU occupancy state in the entire wideband spectrum of interest at time $i$ can be modeled as the vector 
+\begin{equation}\label{5}
+    \vec{B}(i) = [B_1(i), B_2(i), B_3(i), \cdots, B_K(i)]^T {\in} \{0, 1\}^K.
+\end{equation}
+PUs join and leave the spectrum at random times. To capture this temporal correlation, we model $\vec{B}(i)$ as a Markov process,
+\begin{equation}\label{6}
+    \begin{aligned}
+        \mathbb{P}(\vec{B}(i+1)|\vec{B}(j), \forall j \leq i) = \mathbb{P}(\vec{B}(i+1)|\vec{B}(i)).
+    \end{aligned}
+\end{equation}
+Additionally, when joining the spectrum pool, the PUs occupy a number of adjacent spectrum bands, and may vary their spectrum needs over time depending on time-varying traffic demands, channel conditions, etc. To capture this behavior, we model $\vec{B}(i)$ as a Markov chain across spectrum bands, i.e., the spectrum occupancy at time $i{+}1$ in frequency band $k$, $B_{k}(i{+}1)$, depends on the occupancy state of the adjacent spectrum band at the same time, $B_{k{-}1}(i{+}1)$, and that of the same spectrum band $k$ in the previous time index $i$, $B_{k}(i)$. This structure is depicted in Fig. \ref{fig:1}, and is described as
+\begin{align}\label{7}
+&         \mathbb{P}(\vec{B}(i+1)|\vec{B}(i))\\&=
+\nonumber
+         \mathbb{P}(B_{1}(i+1)|B_{1}(i))
+         \prod_{k=2}^{K} \mathbb{P}(B_{k}(i+1)|B_{k}(i), B_{k-1}(i+1)).
+\end{align}
+Overall, the correlation model is expressed by two Markov chains: one across time and the other across frequencies. We parameterize this two-dimensional Markov chain structure by the vector $\vec{\theta}{=}[\vec{p}\ \vec{q}]^\intercal$, where $\vec{p}{=}[p_{uv}{=}\mathbb{P}(B_{k}(i{+}1){=}1|B_{k{-}1}(i{+}1){=}u,B_{k}(i){=}v){:} u,v{\in}\{0,1\}]^{\intercal}$ and $\vec{q}{=}[q_{w}{=}\mathbb{P}(B_{1}(i{+}1){=}1|B_{1}(i){=}w){:}w{\in}\{0,1\}]^\intercal$. We estimate this parameter vector $\vec{\theta}$, using the parameter estimation algorithm described in Sec. \ref{III} in order to obtain the transition model underlying the MDP, given by \eqref{7}.
+
+\noindent{\bf Spectrum Sensing Model:}
+In order to detect the available spectrum holes, the SU performs spectrum sensing. However, owing to physical design limitations of its spectrum sensor \cite{5990482}, it can sense at most $\kappa$ out of $K$ spectrum bands at any given time, with $1{\leq}\kappa{\leq}K$. Let $\mathcal K_{i}{\subseteq}\{1,2,\dots,K\}$ with $|\mathcal K_i|{\leq}\kappa$ be the set of indices of spectrum bands sensed by the SU at time $i$, part of our design.
+Then, we define the observation vector
+\begin{equation}\label{8}
+    \vec{Y}(i) = [Y_k(i)]_{k {\in} \mathcal K_i},
+\end{equation}
+with $Y_k(i)$ given by \eqref{3}.
+The true states $\vec{B}(i)$ encapsulate the actual occupancy state of the PUs, and the measurements $\vec{Y}(i)$ at the SU are noisy observations of these true states, which are modeled to be the observed states of an HMM. Given $\vec{B}(i)$ and $\mathcal K_i$, the probability density function of $\vec{Y}(i)$ is
+\begin{equation}\label{9}
+    f(\vec{Y}(i)|\vec{B}(i), \mathcal K_i) = \prod_{k \in \mathcal K_i} f(Y_k(i)|B_k(i)),
+\end{equation}
+owing to the independence of channels (given the occupancy states), noise, and transmitted symbols across frequency bands. Moreover, from \eqref{3},
+\begin{equation}\label{10}
+ Y_k(i)|B_k(i) \sim \mathcal{CN}(0, \sigma_H^2P_{tx}B_k(i) + \sigma_V^2).
+\end{equation}
+
+\noindent{\bf POMDP Agent Model:}
+We model the SU as a POMDP agent, whose goal is to devise an optimal sensing and access policy in order to maximize its throughput, while ensuring minimal interference with incumbent transmissions. The agent's limited sensing capabilities coupled with its noisy observations result in uncertainty on the PU spectrum occupancy state and on the exact effect of executing a spectrum access action on the radio environment. The transition model of the underlying MDP, as described by \eqref{7}, is denoted by $\mathbf{A}$ and is learned by the agent by interacting with the radio environment (see Sec. \ref{III}). The observation model is denoted by $\mathbf{M}$ and is given by \eqref{9}, with $f(Y_k(i)|B_k(i))$ given by \eqref{10}. 
+
+We model the POMDP as a tuple $(\mathcal B,\mathcal{A},\mathcal{Y},\mathbf{A},\mathbf{M})$ where $\mathcal{B}{\equiv}\{0,1\}^K$ represents the state space of the underlying MDP, given by all possible realizations of the spectrum occupancy vector $\vec{B}$, as described by \eqref{5}; $\mathcal{A}$ represents the action space of the agent, given by all possible combinations in which $\kappa$ spectrum bands are chosen to be sensed out of $K$ at any given time; and $\mathcal{Y}$ represents the observation space of the agent based on the aforementioned signal model. The state of the POMDP at time $i$ is given by the \emph{prior belief} $\beta_i$, which represents the probability distribution of the underlying MDP state $\vec{B}(i)$, given the information collected by the agent up to time $i$, but before collecting the new information in time-slot $i$. At the beginning of each time index $i$, given $\beta_i$, the agent selects $\kappa$ spectrum bands out of $K$, according to a policy $\mathcal K_i{=}\pi(\beta_i)$, which defines the sensing set $\mathcal K_i$, performs spectrum sensing  on these spectrum bands, observes $\vec{Y}(i){\in} \mathcal{Y}$, and updates its \emph{posterior belief} $\hat{\beta}_i$ of the current spectrum occupancy $\vec{B}(i)$ as 
+\begin{align}\label{11}
+\nonumber
+\hat\beta_i(\vec{B}') &= \mathbb{P}(\vec{B}(i) = \vec{B}'|\vec{Y}(i), \mathcal K_i, \beta_i)\\&=
+\frac{\mathbb{P}(\vec{Y}(i)|\vec{B}', \mathcal{K}_i) \beta_i(\vec{B}')}{
+\sum_{\vec{B}'' {\in} \{0,1\}^K} \mathbb{P}(\vec{Y}(i)|\vec{B}'', \mathcal{K}_i) \beta_i(\vec{B}'')}.
+\end{align}
+Given the posterior belief $\hat{\beta}_i$, we estimate $\vec{B}(i)$ as 
+$$
+\vec{\phi}(\hat{\beta}_{i})\triangleq \argmax_{\vec{B} {\in} \mathcal{B}} \hat{\beta}_{i}(\vec{B}),
+$$
+with the $k$th spectrum channel estimate given by $\phi_k(\hat{\beta}_{i})$. If this MAP estimation procedure deems the $k$th channel to be idle, i.e., $\phi_{k}(\hat{\beta}_{i}){=}0$, the SU accesses the channel to deliver its network flows. Else, it leaves it untouched. Given the PU occupancy state $\vec{B}(i)$ and posterior belief $\hat\beta_i$, the reward metric of the POMDP is given by the number of \emph{truly idle} bands detected by the SU, accounting for the throughput maximization aspect of the agent's objective, and a penalty for \emph{missed detections} accounting for interference to the incumbents, i.e.,
+\begin{equation}
+\nonumber
+    R(\vec{B}(i), \hat{\beta}_i){=}\sum_{k=1}^{K} (1{-}B_k(i))(1{-}\phi_k(\hat{\beta}_{i})){-}\lambda B_k(i)(1 - \phi_k(\hat{\beta}_i)),
+\end{equation}
+where $\lambda{>}0$ represents a penalty cost. After performing data transmission, the SU computes the prior belief for the next time-slot based on the dynamics of the Markov chain as
+\begin{equation}\label{13}
+    \beta_{i+1}(\vec{B}'')=\sum_{\vec{B}'}\mathbb{P}(\vec{B}(i+1) = \vec{B}''|\vec{B}(i)=\vec{B}')\hat{\beta}_{i}(\vec{B}').
+\end{equation}
+We denote the functions that map the prior belief $\beta_i$ to the posterior belief $\hat\beta_i$ through the spectrum sensing action $\mathcal K_i$ and the observation signal $\vec{Y}(i)$, and the posterior belief $\hat\beta_i$ to the next prior belief $\beta_{i+1}$ as
+$$\hat\beta_i{=}\hat{\mathbb B}(\beta_i, \mathcal K_i, \vec{Y}(i)),\ \beta_{i+1}{=}{\mathbb B}(\hat\beta_i),\text{ respectively}.$$
+The goal is to determine an optimal spectrum sensing policy to maximize the infinite-horizon discounted reward, with discount factor $0{<}\gamma{<}1$,
+\begin{equation}\label{14}
+    \pi^{*}{=}\argmax_{\pi} V^{\pi}(\beta) \triangleq \mathbb{E}_{\pi} \Big[\sum_{i=1}^{\infty} \gamma^{i} R(\vec{B}(i), \hat{\beta}_i)|\beta_0 {=}\beta\Big],
+\end{equation}
+where $\beta_0$ is the initial belief, $\hat\beta_i$ is the posterior belief induced by policy $\mathcal K_i{=}\pi(\beta_i)$ and the observation $\vec{Y}(i)$ via $\hat\beta_i{=}\hat{\mathbb B}(\beta_i, \mathcal K_i, \vec{Y}(i))$, and we have defined the value function $V^{\pi}(\beta)$ under policy $\pi$ starting from belief $\beta$.
+The optimal policy $\pi^*$ and the corresponding optimal reward $V^*(\beta)$ are the solutions of Bellman's optimality equation $V^*{=}\mathcal{H}[V^*]$, where the operator $V_{t+1}{=}\mathcal {H}[V_{t}]$ is defined as
+\begin{align}\label{16}
+\nonumber
+        V_{t+1}(\beta) = &\max_{\mathcal{K} {\in} \mathcal{A}} \sum_{\vec{B} {\in} \mathcal{B}} \beta(\vec{B}) \mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta, \mathcal{K}, \vec{Y}))\\ &+\gamma V_{t}(\mathbb{B}(\hat{\mathbb{B}}(\beta, \mathcal{K}, \vec{Y})))\Big],\ \forall \beta.
+\end{align}
+This problem can be solved using the value iteration algorithm, i.e., by solving \eqref{16} iteratively until convergence to a fixed point. However, two challenges arise in our formulation:
+\begin{itemize}
+\item The parameter vector $\vec{\theta}$ is unknown, hence the belief updates 
+$\hat{\mathbb B}$ and $\mathbb B$ cannot be computed;
+\item The number of states of the underlying MDP scales exponentially with the number of spectrum bands, resulting in a high-dimensional belief space, hence, solving equation \eqref{16} exactly is computationally infeasible.
+\end{itemize}
+To overcome these challenges, in the next section, we present a framework to estimate the transition model of the underlying MDP online, while concurrently utilizing this learned model to solve for the optimal policy via PERSEUS, a low-complexity, randomized point-based value iteration algorithm \cite{DBLP:journals/corr/abs-1109-2145}.
+\vspace{-4mm}
+\section{Approaches and Algorithms}\label{III}
+\noindent{\bf Occupancy Behavior Model Estimation:}
+In real-world implementations of cognitive radios, the correlation model defining the occupancy behavior of the PUs is unknown to the SUs, and therefore needs to be learned over time. The learned model then needs to be fed back to the POMDP agent which is solving for the optimal spectrum sensing and access policy simultaneously. Inherently, the approach constitutes solving the Maximum Likelihood Estimation (MLE) problem
+\begin{equation}\label{17}
+\vec{\theta}^{*} = \argmax_{\vec{\theta}} \log\Big(\sum_{\mathbf{B}} \mathbb{P}(\mathbf{B}, \mathbf{Y}| \vec{\theta})\Big),
+\end{equation}
+where $\vec{\theta}{=}[\vec{p}\ \vec{q}]^{T}$, $\mathbf{Y}=[\vec{Y}(i)]_{i{=}1}^{\tau}$, $\mathbf{B}=[\vec{B}(i)]_{i{=}1}^{\tau}$,
+and $\tau$ refers to the learning period of the parameter estimator: this can be equal to the entire duration of the POMDP agent's interaction with the radio environment implying simultaneous model learning or can be a predefined parameter learning period before triggering the POMDP agent.
+This problem can be solved using the Expectation-Maximization (EM) algorithm \cite{778361}, with the E-step given by
+\begin{equation}
+    Q(\vec{\theta}|\vec{\theta}^{(t)}) = \mathbb{E}_{\mathbf{B}|\mathbf{Y}, \vec{\theta}^{(t)}} \Big[ \log \Big(\mathbb{P}(\mathbf{B}, \mathbf{Y}|\vec{\theta}^{(t)})\Big)\Big].
+\end{equation}
+The term $Q(\vec{\theta}|\vec{\theta}^{(t)})$ can be computed by employing the Forward-Backward algorithm \cite{778361} using the current estimate $\vec{\theta}^{(t)}$. The M-step constitutes
+\begin{equation}
+\vec{\theta}^{(t+1)}
+ = \argmax_{\vec{\theta}} Q(\vec{\theta}|\vec{\theta}^{(t)}),
+\end{equation}
+which involves re-estimation of the maximum likelihood parameter vector $\vec{\theta}$ using the statistics obtained from the Forward-Backward algorithm.
+
+\noindent{\bf The PERSEUS Algorithm:}
+We solve for the optimal spectrum sensing and access policy, formulated as a POMDP, in parallel with the parameter estimation algorithm, employing the model estimates until both the EM and the POMDP algorithms converge. As discussed in Sec. \ref{II} of this article, solving the Bellman equation \eqref{16} for POMDPs with large state and action spaces using exact value iteration is computationally infeasible \cite{DBLP:journals/corr/abs-1109-2145}. Hence, we resort to approximate value iteration methods to ensure that the system scales well to a large number of bands in the spectrum of interest. One such method, the PERSEUS algorithm \cite{DBLP:journals/corr/abs-1109-2145} is a randomized point-based approximate value iteration technique that involves an initial phase of determining a set of so-called \emph{reachable beliefs} $\tilde{\mathcal{B}}$ by allowing the agent to randomly interact with the radio environment. The goal of PERSEUS is to improve the value of all the belief points in this set $\tilde{\mathcal{B}}$ by updating the value of only a subset of these belief points, chosen iteratively at random. Using the notion that, for finite-horizon POMDPs, $V^*$ in \eqref{16} can be approximated by a piece-wise linear and convex function \cite{DBLP:journals/corr/abs-1109-2145}, PERSEUS operates on the core idea that the value function at iteration $t$ can be parameterized by a set of hyperplanes $\{\vec{\alpha}_{t}^{u}\}$, $u {\in} \{1,2,\dots,|\tilde{\mathcal{B}}|\}$, each representing a region of the belief space for which it is the maximizing element, and each associated with an optimal spectrum sensing action $\mathcal K_t^{u}$. That is, when operating with belief $\beta$, the value function is approximated as
+\begin{equation}
+    \begin{aligned}\label{40}
+        V_{t}(\beta) \approx \beta \cdot \vec{\alpha}_{t}^{u^*},
+        \ 
+        u^* = \argmax_{u\in\{1,2,\dots,|\tilde{\mathcal{B}}|\}} \beta \cdot \vec{\alpha}_{t}^{u},
+    \end{aligned}
+\end{equation}
+and the optimal spectrum sensing action is $\mathcal K_t^{u^*}$, where $\beta\cdot\vec{\alpha}{=}\sum_{\vec{B}}\beta(\vec{B})\vec{\alpha}(\vec{B})$ denotes inner product. The set of hyperplanes $\{\vec{\alpha}_{t}^{u}\}$ associated with the set $\tilde{\mathcal{B}}$ are improved over multiple iterations of PERSEUS: given $\{\vec{\alpha}_{t}^{u}\}$ and the optimal spectrum sensing actions $\{\mathcal K_{t}^{u}\}$ at iteration $t$, a PERSEUS iteration generates a new set of hyperplanes $\{\vec{\alpha}_{t+1}^{u}\}$ and associated spectrum sensing actions
+$\{\mathcal K_{t+1}^{u}\}$, as we now describe. Let $\tilde{\mathcal{U}}$ be the set of unimproved belief points (initially, $\tilde{\mathcal{U}}{=}\tilde{\mathcal{B}}$). Then, a belief $\beta_u$ is picked randomly from $\tilde{\mathcal{U}}$. Next, a \emph{backup} operation is performed on $\beta_u$ to determine a new associated hyperplane and spectrum sensing action as in \cite{DBLP:journals/corr/abs-1109-2145},
+\begin{equation}\label{20}
+    \vec{\alpha}_{t+1}^{u}=\Xi_{\mathcal K_{t+1}^{u}}^{u},\ 
+    \mathcal K_{t+1}^{u}=\argmax_{\mathcal{K} \in \mathcal{A}} \beta_u \cdot \Xi_{\mathcal{K}}^{u},
+\end{equation}
+where $\Xi_{\mathcal{K}}^{u}$ is the hyperplane corresponding to a one-step look-ahead under action $\mathcal K$ and belief $\beta_u$, given by
+\begin{align*}
+\Xi_{\mathcal{K}}^{u}(\vec{B}) = &\mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))\\
+&+\gamma 
+        \sum_{\vec{B}'}\mathbb{P}(\vec{B}(i+1){=} \vec{B}'|\vec{B}(i){=}\vec{B})
+                \Xi_{\mathcal{K}, \vec{Y}}^{u}(\vec{B}')\Big]
+\nonumber
+\end{align*}
+and $\Xi_{\mathcal{K}, \vec{Y}}^{u}$ is the hyperplane associated with the future value function computed from the previous set of hyperplanes as
+\begin{equation}
+    \Xi_{\mathcal{K}, \vec{Y}}^{u}=\argmax_{\alpha_{t}^{u'}, u' {\in} \{1, 2, \dots, |\tilde{\mathcal{B}}|\}} \mathbb{B}(\hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))\cdot\alpha_{t}^{u'},
+\nonumber
+\end{equation}
+under the new belief $\mathbb{B}(\hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))$ reached from $\beta_{u}$, under action $\mathcal{K}$ and observation $\vec{Y}$, in one step. At this point, $\beta_{u}{\cdot}\vec{\alpha}_{t+1}^{u}$ is the approximate value function associated with the belief $\beta_u$. If $\beta_{u}{\cdot}\vec{\alpha}_{t+1}^{u}{\geq}V_{t}(\beta_{u})$, the newly defined hyperplane generates an improved value function; otherwise ($\beta_{u}{\cdot}\vec{\alpha}_{t+1}^{u}{<}V_{t}(\beta_{u})$), the value function is worsened and the previous hyperplane is kept, hence $\vec{\alpha}_{t+1}^{u}{:=}\vec{\alpha}_{t}^{u}$ and $\mathcal K_{t+1}^{u}{:=}\mathcal K_{t}^{u}$. Finally, the belief $\beta_u$ is removed from $\tilde{\mathcal{U}}$, along with all belief points that are improved by the newly added hyperplane:
+$$
+\tilde{\mathcal{U}}\leftarrow \tilde{\mathcal{U}}\setminus\{\beta_u\}\setminus
+\{\beta'\in\tilde{\mathcal{U}}:\beta'{\cdot}\vec{\alpha}_{t+1}^{u}\geq V_t(\beta')\}.
+$$
+This operation continues until the set $\tilde{\mathcal{U}}$ is empty, which constitutes a single PERSEUS iteration. The PERSEUS iterations continue until a termination condition is met, i.e., $|V_{t{+}1}(\beta){-}V_{t}(\beta)|{<}\epsilon,\ \forall \beta{\in} \tilde{\mathcal{B}},\ \epsilon{>}0$. The belief update procedure outlined in \eqref{11} is an essential aspect of POMDPs, which can turn into a performance bottleneck for large state spaces due to the inherent iteration over all possible states. In order to circumvent this problem, we employ a \emph{fragmentation heuristic}, i.e., we fragment the spectrum into smaller, independent sets of correlated channels and then run the PERSEUS algorithm on these fragments by leveraging multi-processing and multi-threading tools available at our disposal in software frameworks. Furthermore, we avoid iterating over all possible states by employing a \emph{belief update simplification heuristic}, i.e., we allow only those state transitions we deem to be the most probable -- for example, only those that involve a Hamming distance of up to $3$ between the previous and current state vectors in a radio environment with $18$ frequency channels.
+\vspace{-4mm}
+\section{Numerical Evaluations}\label{IV}
+\noindent{\bf Simulation Setup:}
+We simulate a radio environment with $J{=}3$ PUs occupying a set of $K{=}18$ channels, each of bandwidth $\text{BW}{=}160 \text{kHz}$, according to a Markovian time-frequency correlation structure with parameters $\vec{p}{=}[p_{00}{=}0.1,p_{01}{=}p_{10}{=}0.3,p_{11}{=}0.7]^\intercal$ and $\vec{q}{=}[q_{0}{=}0.3,q_{1}{=}0.8]^\intercal$. A SU intelligently tries to access the available white spaces. We model the expected SINRs at the SU and PU receivers, averaged out with respect to fading and conditional on the SU and PU access decisions, as follows: 
+at the PU receivers,
+$\text{SINR}_{\text{PU}}{=}17\text{dB}$ when there is no interference from the SU, and $\text{SINR}_{\text{PU}}{=}6\text{dB}$ under SU interference; 
+at the SU receiver,
+ $\text{SINR}_{\text{SU}}{=}11\text{dB}$ when the channel is not occupied by an incumbent, and $\text{SINR}_{\text{SU}}{=}{-}6\text{dB}$ under PU interference.
+  We denote 
+ the actual SINR realizations in 
+ frequency $k$ and time index $i$ by $\text{SINR}_{\text{SU}}(k,i)$ 
+ and $\text{SINR}_{\text{PU}}(k,i)$,
+ with $\text{SINR}_{\text{SU}}(k,i){=}0$ if the SU remains idle.
+The SU can sense at most $\kappa{=}6$ out of $K{=}18$ channels at any given time, it is backlogged and accesses all the channels deemed idle. 
+ Hence, the average SU throughput
+ over $T$ time-slots is given by $$C^{\text{SU}} = \frac{1}{T}\sum_{i=1}^T \sum_{k=1}^{K} R_{\text{SU}} \cdot \mathcal{I}\left(\text{SINR}_{\text{SU}}(k,i) \geq 2^{R_{\text{SU}}/\text{BW}} - 1\right),$$ where $R_{\text{SU}}{=}0.6$Mbps is the transmission rate
+   of the SU on each frequency channel. Similarly, the throughput attained by the PUs
+  over the same time interval,
+  normalized over time and the number of transmissions,
+   is given by $$C^{\text{PUs}}{=}\frac{\sum_{i=1}^{T}\sum_{k=1}^{K}R_{\text{PU}}B_{k}(i)\mathcal{I}\left(\text{SINR}_{\text{PU}}(k,i){\geq}2^{R_{\text{PU}}/\text{BW}}{-}1\right)}{\sum_{i=1}^T\sum_{k=1}^{K}B_{k}(i)},$$ where $R_{\text{PU}}{=}0.9$Mbps is the transmission rate of the PUs on each frequency channel. To solve for the optimal PERSEUS policy, we employ a discount factor of $\gamma{=}0.9$ and a termination threshold of $\epsilon{=}10^{-5}$.
+
+\noindent{\bf Evaluations:}
+The plot depicted in Fig. \ref{fig:4} shows the mean squared error (MSE) convergence of the parameter estimation algorithm to determine the time-frequency correlation parameters $\vec{\theta}$, averaged over $45{\cdot} 10^3$ iterations. Assuming a time-slot duration of $3$ms, this corresponds 
+to an observation and estimation period of $135$s. Starting with initial estimates of $0.5$ for the parameters $p_{uv}$ and $q_{w}$, ${\forall}u,v,w{\in}\{0,1\}$, the EM algorithm iteratively reduces the MSE, as it goes through the E and M steps, and converges to the true transition model with an error of $10^{-8}$.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\linewidth]{PerseusRegretConvergence_MeanSquareErrorConvergence.png}
+    \caption{Convergence of: MSE of the EM algorithm to estimate $\vec{\theta}$; and Loss of the fragmented PERSEUS algorithm with belief update simplification}
+    \vspace{-5mm}
+    \label{fig:4}
+\end{figure}
+Fig. \ref{fig:4} also illustrates the convergence of the PERSEUS algorithm, on the same time scale and in the same simulation run. The loss metric is defined as the difference in utility obtained by our PERSEUS algorithm, denoted by $R_{P}(\vec{B}(i), \hat{\beta}_{i})$ at time-slot $i$, and an \emph{Oracle} which knows the exact occupancy behavior of incumbents in the network, with utility $R_{O}(\vec{B}(i))$.
+
+In Fig. \ref{fig:8}, we evaluate the performance of the proposed framework in terms of SU and PU network throughputs over varying values of the penalty term $\lambda$. As surmised, we find that our POMDP agent decides to limit channel access when the penalty is high, leading to lower SU network throughput and PU interference; conversely, it follows a more lenient channel access strategy when the penalty is low, resulting in higher SU network throughput and PU interference. In general, we observe the trend of rising throughput and increasing interference as the penalty for missed detections $\lambda$ is lowered.
+
+We also compare the performance of our framework with state-of-the-art algorithms, namely: two separate versions of Minimum Entropy Merging (MEM) with Channel Correlation Estimation (CCE) and Markov Process Estimation (MPE) -- one with Greedy Clustering (GC) and the other with Minimum Entropy Increment (MEI) Clustering \cite{6956794}, both with a correlation threshold of $\rho_{th}{=}0.77$ and a sensing restriction of $6$; the Viterbi algorithm \cite{4554696} with a priori model information and sensing restriction of $6$; a Neyman-Pearson Detector \cite{5167826}, which assumes independence among channels across both frequency and time, no sensing restrictions, an AND fusion rule across 300 different samplings, and whose threshold is determined with respect to a false alarm probability of $0.3$; and a variant of our PERSEUS framework in which the agent has perfect knowledge of the correlation model. We note that our framework out-performs the state-of-the-art by achieving a higher SU throughput for a certain PU throughput degradation: for the same level of PU throughput degradation, our framework achieves a 37.5\% increase in SU throughput over the MEM with MEI-CCE and MPE algorithm, a 25\% increase over the Neyman-Pearson Detector (remarkable since this algorithm does not impose any sensing restrictions), and a 6\% increase over the Viterbi algorithm. 
+
+These results reveal the advantages of exploiting the correlation structure (as opposed to Neyman-Pearson Detector which assumes independence) and of adapting the spectrum sensing decision to optimize the performance (as opposed to Viterbi, which uses a fixed sensing strategy). Finally, unlike these works, our framework enables a critical feature in practical scenarios, where different interference constraints may be imposed on incumbents: the ability of the SU to regulate the interference caused to PUs, by adjusting the parameter $\lambda$.
+\vspace{-5mm}
+\section{Conclusion}\label{V}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\linewidth]{SU_Throughput_PU_Interference_Varying_Penalty.png}
+    \caption{Evaluation of $C^{\text{SU}}$ versus $C^{\text{PUs}}$ for different values of the penalty $\lambda$; comparison with state-of-the-art}
+    \vspace{-5mm}
+    \label{fig:8}
+\end{figure}
+In this letter, we formulate the optimal spectrum sensing and access problem in cognitive radio networks via POMDPs. In a radio environment wherein the occupancy behavior of the incumbents is correlated across time and frequencies, we present a framework that employs the EM algorithm to estimate the transition model of this occupancy behavior, and leverage a fragmented PERSEUS algorithm with belief update heuristics to concurrently solve for the optimal spectrum sensing and access policy. In addition to its superior performance compared to the state-of-the-art, our framework facilitates regulation of the trade-off between SU throughput and PU interference.
+\bibliographystyle{IEEEtran}
+\vspace{-5mm}
+\bibliography{ref}
+\end{document}

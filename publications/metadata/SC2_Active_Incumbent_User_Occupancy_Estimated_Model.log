@@ -1,0 +1,31 @@
+-----Console Logs-----
+
+Spatial Chain:
+P(1|0) = 0.6
+P(0|0) = 0.4
+P(1|1) = 0.75
+P(0|1) = 0.25
+
+Temporal Chain:
+P(1|0) = 0.67
+P(0|0) = 0.33
+P(1|1) = 0.88
+P(0|1) = 0.12
+
+Spatio-Temporal Chain:
+Note: Notation - pxy = P(1|ch=x, time=y)
+
+P(1|1,1) = 0.8 = p11
+P(0|1,1) = 0.2
+P(1|1,0) = 0.71 = p10
+P(0|1,0) = 0.29
+P(1|0,1) = 0.75 = p01
+P(0|0,1) = 0.25
+P(1|0,0) = 0.25 = p00
+P(0|0,0) = 0.75
+
+Kullback-Liebler Divergence:
+Time-Freq Correlation = 0.05997 (used in our paper)
+Independence = 0.23071 (widely used in the state-of-the-art)
+Freq correlation only = 0.25665 (not widely used)
+Time correlation only = 0.14349 (used in the TD-SARSA paper)

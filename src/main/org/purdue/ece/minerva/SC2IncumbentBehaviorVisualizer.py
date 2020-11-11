@@ -10,7 +10,7 @@ import collections
 import plotly
 import plotly.graph_objs as graph_objs
 
-plotly.tools.set_credentials_file(username='bkeshava', api_key='RHqYrDdThygiJEPiEW5S')
+plotly.tools.set_credentials_file(username='bkeshava', api_key='BEp2EMeaooErdwcIF8Ss')
 
 
 # DARPA SC2 DSRC Incumbent Behavior Visualization
@@ -211,9 +211,9 @@ class SC2IncumbentBehaviorVisualizer(object):
         # Layout
         layout = graph_objs.Layout(title='Spectrum Occupancy Map of an SC2 DSRC WLAN Incumbent with SRN_ID: ' +
                                          str(self.SRN_ID) + ' and spectrum ''ranging from ' +
-                                         str(self.lower_end_of_the_spectrum) + ' Hz to ' +
-                                         str(self.higher_end_of_the_spectrum) + ' Hz',
-                                   xaxis=dict(title='Sampling Rounds extracted from TimeStamps', showgrid=True,
+                                         str(self.lower_end_of_the_spectrum / 1e6) + ' MHz to ' +
+                                         str(self.higher_end_of_the_spectrum / 1e6) + ' MHz',
+                                   xaxis=dict(title='Sampling Rounds extracted from Timestamps', showgrid=True,
                                               linecolor='black', showticklabels=True, tickvals=self.time_axis),
                                    yaxis=dict(
                                        title='Frequency of channels (in ' + self.FREQUENCY_UNITS + ')',
@@ -223,7 +223,7 @@ class SC2IncumbentBehaviorVisualizer(object):
         figure = graph_objs.Figure(data=data, layout=layout)
         try:
             # Interactive plotting online so that the plot can be saved later for analytics
-            plotly.plotly.iplot(figure, filename='Spectrum Occupancy Map of an SC2 DSRC WLAN Incumbent')
+            plotly.plotly.plot(figure, filename='Spectrum Occupancy Map of an SC2 DSRC WLAN Incumbent')
         except Exception as e:
             print(
                 '[ERROR] SC2IncumbentBehaviorVisualizer visualize: Plotly Heatmap- '

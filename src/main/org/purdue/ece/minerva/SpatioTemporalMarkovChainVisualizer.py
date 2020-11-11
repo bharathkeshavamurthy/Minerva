@@ -10,7 +10,7 @@ import numpy
 import plotly
 import plotly.graph_objs as graph_objs
 
-plotly.tools.set_credentials_file(username='bkeshava', api_key='RHqYrDdThygiJEPiEW5S')
+plotly.tools.set_credentials_file(username='bkeshava', api_key='6OIjH4XrjB5IyX8bwcaL')
 
 
 # Channel Object
@@ -38,8 +38,8 @@ class SpatioTemporalMarkovChainVisualizer(object):
     NUMBER_OF_CHANNELS = 18
 
     # Number of sampling rounds
-    # t goes all the way to 100
-    NUMBER_OF_SAMPLING_ROUNDS = 100
+    # t goes all the way to 300
+    NUMBER_OF_SAMPLING_ROUNDS = 300
 
     # (t,k) represents one "pixel"
 

@@ -1,0 +1,1492 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  10 NOV 2020 18:09
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**main.tex
+(./main.tex
+LaTeX2e <2018-12-01>
+(./IEEEtran.cls
+Document Class: IEEEtran 2015/08/26 V1.8b by Michael Shell
+-- See the "IEEEtran_HOWTO" manual for usage information.
+-- http://www.michaelshell.org/tex/ieeetran/
+\@IEEEtrantmpdimenA=\dimen102
+\@IEEEtrantmpdimenB=\dimen103
+\@IEEEtrantmpdimenC=\dimen104
+\@IEEEtrantmpcountA=\count80
+\@IEEEtrantmpcountB=\count81
+\@IEEEtrantmpcountC=\count82
+\@IEEEtrantmptoksA=\toks14
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 503.
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+-- Using 8.5in x 11in (letter) paper.
+-- Using PDF output.
+\@IEEEnormalsizeunitybaselineskip=\dimen105
+-- This is a 12 point document.
+\CLASSINFOnormalsizebaselineskip=\dimen106
+\CLASSINFOnormalsizeunitybaselineskip=\dimen107
+\IEEEnormaljot=\dimen108
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <22> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <22> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+\IEEEquantizedlength=\dimen109
+\IEEEquantizedlengthdiff=\dimen110
+\IEEEquantizedtextheightdiff=\dimen111
+\IEEEilabelindentA=\dimen112
+\IEEEilabelindentB=\dimen113
+\IEEEilabelindent=\dimen114
+\IEEEelabelindent=\dimen115
+\IEEEdlabelindent=\dimen116
+\IEEElabelindent=\dimen117
+\IEEEiednormlabelsep=\dimen118
+\IEEEiedmathlabelsep=\dimen119
+\IEEEiedtopsep=\skip41
+\c@section=\count83
+\c@subsection=\count84
+\c@subsubsection=\count85
+\c@paragraph=\count86
+\c@IEEEsubequation=\count87
+\abovecaptionskip=\skip42
+\belowcaptionskip=\skip43
+\c@figure=\count88
+\c@table=\count89
+\@IEEEeqnnumcols=\count90
+\@IEEEeqncolcnt=\count91
+\@IEEEsubeqnnumrollback=\count92
+\@IEEEquantizeheightA=\dimen120
+\@IEEEquantizeheightB=\dimen121
+\@IEEEquantizeheightC=\dimen122
+\@IEEEquantizeprevdepth=\dimen123
+\@IEEEquantizemultiple=\count93
+\@IEEEquantizeboxA=\box27
+\@IEEEtmpitemindent=\dimen124
+\IEEEPARstartletwidth=\dimen125
+\c@IEEEbiography=\count94
+\@IEEEtranrubishbin=\box28
+) (/usr/local/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2018/08/11 v2.0j Standard LaTeX package
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/base/t1enc.def
+File: t1enc.def 2018/08/11 v2.0j Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+)
+LaTeX Font Info:    Try loading font information for T1+ptm on input line 105.
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/psnfss/t1ptm.fd
+File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
+))
+(/usr/local/texlive/2019/texmf-dist/tex/latex/subfigure/subfigure.sty
+Package: subfigure 2002/03/15 v2.1.5 subfigure package
+\subfigtopskip=\skip44
+\subfigcapskip=\skip45
+\subfigcaptopadj=\dimen126
+\subfigbottomskip=\skip46
+\subfigcapmargin=\dimen127
+\subfiglabelskip=\skip47
+\c@subfigure=\count95
+\c@lofdepth=\count96
+\c@subtable=\count97
+\c@lotdepth=\count98
+
+****************************************
+* Local config file subfigure.cfg used *
+****************************************
+(/usr/local/texlive/2019/texmf-dist/tex/latex/subfigure/subfigure.cfg)
+\subfig@top=\skip48
+\subfig@bottom=\skip49
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/ulem/ulem.sty
+\UL@box=\box29
+\UL@hyphenbox=\box30
+\UL@skip=\skip50
+\UL@hook=\toks15
+\UL@height=\dimen128
+\UL@pe=\count99
+\UL@pixel=\dimen129
+\ULC@box=\box31
+Package: ulem 2012/05/18
+\ULdepth=\dimen130
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2019/04/01 v2.17c AMS math features
+\@mathmargin=\skip51
+
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01 AMS text
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks16
+\ex@=\dimen131
+))
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen132
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count100
+LaTeX Info: Redefining \frac on input line 227.
+\uproot@=\count101
+\leftroot@=\count102
+LaTeX Info: Redefining \overline on input line 389.
+\classnum@=\count103
+\DOTSCASE@=\count104
+LaTeX Info: Redefining \ldots on input line 486.
+LaTeX Info: Redefining \dots on input line 489.
+LaTeX Info: Redefining \cdots on input line 610.
+\Mathstrutbox@=\box32
+\strutbox@=\box33
+\big@size=\dimen133
+LaTeX Font Info:    Redeclaring font encoding OML on input line 733.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 734.
+\macc@depth=\count105
+\c@MaxMatrixCols=\count106
+\dotsspace@=\muskip10
+\c@parentequation=\count107
+\dspbrk@lvl=\count108
+\tag@help=\toks17
+\row@=\count109
+\column@=\count110
+\maxfields@=\count111
+\andhelp@=\toks18
+\eqnshift@=\dimen134
+\alignsep@=\dimen135
+\tagshift@=\dimen136
+\tagwidth@=\dimen137
+\totwidth@=\dimen138
+\lineht@=\dimen139
+\@envbody=\toks19
+\multlinegap=\skip52
+\multlinetaggap=\skip53
+\mathdisplay@stack=\toks20
+LaTeX Info: Redefining \[ on input line 2855.
+LaTeX Info: Redefining \] on input line 2856.
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/tools/hhline.sty
+Package: hhline 2014/10/28 v2.03 Table rule package (DPC)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks21
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2019/11/01 v1.3d Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 105.
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen140
+\Gin@req@width=\dimen141
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/yfonts/yfonts.sty
+Package: yfonts 2019/04/04 v1.4 (WaS&NP)
+Now handling font encoding LY ...
+... no UTF-8 mapping file for font encoding LY
+Now handling font encoding LYG ...
+... no UTF-8 mapping file for font encoding LYG
+LaTeX Info: Composite with undeclared \" in encoding LYG on input line 58.
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2016/07/10 v1.1e Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 147.
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/soul/soul.sty
+Package: soul 2003/11/17 v2.4 letterspacing/underlining (mf)
+\SOUL@word=\toks22
+\SOUL@lasttoken=\toks23
+\SOUL@cmds=\toks24
+\SOUL@buffer=\toks25
+\SOUL@token=\toks26
+\SOUL@spaceskip=\skip54
+\SOUL@ttwidth=\dimen142
+\SOUL@uldp=\dimen143
+\SOUL@ulht=\dimen144
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+LaTeX Info: Redefining \color on input line 709.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2014/10/28 v1.5q LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks27
+\verbatim@line=\toks28
+\verbatim@in@stream=\read1
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2017/10/31 v2.20.4
+\thm@style=\toks29
+\thm@bodyfont=\toks30
+\thm@headfont=\toks31
+\thm@notefont=\toks32
+\thm@headpunct=\toks33
+\thm@preskip=\skip55
+\thm@postskip=\skip56
+\thm@headsep=\skip57
+\dth@everypar=\toks34
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count112
+\float@exts=\toks35
+\float@box=\box34
+\@float@everytoks=\toks36
+\@floatcapt=\box35
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/tools/bm.sty
+Package: bm 2019/07/24 v1.2d Bold Symbol Support (DPC/FMi)
+\symboldoperators=\mathgroup6
+\symboldletters=\mathgroup7
+\symboldsymbols=\mathgroup8
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 141.
+LaTeX Info: Redefining \bm on input line 209.
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip11
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/tools/array.sty
+Package: array 2019/08/31 v2.4l Tabular extension package (FMi)
+\col@sep=\dimen145
+\ar@mcellbox=\box36
+\extrarowheight=\dimen146
+\NC@list=\toks37
+\extratabsurround=\skip58
+\backup@length=\skip59
+\ar@cellbox=\box37
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/cite/cite.sty
+LaTeX Info: Redefining \cite on input line 302.
+LaTeX Info: Redefining \nocite on input line 332.
+Package: cite 2015/02/27  v 5.5
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.te
+x
+\pgfutil@everybye=\toks38
+\pgfutil@tempdima=\dimen147
+\pgfutil@tempdimb=\dimen148
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-li
+sts.tex))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box38
+(/usr/local/texlive/2019/texmf-dist/tex/latex/ms/everyshi.sty
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/pgf.revision.tex)
+Package: pgfrcs 2019/08/03 v3.1.4b (3.1.4b)
+))
+Package: pgf 2019/08/03 v3.1.4b (3.1.4b)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2019/08/03 v3.1.4b (3.1.4b)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks39
+\pgfkeys@temptoks=\toks40
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.c
+ode.tex
+\pgfkeys@tmptoks=\toks41
+))
+\pgf@x=\dimen149
+\pgf@y=\dimen150
+\pgf@xa=\dimen151
+\pgf@ya=\dimen152
+\pgf@xb=\dimen153
+\pgf@yb=\dimen154
+\pgf@xc=\dimen155
+\pgf@yc=\dimen156
+\pgf@xd=\dimen157
+\pgf@yd=\dimen158
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count113
+\c@pgf@countb=\count114
+\c@pgf@countc=\count115
+\c@pgf@countd=\count116
+\t@pgf@toka=\toks42
+\t@pgf@tokb=\toks43
+\t@pgf@tokc=\toks44
+\pgf@sys@id@count=\count117
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2019/08/03 v3.1.4b (3.1.4b)
+)
+Driver file for pgf: pgfsys-pdftex.def
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
+ef
+File: pgfsys-pdftex.def 2019/08/03 v3.1.4b (3.1.4b)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
+df.def
+File: pgfsys-common-pdf.def 2019/08/03 v3.1.4b (3.1.4b)
+)))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.
+code.tex
+File: pgfsyssoftpath.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgfsyssoftpath@smallbuffer@items=\count118
+\pgfsyssoftpath@bigbuffer@items=\count119
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.
+code.tex
+File: pgfsysprotocol.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2019/08/03 v3.1.4b (3.1.4b)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen159
+\pgfmath@count=\count120
+\pgfmath@box=\box39
+\pgfmath@toks=\toks45
+\pgfmath@stack@operand=\toks46
+\pgfmath@stack@operation=\toks47
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.
+tex
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic
+.code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigo
+nometric.code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rando
+m.code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.compa
+rison.code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.
+code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round
+.code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.
+code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integ
+erarithmetics.code.tex)))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count121
+)) (/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.co
+de.tex
+File: pgfcorepoints.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgf@picminx=\dimen160
+\pgf@picmaxx=\dimen161
+\pgf@picminy=\dimen162
+\pgf@picmaxy=\dimen163
+\pgf@pathminx=\dimen164
+\pgf@pathmaxx=\dimen165
+\pgf@pathminy=\dimen166
+\pgf@pathmaxy=\dimen167
+\pgf@xx=\dimen168
+\pgf@xy=\dimen169
+\pgf@yx=\dimen170
+\pgf@yy=\dimen171
+\pgf@zx=\dimen172
+\pgf@zy=\dimen173
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconst
+ruct.code.tex
+File: pgfcorepathconstruct.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgf@path@lastx=\dimen174
+\pgf@path@lasty=\dimen175
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
+.code.tex
+File: pgfcorepathusage.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgf@shorten@end@additional=\dimen176
+\pgf@shorten@start@additional=\dimen177
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
+de.tex
+File: pgfcorescopes.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgfpic=\box40
+\pgf@hbox=\box41
+\pgf@layerbox@main=\box42
+\pgf@picture@serial@count=\count122
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
+ate.code.tex
+File: pgfcoregraphicstate.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgflinewidth=\dimen178
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
+ations.code.tex
+File: pgfcoretransformations.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgf@pt@x=\dimen179
+\pgf@pt@y=\dimen180
+\pgf@pt@temp=\dimen181
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.cod
+e.tex
+File: pgfcorequick.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.c
+ode.tex
+File: pgfcoreobjects.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproce
+ssing.code.tex
+File: pgfcorepathprocessing.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
+de.tex
+File: pgfcorearrows.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgfarrowsep=\dimen182
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
+e.tex
+File: pgfcoreshade.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgf@max=\dimen183
+\pgf@sys@shading@range@num=\count123
+\pgf@shadingcount=\count124
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.cod
+e.tex
+File: pgfcoreimage.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
+code.tex
+File: pgfcoreexternal.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgfexternal@startupbox=\box43
+))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
+de.tex
+File: pgfcorelayers.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspare
+ncy.code.tex
+File: pgfcoretransparency.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.
+code.tex
+File: pgfcorepatterns.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code.
+tex
+File: pgfcorerdf.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex
+File: pgfmoduleshapes.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgfnodeparttextbox=\box44
+)
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex
+File: pgfmoduleplot.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty
+Package: pgfcomp-version-0-65 2019/08/03 v3.1.4b (3.1.4b)
+\pgf@nodesepstart=\dimen184
+\pgf@nodesepend=\dimen185
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty
+Package: pgfcomp-version-1-18 2019/08/03 v3.1.4b (3.1.4b)
+))
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2019/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2019/08/03 v3.1.4b (3.1.4b)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)
+\pgffor@iter=\dimen186
+\pgffor@skip=\dimen187
+\pgffor@stack=\toks48
+\pgffor@toks=\toks49
+))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+Package: tikz 2019/08/03 v3.1.4b (3.1.4b)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex
+File: pgflibraryplothandlers.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgf@plot@mark@count=\count125
+\pgfplotmarksize=\dimen188
+)
+\tikz@lastx=\dimen189
+\tikz@lasty=\dimen190
+\tikz@lastxsaved=\dimen191
+\tikz@lastysaved=\dimen192
+\tikz@lastmovetox=\dimen193
+\tikz@lastmovetoy=\dimen194
+\tikzleveldistance=\dimen195
+\tikzsiblingdistance=\dimen196
+\tikz@figbox=\box45
+\tikz@figbox@bg=\box46
+\tikz@tempbox=\box47
+\tikz@tempbox@bg=\box48
+\tikztreelevel=\count126
+\tikznumberofchildren=\count127
+\tikznumberofcurrentchild=\count128
+\tikz@fig@count=\count129
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex
+File: pgfmodulematrix.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+\pgfmatrixcurrentrow=\count130
+\pgfmatrixcurrentcolumn=\count131
+\pgf@matrix@numberofcolumns=\count132
+)
+\tikz@expandcount=\count133
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2019/08/03 v3.1.4b (3.1.4b)
+)))
+(/usr/local/texlive/2019/texmf-dist/tex/latex/framed/framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip60
+\fb@frw=\dimen197
+\fb@frh=\dimen198
+\FrameRule=\dimen199
+\FrameSep=\dimen256
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/preprint/balance.sty
+Package: balance 1999/02/23 4.3 (PWD)
+\oldvsize=\dimen257
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/epsfig.sty
+Package: epsfig 2017/06/25 v1.7b (e)psfig emulation (SPQR)
+\epsfxsize=\dimen258
+\epsfysize=\dimen259
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf.sty
+Package: epstopdf 2016/05/15 v2.6 Conversion with epstopdf on the fly (HO)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)))
+(/usr/local/texlive/2019/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/iftex/ifluatex.sty
+Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2019/11/07 v1.0c TeX engine tests
+)))))
+(/usr/local/texlive/2019/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2019/07/25 v0.30 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/local/texlive/2019/texmf-dist/tex/generic/iftex/ifpdf.sty
+Package: ifpdf 2019/10/25 v3.4 ifpdf legacy package. Use iftex instead.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+)))
+(/usr/local/texlive/2019/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2019/10/08 v1.6180339 publication quality tables
+\heavyrulewidth=\dimen260
+\lightrulewidth=\dimen261
+\cmidrulewidth=\dimen262
+\belowrulesep=\dimen263
+\belowbottomsep=\dimen264
+\aboverulesep=\dimen265
+\abovetopsep=\dimen266
+\cmidrulesep=\dimen267
+\cmidrulekern=\dimen268
+\defaultaddspace=\dimen269
+\@cmidla=\count134
+\@cmidlb=\count135
+\@aboverulesep=\dimen270
+\@belowrulesep=\dimen271
+\@thisruleclass=\count136
+\@lastruleclass=\count137
+\@thisrulewidth=\dimen272
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/psnfss/courier.sty
+Package: courier 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/pseudocode/pseudocode.sty
+** 
+** Document Style `pseudocode' - environment 
+** by D.L. Kreher and D.R. Stinson 
+** 
+** The pseudocode environment was originally developed for the book
+** Combinatorial Algorithms: Enumeration, Generation, and Search
+** CRC Press, 1999. 
+Package: pseudocode 
+\pcode@width=\skip61
+(/usr/local/texlive/2019/texmf-dist/tex/latex/fancybox/fancybox.sty
+Package: fancybox 2010/05/15 1.4
+
+Style option: `fancybox' v1.4 <2010/05/15> (tvz)
+\@fancybox=\box49
+\shadowsize=\dimen273
+\@Sbox=\box50
+\do@VerbBox=\toks50
+\the@fancyput=\toks51
+\this@fancyput=\toks52
+\EndVerbatimTokens=\toks53
+\Verbatim@Outfile=\write4
+\Verbatim@Infile=\read3
+) (/usr/local/texlive/2019/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\c@pseudocode=\count138
+\c@pseudonum=\count139
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/tools/enumerate.sty
+Package: enumerate 2015/07/23 v3.00 enumerate extensions (DPC)
+\@enLab=\toks54
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/algorithms/algorithm.sty
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+\@float@every@algorithm=\toks55
+\c@algorithm=\count140
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+Package: algpseudocode 
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count141
+\c@ALG@rem=\count142
+\c@ALG@nested=\count143
+\ALG@tlm=\skip62
+\ALG@thistlm=\skip63
+\c@ALG@Lnr=\count144
+\c@ALG@blocknr=\count145
+\c@ALG@storecount=\count146
+\c@ALG@tmpcounter=\count147
+\ALG@tmplength=\skip64
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+)
+\c@definition=\count148
+\c@theorem=\count149
+\c@assumption=\count150
+\c@remark=\count151
+ (/usr/local/texlive/2019/texmf-dist/tex/latex/cancel/cancel.sty
+Package: cancel 2013/04/12 v2.2 Cancel math terms
+) (./main.aux)
+\openout1 = `main.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for LY/yfrak/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Checking defaults for LYG/ygoth/m/n on input line 74.
+LaTeX Font Info:    ... okay on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <6> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <8> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <12> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <14> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <14> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <20> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <20> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <22> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <22> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <24> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 74.
+-- Lines per column: 32 (exact).
+(/usr/local/texlive/2019/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count152
+\scratchdimen=\dimen274
+\scratchbox=\box51
+\nofMPsegments=\count153
+\nofMParguments=\count154
+\everyMPshowfont=\toks56
+\MPscratchCnt=\count155
+\MPscratchDim=\dimen275
+\MPnumerator=\count156
+\makeMPintoPDFobject=\count157
+\everyMPtoPDFconversion=\toks57
+) ABD: EveryShipout initializing macros
+LaTeX Font Info:    Try loading font information for U+msa on input line 88.
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 88.
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [1{/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+
+LaTeX Warning: Citation `Ericsson:5Gusecases' on page 2 undefined on input line
+ 102.
+
+
+LaTeX Warning: Citation `WSJ:5Gdominance' on page 2 undefined on input line 102
+.
+
+
+LaTeX Warning: Citation `WSJ:CBRS' on page 2 undefined on input line 102.
+
+
+LaTeX Warning: Citation `WSJ:HolmanJenkinsJr.' on page 2 undefined on input lin
+e 102.
+
+
+LaTeX Warning: Citation `WCL:2' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:3' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:4' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:5' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:6' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:7' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:4' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:5' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:8' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:9' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:10' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:11' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Citation `WCL:12' on page 2 undefined on input line 105.
+
+[2]
+
+LaTeX Warning: Citation `WCL:5' on page 3 undefined on input line 113.
+
+
+LaTeX Warning: Citation `WCL:7' on page 3 undefined on input line 114.
+
+
+LaTeX Warning: Citation `WCL:6' on page 3 undefined on input line 124.
+
+
+LaTeX Warning: Citation `WCL:6' on page 3 undefined on input line 127.
+
+
+LaTeX Warning: Citation `WCL:7' on page 3 undefined on input line 127.
+
+[3]
+
+LaTeX Warning: Citation `WCL:4' on page 4 undefined on input line 129.
+
+
+LaTeX Warning: Citation `WCL:8' on page 4 undefined on input line 129.
+
+
+LaTeX Warning: Citation `WCL:11' on page 4 undefined on input line 129.
+
+
+LaTeX Warning: Citation `WCL:9' on page 4 undefined on input line 129.
+
+
+LaTeX Warning: Citation `WCL:10' on page 4 undefined on input line 129.
+
+
+LaTeX Warning: Citation `WCL:DQN' on page 4 undefined on input line 130.
+
+[4]
+
+LaTeX Warning: Citation `WCL:5' on page 5 undefined on input line 132.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 5 undefined on input line 132.
+
+
+LaTeX Warning: Citation `WCL:5' on page 5 undefined on input line 132.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 5 undefined on input line 132.
+
+
+LaTeX Warning: Citation `GCTronic:epuck2' on page 5 undefined on input line 133
+.
+
+
+LaTeX Warning: Citation `Espressif:ESP32' on page 5 undefined on input line 133
+.
+
+
+LaTeX Warning: Citation `WCL:5' on page 5 undefined on input line 134.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 5 undefined on input line 134.
+
+
+LaTeX Warning: Citation `BAM' on page 5 undefined on input line 141.
+
+
+LaTeX Warning: Citation `DARPA:SC2' on page 5 undefined on input line 141.
+
+
+LaTeX Warning: Citation `DARPA:SC2scenarios' on page 5 undefined on input line 
+141.
+
+
+LaTeX Warning: Citation `DARPA:ActiveIncumbent' on page 5 undefined on input li
+ne 141.
+
+
+LaTeX Warning: Citation `DARPA:CIL' on page 5 undefined on input line 141.
+
+
+LaTeX Warning: Citation `DARPASC2:end1' on page 5 undefined on input line 141.
+
+
+LaTeX Warning: Citation `DARPASC2:end2' on page 5 undefined on input line 141.
+
+
+LaTeX Warning: Citation `DARPASC2:end3' on page 5 undefined on input line 141.
+
+
+LaTeX Warning: Citation `DARPASC2:end4' on page 5 undefined on input line 141.
+
+[5]
+
+LaTeX Warning: Citation `BAM' on page 6 undefined on input line 154.
+
+[6]
+<figures/Minerva_System_Model.png, id=31, 971.63pt x 571.13374pt>
+File: figures/Minerva_System_Model.png Graphic file (type png)
+<use figures/Minerva_System_Model.png>
+Package pdftex.def Info: figures/Minerva_System_Model.png  used on input line 1
+66.
+(pdftex.def)             Requested size: 375.80544pt x 220.90244pt.
+ [7 <./figures/Minerva_System_Model.png>]
+<figures/Minerva_Independent_Occupancy_Model.png, id=43, 3049.64343pt x 897.352
+5pt>
+File: figures/Minerva_Independent_Occupancy_Model.png Graphic file (type png)
+<use figures/Minerva_Independent_Occupancy_Model.png>
+Package pdftex.def Info: figures/Minerva_Independent_Occupancy_Model.png  used 
+on input line 189.
+(pdftex.def)             Requested size: 469.75502pt x 138.21187pt.
+<figures/Minerva_Occupancy_Markov_Chain_Flipped.png, id=44, 1953.54843pt x 1835
+.35687pt>
+File: figures/Minerva_Occupancy_Markov_Chain_Flipped.png Graphic file (type png
+)
+<use figures/Minerva_Occupancy_Markov_Chain_Flipped.png>
+Package pdftex.def Info: figures/Minerva_Occupancy_Markov_Chain_Flipped.png  us
+ed on input line 196.
+(pdftex.def)             Requested size: 281.85587pt x 264.78969pt.
+<figures/Combined_PSD_Measurement_Gateway_SC2_Active_Incumbent.png, id=45, 2745
+.50719pt x 900.36375pt>
+File: figures/Combined_PSD_Measurement_Gateway_SC2_Active_Incumbent.png Graphic
+ file (type png)
+<use figures/Combined_PSD_Measurement_Gateway_SC2_Active_Incumbent.png>
+Package pdftex.def Info: figures/Combined_PSD_Measurement_Gateway_SC2_Active_In
+cumbent.png  used on input line 202.
+(pdftex.def)             Requested size: 469.75502pt x 154.04898pt.
+<figures/SC2_Passive_Incumbent_Occupancy_Heatmap.png, id=46, 1104.62688pt x 637
+.38126pt>
+File: figures/SC2_Passive_Incumbent_Occupancy_Heatmap.png Graphic file (type pn
+g)
+<use figures/SC2_Passive_Incumbent_Occupancy_Heatmap.png>
+Package pdftex.def Info: figures/SC2_Passive_Incumbent_Occupancy_Heatmap.png  u
+sed on input line 210.
+(pdftex.def)             Requested size: 375.80544pt x 216.84291pt.
+ [8 <./figures/Minerva_Independent_Occupancy_Model.png>]
+
+LaTeX Warning: Citation `WCL:12' on page 9 undefined on input line 230.
+
+[9 <./figures/Minerva_Occupancy_Markov_Chain_Flipped.png>] [10 <./figures/Combi
+ned_PSD_Measurement_Gateway_SC2_Active_Incumbent.png> <./figures/SC2_Passive_In
+cumbent_Occupancy_Heatmap.png>]
+
+LaTeX Warning: Citation `WCL:4' on page 11 undefined on input line 259.
+
+
+LaTeX Warning: Citation `WCL:10' on page 11 undefined on input line 259.
+
+
+LaTeX Warning: Citation `WCL:9' on page 11 undefined on input line 259.
+
+
+LaTeX Warning: Citation `WCL:11' on page 11 undefined on input line 259.
+
+
+LaTeX Warning: Citation `WCL:8' on page 11 undefined on input line 259.
+
+
+LaTeX Warning: Citation `WCL:5' on page 11 undefined on input line 259.
+
+
+LaTeX Warning: Citation `DARPA:SC2' on page 11 undefined on input line 261.
+
+
+LaTeX Warning: Citation `DARPA:SC2c2api' on page 11 undefined on input line 261
+.
+
+
+LaTeX Warning: Citation `DARPA:ActiveIncumbent' on page 11 undefined on input l
+ine 261.
+
+
+LaTeX Warning: Citation `DARPA:SC2scenarios' on page 11 undefined on input line
+ 261.
+
+
+LaTeX Warning: Citation `BAM' on page 11 undefined on input line 261.
+
+[11]
+
+LaTeX Warning: Citation `DARPA:SC2pi' on page 12 undefined on input line 277.
+
+[12]
+
+LaTeX Warning: Citation `WCL:3' on page 13 undefined on input line 284.
+
+
+LaTeX Warning: Citation `WCL:3' on page 13 undefined on input line 285.
+
+[13] [14]
+Overfull \hbox (145.0079pt too wide) detected at line 322
+\OML/cmm/m/it/12 R\OT1/cmr/m/n/12 ([](\OML/cmm/m/it/12 i\OT1/cmr/m/n/12 )\OML/c
+mm/m/it/12 ; []\OT1/cmr/m/n/12 ) = \U/msb/m/n/12 E [] \OT1/cmr/m/n/12 = []\U/ms
+b/m/n/12 E [] [][]
+ []
+
+[15]
+<figures/Minerva_POMDP_Model.png, id=79, 1051.93pt x 508.39937pt>
+File: figures/Minerva_POMDP_Model.png Graphic file (type png)
+<use figures/Minerva_POMDP_Model.png>
+Package pdftex.def Info: figures/Minerva_POMDP_Model.png  used on input line 36
+0.
+(pdftex.def)             Requested size: 375.80544pt x 181.62727pt.
+
+
+LaTeX Warning: Citation `WCL:13' on page 16 undefined on input line 366.
+
+[16] [17 <./figures/Minerva_POMDP_Model.png>] [18]
+
+LaTeX Warning: Citation `WCL:14' on page 19 undefined on input line 379.
+
+
+LaTeX Warning: Citation `WCL:14' on page 19 undefined on input line 383.
+
+
+LaTeX Warning: Citation `WCL:13' on page 19 undefined on input line 392.
+
+
+LaTeX Warning: Citation `PUOccupancy:18' on page 19 undefined on input line 392
+.
+
+
+LaTeX Warning: Citation `PUOccupancy:17' on page 19 undefined on input line 392
+.
+
+
+LaTeX Warning: Citation `PUOccupancy:17' on page 19 undefined on input line 392
+.
+
+
+LaTeX Warning: Citation `PUOccupancy:18' on page 19 undefined on input line 392
+.
+
+
+LaTeX Warning: Citation `PUOccupancy:17' on page 19 undefined on input line 392
+.
+
+[19]
+
+LaTeX Warning: Citation `WCL:13' on page 20 undefined on input line 394.
+
+[20] [21]
+
+LaTeX Warning: Citation `PUOccupancy:18' on page 22 undefined on input line 440
+.
+
+
+LaTeX Warning: Citation `PUOccupancy:17' on page 22 undefined on input line 440
+.
+
+[22]
+
+LaTeX Warning: Citation `WCL:3' on page 23 undefined on input line 456.
+
+[23]
+<figures/Performance_Single_Agent_Comparisons.png, id=108, 739.26187pt x 606.76
+688pt>
+File: figures/Performance_Single_Agent_Comparisons.png Graphic file (type png)
+<use figures/Performance_Single_Agent_Comparisons.png>
+Package pdftex.def Info: figures/Performance_Single_Agent_Comparisons.png  used
+ on input line 477.
+(pdftex.def)             Requested size: 375.80544pt x 308.4471pt.
+
+
+LaTeX Warning: Citation `WCL:7' on page 24 undefined on input line 483.
+
+
+LaTeX Warning: Citation `WCL:7' on page 24 undefined on input line 484.
+
+
+LaTeX Warning: Citation `WCL:6' on page 24 undefined on input line 485.
+
+[24]
+
+LaTeX Warning: Citation `WCL:11' on page 25 undefined on input line 486.
+
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 487.
+(/usr/local/texlive/2019/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+) [25 <./figures/Performance_Single_Agent_Comparisons.png>]
+
+LaTeX Warning: Citation `WCL:5' on page 26 undefined on input line 489.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 26 undefined on input line 490.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 26 undefined on input line 491.
+
+
+LaTeX Warning: Citation `WCL:DQN' on page 26 undefined on input line 492.
+
+
+LaTeX Warning: Citation `WCL:7' on page 26 undefined on input line 495.
+
+
+LaTeX Warning: Citation `WCL:7' on page 26 undefined on input line 495.
+
+
+LaTeX Warning: Citation `WCL:11' on page 26 undefined on input line 495.
+
+
+LaTeX Warning: Citation `WCL:6' on page 26 undefined on input line 495.
+
+[26]
+
+LaTeX Warning: Citation `WCL:5' on page 27 undefined on input line 497.
+
+
+LaTeX Warning: Citation `WCL:DQN' on page 27 undefined on input line 497.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 27 undefined on input line 497.
+
+<figures/CDF_Single_Agent_Performance_Comparison.png, id=121, 730.22812pt x 602
+.75188pt>
+File: figures/CDF_Single_Agent_Performance_Comparison.png Graphic file (type pn
+g)
+<use figures/CDF_Single_Agent_Performance_Comparison.png>
+Package pdftex.def Info: figures/CDF_Single_Agent_Performance_Comparison.png  u
+sed on input line 500.
+(pdftex.def)             Requested size: 375.80544pt x 310.19534pt.
+
+LaTeX Warning: Citation `WCL:7' on page 27 undefined on input line 505.
+
+
+LaTeX Warning: Citation `WCL:7' on page 27 undefined on input line 505.
+
+
+LaTeX Warning: Citation `WCL:11' on page 27 undefined on input line 505.
+
+
+LaTeX Warning: Citation `WCL:6' on page 27 undefined on input line 505.
+
+<figures/Modified_Viterbi_Accuracies_Plot_Single_Chain.png, id=122, 759.83875pt
+ x 597.23125pt>
+File: figures/Modified_Viterbi_Accuracies_Plot_Single_Chain.png Graphic file (t
+ype png)
+<use figures/Modified_Viterbi_Accuracies_Plot_Single_Chain.png>
+Package pdftex.def Info: figures/Modified_Viterbi_Accuracies_Plot_Single_Chain.
+png  used on input line 508.
+(pdftex.def)             Requested size: 375.80544pt x 295.38889pt.
+[27]
+
+LaTeX Warning: Citation `WCL:3' on page 28 undefined on input line 513.
+
+
+LaTeX Warning: Citation `WCL:5' on page 28 undefined on input line 513.
+
+
+LaTeX Warning: Citation `WCL:6' on page 28 undefined on input line 513.
+
+
+LaTeX Warning: Citation `WCL:7' on page 28 undefined on input line 513.
+
+<figures/HMM_EM_Speed_Up.PNG, id=126, 785.93625pt x 582.67688pt>
+File: figures/HMM_EM_Speed_Up.PNG Graphic file (type png)
+<use figures/HMM_EM_Speed_Up.PNG>
+Package pdftex.def Info: figures/HMM_EM_Speed_Up.PNG  used on input line 516.
+(pdftex.def)             Requested size: 375.80544pt x 278.6237pt.
+[28 <./figures/CDF_Single_Agent_Performance_Comparison.png>] [29 <./figures/Mod
+ified_Viterbi_Accuracies_Plot_Single_Chain.png>]
+Overfull \hbox (2.2921pt too wide) in paragraph at lines 521--522
+\T1/ptm/m/n/12 EM al-go-rithm (Baum-Welch), we find that, with ini-tial es-ti-m
+ates of $\OT1/cmr/m/n/12 0\OML/cmm/m/it/12 :\OT1/cmr/m/n/12 5$\T1/ptm/m/n/12 , 
+i.e., $\OML/cmm/m/it/12 p[][]\OT1/cmr/m/n/12 0\OML/cmm/m/it/12 :\OT1/cmr/m/n/12
+ 5\OML/cmm/m/it/12 ; \OMS/cmsy/m/n/12 8\OML/cmm/m/it/12 u; v[]\OMS/cmsy/m/n/12 
+f\OT1/cmr/m/n/12 0\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 1\OMS/cmsy/m/n/12 g$
+ []
+
+[30] [31 <./figures/HMM_EM_Speed_Up.PNG>]
+<figures/Minerva_Multiagent_System_Model.png, id=144, 873.76437pt x 674.01813pt
+>
+File: figures/Minerva_Multiagent_System_Model.png Graphic file (type png)
+<use figures/Minerva_Multiagent_System_Model.png>
+Package pdftex.def Info: figures/Minerva_Multiagent_System_Model.png  used on i
+nput line 534.
+(pdftex.def)             Requested size: 375.80544pt x 289.89413pt.
+
+
+LaTeX Warning: Citation `WCL:5' on page 32 undefined on input line 540.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 32 undefined on input line 540.
+
+[32 <./figures/Minerva_Multiagent_System_Model.png>]
+<figures/Minerva_Multiagent_POMDP_Model.png, id=149, 1047.41313pt x 491.8375pt>
+
+File: figures/Minerva_Multiagent_POMDP_Model.png Graphic file (type png)
+<use figures/Minerva_Multiagent_POMDP_Model.png>
+Package pdftex.def Info: figures/Minerva_Multiagent_POMDP_Model.png  used on in
+put line 544.
+(pdftex.def)             Requested size: 375.80544pt x 176.46848pt.
+ [33 <./figures/Minerva_Multiagent_POMDP_Model.png>]
+
+LaTeX Warning: Citation `WCL:5' on page 34 undefined on input line 550.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 34 undefined on input line 550.
+
+
+LaTeX Warning: Citation `WCL:MIT' on page 34 undefined on input line 550.
+
+<figures/CDF_Multi_Agent_Performance_Comparison.png, id=154, 728.22063pt x 586.
+69188pt>
+File: figures/CDF_Multi_Agent_Performance_Comparison.png Graphic file (type png
+)
+<use figures/CDF_Multi_Agent_Performance_Comparison.png>
+Package pdftex.def Info: figures/CDF_Multi_Agent_Performance_Comparison.png  us
+ed on input line 553.
+(pdftex.def)             Requested size: 375.80544pt x 302.76291pt.
+<figures/Minerva_Active_Incumbent_Deployment_Model_New.png, id=155, 1673.50218p
+t x 944.7797pt>
+File: figures/Minerva_Active_Incumbent_Deployment_Model_New.png Graphic file (t
+ype png)
+<use figures/Minerva_Active_Incumbent_Deployment_Model_New.png>
+Package pdftex.def Info: figures/Minerva_Active_Incumbent_Deployment_Model_New.
+png  used on input line 561.
+(pdftex.def)             Requested size: 375.80544pt x 212.1626pt.
+
+LaTeX Warning: Citation `DARPA:ActiveIncumbent' on page 34 undefined on input l
+ine 562.
+
+
+LaTeX Warning: Citation `DARPA:ActiveIncumbent' on page 34 undefined on input l
+ine 562.
+
+<figures/Minerva_Radio_Design_Model.png, id=156, 1698.345pt x 858.20625pt>
+File: figures/Minerva_Radio_Design_Model.png Graphic file (type png)
+<use figures/Minerva_Radio_Design_Model.png>
+Package pdftex.def Info: figures/Minerva_Radio_Design_Model.png  used on input 
+line 567.
+(pdftex.def)             Requested size: 375.80544pt x 189.89285pt.
+
+LaTeX Warning: Citation `BAM' on page 34 undefined on input line 570.
+
+
+LaTeX Warning: Citation `BAM' on page 34 undefined on input line 570.
+
+
+LaTeX Warning: Citation `BAM' on page 34 undefined on input line 573.
+
+
+LaTeX Warning: Citation `DARPA:ActiveIncumbent' on page 34 undefined on input l
+ine 573.
+
+
+LaTeX Warning: Citation `DARPA:SC2c2api' on page 34 undefined on input line 573
+.
+
+
+LaTeX Warning: Citation `DARPA:SC2scenarios' on page 34 undefined on input line
+ 573.
+
+
+LaTeX Warning: Citation `DARPA:ActiveIncumbent' on page 34 undefined on input l
+ine 573.
+
+
+LaTeX Warning: Citation `DARPA:ActiveIncumbent' on page 34 undefined on input l
+ine 575.
+
+<figures/PSD_Observations_Active_Incumbent.png, id=157, 1137.4997pt x 847.66687
+pt>
+File: figures/PSD_Observations_Active_Incumbent.png Graphic file (type png)
+<use figures/PSD_Observations_Active_Incumbent.png>
+Package pdftex.def Info: figures/PSD_Observations_Active_Incumbent.png  used on
+ input line 578.
+(pdftex.def)             Requested size: 375.80544pt x 280.05429pt.
+<figures/Active_Incumbent_Scenario_Link_SNRs.png, id=158, 1473.5853pt x 896.148
+pt>
+File: figures/Active_Incumbent_Scenario_Link_SNRs.png Graphic file (type png)
+<use figures/Active_Incumbent_Scenario_Link_SNRs.png>
+Package pdftex.def Info: figures/Active_Incumbent_Scenario_Link_SNRs.png  used 
+on input line 584.
+(pdftex.def)             Requested size: 375.80544pt x 228.53522pt.
+[34]
+
+LaTeX Warning: Citation `BAM' on page 35 undefined on input line 589.
+
+
+LaTeX Warning: Citation `DARPA:CIL' on page 35 undefined on input line 589.
+
+
+LaTeX Warning: Citation `DARPA:CIL' on page 35 undefined on input line 589.
+
+<figures/DARPA_SC2_Active_Incumbent_Scores_CDF.png, id=162, 754.82pt x 597.7331
+2pt>
+File: figures/DARPA_SC2_Active_Incumbent_Scores_CDF.png Graphic file (type png)
+
+<use figures/DARPA_SC2_Active_Incumbent_Scores_CDF.png>
+Package pdftex.def Info: figures/DARPA_SC2_Active_Incumbent_Scores_CDF.png  use
+d on input line 592.
+(pdftex.def)             Requested size: 375.80544pt x 297.59805pt.
+[35 <./figures/CDF_Multi_Agent_Performance_Comparison.png>] [36 <./figures/Mine
+rva_Active_Incumbent_Deployment_Model_New.png>]
+<figures/Minerva_ESP32_Deployment_Model.png, id=170, 624.83438pt x 585.68813pt>
+
+File: figures/Minerva_ESP32_Deployment_Model.png Graphic file (type png)
+<use figures/Minerva_ESP32_Deployment_Model.png>
+Package pdftex.def Info: figures/Minerva_ESP32_Deployment_Model.png  used on in
+put line 600.
+(pdftex.def)             Requested size: 375.80544pt x 352.26459pt.
+
+
+LaTeX Warning: Citation `Espressif:ESP32' on page 37 undefined on input line 60
+4.
+
+
+LaTeX Warning: Citation `GCTronic:epuck2' on page 37 undefined on input line 60
+4.
+
+[37 <./figures/Minerva_Radio_Design_Model.png>] [38 <./figures/PSD_Observations
+_Active_Incumbent.png>] [39 <./figures/Active_Incumbent_Scenario_Link_SNRs.png>
+] [40 <./figures/DARPA_SC2_Active_Incumbent_Scores_CDF.png>]
+<figures/ESP32_Success_Probability.PNG, id=186, 783.92876pt x 232.36812pt>
+File: figures/ESP32_Success_Probability.PNG Graphic file (type png)
+<use figures/ESP32_Success_Probability.PNG>
+Package pdftex.def Info: figures/ESP32_Success_Probability.PNG  used on input l
+ine 620.
+(pdftex.def)             Requested size: 375.80544pt x 111.39714pt.
+ [41 <./figures/Minerva_ESP32_Deployment_Model.png>]
+No file main.bbl.
+[42 <./figures/ESP32_Success_Probability.PNG>] [43] (./main.aux)
+
+LaTeX Warning: There were undefined references.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 16049 strings out of 492616
+ 303986 string characters out of 6129482
+ 373398 words of memory out of 5000000
+ 19542 multiletter control sequences out of 15000+600000
+ 117358 words of font info for 157 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 55i,13n,48p,3310b,513s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/te
+xlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/local/texl
+ive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texli
+ve/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texliv
+e/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/
+2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/20
+19/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2019
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2019/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2019/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2019/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2019/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2019/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2019/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2019/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2019/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2019/texmf-dist/fonts/ty
+pe1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2019/texmf-dist/font
+s/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2019/texmf-dist/
+fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/ty
+pe1/urw/times/utmb8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/ti
+mes/utmr8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/times/utmri8
+a.pfb>
+Output written on main.pdf (43 pages, 3859024 bytes).
+PDF statistics:
+ 272 PDF objects out of 1000 (max. 8388607)
+ 169 compressed objects within 2 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 113 words of extra memory for PDF output out of 10000 (max. 10000000)
+

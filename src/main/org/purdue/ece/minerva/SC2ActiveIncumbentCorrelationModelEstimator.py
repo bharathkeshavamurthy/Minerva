@@ -319,7 +319,7 @@ class SC2ActiveIncumbentCorrelationModelEstimator(object):
                                                                                       observations[k][i]) *
                                                         spatial_transition_matrix[prev_spatial_state.value][
                                                             current_state.value] *
-                                                        forward_probabilities[k-1][i][prev_spatial_state],
+                                                        forward_probabilities[k-1][i][prev_spatial_state.value],
                                                 lambda: self.get_emission_probability(current_state,
                                                                                       observations[k][i]) *
                                                         transition_matrix[''.join([str(prev_spatial_state.value),

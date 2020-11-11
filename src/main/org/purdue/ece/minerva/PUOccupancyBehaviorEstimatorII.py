@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore",
 
 # Plotly user account credentials for visualization
 plotly.tools.set_credentials_file(username='bkeshava',
-                                  api_key='W2WL5OOxLcgCzf8NNlgl')
+                                  api_key='BEp2EMeaooErdwcIF8Ss')
 
 
 # Occupancy state enumeration
@@ -165,7 +165,7 @@ class PUOccupancyBehaviorEstimatorII(object):
 
     # Safe entry access using indices from a collection object exclusive to this constrained Viterbi algorithm
     def get_entry(self, collection, index):
-        if collection is not None and len(collection) is not 0 and collection[index] is not None:
+        if collection is not None and len(collection) != 0 and collection[index] is not None:
             return collection[index]
         else:
             return self.EMPTY_OBSERVATION_PLACEHOLDER_VALUE
@@ -333,10 +333,11 @@ if __name__ == '__main__':
     # Create the constrained Viterbi agent
     puOccupancyBehaviorEstimator = PUOccupancyBehaviorEstimatorII()
     # Get the channel selection strategies
-    # Two strategies (limiting to two for aesthetic purposes)
+    # Three strategies (limiting to three for aesthetic purposes)
+    # 0: Sense {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17}
     # 1: Sense {0, 2, 4, 6, 8, 10, 12, 14, 16}
     # 2: Sense {0, 3, 6, 9, 12, 15}
-    channel_selection_strategies = generic_uniform_sensing(puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)[1:3]
+    channel_selection_strategies = generic_uniform_sensing(puOccupancyBehaviorEstimator.NUMBER_OF_FREQUENCY_BANDS)[0:3]
     strategy_counter = 0
     # Iterate over multiple channel selection strategies provided by the emulator or the Bandit / RL-agent
     for channel_selection_strategy in channel_selection_strategies:
@@ -349,6 +350,9 @@ if __name__ == '__main__':
         puOccupancyBehaviorEstimator.BANDS_OBSERVED = channel_selection_strategy
         # 2 takes - sensed channels and un-sensed channels
         for _simple_counter in range(0, 2):
+            # There's no need to do un-sensed channel analysis for strategy #0 (there are no un-sensed channels)
+            if len(channel_selection_strategy) == 18 and _simple_counter == 1:
+                continue
             # X-Axis for the Estimation Accuracy vs \mathbb{P}(1|0) plot
             p_values_overall = []
             # Y-Axis for the Estimation Accuracy vs \mathbb{P}(1|0) plot
@@ -387,6 +391,7 @@ if __name__ == '__main__':
                         puOccupancyBehaviorEstimator.estimate_pu_occupancy_states(parameter_evaluation_input)
                     )
                     puOccupancyBehaviorEstimator.reset()
+                    p += increment_value_for_p
                 p_values_overall = p_values
                 estimation_accuracies_across_p_values_overall.append(estimation_accuracies_across_p_values)
             traces.append(go.Scatter(x=p_values_overall,

@@ -3,7 +3,7 @@
 #   1. A pre-allocation of channel access ranks/orders via communication over a common control channel and
 #   employs past-horizon channel availability updates for determining channel access; and
 #   2. An $\epsilon$-greedy strategy based on g-statistics, past-horizon channel availability metrics, and ACKs for
-#   distributed, opportunistic channel sensing and access without any information exchange among the nodes whatsover.
+#   distributed, opportunistic channel sensing and access without any information exchange among the nodes whatsoever.
 # Author: Bharath Keshavamurthy
 # Organization: School of Electrical and Computer Engineering, Purdue University, West Lafayette, IN.
 # Copyright (c) 2020. All Rights Reserved.
@@ -76,7 +76,7 @@ class DistributedOpportunisticAccess(object):
     PLOTLY_SCATTER_MODE = 'lines+markers'
 
     # A flag for inactive/invalid entries
-    INVALIDITY_IDENITIFIER = 7777
+    INVALIDITY_IDENTIFIER = 7777
 
     # The initialization sequence
     def __init__(self):
@@ -243,18 +243,18 @@ class DistributedOpportunisticAccess(object):
                 if estimated_occupancy == 0:
                     actions[n].append(action)
                 else:
-                    actions[n].append(self.INVALIDITY_IDENITIFIER)
+                    actions[n].append(self.INVALIDITY_IDENTIFIER)
                 availabilities[n][action] += 1 - estimated_occupancy
                 # +1 for the initial availability random assignment
                 availabilities[n][action] /= (sum([((s+1)/(s+1)) for s in sensings.get(n) if s == action]) + 1)
         su_throughputs = [sum([((actions.get(n)[i]+1)/(actions.get(n)[i]+1))
                                for n in self.cognitive_radio_ensemble.keys()
-                               if (actions.get(n)[i] != self.INVALIDITY_IDENITIFIER and
+                               if (actions.get(n)[i] != self.INVALIDITY_IDENTIFIER and
                                    self.incumbent_occupancy_states[actions.get(n)[i]][i] == 0)])
                           for i in range(self.NUMBER_OF_TIME_STEPS)]
         pu_interferences = [sum([((actions.get(n)[i]+1)/(actions.get(n)[i]+1))
                                  for n in self.cognitive_radio_ensemble.keys()
-                                 if (actions.get(n)[i] != self.INVALIDITY_IDENITIFIER and
+                                 if (actions.get(n)[i] != self.INVALIDITY_IDENTIFIER and
                                      self.incumbent_occupancy_states[actions.get(n)[i]][i] == 1)])
                             for i in range(self.NUMBER_OF_TIME_STEPS)]
         utilities = [su_throughputs[i] - (self.PENALTY * pu_interferences[i]) for i in range(self.NUMBER_OF_TIME_STEPS)]
@@ -276,7 +276,7 @@ class DistributedOpportunisticAccess(object):
                           for n in self.cognitive_radio_ensemble.keys()}
         sensings = {n: [k for k in range(self.NUMBER_OF_CHANNELS)]
                     for n in self.cognitive_radio_ensemble.keys()}
-        actions = {n: [((i+1)/(i+1)) * self.INVALIDITY_IDENITIFIER
+        actions = {n: [((i+1)/(i+1)) * self.INVALIDITY_IDENTIFIER
                        for i in range(self.NUMBER_OF_TIME_STEPS)]
                    for n in self.cognitive_radio_ensemble.keys()}
         acknowledgements = {n: True for n in self.cognitive_radio_ensemble.keys()}
@@ -359,12 +359,12 @@ class DistributedOpportunisticAccess(object):
                 availabilities[n][action] /= (sum([((s+1)/(s+1)) for s in sensings[n] if s == action]) + 1)
         su_throughputs = [sum([((actions.get(n)[i]+1)/(actions.get(n)[i]+1))
                                for n in self.cognitive_radio_ensemble.keys()
-                               if (actions.get(n)[i] != self.INVALIDITY_IDENITIFIER and
+                               if (actions.get(n)[i] != self.INVALIDITY_IDENTIFIER and
                                    self.incumbent_occupancy_states[actions.get(n)[i]][i] == 0)])
                           for i in range(self.NUMBER_OF_TIME_STEPS)]
         pu_interferences = [sum([((actions.get(n)[i]+1)/(actions.get(n)[i]+1))
                                  for n in self.cognitive_radio_ensemble.keys()
-                                 if (actions.get(n)[i] != self.INVALIDITY_IDENITIFIER and
+                                 if (actions.get(n)[i] != self.INVALIDITY_IDENTIFIER and
                                      self.incumbent_occupancy_states[actions.get(n)[i]][i] == 1)])
                             for i in range(self.NUMBER_OF_TIME_STEPS)]
         utilities = [su_throughputs[i] - (self.PENALTY * pu_interferences[i])

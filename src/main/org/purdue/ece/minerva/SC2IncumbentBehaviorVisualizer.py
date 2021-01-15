@@ -226,7 +226,7 @@ class SC2IncumbentBehaviorVisualizer(object):
             plotly.plotly.plot(figure, filename='Spectrum Occupancy Map of an SC2 DSRC WLAN Incumbent')
         except Exception as e:
             print(
-                '[ERROR] SC2IncumbentBehaviorVisualizer visualize: Plotly Heatmap- '
+                '[ERROR] SC2IncumbentBehaviorVisualizer visualize: Plotly Heatmap - '
                 'Exception caught while plotting [', e, ']')
 
     # Termination sequence

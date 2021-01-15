@@ -14,9 +14,9 @@ import contextlib
 from collections import OrderedDict
 
 
-# The purpose of this class is analyze the occupancy behavior of the DARPA SC2 Active Incumbent and other competitors
+# The purpose of this class is to analyze the occupancy behavior of the DARPA SC2 Active Incumbent and other competitors
 #   and determine two things: Can we extract a double Markov chain time-frequency correlation structure from this
-#   occupancy behavior--and if yes, use this occupancy information in the evaluation of our PERSEUS-III framework.
+#   occupancy behavior--and if yes, can we use this occupancy information in the evaluation of PERSEUS-III?
 class DARPASC2ActiveIncumbentAnalysis(object):
 
     # The discretization length of the data accumulation in the SQLite3 database

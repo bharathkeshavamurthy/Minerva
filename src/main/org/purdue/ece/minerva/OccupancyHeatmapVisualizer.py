@@ -16,7 +16,6 @@ plotly.tools.set_credentials_file(username='bkeshava', api_key='BEp2EMeaooErdwcI
 # This enumeration entity lists the various types of errors (and their associated error codes) that can potentially be
 #   caught during the emulation process
 class ErrorCode(Enum):
-
     # No errors, i.e., successful operation
     SUCCESS = 0
 
@@ -90,7 +89,7 @@ class OccupancyHeatmapVisualizer(object):
         self.time_frequency_correlation_structure = {'p00': 0.25, 'p01': 0.75, 'p10': 0.71, 'p11': 0.8,
                                                      'q0': 0.67, 'q1': 0.88}
         # The data object that constitutes the time-frequency occupancy behavior of incumbents in the network
-        self.occupancy_behavior = [[k*(t-t) for t in range(self.number_of_timeslots)]
+        self.occupancy_behavior = [[k * (t - t) for t in range(self.number_of_timeslots)]
                                    for k in range(self.number_of_channels)]
         # The initialization sequence has been completed
 
@@ -184,8 +183,8 @@ class OccupancyHeatmapVisualizer(object):
             # k, t
             for k in range(1, self.number_of_channels):
                 for t in range(1, self.number_of_timeslots):
-                    previous_spatial = self.occupancy_behavior[k-1][t]
-                    previous_temporal = self.occupancy_behavior[k][t-1]
+                    previous_spatial = self.occupancy_behavior[k - 1][t]
+                    previous_temporal = self.occupancy_behavior[k][t - 1]
                     if previous_spatial == 0 and previous_temporal == 0:
                         self.occupancy_behavior[k][t] = (lambda: 0, lambda: 1)[
                             numpy.random.random_sample() <= self.time_frequency_correlation_structure['p00']]()
@@ -273,9 +272,9 @@ class OccupancyHeatmapVisualizer(object):
     # Visualize the occupancy behavior heatmap using the Plotly API
     def visualize_heatmap(self, visualization_type):
         # Time-slots/Episodes
-        horizontal_axis = [k+1 for k in range(0, self.number_of_timeslots)]
+        horizontal_axis = [k + 1 for k in range(0, self.number_of_timeslots)]
         # Channels
-        vertical_axis = [k+1 for k in range(0, self.number_of_channels)]
+        vertical_axis = [k + 1 for k in range(0, self.number_of_channels)]
         # Data
         # Plotly API's HeatMap
         data = [

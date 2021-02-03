@@ -1,0 +1,9 @@
+1. MINOR: Explain the second numerical evaluation figure better
+2. MINOR: More numerical evaluation plots needed: Can we add the Viterbi plot which we removed from the Journal?
+3. MAJOR: What happens to the SU's detection accuracy (SU throughput and PU interference) as the noise power increases? Plot of SU throughput and PU interference as noise worsens (observations become more and more error prone). Add this additional curve to numerical evaluation plot #2
+4. MINOR: Different comm system models like WiFi to better understand the practicality: ESP32 implementation addressed in the journal paper (maybe add an annotation at the bottom of the paper referencing this?)
+5. MINOR: Extend to multi-agent models: addressed in the journal paper
+6. MINOR: Format of affiliation does not follow IEEE guidelines?
+
+Final manuscript is due on Feb 22, 2021 post registration
+Presentation is due on Apr 15, 2021

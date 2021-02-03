@@ -1,0 +1,9 @@
+1. CRITICAL: Multiple UAVs and Multiple BSs
+2. MAJOR: Additional NLoS model
+3. MAJOR: Interference in GN-BS, GN-UAV, and BS-UAV links
+4. MAJOR: Comparison with RL models: performance & computational cost
+5. MAJOR: Simulations showing explicit comparisons with SCA
+6. MAJOR: Optimize the Tx power as well
+7. MINOR: Rotary Wing UAV: Hover power consumption is higher than that of level-flight (modify the waiting state logic?)
+8. MAJOR: Comparison with non-adaptive approaches
+9. MINOR: Simplified paper structure, notation tables, sign-posts/diagrams to guide the readers along

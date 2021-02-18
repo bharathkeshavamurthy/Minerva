@@ -182,12 +182,12 @@ owing to the independence of channels (given the occupancy states), noise, and t
 \noindent{\bf POMDP Agent Model:}
 We model the SU as a POMDP agent, whose goal is to devise an optimal sensing and access policy in order to maximize its throughput, while ensuring minimal interference with incumbent transmissions. The agent's limited sensing capabilities coupled with its noisy observations result in uncertainty on the PU spectrum occupancy state. The transition model of the underlying MDP, given by \eqref{7}, is denoted by $\mathbf{A}$ and is learned by the agent by interacting with the radio environment (see Sec. \ref{III}). The observation model in \eqref{9} is denoted by $\mathbf{M}$, with $f(Y_k(i)|B_k(i))$ given by \eqref{10}. 
 
-We model the POMDP as a tuple $(\mathcal B,\mathcal{A},\mathcal{Y},\mathbf{A},\mathbf{M})$ where $\mathcal{B}{\equiv}\{0,1\}^K$ represents the state space of the underlying MDP, given by all possible realizations of the spectrum occupancy vector $\vec{B}$, as described by \eqref{5}; $\mathcal{A}$ represents the action space of the agent, given by all possible combinations in which $\kappa$ spectrum bands are chosen to be sensed out of $K$ at any given time; and $\mathcal{Y}$ represents the observation space of the agent based on the aforementioned signal model. The state of the POMDP at time $i$ is given by the \emph{prior belief} $\beta_i$, which represents the probability distribution of the underlying MDP state $\vec{B}(i)$, given the information collected by the agent up to time $i$, but before collecting the new information in time-slot $i$. At the beginning of each time index $i$, given $\beta_i$, the agent selects $\kappa$ spectrum bands out of $K$, according to a policy $\mathcal K_i{=}\pi(\beta_i)$, which defines the sensing set $\mathcal K_i$, performs spectrum sensing  on these spectrum bands, observes $\vec{Y}(i){\in} \mathcal{Y}$, and updates its \emph{posterior belief} $\hat{\beta}_i$ of the current spectrum occupancy $\vec{B}(i)$ as 
+We model the POMDP as a tuple $(\mathcal{B},\mathcal{A},\mathcal{Y},\mathbf{A},\mathbf{M})$ where $\mathcal{B}{\equiv}\{0,1\}^K$ represents the state space of the underlying MDP, given by all possible realizations of the spectrum occupancy vector $\vec{B}$, as described by \eqref{5}; $\mathcal{A}$ represents the action space of the agent, given by all possible combinations in which $\kappa$ spectrum bands are chosen to be sensed out of $K$ at any given time; and $\mathcal{Y}$ represents the observation space of the agent based on the aforementioned signal model. The state of the POMDP at time $i$ is given by the \emph{prior belief} $\beta_i$, which represents the probability distribution of the underlying MDP state $\vec{B}(i)$, given the information collected by the agent up to time $i$, but before collecting the new information in time-slot $i$. At the beginning of each time index $i$, given $\beta_i$, the agent selects $\kappa$ spectrum bands out of $K$, according to a policy $\mathcal K_i{=}\pi(\beta_i)$, which defines the sensing set $\mathcal K_i$, performs spectrum sensing  on these spectrum bands, observes $\vec{Y}(i){\in} \mathcal{Y}$, and updates its \emph{posterior belief} $\hat{\beta}_i$ of the current spectrum occupancy $\vec{B}(i)$ as 
 \begin{align}\label{11}
 \nonumber
-\hat\beta_i(\vec{B}') &= \mathbb{P}(\vec{B}(i) = \vec{B}'|\vec{Y}(i), \mathcal K_i, \beta_i)\\&=
-\frac{\mathbb{P}(\vec{Y}(i)|\vec{B}', \mathcal{K}_i) \beta_i(\vec{B}')}{
-\sum_{\vec{B}'' {\in} \{0,1\}^K} \mathbb{P}(\vec{Y}(i)|\vec{B}'', \mathcal{K}_i) \beta_i(\vec{B}'')}.
+    \hat\beta_i(\vec{B}') &= \mathbb{P}(\vec{B}(i) = \vec{B}'|\vec{Y}(i), \mathcal K_i, \beta_i)\\&=
+    \frac{\mathbb{P}(\vec{Y}(i)|\vec{B}', \mathcal{K}_i) \beta_i(\vec{B}')}{
+    \sum_{\vec{B}'' {\in} \{0,1\}^K} \mathbb{P}(\vec{Y}(i)|\vec{B}'', \mathcal{K}_i) \beta_i(\vec{B}'')}.
 \end{align}
 Given the posterior belief $\hat{\beta}_i$, we estimate the spectrum occupancy $\vec{B}(i)$
 based on the MAP criterion
@@ -214,7 +214,7 @@ where $\beta_0$ is the initial belief, $\hat\beta_i$ is the posterior belief ind
 The optimal policy $\pi^*$ and the corresponding optimal reward $V^*(\beta)$ are the solutions of Bellman's optimality equation $V^*{=}\mathcal{H}[V^*]$, where the operator $V_{t+1}{=}\mathcal {H}[V_{t}]$ is defined as
 \begin{align}\label{16}
 \nonumber
-        V_{t+1}(\beta) = &\max_{\mathcal{K} {\in} \mathcal{A}} \sum_{\vec{B} {\in} \mathcal{B}} \beta(\vec{B}) \mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta, \mathcal{K}, \vec{Y}))\\ &+\gamma V_{t}(\mathbb{B}(\hat{\mathbb{B}}(\beta, \mathcal{K}, \vec{Y})))\Big],\ \forall \beta.
+    V_{t+1}(\beta) = &\max_{\mathcal{K} {\in} \mathcal{A}} \sum_{\vec{B} {\in} \mathcal{B}} \beta(\vec{B}) \mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta, \mathcal{K}, \vec{Y}))\\ &+\gamma V_{t}(\mathbb{B}(\hat{\mathbb{B}}(\beta, \mathcal{K}, \vec{Y})))\Big],\ \forall \beta.
 \end{align}
 This problem can be solved using the value iteration algorithm, i.e., by solving \eqref{16} iteratively until convergence to a fixed point. However, two challenges arise in our formulation:
 \begin{itemize}
@@ -223,12 +223,13 @@ $\hat{\mathbb B}$ and $\mathbb B$ cannot be computed;
 \item The number of states of the underlying MDP scales exponentially with the number of spectrum bands, resulting in a high-dimensional belief space, hence, solving equation \eqref{16} exactly is computationally infeasible.
 \end{itemize}
 To overcome these challenges, in the next section, we present a framework to estimate the transition model of the underlying MDP online, while concurrently utilizing this learned model to solve for the optimal policy via PERSEUS: an approximate, randomized point-based value iteration algorithm \cite{DBLP:journals/corr/abs-1109-2145}.
-    \vspace{-3mm}
+\vspace{-3mm}
+
 \section{Approaches and Algorithms}\label{III}
 \noindent{\bf Occupancy Behavior Model Estimation:}
 In real-world implementations of cognitive radios, the correlation model defining the occupancy behavior of the PUs is unknown to the SUs, and therefore needs to be learned over time. The learned model is then fed back to the POMDP agent to compute the  optimal spectrum sensing and access policy. Inherently, the approach constitutes solving the Maximum Likelihood Estimation (MLE) problem
 \begin{equation}\label{17}
-\vec{\theta}^{*} = \argmax_{\vec{\theta}} \log\Big(\sum_{\mathbf{B}} \mathbb{P}(\mathbf{B}, \mathbf{Y}| \vec{\theta})\Big),
+    \vec{\theta}^{*} = \argmax_{\vec{\theta}} \log\Big(\sum_{\mathbf{B}} \mathbb{P}(\mathbf{B}, \mathbf{Y}| \vec{\theta})\Big),
 \end{equation}
 where $\vec{\theta}{=}[\vec{p}\ \vec{q}]^{T}$, $\mathbf{Y}{=}[\vec{Y}(i)]_{i{=}1}^{\tau}$, $\mathbf{B}{=}[\vec{B}(i)]_{i{=}1}^{\tau}$,
 and $\tau$ refers to the learning period of the parameter estimator: this may be equal to the entire duration of the POMDP agent's interaction with the radio environment, implying simultaneous model learning, or can be a predefined parameter learning period before triggering the POMDP agent. This problem can be solved using the 
@@ -238,8 +239,7 @@ Baum-Welch algorithm, a special instance of the Expectation-Maximization (EM) al
 \end{equation}
 The term $Q(\vec{\theta}|\vec{\theta}^{(t)})$ can be computed by employing the Forward-Backward algorithm \cite{Rabiner_1989} using the current estimate $\vec{\theta}^{(t)}$. The M-step constitutes
 \begin{equation}
-\vec{\theta}^{(t+1)}
- = \argmax_{\vec{\theta}} Q(\vec{\theta}|\vec{\theta}^{(t)}),
+    \vec{\theta}^{(t+1)} = \argmax_{\vec{\theta}} Q(\vec{\theta}|\vec{\theta}^{(t)}),
 \end{equation}
 which involves re-estimation of the maximum likelihood parameter vector $\vec{\theta}$ \cite{Rabiner_1989} using the statistics obtained from the Forward-Backward algorithm.
 
@@ -260,16 +260,13 @@ $\{\mathcal K_{t+1}^{u}\}$, as we now describe. Let $\tilde{\mathcal{U}}$ be the
 \end{equation}
 where $\Xi_{\mathcal{K}}^{u}$ is the hyperplane corresponding to a one-step look-ahead under action $\mathcal K$ and belief $\beta_u$, given by
 \begin{align*}
-\Xi_{\mathcal{K}}^{u}(\vec{B}) = &\mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))\\
-&+\gamma 
-        \sum_{\vec{B}'}\mathbb{P}(\vec{B}(i+1){=} \vec{B}'|\vec{B}(i){=}\vec{B})
-                \Xi_{\mathcal{K}, \vec{Y}}^{u}(\vec{B}')\Big]
 \nonumber
+    \Xi_{\mathcal{K}}^{u}(\vec{B}) = &\mathbb{E}_{\vec{Y}|\vec{B}, \mathcal{K}} \Big[R(\vec{B}, \hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))\\&+\gamma \sum_{\vec{B}'}\mathbb{P}(\vec{B}(i+1){=} \vec{B}'|\vec{B}(i){=}\vec{B}) \Xi_{\mathcal{K}, \vec{Y}}^{u}(\vec{B}')\Big]
 \end{align*}
 and $\Xi_{\mathcal{K}, \vec{Y}}^{u}$ is the hyperplane associated with the future value function computed from the previous set of hyperplanes as
 \begin{equation}
-    \Xi_{\mathcal{K}, \vec{Y}}^{u}=\argmax_{\alpha_{t}^{u'}, u' {\in} \{1, 2, \dots, |\tilde{\mathcal{B}}|\}} \mathbb{B}(\hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))\cdot\alpha_{t}^{u'},
 \nonumber
+    \Xi_{\mathcal{K}, \vec{Y}}^{u}=\argmax_{\alpha_{t}^{u'}, u' {\in} \{1, 2, \dots, |\tilde{\mathcal{B}}|\}} \mathbb{B}(\hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))\cdot\alpha_{t}^{u'},
 \end{equation}
 under the new belief $\mathbb{B}(\hat{\mathbb{B}}(\beta_{u}, \mathcal{K}, \vec{Y}))$ reached from $\beta_{u}$, under action $\mathcal{K}$ and observation $\vec{Y}$, in one step. At this point, $\beta_{u}{\cdot}\vec{\alpha}_{t+1}^{u}$ is the approximate value function associated with the belief $\beta_u$. If $\beta_{u}{\cdot}\vec{\alpha}_{t+1}^{u}{\geq}V_{t}(\beta_{u})$, the newly defined hyperplane generates an improved value function; otherwise ($\beta_{u}{\cdot}\vec{\alpha}_{t+1}^{u}{<}V_{t}(\beta_{u})$), the value function is worsened and the previous hyperplane is kept, hence $\vec{\alpha}_{t+1}^{u}{:=}\vec{\alpha}_{t}^{u}$ and $\mathcal K_{t+1}^{u}{:=}\mathcal K_{t}^{u}$. Finally, the belief $\beta_u$ is removed from $\tilde{\mathcal{U}}$, along with all belief points that are improved by the newly added hyperplane:
 $$
@@ -303,7 +300,7 @@ The plot depicted in Fig. \ref{fig:4} shows the Mean Squared Error (MSE) converg
 
 In Fig. \ref{fig:8}, we evaluate the performance of the proposed framework in terms of SU and PU network throughputs over varying values of the penalty term $\lambda$. As surmised, we find that our POMDP agent decides to limit channel access when the penalty is high, leading to lower SU network throughput and PU interference; conversely, it follows a more lenient channel access strategy when the penalty is low, resulting in higher SU network throughput and PU interference. In general, we observe the trend of rising throughput and increasing interference as the penalty for missed detections $\lambda$ is lowered.
 
-We compare the performance of our framework with state-of-the-art algorithms: two separate versions of Minimum Entropy Merging (MEM) with Channel Correlation Estimation (CCE) and Markov Process Estimation (MPE) -- one with Greedy Clustering (GC) and the other with Minimum Entropy Increment (MEI) Clustering \cite{6956794}, both with a correlation threshold of $\rho_{th}{=}0.77$ and a sensing restriction of $6$; the Viterbi algorithm \cite{4554696} with a-priori model information and sensing restriction of $6$; a Neyman-Pearson Detector \cite{5167826}, which assumes independence among channels across both frequency and time, no sensing restrictions, an AND fusion rule across 300 different samplings, and whose threshold is determined with respect to a false alarm probability of $0.3$; and a variant of our PERSEUS framework in which the agent has perfect knowledge of the correlation model. We note that our framework out-performs these state-of-the-art solutions by achieving a higher SU throughput for a certain PU throughput degradation: a 37.5\% boost in SU throughput over the MEM with MEI-CCE and MPE algorithm, a 25\% increase over the Neyman-Pearson Detector, and a 6\% upswing over the Viterbi algorithm. Furthermore, bench-marking against state-of-the-art RL frameworks, our solution exhibits $3$\% superior performance over TD-SARSA with LFA \cite{6507570} in single-agent deployment settings, with a sensing restriction of $6$, a belief update heuristic constant $\lambda{=}0.9$, a discount factor of $\gamma{=}0.9$, a fixed exploration factor $\epsilon{=}0.01$, and a raw false alarm probability of $p_{fa,1}{=}5$; and a $9$\% improvement over an adaptive Deep Q-Network (DQN) \cite{DQN} with experiential replay (memory size $C{=}10^{6}$), $2048$ input neurons, $4096$ neurons with ReLU activation functions in each of the $2$ hidden layers of the neural network, MSE cost function with an Adam optimizer, a fixed exploration factor $\epsilon{=}0.1$, a learning rate of $\alpha{=}10^{-4}$, a batch size of $W{=}32$, and a sensing restriction of $6$.
+Also in Fig. \ref{fig:8}, we compare the performance of our framework with state-of-the-art algorithms: two separate versions of Minimum Entropy Merging (MEM) with Channel Correlation Estimation (CCE) and Markov Process Estimation (MPE) -- one with Greedy Clustering (GC) and the other with Minimum Entropy Increment (MEI) Clustering \cite{6956794}, both with a correlation threshold of $\rho_{th}{=}0.77$ and a sensing restriction of $6$; the Viterbi algorithm \cite{4554696} with a-priori model information and sensing restriction of $6$; a Neyman-Pearson Detector \cite{5167826}, which assumes independence among channels across both frequency and time, no sensing restrictions, an AND fusion rule across 300 different samplings, and whose threshold is determined with respect to a false alarm probability of $0.3$; and a variant of our PERSEUS framework in which the agent has perfect knowledge of the correlation model. We note that our framework out-performs these state-of-the-art solutions by achieving a higher SU throughput for a certain PU throughput degradation: a 37.5\% boost in SU throughput over the MEM with MEI-CCE and MPE algorithm, a 25\% increase over the Neyman-Pearson Detector, and a 6\% upswing over the Viterbi algorithm. Furthermore, bench-marking against state-of-the-art RL frameworks, our solution exhibits $3$\% superior performance over TD-SARSA with LFA \cite{6507570} in single-agent deployment settings, with a sensing restriction of $6$, a belief update heuristic constant $\lambda{=}0.9$, a discount factor of $\gamma{=}0.9$, a fixed exploration factor $\epsilon{=}0.01$, and a raw false alarm probability of $p_{fa,1}{=}5$; and a $9$\% improvement over an adaptive Deep Q-Network (DQN) \cite{DQN} with experiential replay (memory size $C{=}10^{6}$), $2048$ input neurons, $4096$ neurons with ReLU activation functions in each of the $2$ hidden layers of the neural network, MSE cost function with an Adam optimizer, a fixed exploration factor $\epsilon{=}0.1$, a learning rate of $\alpha{=}10^{-4}$, a batch size of $W{=}32$, and a sensing restriction of $6$.
 \vspace{-3mm}
 
 \section{Conclusion}\label{V}

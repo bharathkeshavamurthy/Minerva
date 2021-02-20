@@ -29,10 +29,12 @@
 import math
 import numpy
 import random
+import traceback
 import itertools
 import scipy.stats
 from enum import Enum
 from collections import namedtuple
+from concurrent.futures import ThreadPoolExecutor
 
 
 # Occupancy State Enumeration
@@ -104,14 +106,14 @@ class Channel(object):
         print('[INFO] Channel Initialization: Bringing things up...')
         # Noise Statistics
         self.noise_mean = _noise_mean
-        if self.noise_mean is not 0:
+        if self.noise_mean != 0:
             print('[WARN] Channel Initialization: The system assumes Zero-Mean, Additive, White, Gaussian '
                   'Noise...')
             self.noise_mean = 0
         self.noise_variance = _noise_variance
         # Channel Impulse Response Statistics
         self.impulse_response_mean = _impulse_response_mean
-        if self.impulse_response_mean is not 0:
+        if self.impulse_response_mean != 0:
             print('[WARN] Channel Initialization: The system assumes Zero-Mean, Gaussian Impulse Response...')
             self.impulse_response_mean = 0
         self.impulse_response_variance = _impulse_response_variance
@@ -311,7 +313,7 @@ class StateEstimator(object):
     # Safe entry access using indices from a collection object
     @staticmethod
     def get_entry(collection, index):
-        if collection is not None and len(collection) is not 0 and collection[index] is not None:
+        if collection is not None and len(collection) != 0 and collection[index] is not None:
             return collection[index]
         else:
             # Empty Place-Holder value is 0
@@ -546,28 +548,28 @@ class PERSEUS(object):
         self.true_occupancy_states = {k: [] for k in range(self.number_of_channels)}
         # The correlation model parameters, i.e., $\vec{\theta}$ which have been learnt prior to triggering PERSEUS...
         self.correlation_model = {
-            '0': 0.3,   # q0
-            '1': 0.8,   # q1
-            '00': 0.1,  # p00
-            '01': 0.3,  # p01
-            '10': 0.3,  # p10
-            '11': 0.7   # p11
+            'q0': 0.3,  # q0
+            'q1': 0.8,  # q1
+            'p00': 0.1,  # p00
+            'p01': 0.3,  # p01
+            'p10': 0.3,  # p10
+            'p11': 0.7  # p11
         }
         # The single chain correlation model
-        self.single_chain_transition_model = {0: {0: 1 - self.correlation_model['0'],
-                                                  1: self.correlation_model['0']},
-                                              1: {0: 1 - self.correlation_model['1'],
-                                                  1: self.correlation_model['1']}
+        self.single_chain_transition_model = {0: {0: 1 - self.correlation_model['q0'],
+                                                  1: self.correlation_model['q0']},
+                                              1: {0: 1 - self.correlation_model['q1'],
+                                                  1: self.correlation_model['q1']}
                                               }
         # The double chain correlation model
-        self.double_chain_transition_model = {'00': {0: 1 - self.correlation_model['00'],
-                                                     1: self.correlation_model['00']},
-                                              '01': {0: 1 - self.correlation_model['01'],
-                                                     1: self.correlation_model['01']},
-                                              '10': {0: 1 - self.correlation_model['10'],
-                                                     1: self.correlation_model['10']},
-                                              '11': {0: 1 - self.correlation_model['11'],
-                                                     1: self.correlation_model['11']}
+        self.double_chain_transition_model = {'00': {0: 1 - self.correlation_model['p00'],
+                                                     1: self.correlation_model['p00']},
+                                              '01': {0: 1 - self.correlation_model['p01'],
+                                                     1: self.correlation_model['p01']},
+                                              '10': {0: 1 - self.correlation_model['p10'],
+                                                     1: self.correlation_model['p10']},
+                                              '11': {0: 1 - self.correlation_model['p11'],
+                                                     1: self.correlation_model['p11']}
                                               }
         # Simulate incumbent occupancy behavior to get the occupancy behavior collection...
         self.simulate_pu_occupancy()
@@ -650,7 +652,7 @@ class PERSEUS(object):
         for index in range(1, self.number_of_channels):
             # Spatial and Temporal change for the rest of 'em
             transition_probability *= self.double_chain_transition_model[''.join(
-                [str(next_state[index-1], str(prev_state[index]))])][next_state[index]]
+                [str(next_state[index - 1]), str(prev_state[index])])][next_state[index]]
         return transition_probability
 
     # Get the allowed state transitions previous_states -> next_states
@@ -691,7 +693,7 @@ class PERSEUS(object):
         # \vec{x} \in \mathcal{X} in your belief update rule
         for prev_state in allowed_previous_states:
             multiplier += self.get_transition_probability(prev_state, new_state) * previous_belief_vector[
-                              ''.join(str(k) for k in prev_state)]
+                ''.join(str(k) for k in prev_state)]
         numerator = self.get_emission_probability(observations, new_state) * multiplier
         return numerator / normalization_constant
 
@@ -769,9 +771,9 @@ class PERSEUS(object):
         interference /= len(policy_collection.keys())
         throughput *= self.utility_multiplication_factor
         interference *= self.utility_multiplication_factor
-        print('[INFO] PERSEUS calculate_utility: SU Network Throughput = {} | PU Interference = {}'.format(throughput,
-                                                                                                           interference
-                                                                                                           ))
+        print('[INFO] PERSEUS calculate_utility: Noise Power (in dB) = {} dB | '
+              'SU Network Throughput = {} | PU Interference = {}'.format(10 * numpy.log10(self.noise_variance),
+                                                                         throughput, interference))
         return utility
 
     # The Backup stage
@@ -787,7 +789,7 @@ class PERSEUS(object):
             next_stage_value_function_collection[k] = v
         number_of_belief_changes = 0
         # While there are still some un-improved belief points...
-        while len(unimproved_belief_points) is not 0:
+        while len(unimproved_belief_points) != 0:
             print('[INFO] PERSEUS backup: Size of unimproved belief set = {}'.format(len(unimproved_belief_points)))
             # Sample a belief point uniformly at random from \tilde{B}
             belief_sample_key = random.choice(list(unimproved_belief_points.keys()))
@@ -954,9 +956,9 @@ class PERSEUS(object):
             next_value_function_collection = backup_results[0]
             belief_changes = backup_results[1]
             self.policy_changes.append(belief_changes)
-            if len(next_value_function_collection) is not 0:
+            if len(next_value_function_collection) != 0:
                 previous_value_function_collection = next_value_function_collection
-            if belief_changes is 0:
+            if belief_changes == 0:
                 print('[DEBUG] PERSEUS run_perseus: Confidence Update - {}'.format(confidence))
                 confidence += 1
             else:
@@ -1005,8 +1007,8 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     # The mean of the frequency domain channel
     IMPULSE_RESPONSE_MEAN = 0
 
-    # The variance of the AWGN samples
-    NOISE_VARIANCE = 1
+    # The variance of the AWGN samples: tuned from the outside [IEEE ICC Final Manuscript Reviewer Request]
+    # NOISE_VARIANCE = 1
 
     # The variance of the frequency domain channel
     IMPULSE_RESPONSE_VARIANCE = 80
@@ -1018,7 +1020,7 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     FRAGMENTED_SPATIAL_SENSING_LIMITATION = 3
 
     # The exploration period of the PERSEUS algorithm
-    EXPLORATION_PERIOD = 1000
+    EXPLORATION_PERIOD = 100
 
     # The discount factor employed in the Bellman update
     DISCOUNT_FACTOR = 0.9
@@ -1037,12 +1039,13 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     TRANSITION_THRESHOLD = 0.1
 
     # The initialization sequence
-    def __init__(self):
+    def __init__(self, noise_power__):
         print('[INFO] FragmentedSimplifiedPERSEUSModeling Initialization: Bringing things up...')
+        self.noise_power = noise_power__
         self.perseus_with_model_foresight_and_simplified_belief_update = \
             PERSEUS(self.FRAGMENT_SIZE, self.NUMBER_OF_SAMPLING_ROUNDS,
                     self.NUMBER_OF_EPISODES, self.EXPLORATION_PERIOD,
-                    self.NOISE_MEAN, self.NOISE_VARIANCE,
+                    self.NOISE_MEAN, self.noise_power,
                     self.IMPULSE_RESPONSE_MEAN,
                     self.IMPULSE_RESPONSE_VARIANCE, self.PENALTY,
                     self.FRAGMENTED_SPATIAL_SENSING_LIMITATION,
@@ -1054,8 +1057,10 @@ class FragmentedSimplifiedPERSEUSModeling(object):
     def evaluate(self):
         agent_analytics = self.perseus_with_model_foresight_and_simplified_belief_update.run_perseus()
         print('[INFO] FragmentedSimplifiedPERSEUSModeling evaluate: Fragmented PERSEUS with belief simplification - '
+              'Noise Power = {} dB | '
               'Average Episodic SU Throughput = {} | '
-              'Average Episodic PU Interference = {}\n'.format(agent_analytics.su_throughput,
+              'Average Episodic PU Interference = {}\n'.format(10 * numpy.log10(self.noise_power),
+                                                               agent_analytics.su_throughput,
                                                                agent_analytics.pu_interference))
 
     # The termination sequence
@@ -1064,9 +1069,18 @@ class FragmentedSimplifiedPERSEUSModeling(object):
         # Nothing to do...
 
 
+def start__(noise_variance__):
+    FragmentedSimplifiedPERSEUSModeling(noise_variance__).evaluate()
+
+
 # Run Trigger
 if __name__ == '__main__':
     print('[INFO] FragmentedSimplifiedPERSEUSModeling main: Triggering the evaluation of the PERSEUS-III agent, '
           'i.e., the PERSEUS Algorithm with Model Foresight and with a Simplified Belief Update procedure...')
-    agent = FragmentedSimplifiedPERSEUSModeling()
-    agent.evaluate()
+    noise_variances = [0.01, 0.1, 1, 10, 100, 150]
+    try:
+        with ThreadPoolExecutor(max_workers=len(noise_variances)) as executor:
+            for noise_variance in noise_variances:
+                executor.submit(start__, noise_variance)
+    except Exception as e:
+        traceback.print_tb(e.__traceback__)

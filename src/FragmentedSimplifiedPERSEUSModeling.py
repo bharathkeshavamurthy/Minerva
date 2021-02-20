@@ -1069,6 +1069,7 @@ class FragmentedSimplifiedPERSEUSModeling(object):
         # Nothing to do...
 
 
+# Concurrent execution deployment base
 def start__(noise_variance__):
     FragmentedSimplifiedPERSEUSModeling(noise_variance__).evaluate()
 

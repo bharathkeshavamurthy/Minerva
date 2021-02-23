@@ -327,7 +327,7 @@ class PrimaryUser(object):
                 previous_spatial_state = self.occupancy_behavior_collection[channel_idx - 1][episode_idx]
                 previous_temporal_state = self.occupancy_behavior_collection[channel_idx][episode_idx - 1]
                 occupied_probability = spatial_transition_probabilities_matrix[previous_spatial_state][1] * \
-                    temporal_transition_probabilities_matrix[previous_temporal_state][1]
+                                       temporal_transition_probabilities_matrix[previous_temporal_state][1]
                 random_sample = numpy.random.random_sample()
                 if random_sample < occupied_probability:
                     self.occupancy_behavior_collection[channel_idx].append(1)
@@ -538,8 +538,8 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         # Utility = R = \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) + \mu B_k(i) (1 - \hat{B}_k(i))
         for channel in range(0, self.number_of_channels):
             utility += ((1 - self.true_pu_occupancy_states[channel][episode]) * (1 - estimated_state_vector[channel])) \
-                      + (self.mu *
-                         (1 - estimated_state_vector[channel]) * self.true_pu_occupancy_states[channel][episode])
+                       + (self.mu *
+                          (1 - estimated_state_vector[channel]) * self.true_pu_occupancy_states[channel][episode])
         return utility
 
     # Get SU throughput and PU interference analytics
@@ -554,7 +554,7 @@ class DoubleMarkovChainViterbiAlgorithm(object):
                 pu_interference += (1 - estimated_states[k][i]) * self.true_pu_occupancy_states[k][i]
             su_throughputs.append(su_throughput)
             pu_interferences.append(pu_interference)
-        return sum(su_throughputs)/self.number_of_episodes, sum(pu_interferences)/self.number_of_episodes
+        return sum(su_throughputs) / self.number_of_episodes, sum(pu_interferences) / self.number_of_episodes
 
     # Output the episodic utilities of this Constrained Double Markov Chain Viterbi Algorithm
     def estimate_episodic_utilities(self):
@@ -696,11 +696,11 @@ class DoubleMarkovChainViterbiAlgorithm(object):
         for i in range(self.number_of_channels - 1, -1, -1):
             if len(estimated_states[i]) == 0:
                 estimated_states[i].append(
-                                           self.value_from_name(value_function_collection[i + 1][
-                                                                    self.number_of_episodes - 1][
-                                                                    previous_state_spatial].previous_spatial_state
-                                                                )
-                                           )
+                    self.value_from_name(value_function_collection[i + 1][
+                                             self.number_of_episodes - 1][
+                                             previous_state_spatial].previous_spatial_state
+                                         )
+                )
                 previous_state_spatial = value_function_collection[i + 1][self.number_of_episodes - 1][
                     previous_state_spatial].previous_spatial_state
                 previous_state_temporal = previous_state_spatial
@@ -727,7 +727,6 @@ class DoubleMarkovChainViterbiAlgorithm(object):
 
 # A class detailing the evaluation of the Viterbi-II agent (A Constrained Double Markov Chain Viterbi Algorithm)
 class ViterbiIIEvaluation(object):
-
     # The number of channels in the discretized spectrum of interest
     NUMBER_OF_CHANNELS = 18
 
@@ -827,8 +826,7 @@ class ViterbiIIEvaluation(object):
         su_throughput, pu_interference = constrained_non_pomdp_agent.estimate_episodic_utilities()
         print('ViterbiIIEvaluation evaluate: SU Throughput = {} | PU Interference = {}'.format(su_throughput,
                                                                                                pu_interference
-                                                                                               )
-              )
+                                                                                               ))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):

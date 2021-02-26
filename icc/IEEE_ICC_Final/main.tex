@@ -148,7 +148,7 @@ PUs join and leave the spectrum at random times. To capture this temporal correl
         \mathbb{P}(\vec{B}(i+1)|\vec{B}(j), \forall j \leq i) = \mathbb{P}(\vec{B}(i+1)|\vec{B}(i)).
     \end{aligned}
 \end{equation}
-Additionally, when joining the spectrum pool, the PUs may occupy several adjacent spectrum bands and may vary their spectrum needs over time depending on time-varying traffic demands, channel conditions, etc. To capture this behavior, we model $\vec{B}(i)$ as a Markov chain across spectrum bands, i.e., the spectrum occupancy at time $i{+}1$ in frequency band $k$, $B_{k}(i{+}1)$, depends on the occupancy state of the adjacent spectrum band at the same time, $B_{k{-}1}(i{+}1)$, and that of the same spectrum band $k$ in the previous time index $i$, $B_{k}(i)$. This structure is depicted in Fig. \ref{fig:1}, and is described as
+Additionally, when joining the spectrum pool, the PUs may occupy several adjacent spectrum bands and may vary their spectrum needs over time depending on time-varying traffic demands, channel conditions, etc. To capture this behavior, we model $\vec{B}(i)$ as a Markov chain across spectrum bands, i.e., the spectrum occupancy at time $i{+}1$ in frequency band $k$, $B_{k}(i{+}1)$, depends on the occupancy state of the adjacent spectrum band at the same time, $B_{k{-}1}(i{+}1)$, and that of the same spectrum band $k$ in the previous time index $i$, $B_{k}(i)$. This structure is depicted in Fig. \ref{fig:1} (a), and is described as
 \begin{align}\label{7}
 &         \mathbb{P}(\vec{B}(i+1)|\vec{B}(i))\\&=
 \nonumber
@@ -159,7 +159,7 @@ Overall, the correlation model is expressed by two coupled Markov chains: one ac
 \begin{figure} [t]
     \centering
     \includegraphics[width=1.0\linewidth]{System_Model_2.png}
-    \caption{The correlation model across time and frequencies underlying the occupancy behavior of PUs in the network (a); and an illustration of the variation of estimation accuracy (the fraction of correctly detected channels) with channel correlation and sensing strategies, using the Viterbi algorithm as a state estimator in HMM settings for a Markov chain across channels ($\mathbb{P}(B_{k{+}1}(i){|}B_{k}(i))$), with $\mathbb{P}(B_{1}(i){=}1){=}0.6$}
+    \caption{The correlation model across time and frequencies underlying the occupancy behavior of PUs in the network (a); and an illustration of the variation of estimation accuracy (the fraction of correctly detected channels) with channel correlation and sensing strategies, using the Viterbi algorithm as a state estimator in HMM settings for a Markov chain across channels ($\mathbb{P}(B_{k{+}1}(i){|}B_{k}(i))$), with $\mathbb{P}(B_{1}(i){=}1){=}0.6$ (b)}
     \label{fig:1}
     \vspace{-6mm}
 \end{figure}
@@ -294,7 +294,7 @@ at the SU receiver, $\text{SINR}_{\text{SU}}{=}11\text{dB}$ when the channel is 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.95\linewidth]{Evaluation_2_Reduced.png}
-    \caption{Evaluation of $C^{\text{SU}}$ versus $C^{\text{PUs}}$ for different values of the penalty $\lambda$ and noise power $\sigma_{V}^{2}$; comparisons with state-of-the-art and our solution with model foresight}
+    \caption{Evaluation of $C^{\text{SU}}$ versus $C^{\text{PUs}}$ for different values of the penalty $\lambda$; comparisons with state-of-the-art and our solution with model foresight}
     \label{fig:8}
     \vspace{-6mm}
 \end{figure}
@@ -310,11 +310,11 @@ In Fig. \ref{fig:8}, we evaluate the performance of our solution in terms of SU 
 \item TD-SARSA with LFA \cite{6507570} in single-agent deployment settings, with belief update heuristic constant $0.9$, discount factor $0.9$, exploration factor $0.01$, and raw false alarm probability $5$\%: we perform $3$\% better; and
 \item Adaptive Deep Q-Network (DQN) \cite{DQN} with experiential replay (memory size $10^{6}$), $2048$ input neurons, $2{\times}4096$ neurons with ReLU activation functions, an Adam optimizer with MSE cost function, exploration factor $0.1$, learning rate $10^{-4}$, and batch size $32$: we perform $9$\% better.
 \end{itemize}
-\vspace{-9mm}
+\vspace{-7mm}
 
 \section{Conclusion}\label{V}
 In this paper, we formulate the optimal spectrum sensing and access problem as an approximate POMDP, which leverages learning of the spectrum occupancy correlation model of the PUs via the Baum-Welch algorithm. Through system simulations, we demonstrate the advantages of exploiting the correlation structure -- as opposed to Neyman-Pearson Detector which assumes independence -- and of adapting the spectrum sensing decision to optimize the performance -- as opposed to Viterbi, which uses a fixed sensing strategy. We demonstrate the feasibility of a concurrent learning and decision-making framework, as opposed to correlation-coefficient based clustering algorithms which rely on pre-loaded datasets for determining the PU occupancy correlation model. Our framework enables a critical feature: the ability of the SU to regulate the interference caused to PUs, by adjusting a penalty parameter.
-\vspace{-9mm}
+\vspace{-7mm}
 \bibliographystyle{IEEEtran}
 \bibliography{ref}
 \end{document}

@@ -1,0 +1,58 @@
+C:\Users\kesha\Workspaces\venv\Scripts\python.exe C:/Users/kesha/Workspaces/Minerva/src/RateAdaptation.py
+2021-05-31 02:02:54.698398: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2021-05-31 02:02:54.698544: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2021-05-31 02:02:58.656722: I tensorflow/compiler/jit/xla_cpu_device.cc:41] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2021-05-31 02:02:58.659697: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'nvcuda.dll'; dlerror: nvcuda.dll not found
+2021-05-31 02:02:58.660323: W tensorflow/stream_executor/cuda/cuda_driver.cc:326] failed call to cuInit: UNKNOWN ERROR (303)
+2021-05-31 02:02:58.663196: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:169] retrieving CUDA diagnostic information for host: ArkAngel-VI
+2021-05-31 02:02:58.663359: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:176] hostname: ArkAngel-VI
+2021-05-31 02:02:58.668579: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2021-05-31 02:02:58.670805: I tensorflow/compiler/jit/xla_gpu_device.cc:99] Not creating XLA devices, tf_xla_enable_xla_devices not set
+tf.Tensor(0.975585872990847, shape=(), dtype=float64)
+tf.Tensor(0.975585872990847, shape=(), dtype=float64)
+tf.Tensor(0.9306155752431693, shape=(), dtype=float64)
+tf.Tensor(0.8920745263139681, shape=(), dtype=float64)
+tf.Tensor(0.872805890551293, shape=(), dtype=float64)
+tf.Tensor(0.8471165129491889, shape=(), dtype=float64)
+tf.Tensor(0.8406945716113059, shape=(), dtype=float64)
+tf.Tensor(0.7829051185367026, shape=(), dtype=float64)
+tf.Tensor(0.7379690919325615, shape=(), dtype=float64)
+tf.Tensor(0.6930448910838557, shape=(), dtype=float64)
+tf.Tensor(0.654549511663623, shape=(), dtype=float64)
+tf.Tensor(0.638513211810797, shape=(), dtype=float64)
+tf.Tensor(0.46230548133090393, shape=(), dtype=float64)
+tf.Tensor(0.36005716836436225, shape=(), dtype=float64)
+tf.Tensor(0.25824307423832366, shape=(), dtype=float64)
+
+Process finished with exit code 0
+
+
+C:\Users\kesha\Workspaces\venv\Scripts\python.exe C:/Users/kesha/Workspaces/Minerva/src/RateAdaptation.py
+2021-05-31 02:00:18.660873: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2021-05-31 02:00:18.661008: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+tf.Tensor(0.0, shape=(), dtype=float64)
+2021-05-31 02:00:21.581331: I tensorflow/compiler/jit/xla_cpu_device.cc:41] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2021-05-31 02:00:21.582453: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'nvcuda.dll'; dlerror: nvcuda.dll not found
+2021-05-31 02:00:21.582577: W tensorflow/stream_executor/cuda/cuda_driver.cc:326] failed call to cuInit: UNKNOWN ERROR (303)
+2021-05-31 02:00:21.585527: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:169] retrieving CUDA diagnostic information for host: ArkAngel-VI
+2021-05-31 02:00:21.585688: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:176] hostname: ArkAngel-VI
+2021-05-31 02:00:21.586175: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2021-05-31 02:00:21.586725: I tensorflow/compiler/jit/xla_gpu_device.cc:99] Not creating XLA devices, tf_xla_enable_xla_devices not set
+tf.Tensor(0.9304985707562512, shape=(), dtype=float64)
+tf.Tensor(1.7543605707869228, shape=(), dtype=float64)
+tf.Tensor(2.786066937573633, shape=(), dtype=float64)
+tf.Tensor(3.4053927935762283, shape=(), dtype=float64)
+tf.Tensor(4.0248216759884645, shape=(), dtype=float64)
+tf.Tensor(4.437810852829636, shape=(), dtype=float64)
+tf.Tensor(5.263846826381026, shape=(), dtype=float64)
+tf.Tensor(6.089934166488383, shape=(), dtype=float64)
+tf.Tensor(6.709522203809291, shape=(), dtype=float64)
+tf.Tensor(7.466815105960516, shape=(), dtype=float64)
+tf.Tensor(8.981442914997556, shape=(), dtype=float64)
+tf.Tensor(9.910892514546559, shape=(), dtype=float64)
+tf.Tensor(10.468567221847293, shape=(), dtype=float64)
+tf.Tensor(11.418686430773285, shape=(), dtype=float64)
+
+Process finished with exit code 0

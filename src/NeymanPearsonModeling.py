@@ -22,9 +22,11 @@
 import math
 import numpy
 import warnings
+import traceback
 import scipy.stats
 from enum import Enum
 from collections import namedtuple
+from concurrent.futures import ThreadPoolExecutor
 
 warnings.filterwarnings("ignore",
                         category=DeprecationWarning)
@@ -49,14 +51,14 @@ class Channel(object):
         print('[INFO] Channel Initialization: Bringing things up...')
         # Noise Statistics
         self.noise_mean = _noise_mean
-        if self.noise_mean is not 0:
+        if self.noise_mean != 0:
             print('[WARN] Channel Initialization: The system assumes Zero-Mean, Additive, White, Gaussian '
                   'Noise...')
             self.noise_mean = 0
         self.noise_variance = _noise_variance
         # Channel Impulse Response Statistics
         self.impulse_response_mean = _impulse_response_mean
-        if self.impulse_response_mean is not 0:
+        if self.impulse_response_mean != 0:
             print('[WARN] Channel Initialization: The system assumes Zero-Mean, Gaussian Impulse Response...')
             self.impulse_response_mean = 0
         self.impulse_response_variance = _impulse_response_variance
@@ -171,7 +173,7 @@ class NeymanPearsonDetector(object):
         self.false_alarm_probability = _false_alarm_probability
         # The mean of the AWGN samples
         self.noise_mean = _noise_mean
-        if self.noise_mean is not 0:
+        if self.noise_mean != 0:
             print('[WARN] NeymanPearsonDetector Initialization: The observation model assumes Zero-Mean Additive White '
                   'Gaussian Noise samples...')
             self.noise_mean = 0
@@ -208,7 +210,7 @@ class NeymanPearsonDetector(object):
                 pu_interference += self.true_pu_occupancy_states[k][i] * (1 - estimated_state)
             su_throughputs.append(su_throughput)
             pu_interferences.append(pu_interference)
-        return self.analytics(su_throughput=sum(su_throughputs) / self.number_of_episodes,
+        return self.analytics(su_throughput=sum(su_throughputs) / (12 * self.number_of_episodes),
                               pu_interference=sum(pu_interferences) / self.number_of_episodes)
 
 
@@ -220,10 +222,10 @@ class NeymanPearsonModeling(object):
     NUMBER_OF_CHANNELS = 18
 
     # The number of sampling rounds during the observation phase of the SecondaryUser
-    NUMBER_OF_SAMPLING_ROUNDS = 1000
+    NUMBER_OF_SAMPLING_ROUNDS = 300
 
     # The number of episodes of interaction of this agent with the radio environment
-    NUMBER_OF_EPISODES = 1000
+    NUMBER_OF_EPISODES = 300
 
     # The mean of the Additive, White, Gaussian Noise samples
     NOISE_MEAN = 0
@@ -240,9 +242,6 @@ class NeymanPearsonModeling(object):
     # The penalty term for missed detections during utility evaluation
     PENALTY = -1
 
-    # The constraint on false alarm probability for this agent
-    FALSE_ALARM_PROBABILITY_CONSTRAINT = 0.3
-
     # Plotly Scatter mode
     PLOTLY_SCATTER_MODE = 'lines+markers'
 
@@ -257,64 +256,67 @@ class NeymanPearsonModeling(object):
         for i in range(1, self.NUMBER_OF_EPISODES):
             if self.true_occupancy_states[0][i - 1] == 1:
                 self.true_occupancy_states[0].append(
-                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['q1']]()
+                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['1']]()
                 )
             else:
                 self.true_occupancy_states[0].append(
-                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['q0']]()
+                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['0']]()
                 )
         # Spatial chain: Complete column 0 (Use statistics q0 and q1)
         for k in range(1, self.NUMBER_OF_CHANNELS):
             if self.true_occupancy_states[k - 1][0] == 1:
                 self.true_occupancy_states[k].append(
-                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['q1']]()
+                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['1']]()
                 )
             else:
                 self.true_occupancy_states[k].append(
-                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['q0']]()
+                    (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['0']]()
                 )
         # Complete the rest of the kxt matrix (Use statistics p00, p01, p10, and p11)
         for k in range(1, self.NUMBER_OF_CHANNELS):
             for i in range(1, self.NUMBER_OF_EPISODES):
                 if self.true_occupancy_states[k - 1][i] == 0 and self.true_occupancy_states[k][i - 1] == 0:
                     self.true_occupancy_states[k].append(
-                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['p00']]()
+                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['00']]()
                     )
                 elif self.true_occupancy_states[k - 1][i] == 0 and self.true_occupancy_states[k][i - 1] == 1:
                     self.true_occupancy_states[k].append(
-                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['p01']]()
+                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['01']]()
                     )
                 elif self.true_occupancy_states[k - 1][i] == 1 and self.true_occupancy_states[k][i - 1] == 0:
                     self.true_occupancy_states[k].append(
-                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['p10']]()
+                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['10']]()
                     )
                 else:
                     self.true_occupancy_states[k].append(
-                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['p11']]()
+                        (lambda: 1, lambda: 0)[numpy.random.random_sample() > self.correlation_model['11']]()
                     )
         # Return the collection in case an external method needs it...
         return self.true_occupancy_states
 
     # The initialization sequence
-    def __init__(self):
+    def __init__(self, false_alarm_probability):
         print('[INFO] NeymanPearsonModeling Initialization: Bringing things up...')
+        # The false alarm probability control variable for ROC curves
+        self.false_alarm_probability = false_alarm_probability
         # The true occupancy states of the incumbents in the network
         self.true_occupancy_states = {k: [] for k in range(self.NUMBER_OF_CHANNELS)}
         # The start probability of the elements in this double Markov structure
         self.start_probabilities = 0.6
         # The correlation model parameters, i.e., $\vec{\theta}$
         self.correlation_model = {
-            '0': 0.3,   # q0
-            '1': 0.8,   # q1
+            '0': 0.3,  # q0
+            '1': 0.8,  # q1
             '00': 0.1,  # p00
             '01': 0.3,  # p01
             '10': 0.3,  # p10
-            '11': 0.7   # p11
+            '11': 0.7  # p11
         }
         # The channel instance
         self.channel = Channel(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.NUMBER_OF_EPISODES,
                                self.NOISE_MEAN, self.NOISE_VARIANCE, self.IMPULSE_RESPONSE_MEAN,
                                self.IMPULSE_RESPONSE_VARIANCE)
+        self.simulate_pu_occupancy()
         # The Secondary User
         self.secondary_user = SecondaryUser(self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS,
                                             self.NUMBER_OF_EPISODES, self.channel, self.true_occupancy_states)
@@ -324,17 +326,16 @@ class NeymanPearsonModeling(object):
         # The "Neyman Pearson Detection" based non-POMDP agent
         self.neyman_pearson_detection_based_non_pomdp_agent = NeymanPearsonDetector(
             self.NUMBER_OF_CHANNELS, self.NUMBER_OF_SAMPLING_ROUNDS, self.NUMBER_OF_EPISODES,
-            self.FALSE_ALARM_PROBABILITY_CONSTRAINT, self.NOISE_MEAN, self.NOISE_VARIANCE,
+            self.false_alarm_probability, self.NOISE_MEAN, self.NOISE_VARIANCE,
             self.sampled_observations_across_all_episodes, self.true_occupancy_states, self.PENALTY)
 
     # Core behavior
     # The evaluation routine that outputs the SU throughput and PU interference analytics for this non-POMDP agent
     def evaluate(self):
         analytics = self.neyman_pearson_detection_based_non_pomdp_agent.get_analytics()
-        print('[INFO] NeymanPearsonModeling evaluate: Neyman-Pearson Detection - '
-              'Average Episodic SU Throughput = {} | '
-              'Average Episodic PU Interference = {}'.format(analytics.su_throughput,
-                                                             analytics.pu_interference))
+        if analytics.su_throughput < 1.0:
+            roc_dict[self.false_alarm_probability] = analytics.su_throughput
+        # Nothing to return...
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -342,10 +343,22 @@ class NeymanPearsonModeling(object):
         # Nothing to do...
 
 
+# Concurrent execution deployment base
+def start__(pfa__):
+    NeymanPearsonModeling(pfa__).evaluate()
+
+
 # Run Trigger
 if __name__ == '__main__':
     print('[INFO] NeymanPearsonModeling main: Triggering the evaluation of the Neyman Pearson Detection based'
           'non-POMDP agent')
-    agent = NeymanPearsonModeling()
-    agent.simulate_pu_occupancy()
-    agent.evaluate()
+    pfas = numpy.arange(start=0.0, stop=1.05, step=0.05)
+    roc_dict = {pfa: 1.0 for pfa in pfas}
+    try:
+        with ThreadPoolExecutor(max_workers=len(pfas)) as executor:
+            for pfa in pfas:
+                executor.submit(start__, pfa)
+        print('[INFO] NeymanPearsonModeling main: ROC = [{}]'.format(roc_dict))
+        print('[INFO] NeymanPearsonModeling main: ROC = [{}]'.format(roc_dict.values()))
+    except Exception as e:
+        traceback.print_tb(e.__traceback__)

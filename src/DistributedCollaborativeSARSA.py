@@ -8,15 +8,18 @@
 
 # The imports
 import numpy
-import plotly
+# import plotly
 import random
+import traceback
 import scipy.stats
-import plotly.graph_objs as go
+# import plotly.graph_objs as go
 from collections import namedtuple
+from concurrent.futures import ThreadPoolExecutor
+
 
 # Plotly user account credentials for visualization
-plotly.tools.set_credentials_file(username='bkeshava',
-                                  api_key='W2WL5OOxLcgCzf8NNlgl')
+# plotly.tools.set_credentials_file(username='bkeshava',
+#                                   api_key='W2WL5OOxLcgCzf8NNlgl')
 
 
 # This entity describes the distributed collaborative multi-agent multi-band TD-SARSA with LFA framework for optimal
@@ -24,10 +27,10 @@ plotly.tools.set_credentials_file(username='bkeshava',
 #   allocation--for a system without apriori model knowledge.
 class DistributedCollaborativeSARSA(object):
     # The number of time-steps of framework evaluation
-    NUMBER_OF_TIME_STEPS = 3000
+    NUMBER_OF_TIME_STEPS = 300
 
     # The number of sensing sampling rounds per time-step to account for the AWGN observation model
-    NUMBER_OF_SAMPLING_ROUNDS = 3000
+    NUMBER_OF_SAMPLING_ROUNDS = 300
 
     # The number of channels in the discretized spectrum of interest $K$
     NUMBER_OF_CHANNELS = 18
@@ -71,7 +74,7 @@ class DistributedCollaborativeSARSA(object):
     RSSI_THRESHOLD = 10
 
     # The acceptable level of false alarm probability per channel given that only one cognitive radio node is sensing it
-    RAW_FALSE_ALARM_PROBABILITY = 0.05
+    # RAW_FALSE_ALARM_PROBABILITY = 0.0
 
     # The fixed $\epsilon$ value for the $\epsilon$-greedy policy in the TD-SARSA with LFA algorithm
     EPSILON = 0.01
@@ -86,8 +89,9 @@ class DistributedCollaborativeSARSA(object):
     PLOTLY_SCATTER_MODE = 'lines+markers'
 
     # The initialization sequence
-    def __init__(self):
+    def __init__(self, fa):
         print('DistributedCollaborativeSARA Initialization: Bringing things up...')
+        self.false_alarm_probability = fa
         self.temporal_action_pair = namedtuple('ActionPair', ['past', 'present'])
         self.test_statistics_counter = namedtuple('TestStatisticsCounter', ['sum', 'count'])
         self.incumbent_occupancy_states, self.average_occupancies = self.simulate_incumbent_occupancy_behavior()
@@ -216,24 +220,24 @@ class DistributedCollaborativeSARSA(object):
                       numpy.sum([(lambda: 0, lambda: 1)[actions.get(m).present is not None
                                                         and actions.get(m).present == k]()
                                  for m in nodes])
-        return (lambda: self.RAW_FALSE_ALARM_PROBABILITY,
-                lambda: self.RAW_FALSE_ALARM_PROBABILITY / denominator)[denominator.item() > 0]()
+        return (lambda: self.false_alarm_probability,
+                lambda: self.false_alarm_probability / denominator)[denominator.item() > 0]()
 
     # Get the allowed false alarm probability based on the number of cognitive radios sensing a particular channel for
     #   belief and SARSA $\vec{\theta}$ (past)
     def get_pfa2(self, actions, k):
         denominator = numpy.sum([(lambda: 0, lambda: 1)[actions.get(m).past == k]()
                                  for m in self.cognitive_radio_ensemble.keys()])
-        return (lambda: self.RAW_FALSE_ALARM_PROBABILITY,
-                lambda: self.RAW_FALSE_ALARM_PROBABILITY / denominator)[denominator.item() > 0]()
+        return (lambda: self.false_alarm_probability,
+                lambda: self.false_alarm_probability / denominator)[denominator.item() > 0]()
 
     # Get the allowed false alarm probability based on the number of cognitive radios sensing a particular channel for
     #   belief and SARSA $\vec{\theta}$ (present)
     def get_pfa3(self, actions, k):
         denominator = numpy.sum([(lambda: 0, lambda: 1)[actions.get(m).present == k]()
                                  for m in self.cognitive_radio_ensemble.keys()])
-        return (lambda: self.RAW_FALSE_ALARM_PROBABILITY,
-                lambda: self.RAW_FALSE_ALARM_PROBABILITY / denominator)[denominator.item() > 0]()
+        return (lambda: self.false_alarm_probability,
+                lambda: self.false_alarm_probability / denominator)[denominator.item() > 0]()
 
     # The distributed collaborative SARSA with Linear Function Approximation algorithm
     def collaborative_sarsa(self):
@@ -243,23 +247,24 @@ class DistributedCollaborativeSARSA(object):
         su_throughputs = []
         pu_interferences = []
         # Initialize the temporary variables--collaboration through global view (system-wide dicts and lists)
-        thetas = {n: [(0.0 * ((k+1)/(k+1))) for k in range(self.NUMBER_OF_CHANNELS)]
+        thetas = {n: [(0.0 * ((k + 1) / (k + 1))) for k in range(self.NUMBER_OF_CHANNELS)]
                   for n in self.cognitive_radio_ensemble.keys()}
-        beliefs = {n: [(0.5 * ((k+1)/(k+1))) for k in range(self.NUMBER_OF_CHANNELS)]
+        beliefs = {n: [(0.5 * ((k + 1) / (k + 1))) for k in range(self.NUMBER_OF_CHANNELS)]
                    for n in self.cognitive_radio_ensemble.keys()}
         actions = {n: self.temporal_action_pair(past=numpy.random.randint(0, self.NUMBER_OF_CHANNELS - 1),
                                                 present=None) for n in self.cognitive_radio_ensemble.keys()}
         for i in range(self.NUMBER_OF_TIME_STEPS):
             time_slots.append(i)
             # Observation
-            observations = {n: (numpy.sum([((t+1)/(t+1)) * ((self.incumbent_occupancy_states[actions.get(n).past][i] *
-                                                             numpy.random.normal(0, numpy.sqrt(
-                                                                 self.CHANNEL_IMPULSE_RESPONSE_VARIANCE))
-                                                             ) + numpy.random.normal(0,
-                                                                                     numpy.sqrt(self.NOISE_VARIANCE))
-                                                            ) for t in range(self.NUMBER_OF_SAMPLING_ROUNDS)]
-                                          ) / self.NUMBER_OF_SAMPLING_ROUNDS)
-                            for n in self.cognitive_radio_ensemble.keys()}
+            observations = {
+                n: (numpy.sum([((t + 1) / (t + 1)) * ((self.incumbent_occupancy_states[actions.get(n).past][i] *
+                                                       numpy.random.normal(0, numpy.sqrt(
+                                                           self.CHANNEL_IMPULSE_RESPONSE_VARIANCE))
+                                                       ) + numpy.random.normal(0,
+                                                                               numpy.sqrt(self.NOISE_VARIANCE))
+                                                      ) for t in range(self.NUMBER_OF_SAMPLING_ROUNDS)]
+                              ) / self.NUMBER_OF_SAMPLING_ROUNDS)
+                for n in self.cognitive_radio_ensemble.keys()}
             all_nodes = [m for m in self.cognitive_radio_ensemble.keys()]
             random.shuffle(all_nodes)
             # Action selection
@@ -284,13 +289,13 @@ class DistributedCollaborativeSARSA(object):
                 test_statistics[actions.get(n).past] = self.test_statistics_counter(
                     sum=test_statistics[actions.get(n).past].sum + observations.get(n),
                     count=test_statistics[actions.get(n).past].count + 1)
-            estimated_state = [((k+1)/(k+1)) for k in range(self.NUMBER_OF_CHANNELS)]
+            estimated_state = [((k + 1) / (k + 1)) for k in range(self.NUMBER_OF_CHANNELS)]
             for k in range(self.NUMBER_OF_CHANNELS):
                 if test_statistics.get(k).count > 0:
                     if (test_statistics.get(k).sum / test_statistics.get(k).count) < \
                             (numpy.sqrt(self.NOISE_VARIANCE / (test_statistics.get(k).count *
                                                                self.NUMBER_OF_SAMPLING_ROUNDS)) *
-                             scipy.stats.norm.ppf(1 - (self.RAW_FALSE_ALARM_PROBABILITY /
+                             scipy.stats.norm.ppf(1 - (self.false_alarm_probability /
                                                        test_statistics.get(k).count))):
                         estimated_state[k] = 0
             # Reward
@@ -331,41 +336,43 @@ class DistributedCollaborativeSARSA(object):
                                                                (self.DISCOUNT_FACTOR * present_q_value) -
                                                                past_q_value)])
                 thetas[n] = (numpy.array(thetas.get(n)) + additive_factor).tolist()
-        print('DistributedCollaborativeSARSA collaborative_sarsa: The system-wide average performance per time-step'
-              'in an 18-channel 18-SU 3-PU radio environment with RSSI-based neighbor discovery and '
-              'preferential-ballot based channel access rank pre-allocation--in a double Markov chain time-frequency'
-              'correlation structure occupancy model--with a sensing/access restriction of 1 is: '
-              'SU Throughput = {} | PU Interference = {}'.format(numpy.sum(su_throughputs) / self.NUMBER_OF_TIME_STEPS,
-                                                                 numpy.sum(pu_interferences) / (
-                                                                                   self.NUMBER_OF_TIME_STEPS *
-                                                                                   self.average_occupancies)
-                                                                 )
-              )
+        # print('DistributedCollaborativeSARSA collaborative_sarsa: The system-wide average performance per time-step'
+        #       'in an 18-channel 18-SU 3-PU radio environment with RSSI-based neighbor discovery and '
+        #       'preferential-ballot based channel access rank pre-allocation--in a double Markov chain time-frequency'
+        #       'correlation structure occupancy model--with a sensing/access restriction of 1 is: '
+        #       'SU Throughput = {} | '
+        #       'PU Interference = {}'.format(numpy.sum(su_throughputs) / (7 * self.NUMBER_OF_TIME_STEPS),
+        #                                     numpy.sum(pu_interferences) /
+        #                                     (self.NUMBER_OF_TIME_STEPS * self.average_occupancies)))
+        roc__ = numpy.sum(su_throughputs) / (7 * self.NUMBER_OF_TIME_STEPS)
         # Return the output for visualization
-        return time_slots, utilities
+        # return time_slots, utilities
+        return roc__
 
     # Visualize the utilities per time-slot obtained by the "TD-SARSA with LFA" based RL agent using the Plotly API
     def evaluate(self):
-        x_axis, y_axis = self.collaborative_sarsa()
-        # Data Trace
-        visualization_trace = go.Scatter(x=x_axis,
-                                         y=y_axis,
-                                         mode=self.PLOTLY_SCATTER_MODE)
-        # Figure Layout
-        visualization_layout = dict(title='Utilities per time-slot obtained by the "TD-SARSA with LFA" based RL agent '
-                                          'in a Spatio-Temporal Markovian PU Occupancy Behavior Model',
-                                    xaxis=dict(title=r'Time-slots\ i$'),
-                                    yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
-                                                     r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
-        # Figure
-        visualization_figure = dict(data=[visualization_trace],
-                                    layout=visualization_layout)
-        # URL
-        figure_url = plotly.plotly.plot(visualization_figure,
-                                        filename='Utilities_per_time_step_TD_SARSA_LFA')
-        # Print the URL in case you're on an environment where a GUI is not available
-        print('DistributedCollaborativeSARSA evaluate: '
-              'Data Visualization Figure is available at {}'.format(figure_url))
+        roc_value = self.collaborative_sarsa()
+        if roc_value < 1.0:
+            roc_dict[self.false_alarm_probability] = roc_value
+        # # Data Trace
+        # visualization_trace = go.Scatter(x=x_axis,
+        #                                  y=y_axis,
+        #                                  mode=self.PLOTLY_SCATTER_MODE)
+        # # Figure Layout
+        # visualization_layout = dict(title='Utilities per time-slot obtained by the "TD-SARSA with LFA" based RL '
+        #                                   'agent in a Spatio-Temporal Markovian PU Occupancy Behavior Model',
+        #                             xaxis=dict(title=r'Time-slots\ i$'),
+        #                             yaxis=dict(title=r'$Utility\ \sum_{k=1}^{K}\ (1 - B_k(i)) (1 - \hat{B}_k(i)) - '
+        #                                              r'\lambda B_k(i) (1 - \hat{B}_k(i))$'))
+        # # Figure
+        # visualization_figure = dict(data=[visualization_trace],
+        #                             layout=visualization_layout)
+        # # URL
+        # figure_url = plotly.plotly.plot(visualization_figure,
+        #                                 filename='Utilities_per_time_step_TD_SARSA_LFA')
+        # # Print the URL in case you're on an environment where a GUI is not available
+        # print('DistributedCollaborativeSARSA evaluate: '
+        #       'Data Visualization Figure is available at {}'.format(figure_url))
 
     # The termination sequence
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -373,12 +380,25 @@ class DistributedCollaborativeSARSA(object):
         # Termination complete
 
 
+# Concurrent execution deployment base
+def start__(pfa__):
+    DistributedCollaborativeSARSA(pfa__).evaluate()
+
+
 # Run trigger
 if __name__ == '__main__':
     print('DistributedCollaborativeSARSA main: '
           'Starting the distributed multi-agent multi-band collaborative SARSA framework')
-    sarsa = DistributedCollaborativeSARSA()
-    sarsa.evaluate()
+    pfas = numpy.arange(start=0.0, stop=1.05, step=0.05)
+    roc_dict = {pfa: 1.0 for pfa in pfas}
+    try:
+        with ThreadPoolExecutor(max_workers=len(pfas)) as executor:
+            for pfa in pfas:
+                executor.submit(start__, pfa)
+        print('[INFO] DistributedCollaborativeSARSA main: ROC = [{}]'.format(roc_dict))
+        print('[INFO] DistributedCollaborativeSARSA main: ROC = [{}]'.format(roc_dict.values()))
+    except Exception as e:
+        traceback.print_tb(e.__traceback__)
     print('DistributedCollaborativeSARSA main: '
           'Distributed multi-agent multi-band collaborative SARSA framework evaluation completed')
     # Framework evaluation complete

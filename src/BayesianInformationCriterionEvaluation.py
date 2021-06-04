@@ -1,7 +1,8 @@
 # This class describes the evaluation of the Bayesian Information Criterion (BIC) metrics in relation to the DARPA SC2
 #   Active Incumbent data--in order to study the "goodness of fit" of our double Markovian time-frequency correlation
-#   structure ($\hat{\vec{\theta}}$), as opposed to time-frequency independence models ($\mathbf{Q}$), pure temporal
-#   correlation models ($\mathbf{R}$), and pure frequency correlation models ($\mathbf{S}).
+#   structure ($\hat{\vec{\theta}}$) -- in both forward and backward directions vis-a-vis the correlation across
+#   frequency, as opposed to time-frequency independence models ($\mathbf{Q}$), pure temporal correlation models
+#   ($\mathbf{R}$), and pure frequency correlation models ($\mathbf{S}).
 # Author: Bharath Keshavamurthy
 # Organization: School of Electrical and Computer Engineering, West Lafayette, IN.
 # Copyright (c) 2020. All Rights Reserved.
@@ -18,17 +19,22 @@ from DARPASC2ActiveIncumbentAnalysis import DARPASC2ActiveIncumbentAnalysis
 
 # This enumeration entity lists the various types of correlation we intend to analyze in this script
 class CorrelationModelType(Enum):
-    # Double Markovian Time-Frequency Correlation (Our Model - $\hat{\vec{\theta}}$)
-    MARKOVIAN_TIME_FREQUENCY_CORRELATION = 0
+    # Double Markovian Time-Frequency Correlation (Our Model - $\hat{\vec{\theta}}$) -- with top-down correlation across
+    #   frequencies, i.e., a forward-facing Markov chain across the channels in the discretized spectrum of interest
+    MARKOVIAN_TIME_FREQUENCY_CORRELATION_FORWARD = 0
+
+    # Double Markovian Time-Frequency Correlation -- with bottom-up correlation across frequencies, i.e., a
+    #   backward-facing Markov chain across the channels in the discretized spectrum of interest
+    MARKOVIAN_TIME_FREQUENCY_CORRELATION_BACKWARD = 1
 
     # Time-Frequency Independence ($\mathbf{Q}$)
-    TIME_FREQUENCY_INDEPENDENCE = 1
+    TIME_FREQUENCY_INDEPENDENCE = 2
 
     # Markovian Time Correlation Only ($\hat{\vec{\theta}}$)
-    MARKOVIAN_TIME_CORRELATION_ONLY = 2
+    MARKOVIAN_TIME_CORRELATION_ONLY = 3
 
     # Markovian Frequency Correlation Only ($\mathbf{S})
-    MARKOVIAN_FREQUENCY_CORRELATION_ONLY = 3
+    MARKOVIAN_FREQUENCY_CORRELATION_ONLY = 4
 
 
 # Evaluation of the BIC metrics to analyze the "goodness of fit" of our model against those in the state-of-the-art...
@@ -82,9 +88,9 @@ class BayesianInformationCriterionEvaluation(object):
 
         # Determine the likelihood probability across the final ${test}% of the data--based on the model under analysis
 
-        # MARKOVIAN_TIME_FREQUENCY_CORRELATION
+        # MARKOVIAN_TIME_FREQUENCY_CORRELATION_FORWARD
         # Refer to the Channel Occupancy Model equation in the journal manuscript (\eqref{6})
-        if _correlation_model_type == CorrelationModelType.MARKOVIAN_TIME_FREQUENCY_CORRELATION:
+        if _correlation_model_type == CorrelationModelType.MARKOVIAN_TIME_FREQUENCY_CORRELATION_FORWARD:
             # Episodes-$m$ to $T{-}1$
             for i in range(self.m, self.number_of_episodes):
                 # Reset the likelihood for the next episode
@@ -104,6 +110,34 @@ class BayesianInformationCriterionEvaluation(object):
                         likelihood *= 1 - ((lambda: _model['10'],
                                             lambda: _model['11'])[self.occupancy_behavior[k][i - 1]]()
                                            if self.occupancy_behavior[k - 1][i]
+                                           else (lambda: _model['00'],
+                                                 lambda: _model['01'])[self.occupancy_behavior[k][i - 1]]())
+                # Append the calculated likelihood for this episode to the likelihoods collection for averaging...
+                likelihoods.append(likelihood)
+        # MARKOVIAN_TIME_FREQUENCY_CORRELATION_BACKWARD
+        # Refer to the Channel Occupancy Model equation in the journal manuscript (\eqref{7})
+        elif _correlation_model_type == CorrelationModelType.MARKOVIAN_TIME_FREQUENCY_CORRELATION_BACKWARD:
+            # Episodes-$m$ to $T{-}1$
+            for i in range(self.m, self.number_of_episodes):
+                # Reset the likelihood for the next episode
+                likelihood = 1.0
+                # Channel-$K{-}1$ | Episode-$i$ | 'q' parameters | Temporal Correlation
+                if self.occupancy_behavior[self.number_of_channels - 1][i]:
+                    likelihood *= _model['1'] if self.occupancy_behavior[self.number_of_channels - 1][i - 1] \
+                        else _model['0']
+                else:
+                    likelihood *= 1 - (_model['1'] if self.occupancy_behavior[self.number_of_channels - 1][i - 1]
+                                       else _model['0'])
+                # Channel-$0$ to $K{-}2$ | Episode-$i$ | 'p' parameters | Time-Frequency Correlation
+                for k in range(0, self.number_of_channels - 1):
+                    if self.occupancy_behavior[k][i]:
+                        likelihood *= (lambda: _model['10'], lambda: _model['11'])[
+                            self.occupancy_behavior[k][i - 1]]() if self.occupancy_behavior[k + 1][i] else \
+                            (lambda: _model['00'], lambda: _model['01'])[self.occupancy_behavior[k][i - 1]]()
+                    else:
+                        likelihood *= 1 - ((lambda: _model['10'],
+                                            lambda: _model['11'])[self.occupancy_behavior[k][i - 1]]()
+                                           if self.occupancy_behavior[k + 1][i]
                                            else (lambda: _model['00'],
                                                  lambda: _model['01'])[self.occupancy_behavior[k][i - 1]]())
                 # Append the calculated likelihood for this episode to the likelihoods collection for averaging...
@@ -165,7 +199,7 @@ class BayesianInformationCriterionEvaluation(object):
 if __name__ == '__main__':
     print('[INFO] BayesianInformationCriterionEvaluation main: Starting BIC Evaluation...')
     # ${train}-${test} training/test split
-    training_test_split = 0.5
+    training_test_split = 0.7
 
     # The analyzer instance in order to extract the occupancy behavior information from the DARPA SC2 data
     analyzer = DARPASC2ActiveIncumbentAnalysis('data/active_incumbent_scenario8342.db')
@@ -176,14 +210,23 @@ if __name__ == '__main__':
     #   Incumbent data: ${train}% of the emulation data is used for this model estimation...
     # The models under analysis
 
-    # The time-frequency Markovian correlation model (our proposed model: MARKOVIAN_TIME_FREQUENCY_CORRELATION)
-    time_freq_correlation_model = {
+    # The time-frequency Markovian correlation model (our proposed model: MARKOVIAN_TIME_FREQUENCY_CORRELATION_FORWARD)
+    time_freq_correlation_model_forward = {
         '0': 0.67,  # q0
         '1': 0.75,  # q1
         '00': 0.25,  # p00
         '01': 0.75,  # p01
         '10': 0.71,  # p10
-        '11': 0.8  # p11
+        '11': 0.80  # p11
+    }
+    # The time-frequency Markovian correlation model (our proposed model: MARKOVIAN_TIME_FREQUENCY_CORRELATION_BACKWARD)
+    time_freq_correlation_model_backward = {
+        '0': 0.5,  # q0
+        '1': 0.85,  # q1
+        '00': 0.36,  # p00
+        '01': 0.50,  # p01
+        '10': 0.85,  # p10
+        '11': 0.92  # p11
     }
     # The steady state occupancy probability (independence model: TIME_FREQUENCY_INDEPENDENCE)
     steady_state_occupancy = 0.7
@@ -199,9 +242,11 @@ if __name__ == '__main__':
     }
 
     # Correlation Model Type AND Model selection
-    model_type = CorrelationModelType.MARKOVIAN_FREQUENCY_CORRELATION_ONLY
-    if model_type == CorrelationModelType.MARKOVIAN_TIME_FREQUENCY_CORRELATION:
-        model = time_freq_correlation_model
+    model_type = CorrelationModelType.MARKOVIAN_TIME_FREQUENCY_CORRELATION_BACKWARD
+    if model_type == CorrelationModelType.MARKOVIAN_TIME_FREQUENCY_CORRELATION_FORWARD:
+        model = time_freq_correlation_model_forward
+    elif model_type == CorrelationModelType.MARKOVIAN_TIME_FREQUENCY_CORRELATION_BACKWARD:
+        model = time_freq_correlation_model_backward
     elif model_type == CorrelationModelType.TIME_FREQUENCY_INDEPENDENCE:
         model = None
     elif model_type == CorrelationModelType.MARKOVIAN_TIME_CORRELATION_ONLY:

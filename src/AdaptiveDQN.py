@@ -88,7 +88,7 @@ class AdaptiveDQN(object):
     PENALTY = -1
 
     # The allowed false alarm probability for threshold determination w.r.t the Likelihood Ratio Test (LRT)--1%
-    ALLOWED_FALSE_ALARM_PROBABILITY = 0.01
+    ALLOWED_FALSE_ALARM_PROBABILITY = 0.05
 
     # The initialization sequence
     def __init__(self):

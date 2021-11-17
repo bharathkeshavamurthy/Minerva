@@ -210,7 +210,7 @@ class NeymanPearsonDetector(object):
                 pu_interference += self.true_pu_occupancy_states[k][i] * (1 - estimated_state)
             su_throughputs.append(su_throughput)
             pu_interferences.append(pu_interference)
-        return self.analytics(su_throughput=sum(su_throughputs) / (12 * self.number_of_episodes),
+        return self.analytics(su_throughput=sum(su_throughputs) / self.number_of_episodes,
                               pu_interference=sum(pu_interferences) / self.number_of_episodes)
 
 
@@ -234,7 +234,7 @@ class NeymanPearsonModeling(object):
     IMPULSE_RESPONSE_MEAN = 0
 
     # The variance of the Additive, White, Gaussian Noise samples
-    NOISE_VARIANCE = 1
+    NOISE_VARIANCE = 80
 
     # The variance of the Gaussian Impulse Response samples
     IMPULSE_RESPONSE_VARIANCE = 80
@@ -333,8 +333,7 @@ class NeymanPearsonModeling(object):
     # The evaluation routine that outputs the SU throughput and PU interference analytics for this non-POMDP agent
     def evaluate(self):
         analytics = self.neyman_pearson_detection_based_non_pomdp_agent.get_analytics()
-        if analytics.su_throughput < 1.0:
-            roc_dict[self.false_alarm_probability] = analytics.su_throughput
+        roc_dict[self.false_alarm_probability] = analytics.pu_interference
         # Nothing to return...
 
     # The termination sequence
@@ -352,13 +351,14 @@ def start__(pfa__):
 if __name__ == '__main__':
     print('[INFO] NeymanPearsonModeling main: Triggering the evaluation of the Neyman Pearson Detection based'
           'non-POMDP agent')
-    pfas = numpy.arange(start=0.0, stop=1.05, step=0.05)
+    pfas = numpy.arange(start=0.0, stop=1.025, step=0.025)
     roc_dict = {pfa: 1.0 for pfa in pfas}
     try:
         with ThreadPoolExecutor(max_workers=len(pfas)) as executor:
             for pfa in pfas:
                 executor.submit(start__, pfa)
-        print('[INFO] NeymanPearsonModeling main: ROC = [{}]'.format(roc_dict))
-        print('[INFO] NeymanPearsonModeling main: ROC = [{}]'.format(roc_dict.values()))
+        occupancies = max(roc_dict.values())
+        print('[INFO] NeymanPearsonModeling main: ROC = [{}]'.format(
+            [k / occupancies for k in roc_dict.values()]))
     except Exception as e:
         traceback.print_tb(e.__traceback__)

@@ -436,7 +436,7 @@ if __name__ == '__main__':
     markovChainParameterEstimator.allocate_observations()
     # Before, we go ahead and estimate the state transition probabilities matrix, let's set them to some initial values
     # \mathbb{P}(Occupied|Idle) initial assumption
-    p_initial = 1e-8
+    p_initial = 0.5
     markovChainParameterEstimator.p_initial = p_initial
     # \mathbb{P}(Idle|Occupied) initial assumption
     q_initial = (p_initial * (1 - pi)) / pi

@@ -14,7 +14,7 @@ from enum import Enum
 import plotly.graph_objs as graph_objs
 
 # Plotly Access Credentials
-plotly.tools.set_credentials_file(username='bkeshava', api_key='YlZzp2Q0ShxGqIfEAREj')
+plotly.tools.set_credentials_file(username='bkeshava', api_key='T2AiFO1n02nYt0euM7WX')
 
 
 # An enumeration listing the various potential sources of the PSD observations
@@ -35,7 +35,7 @@ class ActiveIncumbentPSDVisualizer(object):
     def __init__(self, db_file, reference_source, reference_srn_id, scenario_bandwidth, scenario_fc, window):
         print('[INFO] ActiveIncumbentPSDVisualizer Initialization: Bringing things up...')
         # TODO: Initiate Error Handling [FILE_NOT_FOUND_EXCEPTION]
-        if not os.path.isfile(db_file):
+        if not os.path.exists(db_file):
             print('[ERROR] ActiveIncumbentPSDVisualizer Initialization: The specified DB file does not exist - '
                   '{}'.format(db_file))
             return
@@ -206,7 +206,7 @@ class ActiveIncumbentPSDVisualizer(object):
 if __name__ == '__main__':
     print('[INFO] ActiveIncumbentPSDVisualizer main: Starting the Active Incumbent PSD Visualization...')
     # The PSD observations heatmap visualizer instance creation...
-    visualizer = ActiveIncumbentPSDVisualizer('data/active_incumbent_scenario8342.db',
+    visualizer = ActiveIncumbentPSDVisualizer('data/full.db',
                                               PSDDataSource.GATEWAY, 99, 10, 1000, (400, 625))
     # Initiate visualization: Extract --> Process --> Visualize
     visualizer.start()

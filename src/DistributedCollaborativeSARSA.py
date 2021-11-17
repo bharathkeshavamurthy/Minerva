@@ -50,7 +50,7 @@ class DistributedCollaborativeSARSA(object):
     CORRELATION_MODEL = {'p00': 0.1, 'p01': 0.3, 'p10': 0.3, 'p11': 0.7, 'q0': 0.3, 'q1': 0.8}
 
     # The noise variance $\sigma_{V}^{2}$
-    NOISE_VARIANCE = 1
+    NOISE_VARIANCE = 20
 
     # The channel impulse response variance $\sigma_{H}^{2}$
     CHANNEL_IMPULSE_RESPONSE_VARIANCE = 80
@@ -59,7 +59,7 @@ class DistributedCollaborativeSARSA(object):
     DISCOUNT_FACTOR = 0.9
 
     # The number of members needed for a quorum
-    QUORUM_REQUIREMENT = 12
+    QUORUM_REQUIREMENT = 6
 
     # The transmission power of all cognitive radio nodes for RSSI analysis (dB)
     TRANSMISSION_POWER = 20
@@ -77,7 +77,7 @@ class DistributedCollaborativeSARSA(object):
     # RAW_FALSE_ALARM_PROBABILITY = 0.0
 
     # The fixed $\epsilon$ value for the $\epsilon$-greedy policy in the TD-SARSA with LFA algorithm
-    EPSILON = 0.01
+    EPSILON = 0.1
 
     # The constant employed in the belief update heuristic $\lambda$
     LAMBDA = 0.9
@@ -344,7 +344,7 @@ class DistributedCollaborativeSARSA(object):
         #       'PU Interference = {}'.format(numpy.sum(su_throughputs) / (7 * self.NUMBER_OF_TIME_STEPS),
         #                                     numpy.sum(pu_interferences) /
         #                                     (self.NUMBER_OF_TIME_STEPS * self.average_occupancies)))
-        roc__ = numpy.sum(su_throughputs) / (7 * self.NUMBER_OF_TIME_STEPS)
+        roc__ = numpy.sum(pu_interferences) / self.NUMBER_OF_TIME_STEPS
         # Return the output for visualization
         # return time_slots, utilities
         return roc__
@@ -389,14 +389,15 @@ def start__(pfa__):
 if __name__ == '__main__':
     print('DistributedCollaborativeSARSA main: '
           'Starting the distributed multi-agent multi-band collaborative SARSA framework')
-    pfas = numpy.arange(start=0.0, stop=1.05, step=0.05)
+    pfas = [0.0, 0.1, 0.15, 0.20, 0.35, 0.40, 0.55, 0.60, 0.65, 0.70, 0.75, 0.85, 0.90, 1.0]
     roc_dict = {pfa: 1.0 for pfa in pfas}
     try:
-        with ThreadPoolExecutor(max_workers=len(pfas)) as executor:
+        with ThreadPoolExecutor(max_workers=10 * len(pfas)) as executor:
             for pfa in pfas:
                 executor.submit(start__, pfa)
-        print('[INFO] DistributedCollaborativeSARSA main: ROC = [{}]'.format(roc_dict))
-        print('[INFO] DistributedCollaborativeSARSA main: ROC = [{}]'.format(roc_dict.values()))
+        occupancies = max(roc_dict.values())
+        print('[INFO] DistributedCollaborativeSARSA main: ROC = [{}]'.format(
+            [k / occupancies for k in roc_dict.values()]))
     except Exception as e:
         traceback.print_tb(e.__traceback__)
     print('DistributedCollaborativeSARSA main: '

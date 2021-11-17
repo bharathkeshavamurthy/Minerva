@@ -48,7 +48,7 @@ def __u(gamma, d, los):
                                                                                         lambda: 2.0)[los]())))
 
 
-def __evaluate_los_throughput(p, d, phi, r_bar):
+def __evaluate_los_throughput(p, d, phi, r_bar, adapt=True):
     k = 1.0 * math.exp(0.0512 * phi)
     df, nc = 2, (2 * k)
     y = (k + 1) * (1 / (1e5 * (d ** (-1 * 2.0))))
@@ -59,14 +59,14 @@ def __evaluate_los_throughput(p, d, phi, r_bar):
     x_star = 2 * (k + 1) * __u(gamma_star, d, True)
     r_star = gamma_star * __marcum_q(df, nc, x_star)
     try:
-        tf.compat.v1.assign(r_bar, r_bar + (p * r_star), validate_shape=True, use_locking=True)
+        tf.compat.v1.assign(r_bar, r_bar + (p * (r_star if adapt else 9e5)), validate_shape=True, use_locking=True)
     except Exception as e__:
         print('[ERROR] SMDPEvaluation __evaluate_los_throughput: Exception caught during tensor assignment - '
               '{}'.format(traceback.print_tb(e__.__traceback__)))
     # Nothing to return...
 
 
-def __evaluate_nlos_throughput(p, d, r_bar):
+def __evaluate_nlos_throughput(p, d, r_bar, adapt=True):
     df, nc = 2, 0
     y = 1 / (1e5 * (0.2 * d ** (-1 * 2.8)))
     z_star = __bisect(__f, df, nc, y, 0,
@@ -77,18 +77,18 @@ def __evaluate_nlos_throughput(p, d, r_bar):
     r_star = gamma_star * __marcum_q(df, nc, x_star)
     # Try-Catch Block to handle resource access exceptions
     try:
-        tf.compat.v1.assign(r_bar, r_bar + (p * r_star), validate_shape=True, use_locking=True)
+        tf.compat.v1.assign(r_bar, r_bar + (p * (r_star if adapt else 9e5)), validate_shape=True, use_locking=True)
     except Exception as e__:
         print('[ERROR] [{}] SMDPEvaluation __evaluate_los_throughput: Exception caught during tensor assignment - '
               '{}'.format(id, traceback.print_tb(e__.__traceback__)))
     # Nothing to return...
 
 
-def __calculate_adapted_throughput(d, phi, r_bar):
+def __calculate_adapted_throughput(d, phi, r_bar, adapt=True):
     p = 1 / (1 + (9.12 * math.exp(-1 * 0.16 * (phi - 9.12))))
     with ThreadPoolExecutor(max_workers=2) as executor:
-        executor.submit(__evaluate_los_throughput, p, d, phi, r_bar)
-        executor.submit(__evaluate_nlos_throughput, (1 - p), d, r_bar)
+        executor.submit(__evaluate_los_throughput, p, d, phi, r_bar, adapt)
+        executor.submit(__evaluate_nlos_throughput, (1 - p), d, r_bar, adapt)
     # Nothing to return...
 
 
@@ -97,20 +97,24 @@ def __calculate_adapted_throughput(d, phi, r_bar):
 # for c_pu in c_pus:
 #     k_su = (c_pu * 6) / 0.9
 #     r_var = tf.Variable(0.0, dtype=tf.float64)
-#     __calculate_adapted_throughput(10, 0, r_var)
+#     __calculate_adapted_throughput(10, 0, r_var, False)
 #     print(r_var / (6 * 1e6))
 
-# c_sus = [0.0, 0.75, 1.35, 2.1, 2.55, 3.0, 3.3, 3.9, 4.5, 4.95, 5.5, 6.6, 7.275, 7.68, 8.37]
+# c_sus = [0, 0.774, 1.31, 1.84, 2.59, 3.04, 3.47, 4, 4.44, 4.77, 5.55, 6.33, 7.1, 7.4, 8.15]
+# c_sus = [0, 0.75, 1.35, 2.1, 2.55, 3, 3.3, 3.9, 4.5, 4.95, 5.5, 6.6, 7.275, 7.68, 8.37]
 # for c_su in c_sus:
 #     k_su = c_su / 0.6
 #     r_var = tf.Variable(0.0, dtype=tf.float64)
-#     __calculate_adapted_throughput(10, 0, r_var)
+#     __calculate_adapted_throughput(100, 45, r_var)
 #     print(r_var / 1e6)
 
 # ROC Evaluation
 k_su, data = 0, dict()
 c_sus = np.array([0.0, 0.75, 1.35, 2.1, 2.55, 3.0, 3.3, 3.9, 4.5, 4.95, 5.5, 6.6, 7.275, 7.68, 8.37]) / 0.6
+c_pus = (np.array([0.9, 0.9, 0.860625, 0.826875, 0.81, 0.7875, 0.781875, 0.73125, 0.691875, 0.6525, 0.61875, 0.6046875,
+                   0.45, 0.36, 0.27, 0.0]) * 6) / 0.9
+max_occupancies = max(c_pus)
+p_mds = (max_occupancies - c_pus) / max_occupancies
 p_fas = np.array([((13.95 - k) / 13.95) for k in c_sus])
-for i in range(len(c_sus)):
-    data[p_fas[i]] = (c_sus[i] / 13.95)
-print(data)
+print(p_mds)
+print(p_fas)

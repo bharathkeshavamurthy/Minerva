@@ -1,5 +1,5 @@
 # Minerva
-An Adaptive, Intelligent, and Hierarchical Cognitive Radio Framework using Partially Observable Markov Decision Processes (POMDPs)
+Distributed Multi-Agent Spectrum Sensing and Access via Partially Observable Markov Decision Processes (POMDPs)
 
 TCCN 2022 | arXiv: https://doi.org/10.48550/arXiv.2107.07049 | Xplore: https://ieeexplore.ieee.org/document/9625015
 

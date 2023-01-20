@@ -1,7 +1,7 @@
 # Minerva
 Distributed Multi-Agent Spectrum Sensing and Access via Partially Observable Markov Decision Processes (POMDPs)
 
-TCCN 2022 | arXiv: https://doi.org/10.48550/arXiv.2107.07049 | Xplore: https://ieeexplore.ieee.org/document/9625015
+TCCN 2022 | Xplore: https://ieeexplore.ieee.org/document/9625015
 
 ICC 2021 | Xplore: https://ieeexplore.ieee.org/document/9500752
 
